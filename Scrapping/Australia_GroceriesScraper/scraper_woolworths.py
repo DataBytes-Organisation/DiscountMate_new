@@ -143,7 +143,7 @@ time.sleep(delay)
 #close the browser
 driver.close()
 
-for category in categories[:1]:
+for category in categories:
 
     #start browser
     driver = webdriver.Edge(options=options)
@@ -371,8 +371,7 @@ for category in categories[:1]:
         #if(total_pages > 1 and page + 1 <= total_pages):
         if(total_pages > 1 and page + 1 <= total_pages):
             driver.get(next_page_link)
-            if total_pages==3:
-                break
+            
         
         #wait the delay time before the next page
         time.sleep(delay)

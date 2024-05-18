@@ -97,7 +97,7 @@ for category in categories:
     print(category.text)
 
 # Iterate through each category and follow the link to get the products
-for category in categories[:1]:
+for category in categories:
     
     #start browser
     driver = webdriver.Edge(options=options)
