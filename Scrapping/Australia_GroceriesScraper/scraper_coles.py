@@ -1,9 +1,13 @@
+import json
 import csv
 import os
 import time
 import configparser
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException,  TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
 #retreive configuration values
@@ -38,6 +42,7 @@ category_ignore = str(config.get('Coles','IgnoredCategories'))
 # Configure options
 options = webdriver.EdgeOptions()
 options.add_argument("--app=https://www.coles.com.au")
+options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36")
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
 # Start EdgeDriver
@@ -47,25 +52,27 @@ driver = webdriver.Edge(options=options)
 # Navigate to the Coles website
 url = "https://www.coles.com.au"
 driver.get(url + "/browse")
-time.sleep(delay)
+
+
+time.sleep(30)
 
 try:
     #Set Loacation via Menu Items
     driver.find_element(By.XPATH, "//button[@data-testid='delivery-selector-button']").click()
     time.sleep(delay)
-
+    print('1')
     driver.find_element(By.XPATH, "//a[@id='shopping-method-label-0']").click()
     time.sleep(delay)
-
+    print('1')
     driver.find_element(By.XPATH, "//input[@aria-label='Search address']").send_keys(ccsuburb)
     time.sleep(delay)
-
+    print('1')  
     driver.find_element(By.XPATH, "//div[@id='react-select-search-location-box-option-0']").click()
     time.sleep(delay)
-
+    print('1')
     driver.find_element(By.XPATH, "//input[@name='radio-group-name'][@value='0']").click()
     time.sleep(delay)
-
+    print('1')
     driver.find_element(By.XPATH, "//button[@data-testid='set-location-button']").click()
     time.sleep(delay)
 except:
@@ -90,8 +97,8 @@ for category in categories:
     print(category.text)
 
 # Iterate through each category and follow the link to get the products
-for category in categories:
-
+for category in categories[:1]:
+    
     #start browser
     driver = webdriver.Edge(options=options)
         
@@ -103,7 +110,8 @@ for category in categories:
 
     # Follow the link to the category page
     driver.get(category_link)
-
+    time.sleep(30)
+    
     # Parse page content
     page_contents = BeautifulSoup(driver.page_source, "html.parser")
 
@@ -183,7 +191,21 @@ for category in categories:
                 # with open(filepath, "a", newline="") as f:
                 #     writer = csv.writer(f)  
                 #     writer.writerow([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, complexpromo, link])
-                collected_data.append([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, promotext, link])
+                # collected_data.append([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, promotext, link])
+                product_details = {
+                                    "product_code": productcode,
+                                    "category": category_name,
+                                    "item_name": name,
+                                    "best_price": best_price,
+                                    "best_unit_price": best_unitprice,
+                                    "item_price": itemprice,
+                                    "unit_price": unitprice,
+                                    "price_was": price_was,
+                                    "special_text": specialtext,
+                                    "promo_text": complexpromo,
+                                    "link": link
+                                }
+                collected_data.append(product_details)
                 
             #reset variables
             name = None
@@ -222,5 +244,10 @@ for category in categories:
     #close the browser
     driver.close()    
 
-driver.quit
+driver.quit()
+json_data = json.dumps(collected_data, indent=4)
+filepath = os.path.join(folderpath,'test2.json')
+with open(filepath, 'w', encoding='utf-8') as f:
+    #json.dump(json_data, f, ensure_ascii=False, indent=4)
+    json.dump(collected_data, f, ensure_ascii=False, indent=4)
 print("Finished")

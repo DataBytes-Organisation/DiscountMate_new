@@ -1,4 +1,4 @@
-
+import json
 import sys
 import os
 import time
@@ -143,7 +143,7 @@ time.sleep(delay)
 #close the browser
 driver.close()
 
-for category in categories:
+for category in categories[:1]:
 
     #start browser
     driver = webdriver.Edge(options=options)
@@ -323,7 +323,21 @@ for category in categories:
                 # with open(filepath, "a", newline="") as f:
                 #     writer = csv.writer(f)  
                 #     writer.writerow([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, promotext, link])
-                collected_data.append([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, promotext, link])
+                product_details = {
+                                    "product_code": productcode,
+                                    "category": category_name,
+                                    "item_name": name,
+                                    "best_price": best_price,
+                                    "best_unit_price": best_unitprice,
+                                    "item_price": itemprice,
+                                    "unit_price": unitprice,
+                                    "price_was": price_was,
+                                    "special_text": specialtext,
+                                    "promo_text": promotext,
+                                    "link": link
+                                }
+                collected_data.append(product_details)
+                #collected_data.append([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, promotext, link])
 
 
             #reset variables
@@ -357,6 +371,8 @@ for category in categories:
         #if(total_pages > 1 and page + 1 <= total_pages):
         if(total_pages > 1 and page + 1 <= total_pages):
             driver.get(next_page_link)
+            if total_pages==3:
+                break
         
         #wait the delay time before the next page
         time.sleep(delay)
@@ -380,6 +396,12 @@ config.set('Woolworths', 'Resume_Page', "0")
 with open(configFile, 'w') as cfgFile:
     config.write(cfgFile)
 cfgFile.close
-collected_data.to_csv('test_woolworths.py')
+#collected_data.to_csv('test_woolworths.py')
+json_data = json.dumps(collected_data, indent=4)
+# filepath = os.path.join(folderpath,'test.json')
+# with open(filepath, 'w', encoding='utf-8') as f:
+#     #json.dump(json_data, f, ensure_ascii=False, indent=4)
+#     json.dump(collected_data, f, ensure_ascii=False, indent=4)
+
 
 print("Finished")   
