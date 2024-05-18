@@ -10,6 +10,10 @@ from bs4 import BeautifulSoup
 config = configparser.ConfigParser()
 config.read('configuration.ini')
 
+# Initialize the array to store data
+collected_data = []
+
+
 #folderpath = str(config.get('Global','SaveLocation'))
 folderpath = "/Users/KarishmaKhanna/Documents/Deakin/TeamProject-SIT764/Week5"
 delay = int(config.get('Coles','DelaySeconds'))
@@ -18,18 +22,18 @@ category_ignore = str(config.get('Coles','IgnoredCategories'))
 
 
 # Create a new csv file for Coles
-filename = "Coles" + ".csv"
-filepath = os.path.join(folderpath,filename)
-if os.path.exists(filepath):
-    os.remove(filepath)
+# filename = "Coles" + ".csv"
+# filepath = os.path.join(folderpath,filename)
+# if os.path.exists(filepath):
+#     os.remove(filepath)
 
-print("Saving to " + filepath)
+# print("Saving to " + filepath)
 
-#write the header
-with open(filepath, "a", newline="") as f:
-    writer = csv.writer(f)
-    writer.writerow(["Product Code", "Category", "Item Name", "Best Price", "Best Unit Price", "Item Price", "Unit Price", "Price Was", "Special Text", "Complex Promo Text", "Link"])
-f.close()
+# #write the header
+# with open(filepath, "a", newline="") as f:
+#     writer = csv.writer(f)
+#     writer.writerow(["Product Code", "Category", "Item Name", "Best Price", "Best Unit Price", "Item Price", "Unit Price", "Price Was", "Special Text", "Complex Promo Text", "Link"])
+# f.close()
 
 # Configure options
 options = webdriver.EdgeOptions()
@@ -176,10 +180,11 @@ for category in categories:
                             best_price = itemprice
 
                 #write contents to file                       
-                with open(filepath, "a", newline="") as f:
-                    writer = csv.writer(f)  
-                    writer.writerow([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, complexpromo, link])
-            
+                # with open(filepath, "a", newline="") as f:
+                #     writer = csv.writer(f)  
+                #     writer.writerow([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, complexpromo, link])
+                collected_data.append([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, promotext, link])
+                
             #reset variables
             name = None
             itemprice = None
