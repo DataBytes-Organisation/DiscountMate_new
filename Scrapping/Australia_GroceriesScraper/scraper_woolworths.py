@@ -1,17 +1,63 @@
+import json
 import sys
-import csv
 import os
 import time
 import configparser
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException, TimeoutException, JavascriptException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
-#retreive configuration values
+def initialize_driver():
+    options = webdriver.ChromeOptions()
+    # options.add_argument('--headless')
+    try:
+        driver = webdriver.Chrome(options=options)
+    except WebDriverException:
+        sys.exit("Error initializing web driver")
+    return driver
+
+def safe_get_url(driver, url):
+    try:
+        driver.get(url)
+    except WebDriverException as e:
+        print(f"Error accessing {url}: {str(e)} - Attempting to reinitialize driver.")
+        driver.quit()
+        driver = initialize_driver()
+        driver.get(url)
+
+def execute_script_safe(driver, script, element_id):
+    try:
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, element_id))
+        )
+        return driver.execute_script(script, element)
+    except JavascriptException as e:
+        print(f"JavaScript error: {str(e)}")
+    except TimeoutException:
+        print("Element not found within the timeout period.")
+
+def with_retries(operation, retries=3):
+    for attempt in range(retries):
+        try:
+            return operation()
+        except Exception as e:
+            print(f"Attempt {attempt + 1} failed: {str(e)}")
+            time.sleep(2)  # wait 2 seconds before retrying
+    print("All attempts failed.")
+    return None
+
+# Initialize the array to store data
+collected_data = []
+
+# Retrieve configuration values
 config = configparser.ConfigParser()
 configFile = 'configuration.ini'
 config.read(configFile)
 
+# Main scraping logic including interaction with the webpage, parsing elements and appending data to array
 #folderpath = str(config.get('Global','SaveLocation'))
 folderpath = "/Users/KarishmaKhanna/Documents/Deakin/TeamProject-SIT764/Week5"
 delay = int(config.get('Woolworths','DelaySeconds'))
@@ -26,24 +72,24 @@ resume_category = config.get('Woolworths','Resume_Category')
 resume_page = int(config.get('Woolworths','Resume_Page'))
 
 # Create a new csv file for Woolworths
-filename = "Woolworths" + ".csv"
-filepath = os.path.join(folderpath,filename)
+# filename = "Woolworths" + ".csv"
+# filepath = os.path.join(folderpath,filename)
 
 #print resume details, otherwise delete the file to start again
-if(resume_active == True):
-    print("Resuming at page " + str(resume_page) + " of " + str(resume_category))
-else:
-    print("Resume data not found, starting anew...")
-    if os.path.exists(filepath):
-        os.remove(filepath)
+# if(resume_active == True):
+#     print("Resuming at page " + str(resume_page) + " of " + str(resume_category))
+# else:
+#     print("Resume data not found, starting anew...")
+#     if os.path.exists(filepath):
+#         os.remove(filepath)
     
     #write the header to the new file
-    with open(filepath, "a", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["Product Code", "Category", "Item Name", "Best Price", "Best Unit Price", "Item Price", "Unit Price", "Price Was", "Special Text", "Complex Promo Text", "Link"])
-    f.close()
+#     with open(filepath, "a", newline="") as f:
+#         writer = csv.writer(f)
+#         writer.writerow(["Product Code", "Category", "Item Name", "Best Price", "Best Unit Price", "Item Price", "Unit Price", "Price Was", "Special Text", "Complex Promo Text", "Link"])
+#     f.close()
 
-print("Saving to " + filepath)
+# print("Saving to " + filepath)
 
 # Configure options
 options = webdriver.EdgeOptions()
@@ -160,6 +206,9 @@ for category in categories:
 
 
         products2 = driver.find_elements(By.XPATH, "//wc-product-tile[@class='ng-star-inserted']")
+        WebDriverWait(driver, 50).until(
+        EC.presence_of_all_elements_located((By.XPATH, "//wc-product-tile[@class='ng-star-inserted']"))
+        )
         productsCount2 = len(products2)
 
         print(category_name + ": Page " + str(page) + " of " + str(total_pages) + " | Products on this page: " + str(productsCount2))
@@ -167,6 +216,7 @@ for category in categories:
         for productCounter in range(productsCount2):
             
             #product name
+            WebDriverWait(driver, 40).until(EC.element_to_be_clickable((By.XPATH, "//button[@class='wx-header__drawer-button browseMenuDesktop']")))
             scriptContents = "return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('title')[0].innerText"
             name = driver.execute_script(scriptContents)
 
@@ -270,9 +320,25 @@ for category in categories:
                     promotext = None
 
                 #write contents to file                       
-                with open(filepath, "a", newline="") as f:
-                    writer = csv.writer(f)  
-                    writer.writerow([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, promotext, link])
+                # with open(filepath, "a", newline="") as f:
+                #     writer = csv.writer(f)  
+                #     writer.writerow([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, promotext, link])
+                product_details = {
+                                    "product_code": productcode,
+                                    "category": category_name,
+                                    "item_name": name,
+                                    "best_price": best_price,
+                                    "best_unit_price": best_unitprice,
+                                    "item_price": itemprice,
+                                    "unit_price": unitprice,
+                                    "price_was": price_was,
+                                    "special_text": specialtext,
+                                    "promo_text": promotext,
+                                    "link": link
+                                }
+                collected_data.append(product_details)
+                #collected_data.append([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, promotext, link])
+
 
             #reset variables
             name = None
@@ -304,9 +370,8 @@ for category in categories:
         # Navigate to the next page
         #if(total_pages > 1 and page + 1 <= total_pages):
         if(total_pages > 1 and page + 1 <= total_pages):
-            if page+1==11:
-                break
             driver.get(next_page_link)
+            
         
         #wait the delay time before the next page
         time.sleep(delay)
@@ -321,7 +386,7 @@ else:
 
 driver.quit()
 
-f.close()
+#f.close()
 
 config.set('Woolworths', 'Resume_Active', "FALSE")
 config.set('Woolworths', 'Resume_Category', "null")
@@ -330,5 +395,12 @@ config.set('Woolworths', 'Resume_Page', "0")
 with open(configFile, 'w') as cfgFile:
     config.write(cfgFile)
 cfgFile.close
+#collected_data.to_csv('test_woolworths.py')
+json_data = json.dumps(collected_data, indent=4)
+# filepath = os.path.join(folderpath,'test.json')
+# with open(filepath, 'w', encoding='utf-8') as f:
+#     #json.dump(json_data, f, ensure_ascii=False, indent=4)
+#     json.dump(collected_data, f, ensure_ascii=False, indent=4)
 
-print("Finished")
+
+print("Finished")   
