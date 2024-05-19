@@ -2,17 +2,41 @@ import pandas as pd
 import numpy as np 
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
-
-from utils import DiscountMateDB
+from utils import *
 import os
+import json
 
+config_path = os.path.abspath("db-config.json")    
+print(f"Config file path: {config_path}")
+    
 
-def load_data_db(config_path):
-    db = DiscountMateDB(config_path)
-    # Read data from the collection
-    fetched_data = db.read_data({}, 5)
-    for item in fetched_data:
-        print(item)  
+def simulate_data(config_path, num_transactions):
+    products_df = load_data_db(config_path)
+    #print(products_df.head())
+
+    # Create a fake customer
+    customer = create_fake_customer()
+    print(f"Customer: {customer}")
+
+    # Generate random transactions for the customer
+    transactions = generate_transactions(customer, products_df, num_transactions=num_transactions)
+
+    # Split the data into training and testing sets
+    train_transactions, test_transactions = split_data(transactions, train_ratio=0.7)
+
+    # Save train and test transactions to disk
+    with open("train_transactions.json", "w") as f:
+        json.dump(train_transactions, f)
+        
+    with open("test_transactions.json", "w") as f:
+        json.dump(test_transactions, f)
+    
+    # Create item similarity matrix
+    cosine_sim = create_item_similarity_matrix(products_df)
+    print(f"Recommendations for customer {customer['customer_name']}:")
+
+    # Evaluate the recommendations
+    evaluate_recommendations(train_transactions, test_transactions, products_df, cosine_sim)
 
 def load_data_file(file):
     """
@@ -87,21 +111,4 @@ def get_recommendations(df, transactions, items, user_id, item_item_sim, num_rec
 db_config_file = "db-config.json"
 config_path = os.path.abspath(db_config_file)
 
-load_data_db(config_path)
-
-# # Load data
-# data_file = "Grocery_data_v1.csv"
-# df_grocery = load_data(file=data_file)
-
-# # Preprocess data
-# items, transactions = data_preprocessing(df_grocery)
-
-# # Calculate item-item similarity matrix
-# item_item_sim = calculate_item_item_similarity(transactions=transactions)
-
-# # Generate recommendations for a user
-# user_id = 9137310586
-# recommendations = get_recommendations(df=df_grocery, transactions=transactions, items=items, 
-#                                       user_id=user_id, item_item_sim=item_item_sim)
-
-# print("Final recommendations:", recommendations)
+simulate_data(config_path, num_transactions = 100)
