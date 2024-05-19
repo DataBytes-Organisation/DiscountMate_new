@@ -1,43 +1,30 @@
 import json
-import csv
 import os
 import time
 import configparser
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException,  TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from bs4 import BeautifulSoup
 
-#retreive configuration values
+# Retrieve configuration values
 config = configparser.ConfigParser()
 config.read('configuration.ini')
 
 # Initialize the array to store data
 collected_data = []
 
+# folderpath = str(config.get('Global','SaveLocation'))
+# folderpath = "/Users/KarishmaKhanna/Documents/Deakin/TeamProject-SIT764/Week5"
 
-#folderpath = str(config.get('Global','SaveLocation'))
-folderpath = "/Users/KarishmaKhanna/Documents/Deakin/TeamProject-SIT764/Week5"
-delay = int(config.get('Coles','DelaySeconds'))
-ccsuburb = str(config.get('Coles','ClickAndCollectSuburb'))
-category_ignore = str(config.get('Coles','IgnoredCategories'))
+script_dir = os.path.dirname(os.path.abspath(__file__))
+folderpath = script_dir
 
-
-# Create a new csv file for Coles
-# filename = "Coles" + ".csv"
-# filepath = os.path.join(folderpath,filename)
-# if os.path.exists(filepath):
-#     os.remove(filepath)
-
-# print("Saving to " + filepath)
-
-# #write the header
-# with open(filepath, "a", newline="") as f:
-#     writer = csv.writer(f)
-#     writer.writerow(["Product Code", "Category", "Item Name", "Best Price", "Best Unit Price", "Item Price", "Unit Price", "Price Was", "Special Text", "Complex Promo Text", "Link"])
-# f.close()
+delay = int(config.get('Coles', 'DelaySeconds'))
+ccsuburb = str(config.get('Coles', 'ClickAndCollectSuburb'))
+category_ignore = str(config.get('Coles', 'IgnoredCategories'))
 
 # Configure options
 options = webdriver.EdgeOptions()
@@ -53,11 +40,10 @@ driver = webdriver.Edge(options=options)
 url = "https://www.coles.com.au"
 driver.get(url + "/browse")
 
-
 time.sleep(30)
 
 try:
-    #Set Loacation via Menu Items
+    # Set Location via Menu Items
     driver.find_element(By.XPATH, "//button[@data-testid='delivery-selector-button']").click()
     time.sleep(delay)
     print('1')
@@ -66,7 +52,7 @@ try:
     print('1')
     driver.find_element(By.XPATH, "//input[@aria-label='Search address']").send_keys(ccsuburb)
     time.sleep(delay)
-    print('1')  
+    print('1')
     driver.find_element(By.XPATH, "//div[@id='react-select-search-location-box-option-0']").click()
     time.sleep(delay)
     print('1')
@@ -75,8 +61,8 @@ try:
     print('1')
     driver.find_element(By.XPATH, "//button[@data-testid='set-location-button']").click()
     time.sleep(delay)
-except:
-    print("Setting C+C Location Failed")
+except Exception as e:
+    print("Setting C+C Location Failed:", str(e))
 
 # Parse the page content
 page_contents = BeautifulSoup(driver.page_source, "html.parser")
@@ -84,25 +70,28 @@ page_contents = BeautifulSoup(driver.page_source, "html.parser")
 # Find all product categories on the page
 categories = page_contents.find_all("a", class_="coles-targeting-ShopCategoriesShopCategoryStyledCategoryContainer")
 
-#remove categories ignored in the config file
+# Remove categories ignored in the config file
 for category in reversed(categories):
     category_endpoint = category.get("href").replace("/browse/", "")
     category_endpoint = category_endpoint.replace("/", "")
-    if (category_ignore.find(category_endpoint) != -1):
+    if category_ignore.find(category_endpoint) != -1:
         categories.remove(category)
 
-#show the user the categories to scrape
+# Show the user the categories to scrape
 print("Categories to Scrape:")
 for category in categories:
     print(category.text)
 
+# Maximum number of products to collect
+max_products = 10
+product_count = 0
+
 # Iterate through each category and follow the link to get the products
 for category in categories:
-    
-    #start browser
+    # Start browser
     driver = webdriver.Edge(options=options)
-        
-    # Get the link to the categories page
+
+    # Get the link to the category's page
     category_link = url + category.get("href")
     category_name = category.text.strip()
 
@@ -111,7 +100,7 @@ for category in categories:
     # Follow the link to the category page
     driver.get(category_link)
     time.sleep(30)
-    
+
     # Parse page content
     page_contents = BeautifulSoup(driver.page_source, "html.parser")
 
@@ -120,20 +109,25 @@ for category in categories:
         pagination = page_contents.find("ul", class_="coles-targeting-PaginationPaginationUl")
         pages = pagination.find_all("li")
         total_pages = int(pages[-2].text.strip())
-    except:
+    except Exception as e:
         total_pages = 1
-
-    for page in range(1, total_pages):
+    product_count = 0
+    for page in range(1, total_pages + 1): 
+        if product_count >= max_products:
+                break
 
         # Parse the page content
         soup = BeautifulSoup(driver.page_source, "html.parser")
-        
+
         # Find all products on the page
         products = soup.find_all("header", class_="product__header")
         print(category_name + ": Page " + str(page) + " of " + str(total_pages) + " | Products on this page: " + str(len(products)))
 
-        # Iterate through each product and extract the product name, price and link
+        # Iterate through each product and extract the product name, price, and link        
         for product in products:
+            if product_count >= max_products:
+                break
+
             name = product.find("h2", class_="product__title")
             itemprice = product.find("span", class_="price__value")
             unitprice = product.find("div", class_="price__calculation_method")
@@ -142,72 +136,65 @@ for category in categories:
             productLink = product.find("a", class_="product__link")["href"]
             productcode = productLink.split("-")[-1]
             price_was = None
-            
-######################
-            #if(productcode == "LOCKED\""):
-            #    breakpoint
 
             if name and itemprice:
                 name = name.text.strip()
                 itemprice = itemprice.text.strip()
-                best_price = itemprice                    
+                best_price = itemprice
                 link = url + productLink
 
-                #Unit Price and Was Price
-                if(unitprice):
+                # Unit Price and Was Price
+                if unitprice:
                     unitprice = unitprice.text.strip().lower()
                     price_was_pos = unitprice.find("was $")
 
-                    if(price_was_pos != -1):
-                        price_was = unitprice[price_was_pos -1 + 6:len(unitprice)]
+                    if price_was_pos != -1:
+                        price_was = unitprice[price_was_pos - 1 + 6:len(unitprice)]
                         unitprice = unitprice[0:price_was_pos].strip()
-                        if (unitprice[0:1] == "|"):
+                        if unitprice[0:1] == "|":
                             unitprice = None
                         else:
-                            unitprice = unitprice[0:unitprice.find("| was") -1].strip()
-                
+                            unitprice = unitprice[0:unitprice.find("| was") - 1].strip()
+
                     best_unitprice = unitprice
-                #Special Text
-                if(specialtext):
+                # Special Text
+                if specialtext:
                     specialtext = specialtext.text.strip()
-                    if(specialtext == "1/2"):
+                    if specialtext == "1/2":
                         specialtext = "50%"
-                
-                #Complex Promo
-                if(complexpromo):
-                    complexpromo = complexpromo.text.strip() 
-                    #Get ComplexPromo price
-                    if(complexpromo.find("Pick any ") != -1 or complexpromo.find("Buy ") != -1):
+
+                # Complex Promo
+                if complexpromo:
+                    complexpromo = complexpromo.text.strip()
+                    # Get ComplexPromo price
+                    if complexpromo.find("Pick any ") != -1 or complexpromo.find("Buy ") != -1:
                         try:
                             complexpromo = complexpromo.replace("Pick any ", "")
                             complexpromo = complexpromo.replace("Buy ", "")
                             complex_itemcount = int(complexpromo[0:complexpromo.find(" for")])
-                            complex_cost = float(complexpromo[complexpromo.find("$")+1:len(complexpromo)])
+                            complex_cost = float(complexpromo[complexpromo.find("$") + 1:len(complexpromo)])
                             best_price = "$" + str(round(complex_cost / complex_itemcount, 2))
                         except:
                             best_price = itemprice
 
-                #write contents to file                       
-                # with open(filepath, "a", newline="") as f:
-                #     writer = csv.writer(f)  
-                #     writer.writerow([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, complexpromo, link])
-                # collected_data.append([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, promotext, link])
+                # Collect product details
                 product_details = {
-                                    "product_code": productcode,
-                                    "category": category_name,
-                                    "item_name": name,
-                                    "best_price": best_price,
-                                    "best_unit_price": best_unitprice,
-                                    "item_price": itemprice,
-                                    "unit_price": unitprice,
-                                    "price_was": price_was,
-                                    "special_text": specialtext,
-                                    "promo_text": complexpromo,
-                                    "link": link
-                                }
+                    "product_code": productcode,
+                    "category": category_name,
+                    "item_name": name,
+                    "best_price": best_price,
+                    "best_unit_price": best_unitprice,
+                    "item_price": itemprice,
+                    "unit_price": unitprice,
+                    "price_was": price_was,
+                    "special_text": specialtext,
+                    "promo_text": complexpromo,
+                    "link": link
+                }
                 collected_data.append(product_details)
-                
-            #reset variables
+                product_count += 1
+
+            # Reset variables
             name = None
             itemprice = None
             unitprice = None
@@ -227,27 +214,26 @@ for category in categories:
         # Get the link to the next page
         next_page_link = f"{category_link}?page={page + 1}"
 
-        #restart browser every 50 pages
-        if(page % 50 == 0):
-            print("Restaring Browser...")
-            driver.close()
-            driver = webdriver.Edge(options=options)
+        # Restart browser every 50 pages
+        # if page % 50 == 0:
+        #     print("Restarting Browser...")
+        #     driver.close()
+        #     driver = webdriver.Edge(options=options)
 
         # Navigate to the next page
-        if(total_pages > 1 and page + 1 <= total_pages):
+        if total_pages > 1 and page + 1 <= total_pages:
             driver.get(next_page_link)
-        #wait the delay time before the next page
+        # Wait the delay time before the next page
         time.sleep(delay)
 
-    #wait the delay time before the next Category
+    # Wait the delay time before the next Category
     time.sleep(delay)
-    #close the browser
-    driver.close()    
+    # Close the browser
+    driver.close()
 
 driver.quit()
 json_data = json.dumps(collected_data, indent=4)
-filepath = os.path.join(folderpath,'test2.json')
+filepath = os.path.join(folderpath, 'test2.json')
 with open(filepath, 'w', encoding='utf-8') as f:
-    #json.dump(json_data, f, ensure_ascii=False, indent=4)
     json.dump(collected_data, f, ensure_ascii=False, indent=4)
 print("Finished")
