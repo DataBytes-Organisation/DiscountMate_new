@@ -52,7 +52,7 @@ Table of Contents
 | Name | Date    | Reason For Changes  | Version   |
 | ---- | ------- | ------------------- | --------- |
 |Hadi   Rastin|  20/04/2024       | Adding Target Users, User Stories, and data collection                     |           |
-|      |         |                     |           |
+|Mohammed     Jameel |  19/05/2024       | Adding product overview, Product Perspective, Machine Learning and Data Analysis, Product Functions and Requirements (functional and Non-functional)                      |           |
 |      |         |                     |           |
 
 ## 1. Introduction
