@@ -1,0 +1,1001 @@
+Invoice ID,Branch,State,City,Customer type,Gender,Item name,Unit Price,Quantity,SKU number,Date,Total price
+750-67-8428,A,WA,Fremantle,Member,Female,Blackcurrant Chocolate Jelly Block,2.94,7,5556661P,1/5/2019,20.58
+226-31-3081,C,WA,Perth,Normal,Female,Passage To India Balti Curry Simmer Sauce Pouch,1.52,5,6836197P,3/8/2019,7.6
+631-41-3108,A,VIC,Ballarat,Normal,Male,Extra Strength Pure Ceylon Bags 200 Pack,0.06,7,5059237P,3/3/2019,0.42
+123-19-1176,A,VIC,Ballarat,Member,Male,Coffee Beans Unplugged Decaf,4.4,8,3762447P,1/27/2019,35.2
+373-73-7910,A,ACT,Canberra,Normal,Male,Creamy Mushroom Pasta Sauce,0.61,7,1274486P,2/8/2019,4.27
+699-14-3026,C,VIC,Melbourne,Normal,Male,Original BBQ Shapes,2,7,2734446P,3/25/2019,14
+355-53-5943,A,NSW,Sydney,Member,Female,Free Range Natural Living Extra Large Eggs 12 pack,0.97,6,8736750P,2/25/2019,5.82
+315-22-5665,C,TAS,Devonport,Normal,Female,Mozzarella Shredded Cheese,12.14,10,1413334P,2/24/2019,121.4
+665-32-9167,A,SA,Mount Gambier,Member,Female,LCMs 25% Less Sugar Chocolate Strawberry Flavour Snack Bars 6 pack,3.33,2,5200437P,1/10/2019,6.66
+692-92-5582,B,NT,Darwin,Member,Female,Club Original Cheddar Cheese,49.11,3,6533005P,2/20/2019,147.33
+351-62-0822,B,QLD,Townsville,Member,Female,Lemon Plus Soft Drink Multipack Cans 375mL x 10,2.4,4,5483080P,2/6/2019,9.6
+529-56-3974,B,WA,Fremantle,Member,Male,Blue Energy Drink 250mL,10,4,9880526P,3/9/2019,40
+365-64-0515,A,WA,Fremantle,Normal,Female,Organic Lemon & Ginger Tea Bags 40 pack,0.07,5,1412954P,2/12/2019,0.35
+252-56-2699,A,WA,Perth,Normal,Male,Smooth And Aromatic Medium Roast Ground Coffee,3.5,10,4965938P,2/7/2019,35
+829-34-3910,A,ACT,Canberra,Normal,Female,Butcher Lamb Loin Chops,28,10,8598420P,3/29/2019,280
+299-46-1805,B,TAS,Devonport,Member,Female,Rich Espresso Coffee Beans,2.24,6,3516065P,1/15/2019,13.44
+656-95-9349,A,QLD,Gold Coast,Member,Female,Classic Medium Roast Instant Coffee,9,7,303556P,3/11/2019,63
+765-26-6951,A,QLD,Brisbane,Normal,Male,Beef 4 Star Lean Mince,16.25,6,3449773P,1/1/2019,97.5
+329-62-1586,A,QLD,Gold Coast,Normal,Male,Traditional Original White Bread,0.57,3,3362937P,1/21/2019,1.71
+319-50-3348,B,ACT,Canberra,Normal,Female,Sliced Smoked Ocean Trout,78,2,2740766P,3/11/2019,156
+300-71-4605,C,NSW,Newcastle,Member,Male,Granola,2.33,5,5203479P,2/25/2019,11.65
+371-85-5789,B,TAS,Launceston,Normal,Male,Fetta Traditional,21.25,3,4962372P,3/5/2019,63.75
+273-16-6619,B,QLD,Gold Coast,Normal,Male,Sriracha Sauce,2.16,2,3498622P,3/15/2019,4.32
+636-48-8204,A,QLD,Brisbane,Normal,Male,Vegetable Oil,0.36,5,8211586P,2/17/2019,1.8
+549-59-1358,A,NSW,Sydney,Member,Male,Espresso Ristretto Intensity 11 Coffee Capsules 52g,0.7,3,2959286P,3/2/2019,2.1
+227-03-5010,A,NT,Alice Springs,Member,Female,Sauce,1.62,8,9899750P,3/22/2019,12.96
+649-29-6775,B,VIC,Geelong,Normal,Male,Mct Premium Liquid Coconut Oil,3.52,1,3526411P,2/8/2019,3.52
+189-17-4241,A,SA,Mount Gambier,Normal,Female,Lamb Backstrap,46,2,3411442P,3/10/2019,92
+145-94-9061,B,SA,Adelaide,Normal,Female,Rice Snacks Flame Grilled BBQ,1.5,5,6368893P,1/25/2019,7.5
+848-62-7243,A,QLD,Brisbane,Normal,Male,Greek Style Yoghurt Manuka Honey,1.74,9,5149330P,3/15/2019,15.66
+871-79-8483,B,NT,Darwin,Normal,Male,Soft Drink Cola,1,5,2506339P,2/25/2019,5
+149-71-6266,B,QLD,Townsville,Member,Male,Milk Chocolate Advent Calendar,4,9,5299864P,1/28/2019,36
+640-49-2076,B,ACT,Canberra,Normal,Male,Dairy Tasty Grated Cheese,1.5,8,6576347P,1/10/2019,12
+595-11-5460,A,VIC,Ballarat,Normal,Male,Baked Pea Crisps Salted,3.76,2,3169846P,3/15/2019,7.52
+183-56-6882,C,SA,Port Lincoln,Member,Female,Free Range Chicken Breast Fillets Bulk Pack,15,4,2303750P,2/6/2019,60
+232-16-2483,C,VIC,Geelong,Member,Female,Cheddar Block,9,1,2071305P,1/7/2019,9
+129-29-8530,A,SA,Port Lincoln,Member,Male,Original Water Crackers,0.76,5,5389901P,3/10/2019,3.8
+272-65-1806,A,SA,Mount Gambier,Normal,Female,Tierra Planet Coffee Beans,3.6,9,3210214P,1/15/2019,32.4
+333-73-7901,C,VIC,Geelong,Normal,Female,ION4 Mountain Blast Sports Drink Sipper Cap,5.83,8,1726056P,3/23/2019,46.64
+777-82-7220,B,ACT,Canberra,Member,Male,Ready Sauce Lemon Chicken,1.66,8,8104564P,3/3/2019,13.28
+280-35-5823,B,VIC,Ballarat,Member,Female,Butcher Lamb Leg Roast Boneless,20,1,9206887P,1/17/2019,20
+554-53-8700,C,TAS,Launceston,Member,Male,Espresso Decaffeinato Ristretto Intensity 9 Coffee Capsules 52g,0.7,2,3193396P,2/2/2019,1.4
+354-25-5821,B,QLD,Townsville,Member,Female,Zanetti Espresso Casa Speciality Roasted Coffee Beans,3,6,3623870P,2/8/2019,18
+228-96-1411,C,TAS,Devonport,Member,Female,Mushrooms Dried Mixed Forest,250,8,1598310P,3/4/2019,2000
+617-15-4209,C,ACT,Canberra,Member,Male,Greek Style Yoghurt,0.73,2,3890877P,3/16/2019,1.46
+132-32-9879,B,WA,Perth,Member,Female,Cheese Lactose Free,32.5,4,5432385P,3/9/2019,130
+370-41-7321,B,NSW,Wollongong,Member,Male,Mum's Sause Garden Veg,0.6,9,3508690P,2/27/2019,5.4
+727-46-3608,B,TAS,Hobart,Member,Female,White Sourdough Vienna Loaf,1,9,4654202P,2/6/2019,9
+669-54-1719,B,VIC,Ballarat,Member,Male,Chocolate Dipping Sauce,2,6,9612210P,2/10/2019,12
+574-22-5561,C,SA,Port Lincoln,Member,Female,Cheese Slices Light & Tasty,23.4,10,5420590P,3/19/2019,234
+326-78-5178,C,NT,Darwin,Member,Male,Coco Pops Limited Edition Vanilla Berry Choc Top Flavour Breakfast Cereal,1.2,7,4927156P,2/3/2019,8.4
+162-48-8011,A,NSW,Sydney,Member,Female,I'm Perfect Carrots Prepacked,1,5,3609392P,2/10/2019,5
+616-24-2851,B,SA,Port Lincoln,Member,Female,Original Oats Quick Sachets 10 pack,1.62,4,9720268P,3/22/2019,6.48
+778-71-5554,C,WA,Albany,Member,Male,Strawberries Prepacked,12,1,5191256P,1/25/2019,12
+242-55-6721,B,ACT,Canberra,Normal,Male,Lemon Myrtle Tonic Can 4x200mL,7.5,2,5563656P,3/7/2019,15
+399-46-5918,C,NSW,Sydney,Normal,Female,Sweet Chilli Sauce,1.28,8,6849199P,2/28/2019,10.24
+106-35-6779,A,ACT,Canberra,Member,Male,Spanish Red Wine Cheese,42,2,5217859P,3/27/2019,84
+635-40-6220,A,NSW,Newcastle,Normal,Male,Dark/Intense Aluminium Nespresso Compatible Coffee Capsules,0.5,8,4299950P,2/7/2019,4
+817-48-8732,A,WA,Albany,Member,Female,Heart Active Fat Free Milk Carton,3.7,10,7258880P,1/20/2019,37
+120-06-4233,C,ACT,Canberra,Normal,Male,Gobble Bliss Bombs,1.71,6,3951949P,3/12/2019,10.26
+285-68-5083,C,TAS,Launceston,Member,Female,Fresh Tasmanian Salmon Portions Skin Off,32.5,3,8104860P,2/15/2019,97.5
+803-83-5989,C,VIC,Melbourne,Normal,Male,No Added Hormone Beef Marrow Bones,6,6,3110785P,2/24/2019,36
+347-34-2234,B,SA,Mount Gambier,Member,Female,Cheerios Multigrains Cereal,1.21,9,1175145P,2/3/2019,10.89
+199-75-8169,A,QLD,Brisbane,Member,Male,Gold Original Premium Instant Coffee,5.5,10,8049750P,3/6/2019,55
+853-23-2453,B,TAS,Launceston,Member,Male,No Added Hormone Beef Shin Gravy Beef Whole Piece,17,4,4256651P,2/14/2019,68
+877-22-3308,A,SA,Port Lincoln,Member,Male,Movie Theatre Butter Microwave Popcorn,1,10,3952114P,3/13/2019,10
+838-78-4295,C,TAS,Devonport,Normal,Female,Coffee & Milk,1.06,2,3995999P,2/10/2019,2.12
+109-28-2512,B,TAS,Hobart,Member,Female,English Breakfast Tea Bags 10 pack,0.3,6,341770P,1/7/2019,1.8
+232-11-3025,A,WA,Fremantle,Normal,Male,Chocolate,1.87,10,5213621P,1/24/2019,18.7
+382-03-4532,A,NT,Darwin,Member,Female,Classic Soft Drink Multipack Mini Cans 6x250mL,5.99,1,4398689P,2/2/2019,5.99
+393-65-2792,C,VIC,Geelong,Normal,Male,Cape Wickham Double Brie,74.75,10,8167484P,1/6/2019,747.5
+796-12-2025,C,SA,Adelaide,Normal,Male,Organic Kombucha Ginger Lemon Drink Multipack Cans 250mL,6,10,3277678P,2/11/2019,60
+510-95-6347,B,NT,Alice Springs,Member,Female,Original Glazed Doughnut 100g X 10,6.15,3,4855827P,3/5/2019,18.45
+841-35-6630,C,WA,Albany,Normal,Female,Potato Chips Roast Chicken With Sage & Burnt Butter,2.57,6,4843500P,3/9/2019,15.42
+287-21-9091,A,TAS,Launceston,Normal,Male,Extra Virgin Olive Oil Spray,1.43,9,8095601P,1/22/2019,12.87
+732-94-0499,C,VIC,Geelong,Normal,Female,Graze Grass Fed Beef Mince,20,10,2024280P,1/13/2019,200
+263-10-3913,C,WA,Albany,Member,Male,Chill Berry Flavoured Milk Carton,6.5,9,5672968P,1/9/2019,58.5
+381-20-0914,A,QLD,Gold Coast,Member,Female,Bom Liquid Strawberry Flavoured Breakfast 6x250mL,5.07,9,4189871P,1/12/2019,45.63
+829-49-1914,C,NSW,Newcastle,Member,Female,GLG Artisan White Cob,2.39,10,4654100P,3/5/2019,23.9
+756-01-7507,C,QLD,Gold Coast,Normal,Female,Shortbread Cello,1.74,5,3163657P,1/22/2019,8.7
+870-72-4431,C,NSW,Sydney,Normal,Female,Mirin Seasoning,1.76,6,3743759P,1/21/2019,10.56
+847-38-7188,B,ACT,Canberra,Normal,Female,Gift Bag,6.99,3,5747025P,1/26/2019,20.97
+480-63-2856,C,VIC,Ballarat,Normal,Male,Excellence Sea Salt  Dark Chocolate Block,3,8,7581841P,1/23/2019,24
+787-56-0757,C,ACT,Canberra,Member,Female,Expresso Intensita 10 Ground Coffee 16 Capsules,0.78,4,3514490P,2/23/2019,3.12
+360-39-5055,C,ACT,Canberra,Member,Male,Boost Chocolate Bar,3.33,5,4425023P,3/9/2019,16.65
+730-50-9884,C,ACT,Canberra,Normal,Female,Caffeine Free Diet Cola,1.28,7,5114390P,3/5/2019,8.96
+362-58-8315,C,WA,Albany,Normal,Male,Gourmet Glaze Italian,4.24,5,2734796P,3/25/2019,21.2
+633-44-8566,A,SA,Mount Gambier,Member,Male,Classic Honey-O Crunch Cereal,1.13,7,5235486P,3/27/2019,7.91
+504-35-8843,A,NT,Alice Springs,Normal,Male,Organic Tomato Paste,0.71,1,3590137P,1/2/2019,0.71
+318-68-5053,B,SA,Mount Gambier,Normal,Female,Fruit Sensation Raspberry & Cranberry Dark Chocolate,3.33,6,3185900P,2/27/2019,19.98
+565-80-5980,C,ACT,Canberra,Member,Female,Beef Roast & Onion Garlic & Red Wine Rub,17,4,4256902P,1/23/2019,68
+225-32-0908,C,SA,Mount Gambier,Normal,Female,Milk Chocolate Caramel Craving Block,2.78,10,3759657P,1/26/2019,27.8
+873-51-0671,A,WA,Albany,Member,Female,Special Treats Dairy Milk Chocolate Multipack,2.78,7,2352960P,1/10/2019,19.46
+152-08-9985,B,NSW,Newcastle,Member,Male,Soy Honey & Garlic Marinade,0.8,9,7072917P,3/12/2019,7.2
+512-91-0811,C,VIC,Ballarat,Normal,Male,Cracker Squares,0.38,1,2471835P,2/6/2019,0.38
+594-34-4444,A,WA,Fremantle,Normal,Male,Strong Coffee Ground,1.8,1,3755383P,3/8/2019,1.8
+766-85-7061,B,SA,Mount Gambier,Normal,Male,Slivered Almonds,40,10,5619568P,3/29/2019,400
+871-39-9221,C,NSW,Wollongong,Normal,Female,Espresso Decaffeinato Ristretto Intensity 9 Coffee Capsules 52g,0.7,6,3193396P,2/9/2019,4.2
+865-92-6136,A,WA,Perth,Normal,Male,Coffee Cappuccino 132g,0.33,3,6168602P,3/23/2019,0.99
+733-01-9107,B,NSW,Newcastle,Normal,Male,Bliss Balls Chocolate Orange,6.25,6,3521338P,3/5/2019,37.5
+163-56-7055,C,NSW,Sydney,Member,Male,Rich & Bold Espresso Ground Coffee,3.5,1,3532695P,3/26/2019,3.5
+189-98-2939,C,ACT,Canberra,Normal,Male,Squeezy Pizza Sauce,0.51,9,3640428P,3/1/2019,4.59
+551-21-3069,C,QLD,Brisbane,Normal,Female,Original Beef Jerky,100,9,6526123P,2/1/2019,900
+212-62-1842,A,QLD,Gold Coast,Normal,Male,Original Ricotta Soft Cheese Tub,14.4,6,181594P,3/28/2019,86.4
+716-39-1409,B,WA,Fremantle,Normal,Male,Free Range Chicken Mince,1.8,7,2285670P,3/19/2019,12.6
+704-48-3927,A,NSW,Sydney,Member,Male,Strawberry Clouds,1.6,10,3736083P,1/12/2019,16
+628-34-3388,C,NT,Alice Springs,Normal,Male,Mocha Coffee Sachets,0.42,6,2868001P,1/5/2019,2.52
+630-74-5166,A,WA,Albany,Normal,Male,Gluten Free Coco Pops Breakfast Cereal,1.44,6,4308813P,3/22/2019,8.64
+588-01-7461,C,WA,Perth,Normal,Female,Barista Reserve Dark Roast Coffee Beans,1.7,9,4824029P,3/24/2019,15.3
+861-77-0145,C,ACT,Canberra,Member,Male,Roll Ups Berry Sour,3.19,10,5200197P,3/3/2019,31.9
+479-26-8945,B,TAS,Hobart,Member,Female,Cashew & Rosemary Crackers,4.33,2,2792420P,2/5/2019,8.66
+210-67-5886,C,TAS,Hobart,Member,Female,Dairy Milk Chunky Chocolate Bar,4,3,5072665P,2/5/2019,12
+227-78-1148,B,QLD,Brisbane,Normal,Female,Organic Tea Peppermint & Licorice,0.29,7,3247542P,2/15/2019,2.03
+645-44-1170,A,QLD,Townsville,Member,Male,Popcorn 10 Pack,1.38,9,2663360P,1/19/2019,12.42
+237-01-6122,C,VIC,Melbourne,Member,Female,Intense Aluminium Nespresso Compatible Coffee Capsules,0.5,9,3928663P,2/1/2019,4.5
+225-98-1496,C,QLD,Brisbane,Normal,Female,Beef Porterhouse Steak,40,3,7442878P,3/2/2019,120
+291-32-1427,B,NSW,Sydney,Member,Male,Sticks Mild,8.5,5,4385723P,3/5/2019,42.5
+659-65-8956,B,VIC,Ballarat,Member,Male,Kids Greek Strawberry Yoghurt Pouch,2,1,2744359P,1/16/2019,2
+642-32-2990,A,WA,Perth,Normal,Female,Goats Cheese Chevre,62.5,10,3275945P,2/2/2019,625
+378-24-2715,B,WA,Perth,Normal,Male,Flakes and Clusters Breakfast Cereal With Cashew Almond Hazelnut & Coconut,1.16,2,9991378P,1/20/2019,2.32
+638-60-7125,A,NT,Alice Springs,Normal,Female,Caffeinated Citrus,1.28,8,9855562P,2/14/2019,10.24
+659-36-1684,C,NSW,Wollongong,Member,Male,Beef 4 Star Lean Mince,16.25,7,3449773P,1/12/2019,113.75
+219-22-9386,B,TAS,Devonport,Member,Male,Classic Soft Drink Multipack Cans 24 x 375mL,3.59,9,7365777P,3/9/2019,32.31
+336-78-2147,C,NSW,Wollongong,Member,Male,I'm Perfect Lemons Prepacked,5.9,8,3586912P,3/13/2019,47.2
+268-27-6179,B,TAS,Hobart,Member,Female,Chopped Kale,21.43,8,2674606P,3/9/2019,171.44
+668-90-8900,A,QLD,Townsville,Normal,Female,Unsweetened Almond Milk,3,7,2684381P,3/10/2019,21
+870-54-3162,A,TAS,Devonport,Normal,Female,Full Cream Milk,1.55,5,439693P,1/27/2019,7.75
+189-08-9157,C,NT,Darwin,Normal,Female,Avocado Oil,2.7,9,4993037P,1/8/2019,24.3
+663-86-9076,C,TAS,Devonport,Member,Female,Oat Flakes Cereal,0.86,8,5589274P,1/8/2019,6.88
+549-84-7482,B,WA,Perth,Normal,Female,Sunflower Oil,0.8,9,4615970P,2/8/2019,7.2
+191-10-6171,B,TAS,Launceston,Normal,Female,Blue Label Black Tea Bags,0.04,7,250154P,1/25/2019,0.28
+802-70-5316,A,SA,Port Lincoln,Member,Female,Biscoff Caramelised Biscuit 8 pack,1.77,6,1405700P,3/6/2019,10.62
+695-51-0018,B,TAS,Launceston,Normal,Female,Pot Tea Bags 100 Pack,1.03,4,2374216P,2/10/2019,4.12
+590-83-4591,B,ACT,Canberra,Member,Male,Salt And Vinegar Thinly Cut Potato Chips,1.43,6,5706254P,2/17/2019,8.58
+483-71-1164,C,NT,Darwin,Normal,Female,Family Cup Nespresso Compatible Coffee Capsules,0.45,6,4191578P,3/8/2019,2.7
+597-78-7908,C,ACT,Canberra,Normal,Male,Traditional Basil Pesto,2.53,3,5558623P,2/18/2019,7.59
+700-81-1757,A,NT,Alice Springs,Normal,Female,Classic Maple Crunch Cereal,1.13,5,5235464P,1/18/2019,5.65
+354-39-5160,A,QLD,Townsville,Member,Female,Pistachios,70.77,6,5645580P,2/18/2019,424.62
+241-72-9525,B,ACT,Canberra,Normal,Male,Organic Carrots Prepacked,5.5,10,5016904P,2/16/2019,55
+575-30-8091,A,QLD,Brisbane,Normal,Male,Cabanossi Barbeque Shapes & Tasty Cheese,8,8,5420943P,3/16/2019,64
+731-81-9469,C,VIC,Geelong,Member,Female,Twist Yoghurt Limited Edition,0.94,10,3477815P,1/23/2019,9.4
+280-17-4359,C,NSW,Sydney,Member,Male,Raspberry Mini Rolls 5 pack,3.85,10,2847726P,1/25/2019,38.5
+338-65-2210,C,NSW,Wollongong,Member,Female,Baby Sweet Corn Prepacked,44,10,6920012P,2/5/2019,440
+488-25-4221,C,ACT,Canberra,Member,Female,Tradicional Olive Oil,1.5,1,134608P,2/22/2019,1.5
+239-10-7476,A,SA,Port Lincoln,Normal,Female,Sweet Chilli & Sour Cream Potato Chips,1.72,6,4382656P,1/21/2019,10.32
+458-41-1477,C,QLD,Gold Coast,Normal,Female,Chewy Apricot Wholegrain Oats Bars 6 Pack,1.35,6,4975181P,3/8/2019,8.1
+685-64-1609,A,QLD,Brisbane,Member,Female,Dark Choc Macadamia & Coconut Nut Bar 5 pack,4.06,10,3022892P,2/10/2019,40.6
+568-90-5112,C,NT,Darwin,Normal,Male,RSPCA Approved Chicken Boneless Roast With Apricot & Herb Stuffing,12.5,4,1165866P,3/19/2019,50
+262-47-2794,B,NSW,Newcastle,Member,Male,Dark Choc Protein Bars 5 Pack,2.11,8,3838505P,3/6/2019,16.88
+238-49-0436,A,ACT,Canberra,Normal,Male,Ultra Energy Passionfruit,16.9,8,5720561P,3/27/2019,135.2
+608-96-3517,B,QLD,Townsville,Member,Female,Organic Natural Almonds,35,4,3571915P,3/23/2019,140
+584-86-7256,C,TAS,Devonport,Member,Male,Turkish Style Pulverised Coffee,3.6,7,116457P,3/11/2019,25.2
+746-94-0204,A,ACT,Canberra,Normal,Male,Dark Roasted Extra Crunchy Natural Peanut Butter,1.23,9,3851183P,1/29/2019,11.07
+214-17-6927,C,ACT,Canberra,Normal,Female,Grana Padano Grated PDO,55,6,4379957P,2/7/2019,330
+400-89-4171,C,NT,Darwin,Normal,Female,Energy Refresh Drink Citrus Lemonade 4x250mL,10.7,8,5486373P,1/28/2019,85.6
+782-95-9291,A,ACT,Canberra,Member,Male,Turkish Delight Chocolate Bar,3.64,5,136498P,2/20/2019,18.2
+279-74-2924,B,ACT,Canberra,Member,Male,Extra Bolognese Pasta Sauce,0.6,1,1274373P,1/4/2019,0.6
+307-85-2293,B,TAS,Devonport,Normal,Male,Sugarfree 3 Fruits Refreshing Pastilles,8,5,4742864P,3/7/2019,40
+743-04-1105,B,QLD,Brisbane,Member,Male,Peppermint Tea Bags,0.52,9,3081268P,3/30/2019,4.68
+423-57-2993,B,SA,Port Lincoln,Normal,Male,Original Sauce,4.36,6,5354340P,3/27/2019,26.16
+894-41-5205,C,VIC,Geelong,Normal,Female,Fruit Filled 12 Bars Variety Pack,1.07,8,5859889P,1/19/2019,8.56
+275-28-0149,A,WA,Fremantle,Normal,Male,Mocha Kenya Style Coffee Bags 160g,0.24,1,5698633P,2/25/2019,0.24
+101-17-6199,A,ACT,Canberra,Normal,Male,Brownie Chocolate Bar Peanuts Caramel,2.27,7,5162484P,3/13/2019,15.89
+423-80-0988,C,QLD,Brisbane,Normal,Male,Green Cucumber,1.9,2,4559314P,1/30/2019,3.8
+548-46-9322,B,ACT,Canberra,Normal,Male,Lactose Free Block,22.8,10,3575891P,2/20/2019,228
+505-02-0892,B,NSW,Sydney,Member,Male,Mild English Mustard,2.29,8,5435215P,2/25/2019,18.32
+234-65-2137,C,VIC,Geelong,Normal,Male,Indulgence Speciality Blend Coffee,8.5,10,3232465P,1/16/2019,85
+687-47-8271,A,NT,Darwin,Normal,Male,Cheerios Multigrains Cereal,1.29,10,1175145P,2/8/2019,12.9
+796-32-9050,A,VIC,Ballarat,Normal,Male,Simply Nuts The Crunchiest Peanut Butter,1.31,6,4464003P,1/19/2019,7.86
+105-31-1824,A,TAS,Launceston,Member,Male,Iceberg Lettuce,1.8,7,4584071P,2/1/2019,12.6
+249-42-3782,A,QLD,Townsville,Normal,Male,Bom Liquid Breakfast Strawberry Flavoured 3x250mL,3.6,5,4187774P,1/3/2019,18
+316-55-4634,B,WA,Fremantle,Member,Male,Brazilian Cafe Latte Coffee,2.8,5,5436896P,1/26/2019,14
+733-33-4967,C,VIC,Melbourne,Normal,Male,BBQ Sauce Reduced Salt & Sugar,0.44,8,8575582P,3/3/2019,3.52
+608-27-6295,B,NT,Darwin,Member,Male,Hidden Vegetable Extra Pasta Sauce,0.6,6,3869779P,1/19/2019,3.6
+414-12-7047,B,QLD,Townsville,Normal,Male,Fresh Tasmanian Salmon Portions Skin Off,32.5,8,8104860P,1/18/2019,260
+827-26-2100,A,WA,Albany,Member,Male,Dairy Milk Caramello Chocolate Block,1.94,9,2351662P,3/21/2019,17.46
+175-54-2529,A,SA,Mount Gambier,Member,Male,Thawed Basa Fillet 5Kg,9,8,2399476P,3/3/2019,72
+139-52-2867,C,NSW,Sydney,Normal,Female,Original Grab N Go Cookies,1.17,7,1843832P,2/13/2019,8.19
+407-63-8975,A,QLD,Townsville,Normal,Male,Style Potato Chips Sea Salt,1.25,6,2267191P,3/23/2019,7.5
+342-65-4817,C,ACT,Canberra,Member,Male,Premium Blend Tea Bags 100 pack,4.5,3,6059243P,1/28/2019,13.5
+130-98-8941,C,WA,Fremantle,Normal,Male,Urban Coffee Culture Dolce Gusto Americano Capsules,0.41,7,3209055P,2/9/2019,2.87
+434-83-9547,C,VIC,Ballarat,Member,Male,Dark Choc Honeycomb Bag,1.39,8,3735580P,1/23/2019,11.12
+851-28-6367,A,VIC,Melbourne,Member,Male,Homestyle Low Carb Loaf,1.22,10,3750426P,3/23/2019,12.2
+824-88-3614,C,TAS,Hobart,Normal,Male,Christmas Collection Bag,7.25,8,3314402P,1/25/2019,58
+586-25-0848,A,SA,Mount Gambier,Normal,Female,Wheat Free Rolled Oats,1.08,7,3897399P,3/4/2019,7.56
+895-66-0685,B,SA,Adelaide,Member,Male,Mix Of Minis Stocking,2.19,3,3856722P,3/5/2019,6.57
+305-14-0245,B,VIC,Ballarat,Member,Female,100% No Added Sugar Vanilla Chai Latte,5,8,4947109P,3/3/2019,40
+732-04-5373,B,QLD,Townsville,Member,Male,Gamer Lime Sports Drink,,4,3805448P,2/8/2019,
+400-60-7251,A,SA,Adelaide,Normal,Male,Sharepack Dairy Milk Santa,3.47,1,7002605P,2/10/2019,3.47
+593-65-1552,C,QLD,Townsville,Normal,Female,No Added Hormone Beef Blade Steak,18,4,8749311P,1/28/2019,72
+284-34-9626,B,VIC,Ballarat,Normal,Female,Tasty Cheese Slices,25,3,8578P,2/11/2019,75
+437-58-8131,B,TAS,Hobart,Normal,Female,Chips Sour Cream & Chives,2.53,2,3706741P,1/15/2019,5.06
+286-43-6208,C,ACT,Canberra,Normal,Female,Chocolate Truffles,7.81,9,3646286P,3/16/2019,70.29
+641-43-2399,B,QLD,Brisbane,Normal,Male,Grated Parmesan,30,4,5339878P,1/26/2019,120
+831-07-6050,A,ACT,Canberra,Normal,Male,Orange Ice Sports Drink,3.75,5,5594671P,3/19/2019,18.75
+556-86-3144,C,WA,Fremantle,Member,Female,Minis Chocolate Snack & Share Bag,3.45,1,9773038P,1/13/2019,3.45
+848-24-9445,C,WA,Fremantle,Member,Male,Simmer Sauce Satay,0.4,2,2395384P,3/26/2019,0.8
+856-22-8149,A,QLD,Townsville,Normal,Female,Unicorn Fancies 8 Pack,2.15,1,3475490P,3/23/2019,2.15
+699-01-4164,C,WA,Albany,Normal,Male,Assam Bold Tea Bags 80 pack,0.08,4,9896060P,3/12/2019,0.32
+420-11-4919,C,NSW,Newcastle,Member,Female,Petit Miam Squeezie Banana Yoghurt Pouch,1.43,5,6569240P,2/17/2019,7.15
+606-80-4905,C,SA,Mount Gambier,Member,Female,Coffee & Milk,1.06,6,3995999P,1/29/2019,6.36
+542-41-0513,B,TAS,Hobart,Member,Female,Smooth Peanut Butter,0.96,4,136705P,3/15/2019,3.84
+426-39-2418,C,ACT,Canberra,Normal,Male,Snacks No Added Sugar Bar Milk Chocolate & Hazelnut,,7,1751406P,1/14/2019,
+875-46-5808,B,SA,Mount Gambier,Member,Male,Stix Sherbert Fizz Raspberry,1.82,10,4951208P,2/6/2019,18.2
+394-43-4238,B,TAS,Hobart,Member,Male,Crafted Soda Vintage Cola 4x250mL,5.6,5,5178677P,2/15/2019,28
+749-24-1565,A,WA,Perth,Normal,Female,Protein Bakes Peanut Butter Choco Chip 5 Pack,3.94,9,4456480P,1/3/2019,35.46
+672-51-8681,C,QLD,Gold Coast,Member,Female,Plus Iron Cereal,1.15,9,2264524P,1/4/2019,10.35
+263-87-5680,C,VIC,Geelong,Member,Female,Granola Chocolate Hazelnut,1.7,10,5283219P,3/18/2019,17
+573-58-9734,B,QLD,Gold Coast,Normal,Female,Snackpack Mini Rice Cake Triple Berry Yogurt 6 pack,7.14,3,3757980P,3/28/2019,21.42
+817-69-8206,B,TAS,Devonport,Normal,Female,Organic Almond & Coconut Milk,6,9,3187484P,3/2/2019,54
+888-02-0338,A,WA,Albany,Normal,Male,Super Nutty Toasted Muesli,1,9,3994690P,1/25/2019,9
+677-11-0152,C,VIC,Ballarat,Normal,Female,Cold Pressed Macadamia Oil,2.04,9,4993456P,1/16/2019,18.36
+142-63-6033,B,NSW,Sydney,Normal,Male,Espresso Ground Coffee,3.7,5,5098986P,3/20/2019,18.5
+656-16-1063,B,VIC,Ballarat,Normal,Male,Pesto Basilico,1.52,3,5050822P,1/4/2019,4.56
+891-58-8335,B,TAS,Launceston,Member,Female,Apple & Strawberry Fruit Straps 5X14G,6.43,7,5273033P,3/11/2019,45.01
+802-43-8934,A,WA,Perth,Normal,Male,Tasty Cheese & Crackers,3.8,1,2073060P,3/22/2019,3.8
+560-30-5617,B,QLD,Brisbane,Normal,Female,Cup Tea Bags 100 Pack,1.03,5,2389290P,3/24/2019,5.15
+319-74-2561,A,ACT,Canberra,Member,Female,Flavour Gift Box,6,3,4322643P,2/21/2019,18
+549-03-9315,B,WA,Perth,Normal,Male,Digest Blend Tea Bags,0.39,8,4971770P,2/12/2019,3.12
+790-29-1172,B,SA,Port Lincoln,Normal,Female,Vanilla Yoghurt 6x160g,0.63,3,3619534P,3/10/2019,1.89
+239-36-3640,B,SA,Mount Gambier,Normal,Male,Multipack 10 Pack,2.32,6,4855850P,1/31/2019,13.92
+468-01-2051,B,QLD,Brisbane,Normal,Male,Organic Coconut Oil,1.57,7,3218850P,3/6/2019,10.99
+389-25-3394,C,ACT,Canberra,Normal,Male,Snacks High Protein Bar Honeycomb Chocolate Crunch,6,5,4472657P,2/17/2019,30
+279-62-1445,C,VIC,Melbourne,Member,Female,IM Free From White Loaf,0.96,1,3216673P,2/21/2019,0.96
+213-72-6612,A,NSW,Sydney,Normal,Male,Muesli Fruit & Nut,0.91,2,5283693P,3/20/2019,1.82
+746-68-6593,C,QLD,Townsville,Member,Female,English Breakfast Black Tea Bags,0.06,2,3081315P,1/11/2019,0.12
+836-82-5858,B,ACT,Canberra,Member,Male,Sweet Carrot Rice Crackers,2.8,9,2826067P,1/26/2019,25.2
+583-72-1480,C,NT,Darwin,Member,Male,Yopro Mango Yoghurt,1.84,4,3246856P,1/31/2019,7.36
+466-61-5506,B,SA,Mount Gambier,Member,Female,Classic Cottage Cheese,20.6,6,3271922P,2/26/2019,123.6
+721-86-6247,A,TAS,Devonport,Normal,Female,Lamb Rack Roast,30,8,9264409P,3/11/2019,240
+289-65-5721,B,SA,Adelaide,Normal,Female,Chamomile Tea Bags,0.43,2,3701340P,1/26/2019,0.86
+545-46-3100,B,SA,Mount Gambier,Member,Female,Wholegrain Mustard,2.29,3,5435237P,3/12/2019,6.87
+418-02-5978,B,VIC,Melbourne,Normal,Female,Passionfruit Twist Yoghurt,1.04,9,7470487P,2/11/2019,9.36
+269-04-5750,B,TAS,Hobart,Member,Male,Beef 4 Star Lean Mince,16.25,4,3449773P,2/21/2019,65
+157-13-5295,A,NT,Darwin,Member,Male,Organic Coffee Beans,5.45,10,4360970P,3/9/2019,54.5
+645-78-8093,A,QLD,Gold Coast,Normal,Female,Espressotoria Espresso Coffee Capsules 12 pack,6.41,2,1825885P,1/20/2019,12.82
+211-30-9270,C,WA,Fremantle,Normal,Male,Iced Salted Caramel Coffee Sachets,0.88,5,4406175P,1/28/2019,4.4
+755-12-3214,C,NT,Darwin,Member,Female,Olive Oil Light & Mild,0.9,5,5847020P,3/5/2019,4.5
+346-84-3103,B,NSW,Newcastle,Member,Female,LCMs Unicorn Puffed Rice Snack Bars 6 pack,3.03,5,3390499P,3/2/2019,15.15
+478-06-7835,A,ACT,Canberra,Normal,Male,YoPro Pouch Mixed Berries,1.8,1,5312328P,1/11/2019,1.8
+540-11-4336,A,QLD,Brisbane,Normal,Male,Finest Artisan Sesame & Linseed Crispbread,2.46,9,3732468P,1/11/2019,22.14
+448-81-5016,A,NSW,Sydney,Normal,Male,Kids Greek Vanilla Yoghurt Pouch,2,2,2744348P,3/11/2019,4
+142-72-4741,C,WA,Albany,Member,Male,Hazelnut Meal,28.57,2,3834297P,2/28/2019,57.14
+217-58-1179,A,TAS,Hobart,Member,Male,Tummy Tea,0.7,4,3987618P,1/5/2019,2.8
+376-02-8238,B,WA,Albany,Normal,Male,Rice Bubbles Crispy Milk Chocolate Block,3.13,8,5556639P,2/2/2019,25.04
+530-90-9855,A,WA,Albany,Member,Male,Flat Mushrooms loose,13.5,8,4594031P,1/1/2019,108
+866-05-7563,B,SA,Port Lincoln,Member,Female,Yorkshire Black Tea Bags 100 pack,0.06,3,1417368P,2/9/2019,0.18
+604-70-6476,A,TAS,Launceston,Member,Male,Dairy Natural Tasty Cheese Slices 30 Pack,17,5,6704811P,1/23/2019,85
+799-71-1548,A,WA,Fremantle,Member,Male,Napoletana Pasta Sauce,1.15,4,8951630P,1/7/2019,4.6
+785-13-7708,B,TAS,Hobart,Normal,Male,Prawn Crackers BBQ,2.17,7,5007335P,1/14/2019,15.19
+845-51-0542,B,VIC,Melbourne,Member,Male,Chicken Crimpy Shapes,2,9,8638285P,2/2/2019,18
+662-47-5456,C,QLD,Brisbane,Member,Male,Bom Liquid Breakfast Vanilla Flavoured 6x250mL,5.07,10,4189769P,3/17/2019,50.7
+883-17-4236,C,NSW,Sydney,Normal,Female,Ginger Beer 10X375mL,3.2,2,9826123P,3/2/2019,6.4
+290-68-2984,A,VIC,Ballarat,Normal,Male,Latte Nespresso Compatible Coffee Capsules,0.45,4,3984347P,3/16/2019,1.8
+704-11-6354,A,VIC,Melbourne,Member,Male,Aero Peppermint Chocolate Block,4.24,8,7157168P,1/6/2019,33.92
+110-48-7033,B,VIC,Geelong,Member,Male,Salt Reduced Soy Sauce,2.6,4,52897P,1/29/2019,10.4
+366-93-0948,A,ACT,Canberra,Member,Male,Thawed Cooked Peeled Prawn Cutlets,26,1,2210591P,1/31/2019,26
+729-09-9681,A,ACT,Canberra,Member,Male,Raspberry Shortcake Biscuits,1,6,329775P,2/5/2019,6
+151-16-1484,A,TAS,Launceston,Member,Male,Biscoff Spread,1.63,4,3577219P,2/13/2019,6.52
+380-94-4661,C,NT,Alice Springs,Member,Male,Yellow Capsicum,9.9,4,7215355P,2/7/2019,39.6
+850-41-9669,A,QLD,Gold Coast,Normal,Female,Herbal Collection Tea Bags 20 pack,0.41,9,3452508P,3/19/2019,3.69
+821-07-3596,C,ACT,Canberra,Normal,Female,Barista Coffee Machine,99,4,5745722P,3/7/2019,396
+655-85-5130,B,SA,Port Lincoln,Member,Female,Dark Chocolate Coated Liquorice,0.92,4,2224847P,3/13/2019,3.68
+447-15-7839,A,NSW,Sydney,Member,Female,Caramel Whyte Milk Chocolate Bars 4x40g,7.5,10,4476512P,2/9/2019,75
+154-74-7179,B,VIC,Melbourne,Normal,Male,Pot Set Greek Style Natural Yoghurt,0.8,1,7250935P,2/26/2019,0.8
+253-12-6086,A,ACT,Canberra,Member,Female,Natural 99.85% Fat Free Yoghurt,0.6,7,2130313P,3/12/2019,4.2
+808-65-0703,C,VIC,Melbourne,Normal,Male,Cheddar Snack Pack,2.58,4,5895736P,3/14/2019,10.32
+571-94-0759,B,VIC,Ballarat,Member,Female,Matese Passata,0.43,10,3740783P,1/8/2019,4.3
+144-51-6085,A,NT,Alice Springs,Member,Male,Choc Chip Muesli Bars Variety Pack,1.42,4,3957060P,1/5/2019,5.68
+731-14-2199,A,TAS,Launceston,Member,Female,Punjabi Lemon Simmer Sauce,1.52,10,3997236P,1/4/2019,15.2
+783-09-1637,B,NT,Darwin,Normal,Female,Strawberry Cream Twist Yoghurt,1.04,5,3721971P,3/6/2019,5.2
+687-15-1097,C,TAS,Launceston,Member,Female,Kitchen Loaded Mash,12.86,2,3748093P,1/3/2019,25.72
+126-54-1082,A,QLD,Gold Coast,Member,Female,Aged Havarti,36,9,5400130P,1/7/2019,324
+633-91-1052,A,VIC,Ballarat,Normal,Female,Style Crackers Smoky BBQ Pulled Pork,3.33,2,5484629P,1/27/2019,6.66
+477-24-6490,B,ACT,Canberra,Normal,Female,Plus Fibre Breakfast Cereal,0.64,6,3789476P,2/26/2019,3.84
+566-19-5475,B,ACT,Canberra,Normal,Male,Thai Red Curry Cooking Kit,2.16,7,8643365P,1/7/2019,15.12
+526-86-8552,C,QLD,Townsville,Member,Female,Veggie Straws Sour Cream & Herb,2.17,10,5007324P,1/7/2019,21.7
+376-56-3573,C,SA,Port Lincoln,Normal,Female,Gorgonzola Dolce,27.5,4,4351925P,2/2/2019,110
+537-72-0426,C,NT,Alice Springs,Member,Male,Joyful Muesli Bar Strawberry Cheesecake 180g,2.22,10,5448909P,3/20/2019,22.2
+828-61-5674,A,TAS,Devonport,Member,Male,Pink Lemonade Chewy Mints Tin,6.3,10,4966555P,3/20/2019,63
+136-08-6195,A,NSW,Sydney,Normal,Female,Tasmanian Cold Smoked Salmon,40,8,3873437P,2/15/2019,320
+523-38-0215,C,WA,Fremantle,Normal,Male,Joyful Muesli Bar Strawberry Cheesecake 180g,2.22,1,5448909P,3/6/2019,2.22
+490-29-1201,A,NSW,Newcastle,Normal,Female,Thai Yellow Curry Paste,2.16,1,2001423P,1/6/2019,2.16
+667-92-0055,A,SA,Adelaide,Member,Male,RSPCA Approved Free Range Chicken Breast Large Pack,13,6,3227410P,3/4/2019,78
+565-17-3836,A,ACT,Canberra,Member,Female,RSPCA Approved Chicken Drumsticks Large Pack,5,4,2923835P,3/12/2019,20
+498-41-1961,B,TAS,Launceston,Normal,Male,Fruit Toast Crackers,4.5,5,5484505P,2/20/2019,22.5
+593-95-4461,C,ACT,Canberra,Member,Male,Mexican Blend Grated Cheese,19,1,3846139P,3/24/2019,19
+226-71-3580,C,QLD,Gold Coast,Normal,Female,French Vanilla Latte Instant Coffee,2.8,9,5436900P,1/31/2019,25.2
+283-79-9594,B,ACT,Canberra,Normal,Female,Tasty Cheese Slices,25,7,8578P,1/25/2019,175
+430-60-3493,A,TAS,Launceston,Member,Female,Ultimate 40% Chocolate Dipped Chip Cookie,1.25,7,3763111P,2/3/2019,8.75
+139-20-0155,B,ACT,Canberra,Member,Male,Swedes Loose,6,10,4966930P,1/24/2019,60
+558-80-4082,C,ACT,Canberra,Normal,Male,50% Less Sugar Cereal Fruity Loops,1.51,7,5296630P,3/14/2019,10.57
+278-97-7759,A,TAS,Devonport,Member,Female,Lamb Diced,28.89,1,3580600P,2/18/2019,28.89
+316-68-6352,A,QLD,Townsville,Member,Female,Original Barbecue Sauce,0.53,2,234577P,1/21/2019,1.06
+585-03-5943,B,QLD,Brisbane,Normal,Male,Creamy Chicken Stroganoff Recipe Base,4.5,10,2385391P,3/13/2019,45
+211-05-0490,C,NSW,Sydney,Member,Female,Caramel Dipping Sauce,2,5,8165740P,3/3/2019,10
+727-75-6477,C,VIC,Ballarat,Normal,Male,Balsamic Vinegar,1,4,3903221P,3/29/2019,4
+744-02-5987,A,ACT,Canberra,Member,Male,Side Dish Creamy Cheesy Potato Bake Recipe Base,1.6,6,6855985P,1/10/2019,9.6
+307-83-9164,A,TAS,Launceston,Member,Male,Beef Roast With Mustard And Black Pepper,18,4,2311191P,1/25/2019,72
+779-06-0012,C,TAS,Hobart,Member,Female,Italian Espresso Style Coffee Bags 160g,0.24,1,4965756P,1/19/2019,0.24
+446-47-6729,C,NSW,Wollongong,Normal,Male,English Breakfast Black Tea Bags,0.06,2,3081315P,1/2/2019,0.12
+573-10-3877,B,ACT,Canberra,Member,Male,Australian Afternoon Tea Bags,0.06,1,8930039P,3/12/2019,0.06
+735-06-4124,C,ACT,Canberra,Normal,Male,Kids Yoghurt Banana,1.71,1,4348385P,2/25/2019,1.71
+439-54-7422,A,TAS,Devonport,Normal,Female,Bismarck Herring,1.3,4,3899135P,3/18/2019,5.2
+396-90-2219,B,QLD,Townsville,Normal,Female,Pop Tarts Frosted Cookies & Creme,1.82,8,5200426P,2/23/2019,14.56
+411-77-0180,A,SA,Mount Gambier,Member,Male,Cheese Twisties Chips 6 pack,3.42,7,7118188P,3/26/2019,23.94
+286-01-5402,A,TAS,Devonport,Normal,Female,Pine Nuts,51,7,3041241P,3/30/2019,357
+803-17-8013,A,ACT,Canberra,Member,Female,Manuka Dark & Aromatic Honey,2.5,8,6999894P,2/17/2019,20
+512-98-1403,A,NSW,Wollongong,Member,Female,Washed Rind Brie Cheese,75.01,3,3089394P,3/21/2019,225.03
+848-42-2560,A,QLD,Townsville,Normal,Female,90 Calorie Fibre Bakes Chocolate Brownie 5 pack,3.75,2,4831942P,3/5/2019,7.5
+532-59-7201,B,NSW,Wollongong,Member,Male,Topless Pineapple Half,2.5,6,5536948P,1/31/2019,15
+181-94-6432,C,TAS,Hobart,Member,Male,Peanut Butter Smooth,1.75,2,181641P,2/5/2019,3.5
+870-76-1733,A,QLD,Brisbane,Member,Female,Organic Lite Milk,2.6,5,3227160P,2/1/2019,13
+423-64-4619,A,TAS,Devonport,Member,Female,Butcher Lamb Forequarter Chops,16,9,8599208P,3/7/2019,144
+227-07-4446,C,WA,Albany,Member,Female,Apricot Jam,0.48,10,5409463P,2/10/2019,4.8
+174-36-3675,C,SA,Adelaide,Member,Male,Crinkle BBQ Potato Chips,2.53,2,2358264P,2/14/2019,5.06
+428-83-5800,C,NSW,Wollongong,Member,Female,Primavera Pasta Sauce,0.88,3,3428015P,2/9/2019,2.64
+603-07-0961,C,WA,Perth,Member,Male,Coconut Yoghurt Vanilla,1,5,5318980P,1/10/2019,5
+704-20-4138,C,ACT,Canberra,Member,Female,Classics Latte Sachets,0.4,7,4405569P,3/11/2019,2.8
+787-15-1757,C,TAS,Hobart,Member,Male,Shortbread Car Tin,3.33,4,5446266P,2/18/2019,13.32
+649-11-3678,C,NSW,Newcastle,Normal,Female,Throat Gummies Butter Menthol,3.33,9,4966475P,2/26/2019,29.97
+622-20-1945,C,WA,Fremantle,Normal,Female,Classic Medium Decaffeinated Instant Coffee,9,1,25249P,1/18/2019,9
+372-94-8041,A,NSW,Wollongong,Normal,Male,Beef Ribs,12.5,6,2888519P,2/15/2019,75
+563-91-7120,A,WA,Albany,Normal,Female,Sharepack Dairy Milk Santa,3.47,5,7002605P,3/8/2019,17.35
+746-54-5508,A,VIC,Geelong,Normal,Male,RSPCA Approved Chicken Wing Nibbles,8,6,2021544P,1/17/2019,48
+276-54-0879,B,WA,Fremantle,Normal,Male,Coffee Bags Espresso Blend,0.54,4,3988621P,3/12/2019,2.16
+815-11-1168,A,ACT,Canberra,Member,Male,Latte Beans Coffee,3.7,5,4824390P,3/9/2019,18.5
+719-76-3868,C,QLD,Townsville,Member,Male,Chocolate Bar Salted Caramel Honeycomb,2.13,4,5492263P,3/12/2019,8.52
+730-61-8757,B,TAS,Launceston,Member,Male,Australian Colby Cheese,12.5,4,2071269P,1/25/2019,50
+340-66-0321,A,QLD,Brisbane,Member,Male,Lemon & Ginger Infusions Tea Bags 40 pack,0.19,4,6811221P,3/25/2019,0.76
+868-81-1752,B,TAS,Hobart,Normal,Male,Traditional Settler's Grain Bread,0.57,9,3362915P,2/7/2019,5.13
+634-97-8956,A,NSW,Newcastle,Normal,Male,Simply Nuts Smooth Peanut Butter,1.31,3,3791092P,2/17/2019,3.93
+566-71-1091,A,SA,Adelaide,Normal,Male,Edam Cheese Slices,25,5,1462511P,2/3/2019,125
+442-48-3607,A,WA,Albany,Member,Male,Cafe Classics Cappuccino Sachets,0.5,2,4405627P,3/14/2019,1
+835-16-0096,C,NT,Alice Springs,Member,Male,Chocolate Flavoured Milk,8.33,5,7024030P,3/24/2019,41.65
+527-09-6272,A,QLD,Brisbane,Member,Female,Half Cauliflower,2,5,3395313P,3/21/2019,10
+898-04-2717,A,WA,Perth,Normal,Male,Peppermint Sugar Free Chewing Gum,7.37,9,5703176P,3/19/2019,66.33
+692-27-8933,B,SA,Port Lincoln,Normal,Female,Peri Peri Garlic Sauce,2.6,6,4277378P,2/24/2019,15.6
+633-09-3463,C,WA,Fremantle,Normal,Female,Persian Fetta,25,3,5443360P,3/28/2019,75
+374-17-3652,B,VIC,Melbourne,Member,Female,Ketjap Manis Sweet Soy Sauce,2.29,9,202843P,2/5/2019,20.61
+378-07-7001,B,NSW,Sydney,Member,Male,Doritos Supreme Cheese Corn Chips 6 pack,3.42,3,8156058P,2/10/2019,10.26
+433-75-6987,B,VIC,Ballarat,Member,Female,Chocolate Soy Milk,3,7,4619303P,3/5/2019,21
+873-95-4984,B,VIC,Ballarat,Member,Female,95% Sugar Free Banana Bread Slices,3.89,7,5111440P,2/15/2019,27.23
+416-13-5917,C,NSW,Wollongong,Normal,Female,Up&Go Liquid Breakfast Vanilla Ice Cereal No Added Sugar 3X250mL,7.47,5,3723467P,1/30/2019,37.35
+150-89-8043,A,SA,Mount Gambier,Normal,Male,Rosemary & Thyme Water Crackers,1.2,3,3815838P,2/14/2019,3.6
+135-84-8019,A,SA,Adelaide,Normal,Female,Freddo & Caramello Koala Large Sharepack,2.14,9,4466698P,2/27/2019,19.26
+441-94-7118,A,VIC,Ballarat,Member,Male,Thinly Cut Chips Lightly Salted 6 Pack,3.42,1,5349893P,2/4/2019,3.42
+725-96-3778,C,ACT,Canberra,Member,Female,Guacamole Tortilla Chips,2,8,5350032P,1/20/2019,16
+531-80-1784,A,NSW,Sydney,Normal,Male,Lactose Free Whole Milk Natural Yoghurt,7,7,3242968P,3/28/2019,49
+400-45-1220,B,QLD,Gold Coast,Normal,Female,Sourdough Crackers Pink Salt & Garlic,4.09,10,5484276P,2/27/2019,40.9
+860-79-0874,C,VIC,Geelong,Member,Female,Lemonade,1.27,10,3270191P,2/15/2019,12.7
+834-61-8124,A,QLD,Townsville,Normal,Male,Gobstoppers,1.76,7,2872803P,1/26/2019,12.32
+115-99-4379,B,NSW,Newcastle,Member,Female,Spice Chai Tea,2.92,7,7490189P,3/14/2019,20.44
+565-67-6697,B,QLD,Brisbane,Member,Male,R2E2 Mangoes,4.5,9,5604356P,3/2/2019,40.5
+320-49-6392,C,SA,Port Lincoln,Normal,Female,RSPCA Approved Chicken Breast Schnitzel Plain Crumb,17.5,1,5969865P,3/4/2019,17.5
+889-04-9723,B,WA,Perth,Member,Female,Hot Salsa,0.92,4,8486019P,1/7/2019,3.68
+632-90-0281,C,TAS,Hobart,Normal,Female,Dry Recipe Base Lamb Ragout,4.73,10,4307661P,3/8/2019,47.3
+554-42-2417,C,NSW,Newcastle,Normal,Female,Lab Santo Ground Espresso,5,10,3984530P,1/9/2019,50
+453-63-6187,B,NT,Alice Springs,Normal,Male,Sharepack Rosemary & Sea Salt Mini Rice Cakes,5.25,3,3757877P,3/1/2019,15.75
+578-80-7669,B,NSW,Newcastle,Normal,Male,Red Wine & Garlic Marinade,0.8,1,7076587P,3/16/2019,0.8
+612-36-5536,A,WA,Albany,Member,Male,Smoked Salmon,45.72,8,3796664P,2/17/2019,365.76
+605-72-4132,C,VIC,Geelong,Normal,Female,Layers Boost,3.13,8,5148360P,2/27/2019,25.04
+471-41-2823,C,QLD,Gold Coast,Normal,Male,Freddo & Caramello Koala Large Sharepack,2.14,2,4466698P,3/7/2019,4.28
+462-67-9126,A,VIC,Ballarat,Normal,Male,Shapes Mini Bites Sour Cream Onion Crackers,2.5,6,3978843P,1/21/2019,15
+272-27-9238,C,NSW,Sydney,Normal,Female,Dark Chocolate Coated Ginger,4,4,1074851P,2/19/2019,16
+834-25-9262,C,SA,Adelaide,Normal,Female,Blackcurrant Pastilles,2.22,4,4952164P,1/6/2019,8.88
+122-61-9553,C,NSW,Sydney,Normal,Female,Nacho Cheese Shapes,2.19,9,5591888P,3/14/2019,19.71
+468-88-0009,A,QLD,Brisbane,Member,Male,Natural Fruit Muesli,0.58,4,2870885P,3/24/2019,2.32
+613-59-9758,C,ACT,Canberra,Normal,Female,Thick & Chunky Rustic Passata,0.5,10,3637682P,1/27/2019,5
+254-31-0042,A,QLD,Gold Coast,Member,Male,YoPro Strawberry Yoghurt,1.69,9,2991880P,3/6/2019,15.21
+201-86-2184,B,QLD,Brisbane,Member,Female,Extra Bloody Peri-Peri Hot Sauce,2.6,7,3499308P,2/2/2019,18.2
+261-12-8671,B,WA,Fremantle,Normal,Female,Mini Chocolate Chip Brownies 5 Pack,2.67,2,5115407P,1/25/2019,5.34
+730-70-9830,C,SA,Port Lincoln,Normal,Female,Organic Rolled Oats,0.55,6,3970820P,3/14/2019,3.3
+382-25-8917,C,NT,Darwin,Normal,Male,Original Hot Sauce,3.33,6,7267847P,1/29/2019,19.98
+422-29-8786,A,ACT,Canberra,Normal,Female,85% Lower Carb High Protein Loaf,1,5,4654155P,1/3/2019,5
+667-23-5919,A,VIC,Melbourne,Member,Female,Lemon Lime Bitters No Sugar Mixers 4x300mL,5.42,5,3752782P,1/14/2019,27.1
+843-01-4703,B,QLD,Townsville,Member,Female,Thick & Creamy Yoghurt Strawberry,0.5,9,4339577P,1/5/2019,4.5
+743-88-1662,C,ACT,Canberra,Normal,Male,Twirl Chocolate Multipack 12 Treats,2.98,7,2353078P,2/22/2019,20.86
+595-86-2894,C,SA,Port Lincoln,Member,Male,Dry Recipe Base Gluten Free Mince Cottage Pie,4.73,4,2715088P,2/6/2019,18.92
+182-69-8360,B,NT,Alice Springs,Normal,Female,Oatilicious White Bread,0.57,4,4986304P,1/30/2019,2.28
+289-15-7034,A,SA,Port Lincoln,Member,Male,Yoghurt Fruit & Nut Delight Bar,4.6,4,5344743P,1/11/2019,18.4
+462-78-5240,C,VIC,Geelong,Normal,Female,Collagen Almond Berry Granola,1.78,2,4312898P,3/19/2019,3.56
+868-52-7573,B,NSW,Newcastle,Normal,Female,Baked Sour Cream & Chives,3.95,5,3851897P,1/14/2019,19.75
+153-58-4872,C,QLD,Gold Coast,Member,Female,Gold Original Blend Coffee,7,4,8048033P,3/1/2019,28
+662-72-2873,A,ACT,Canberra,Normal,Female,Clinkers,3.33,5,3851037P,1/6/2019,16.65
+525-88-7307,B,NSW,Newcastle,Member,Male,Country Split Wholemeal Bread,0.78,1,1047P,1/31/2019,0.78
+689-16-9784,C,VIC,Geelong,Normal,Male,Organic Cauliflower Prepacked,8.5,6,4982948P,3/11/2019,51
+725-56-0833,A,QLD,Brisbane,Normal,Female,Whole Pork Leg Easy Carve Roast,11,10,4762500P,2/20/2019,110
+394-41-0748,C,VIC,Ballarat,Member,Female,Sourdough Superseed Crispbread,3.33,9,4385202P,1/27/2019,29.97
+596-42-3999,B,NSW,Newcastle,Normal,Male,Potatoes Prepacked,3.33,7,3026441P,3/10/2019,23.31
+541-89-9860,C,NT,Alice Springs,Member,Female,Coco Belgian Milk Chocolate & Hazelnut Spread,1.46,3,4463984P,2/15/2019,4.38
+173-82-9529,B,TAS,Devonport,Normal,Female,Jam Lamingtons 6 Pack,0.77,10,1898903P,1/26/2019,7.7
+563-36-9814,A,TAS,Devonport,Member,Male,Joyful Protein Bars Salted Caramel 190g,2.11,1,5414077P,2/13/2019,2.11
+308-47-4913,A,QLD,Gold Coast,Member,Female,Milk Chocolate Coated Hazelnut,1.79,10,4311964P,3/9/2019,17.9
+885-17-6250,A,NT,Darwin,Normal,Female,Lightly Salted Brown Rice Crackers,3,1,2161419P,3/6/2019,3
+726-27-2396,A,QLD,Gold Coast,Normal,Female,Dairy Extra Tasty Cheese Block,20,5,5432669P,1/24/2019,100
+316-01-3952,A,WA,Perth,Normal,Female,Chamomile Tea Bags,0.43,5,3701340P,3/13/2019,2.15
+760-54-1821,B,SA,Port Lincoln,Normal,Male,RSPCA Approved Chicken Portions With BBQ Rub,8.5,9,3024876P,3/15/2019,76.5
+793-10-3222,B,NSW,Sydney,Member,Female,Tim Tam Deluxe Chocolate Biscuits Dark Choc Mint,2.71,6,4964389P,3/5/2019,16.26
+346-12-3257,B,TAS,Hobart,Member,Male,Beef Roast & Onion Garlic & Red Wine Rub,17,9,4256902P,3/4/2019,153
+110-05-6330,C,QLD,Brisbane,Normal,Female,Raspberry & Passionfruit Hot Or Cold Lemon Brew Tea,0.15,6,4954589P,3/25/2019,0.9
+651-61-0874,C,SA,Port Lincoln,Normal,Male,Gourmet Truffles,10.42,4,5310286P,3/12/2019,41.68
+236-86-3015,C,VIC,Ballarat,Member,Male,Brittle Cake Almonds & Honey,10,1,5638063P,2/4/2019,10
+831-64-0259,B,QLD,Brisbane,Normal,Female,Pumpkin & Pepita Sliced,0.97,5,4654188P,2/22/2019,4.85
+587-03-7455,C,ACT,Canberra,Member,Female,Apricot Chicken Real Herbs & Spices Dry Recipe Base,5,7,2714926P,2/16/2019,35
+882-40-4577,A,NSW,Sydney,Member,Male,Cheese,2.67,4,3706832P,1/19/2019,10.68
+732-67-5346,A,WA,Albany,Normal,Male,Coffee Beans Darkness,4,5,3354746P,1/11/2019,20
+725-32-9708,B,WA,Perth,Member,Female,Dairy Cheese Extra Sharp Grated Parmesan,30,4,6577000P,1/4/2019,120
+256-08-8343,A,WA,Albany,Normal,Female,Mini Jam Rolls,0.45,4,5057708P,3/4/2019,1.8
+372-26-1506,C,WA,Perth,Normal,Female,Mascarpone,17.6,5,2212600P,1/28/2019,88
+244-08-0162,B,TAS,Launceston,Normal,Female,Pure Australian Honey Squeeze,1.44,10,2912453P,1/2/2019,14.4
+569-71-4390,B,VIC,Ballarat,Normal,Male,Cheddar Portion,40,2,3735455P,1/25/2019,80
+132-23-6451,A,SA,Adelaide,Member,Male,Yoghurt Peach 130g,1.38,5,3830911P,1/4/2019,6.9
+696-90-2548,A,VIC,Melbourne,Normal,Male,Blanched Hazelnuts,30,3,3834286P,3/10/2019,90
+472-15-9636,A,VIC,Melbourne,Normal,Male,Sustain Whole Grain Flakes Breakfast Cereal,1.3,8,5105651P,3/22/2019,10.4
+268-03-6164,B,NT,Darwin,Normal,Male,Brown Sugar Bubble Tea Can,8.57,1,5605009P,1/25/2019,8.57
+750-57-9686,C,NT,Alice Springs,Normal,Female,Dairy Milk Chocolate Maker's Mint Chip Block,2.12,4,5303633P,1/8/2019,8.48
+186-09-3669,C,QLD,Brisbane,Member,Female,Mini Capsicums,18.57,1,3066275P,1/22/2019,18.57
+848-07-1692,B,ACT,Canberra,Normal,Female,Shepherd's Pie Oven Easy Recipe Base,1.6,2,1330576P,1/12/2019,3.2
+745-71-3520,A,NT,Darwin,Member,Female,Jam Sponge Roll,0.68,7,8782565P,2/4/2019,4.76
+266-76-6436,C,WA,Fremantle,Member,Female,Herbs & Garlic In Oil Marinated Fetta,24.53,3,3842932P,3/28/2019,73.59
+740-22-2500,C,SA,Adelaide,Normal,Female,RSPCA Approved Free Range Chicken Stir Fry,24,3,3505954P,1/23/2019,72
+271-88-8734,C,WA,Fremantle,Member,Female,Vegetable Oil,0.36,10,8211586P,2/8/2019,3.6
+301-81-8610,B,NT,Darwin,Member,Male,Intense Extra Strong Black Tea Bags,0.07,8,4678029P,3/19/2019,0.56
+489-64-4354,C,SA,Adelaide,Normal,Male,Lamb Mince,15,1,8850053P,3/9/2019,15
+198-84-7132,B,ACT,Canberra,Member,Male,Mango Greek Yogurt Pouch,1.43,9,4348975P,1/2/2019,12.87
+269-10-8440,A,NSW,Wollongong,Member,Male,Baby Carrots Prepacked,3.6,7,4236122P,1/21/2019,25.2
+650-98-6268,B,VIC,Melbourne,Member,Female,Passionfruit,2.5,3,409896P,3/20/2019,7.5
+741-73-3559,B,NSW,Wollongong,Normal,Male,Pork Belly With Salt And Pepper,28.57,5,5259688P,2/27/2019,142.85
+325-77-6186,A,NT,Alice Springs,Member,Female,Organic Classic Medium Roast Fairtrade Coffee,3,10,3208290P,3/8/2019,30
+286-75-7818,B,ACT,Canberra,Normal,Male,Yopro Vanilla Yoghurt,0.96,2,3246914P,1/31/2019,1.92
+574-57-9721,C,SA,Mount Gambier,Normal,Male,The Laughing Cow Cheese Portions Original,32.5,2,8546642P,3/8/2019,65
+459-50-7686,A,QLD,Brisbane,Normal,Female,Aged Havarti,36,6,5400130P,1/13/2019,216
+616-87-0016,B,VIC,Geelong,Normal,Male,Caramilk Twirl Bitesize,1.82,7,3826029P,3/9/2019,12.74
+837-55-7229,B,SA,Port Lincoln,Normal,Female,Crumbed Pork Schnitzel,20,1,3478308P,2/22/2019,20
+751-69-0068,C,QLD,Gold Coast,Normal,Male,Blackberries,29.41,9,3742202P,3/19/2019,264.69
+257-73-1380,C,ACT,Canberra,Member,Male,Beef Rump Steak,28,4,8601707P,1/20/2019,112
+345-08-4992,A,VIC,Geelong,Normal,Male,Cheese Salted Honey Cow,51.25,6,5443519P,3/8/2019,307.5
+549-96-4200,C,VIC,Ballarat,Member,Male,Pouch Of Purity Organic Strawberry Yoghurt,1.8,4,3536583P,3/8/2019,7.2
+810-60-6344,C,SA,Mount Gambier,Normal,Female,French Earl Grey Flavoured Black Tea Bags 25 pack,32,8,3079200P,2/7/2019,256
+450-28-2866,C,NSW,Newcastle,Member,Male,Milk Chocolate Raspberry Bullets,1.16,5,3448362P,1/15/2019,5.8
+394-30-3170,B,NT,Alice Springs,Member,Female,Passage To Asia Teriyaki Chicken Stir Fry Sauce,1.88,8,8766220P,3/22/2019,15.04
+138-17-5109,A,WA,Fremantle,Member,Female,Espresso Style Bold & Intense Instant Coffee,9.75,9,7479357P,1/15/2019,87.75
+192-98-7397,C,NT,Alice Springs,Normal,Male,Mango Yoghurt,0.45,1,5892512P,1/8/2019,0.45
+301-11-9629,A,TAS,Devonport,Normal,Female,Kangaroo Mince,13.5,7,9007723P,1/15/2019,94.5
+390-80-5128,B,TAS,Launceston,Member,Female,Diet Coke Soft Drink Multipack Cans 10 x 375mL,2.28,1,1849318P,1/28/2019,2.28
+235-46-8343,C,NSW,Wollongong,Member,Male,Greek Feta Cheese Lactose Free,38.75,10,3561955P,2/14/2019,387.5
+453-12-7053,C,SA,Port Lincoln,Normal,Male,Red Raspberry Spread,2.01,3,5704350P,3/10/2019,6.03
+296-11-7041,B,SA,Mount Gambier,Member,Female,Rich Espresso Ground Coffee,3.5,1,8769160P,1/12/2019,3.5
+449-27-2918,B,VIC,Geelong,Member,Female,Groovy Grape Bubble Gum 180cm,4.82,1,9564195P,3/26/2019,4.82
+891-01-7034,B,TAS,Launceston,Normal,Female,Natural Pot Set Yoghurt,6,6,3116318P,1/1/2019,36
+744-09-5786,B,SA,Adelaide,Normal,Male,Lactose Free Plain Yoghurt 4 pack,0.89,6,1200107P,1/2/2019,5.34
+727-17-0390,A,TAS,Hobart,Normal,Female,Original Beef Jerky,100,5,6526123P,3/16/2019,500
+568-88-3448,A,TAS,Hobart,Normal,Male,Teriyaki Rice Puffs Crackers,4.86,1,3629141P,3/3/2019,4.86
+187-83-5490,A,ACT,Canberra,Member,Male,All Rounder Australian Extra Virgin Olive Oil,1.49,4,2107479P,1/31/2019,5.96
+767-54-1907,B,NT,Darwin,Member,Female,Manuka Honey MGO 100+,6.3,5,5466365P,2/13/2019,31.5
+710-46-4433,B,QLD,Gold Coast,Member,Female,Passage To India Korma Curry Simmer Sauce Pouch,1.52,9,9781580P,2/15/2019,13.68
+533-33-5337,B,NSW,Wollongong,Normal,Male,Granola Simply Nut,1.89,10,3779450P,2/7/2019,18.9
+325-90-8763,C,WA,Perth,Member,Female,LCMs Kaleidos Puffed Rice Snack Bars 15 pack,2.42,10,2396412P,1/27/2019,24.2
+729-46-7422,C,SA,Mount Gambier,Normal,Male,Go Hazelnut Spread With Cocoa Breadsticks Multipack 48g,2.34,1,3574709P,2/23/2019,2.34
+639-76-1242,C,VIC,Ballarat,Normal,Male,Cheese Shredded Tasty Light,10.71,5,8145346P,2/3/2019,53.55
+234-03-4040,B,WA,Albany,Member,Female,Stacker Leg Ham Cheese & Crackers,8,10,3752705P,3/3/2019,80
+326-71-2155,C,QLD,Townsville,Normal,Female,Digest Blend Tea Bags,0.39,4,4971770P,2/3/2019,1.56
+320-32-8842,C,SA,Mount Gambier,Member,Female,Italian Blend Beans Coffee,3.1,1,4824415P,3/17/2019,3.1
+470-32-9057,A,VIC,Melbourne,Member,Male,Brioche Sliders 10 Pack,3.05,5,4876420P,3/28/2019,15.25
+878-30-2331,C,NT,Alice Springs,Member,Female,Cashew & Coconut Simmer Sauce Mild,1.17,10,2917810P,3/2/2019,11.7
+440-59-5691,C,QLD,Brisbane,Member,Female,By Nespresso Single Origin Coffee Colombia Capsules,0.75,7,3612987P,2/8/2019,5.25
+554-53-3790,B,VIC,Geelong,Normal,Male,Mirin Seasoning,1.76,6,3743759P,3/22/2019,10.56
+746-19-0921,C,WA,Fremantle,Normal,Male,Cranberry & Pumpkin Seed Crackers,4.33,1,2792395P,2/9/2019,4.33
+233-34-0817,C,WA,Perth,Member,Female,Strong Coffee Ground,1.8,1,3755383P,2/15/2019,1.8
+767-05-1286,C,NT,Alice Springs,Member,Female,Live Well Revive Tea Bags,0.19,6,4984604P,1/23/2019,1.14
+340-21-9136,A,NSW,Sydney,Member,Female,Premium Light Mixers Tonic Water 4x200mL,10,4,3048783P,1/25/2019,40
+405-31-3305,A,NSW,Sydney,Member,Male,Chocolate Luxury Assorted Optus,5,10,5235318P,2/2/2019,50
+731-59-7531,B,QLD,Gold Coast,Member,Male,Peach Iced Tea Sachets,0.25,8,4651408P,3/30/2019,2
+676-39-6028,A,SA,Mount Gambier,Member,Female,Orange Soft Drink Bottle,1.58,5,224857P,3/30/2019,7.9
+502-05-1910,A,VIC,Ballarat,Normal,Male,Relax,0.7,3,4995418P,2/25/2019,2.1
+485-30-8700,A,SA,Port Lincoln,Normal,Female,Greenhouse Truss Tomatoes,3.5,5,4628676P,3/18/2019,17.5
+598-47-9715,C,ACT,Canberra,Normal,Male,No Sugar Orange,3.75,4,4313722P,3/7/2019,15
+701-69-8742,B,WA,Fremantle,Normal,Male,Sweet Chilli Sauce,0.42,10,5332289P,3/16/2019,4.2
+575-67-1508,A,TAS,Launceston,Normal,Male,Weet-Bix Gluten Free Cereal,1.28,1,2001365P,1/29/2019,1.28
+541-08-3113,C,NSW,Newcastle,Normal,Male,Max Soft Drink,1.5,8,5441783P,2/2/2019,12
+246-11-3901,C,TAS,Devonport,Normal,Female,Teevee Snacks 0'S & X'S Biscuits Honeycomb Chocolate,2.42,10,4407611P,2/15/2019,24.2
+674-15-9296,A,TAS,Devonport,Normal,Male,Pure Ceylon Extra Strength Tea Bags 100 pack,0.08,5,9505163P,1/8/2019,0.4
+305-18-3552,B,VIC,Geelong,Member,Male,Organic Green Asparagus,5.5,10,4967999P,2/12/2019,55
+493-65-6248,C,QLD,Townsville,Member,Female,Light Milk,3.3,10,9759944P,1/1/2019,33
+438-01-4015,B,TAS,Hobart,Member,Female,Grissini Breadsticks Sesame & Sea Salt,2.52,4,5085805P,3/21/2019,10.08
+709-58-4068,B,SA,Mount Gambier,Normal,Female,All Rounder Pure Black Tea Bags 200 pack,1.73,10,7752060P,2/28/2019,17.3
+795-49-7276,A,SA,Port Lincoln,Normal,Male,Milky Bubble Tea,1.6,4,4956981P,3/23/2019,6.4
+556-72-8512,C,SA,Mount Gambier,Normal,Male,Pure Fresh Sour Gum Strawberry Bottle,6.67,1,3956115P,1/30/2019,6.67
+627-95-3243,B,SA,Adelaide,Member,Female,Cereal Squarz,1.3,9,5297519P,2/4/2019,11.7
+686-41-0932,B,QLD,Gold Coast,Normal,Female,Lemonade Multipack Cans 375mL,1.94,2,9391552P,3/13/2019,3.88
+510-09-5628,A,WA,Albany,Member,Female,Roll Ups Berry Sour,3.19,10,5200197P,3/15/2019,31.9
+608-04-3797,B,WA,Albany,Member,Female,Humans Lemon Lime 4x250mL,7,8,5494531P,3/5/2019,56
+148-82-2527,C,ACT,Canberra,Member,Female,Santa Pouch Bag Mini Milk,10,10,2458371P,3/5/2019,100
+437-53-3084,B,ACT,Canberra,Normal,Male,White Peppermint Sugar Free Chewing Gum,7.37,2,4969203P,2/26/2019,14.74
+632-32-4574,B,NSW,Newcastle,Normal,Male,Oyster Sauce,1.31,8,5196996P,3/20/2019,10.48
+556-97-7101,C,QLD,Brisbane,Normal,Female,Cini Minis Churros,0.83,2,4310837P,1/1/2019,1.66
+862-59-8517,C,NT,Alice Springs,Normal,Female,Plain Biscuit Shredded Wheat,1.05,6,329276P,1/27/2019,6.3
+401-18-8016,B,NT,Alice Springs,Member,Female,Coffee Expressi/Caffitaly Supreme Capsules,0.41,1,3513464P,1/21/2019,0.41
+420-18-8989,A,VIC,Geelong,Member,Female,Dark/Intense Aluminium Nespresso Compatible Coffee Capsules,0.5,8,4299950P,2/2/2019,4
+277-63-2961,B,WA,Fremantle,Member,Male,Deluxe Fruit Muesli,1.88,1,6022924P,2/3/2019,1.88
+573-98-8548,C,WA,Albany,Member,Female,Aussie Style Yoghurt Vanilla,1.06,1,5325396P,1/5/2019,1.06
+620-02-2046,C,VIC,Ballarat,Normal,Male,Greek Style Coconut Yoghurt,1.67,2,2745293P,1/27/2019,3.34
+282-35-2475,B,QLD,Brisbane,Normal,Female,Crunchy Clusters Cereal Honey,0.8,2,4967503P,3/25/2019,1.6
+511-54-3087,B,VIC,Melbourne,Normal,Male,I Savoiardi Biscuits,1,1,6647864P,2/25/2019,1
+726-29-6793,A,NSW,Sydney,Member,Male,Espresso Style Bold & Intense Instant Coffee,9.75,8,7479357P,1/28/2019,78
+387-49-4215,B,NSW,Sydney,Member,Female,RSPCA Chicken Schnitzel Plain Crumb,8.75,3,2904193P,1/8/2019,26.25
+862-17-9201,B,SA,Port Lincoln,Normal,Female,Earl Grey Tea Bags,0.2,6,3984595P,1/29/2019,1.2
+291-21-5991,B,NT,Alice Springs,Member,Male,Gold Original Blend,6.83,5,5578314P,3/29/2019,34.15
+602-80-9671,C,WA,Albany,Member,Female,100% No Added Sugar Vanilla Chai Latte,5,6,4947109P,2/9/2019,30
+347-72-6115,B,QLD,Brisbane,Member,Female,Pork Loin Chops,18,7,3035282P,1/16/2019,126
+209-61-0206,A,ACT,Canberra,Normal,Female,Happy Hippo Hazelnut Biscuit Bar 5 Pack,4.29,5,4243809P,1/5/2019,21.45
+595-27-4851,A,NSW,Newcastle,Normal,Female,Butcher Lamb Loin Chops,28,7,8598420P,1/27/2019,196
+189-52-0236,A,WA,Fremantle,Normal,Male,Plus Antioxidant Cereal,1.07,7,8937956P,3/14/2019,7.49
+503-07-0930,C,WA,Fremantle,Member,Male,Bliss Balls Peanut Butter,6.25,7,3134590P,2/23/2019,43.75
+413-20-6708,C,SA,Port Lincoln,Member,Female,Espresso Classico Capsules,0.75,1,3626405P,3/18/2019,0.75
+425-85-2085,B,NSW,Sydney,Member,Male,Pork Loin Steaks With Thyme & Black Pepper Butter,27.69,5,3891778P,3/29/2019,138.45
+521-18-7827,C,VIC,Geelong,Member,Male,IM Free From White Loaf,0.96,5,3216673P,1/22/2019,4.8
+220-28-1851,A,NSW,Newcastle,Normal,Male,Minis Milk Chocolate Treats Tube,2.86,2,4503874P,3/1/2019,5.72
+600-38-9738,C,NSW,Newcastle,Member,Male,Yoghurt Pouch Banana,1.8,5,4346255P,1/17/2019,9
+734-91-1155,B,ACT,Canberra,Normal,Female,Snaps Pea Original Salted 5x18g Multi Pack,3.89,3,3434095P,3/26/2019,11.67
+451-28-5717,C,WA,Fremantle,Member,Female,Danish Fetta Cheese,18.7,6,3218657P,3/20/2019,112.2
+609-81-8548,A,TAS,Hobart,Member,Female,Extra Red Wine & Italian Herbs Pasta Sauce,0.6,6,1274442P,2/6/2019,3.6
+133-14-7229,C,NT,Alice Springs,Normal,Male,Classic Maple Crunch Cereal,1.13,2,5235464P,1/1/2019,2.26
+534-01-4457,A,WA,Fremantle,Normal,Male,Raw Apple Cider Vinegar,0.8,6,3497754P,1/27/2019,4.8
+719-89-8991,A,SA,Port Lincoln,Member,Female,Probiotic Kefir Yoghurt Natural,1,5,5312543P,2/25/2019,5
+286-62-6248,B,ACT,Canberra,Normal,Male,Urban Coffee Culture Decaf Aluminium,0.4,4,5020796P,1/16/2019,1.6
+339-38-9982,B,NSW,Newcastle,Member,Male,Raspberry Jam,0.99,2,7549350P,1/13/2019,1.98
+827-44-5872,B,WA,Fremantle,Member,Female,No Added Hormone Beef Porterhouse Steak,40,10,3331751P,2/7/2019,400
+827-77-7633,A,NSW,Newcastle,Normal,Male,Rainbow Roll,4,9,7798457P,2/17/2019,36
+287-83-1405,A,ACT,Canberra,Normal,Male,Gran Pasticceria White Coconut,4.5,6,3236240P,2/12/2019,27
+435-13-4908,A,NSW,Sydney,Member,Male,Bueno White Chocolate Bar,5.13,8,2877432P,1/24/2019,41.04
+857-67-9057,B,VIC,Geelong,Normal,Male,Rocher Chocolate Gift Box 30 Pack,4.4,10,7327585P,2/6/2019,44
+236-27-1144,C,TAS,Hobart,Normal,Female,Butter Cookies,1.21,9,9918119P,3/26/2019,10.89
+892-05-6689,A,TAS,Launceston,Normal,Female,Colby Cheese Slices,32,5,4223867P,3/11/2019,160
+583-41-4548,C,NT,Darwin,Normal,Male,Tasty Cheddar Cheese Crackers,2,7,1743215P,2/7/2019,14
+339-12-4827,B,QLD,Townsville,Member,Female,English Breakfast Extra Strong Tea Bags 80 pack,0.08,1,2236788P,1/5/2019,0.08
+643-38-7867,A,QLD,Brisbane,Normal,Male,Almond Nut Protein Balls 3x40g,7.17,1,3895270P,3/7/2019,7.17
+308-81-0538,A,SA,Adelaide,Normal,Female,Fruchocs Dark Choc & Vegan,3.33,4,5057854P,2/25/2019,13.32
+358-88-9262,C,QLD,Brisbane,Member,Female,Pure Ceylon Green Tea Bags 20 pack,0.22,6,2601318P,2/1/2019,1.32
+460-35-4390,A,WA,Albany,Normal,Male,Oat Yogurt Vanilla,1.3,3,5309210P,1/22/2019,3.9
+343-87-0864,C,QLD,Gold Coast,Member,Male,Collagen Beauty Bites Lemon & Coconut,12.5,1,3756422P,1/3/2019,12.5
+173-50-1108,B,NSW,Sydney,Member,Female,Clusters Cranberry Apple & Roasted Nuts,1.53,4,5293336P,2/13/2019,6.12
+243-47-2663,C,NT,Darwin,Member,Male,Creamy Sundried Tomato & Garlic Pasta Bake Sauce,0.7,6,2683855P,1/28/2019,4.2
+841-18-8232,B,TAS,Launceston,Normal,Female,Brownies 5Pack,1.4,1,2682036P,1/5/2019,1.4
+701-23-5550,B,TAS,Launceston,Member,Male,Vanilla Latte Sachets 185g,0.33,4,4292768P,3/19/2019,1.32
+647-50-1224,A,QLD,Gold Coast,Normal,Female,Original Beef Jerky,8.73,10,3434903P,1/12/2019,87.3
+541-48-8554,A,ACT,Canberra,Normal,Male,Vanilla Coconut Yoghurt,1.67,9,3540412P,1/7/2019,15.03
+539-21-7227,B,VIC,Melbourne,Normal,Female,Max Multipack Cans 375mL,3.6,5,2684166P,1/26/2019,18
+213-32-1216,A,WA,Perth,Normal,Female,Thawed Arrow Squid Rings,20,6,2157397P,1/23/2019,120
+747-58-7183,B,NSW,Sydney,Normal,Male,Free Range Pork Rib Rack Roast,18,3,4679134P,2/9/2019,54
+582-52-8065,B,ACT,Canberra,Normal,Female,Medicated Lemon & Lime Liquid Centres Throat Lozenges,5,9,9702856P,2/22/2019,45
+210-57-1719,B,WA,Perth,Normal,Female,Snaps Pea Original Salted 5x18g Multi Pack,3.89,9,3434095P,2/5/2019,35.01
+399-69-4630,C,NSW,Sydney,Normal,Male,Corn Chips Sea Salt,2.31,6,3960983P,3/7/2019,13.86
+134-75-2619,A,TAS,Devonport,Member,Male,Classic BBQ Rice Crackers,2.3,7,9610430P,3/25/2019,16.1
+356-44-8813,B,ACT,Canberra,Normal,Male,Aussie Oat Muesli Bars Brownie with Choc 6 Pack,3.06,3,3786897P,1/20/2019,9.18
+198-66-9832,B,WA,Fremantle,Member,Female,Crispy Oat Clusters Strawberry,1.7,2,1315368P,2/4/2019,3.4
+283-26-5248,C,QLD,Brisbane,Member,Female,English Breakfast Tea Bags,0.06,10,3984675P,1/30/2019,0.6
+712-39-0363,A,VIC,Geelong,Member,Male,Green Tea Bags,0.2,6,3984631P,1/2/2019,1.2
+218-59-9410,A,NSW,Sydney,Member,Female,Graze Grass Fed Beef Mince,20,3,2024280P,3/29/2019,60
+174-75-0888,B,VIC,Ballarat,Normal,Male,Sea Salt Gluten Free Popcorn,3.38,9,6772593P,3/14/2019,30.42
+866-99-7614,C,WA,Fremantle,Normal,Male,Right Start Fruit & Fibre Cereal,0.67,10,2024098P,2/11/2019,6.7
+134-54-4720,B,ACT,Canberra,Normal,Female,White Vinegar,0.41,8,156768P,1/30/2019,3.28
+760-90-2357,A,NT,Alice Springs,Member,Male,Chocolate Cream Wafers,0.44,6,1389794P,3/20/2019,2.64
+514-37-2845,B,SA,Mount Gambier,Normal,Male,Nat Bears Honey,3.39,2,5297472P,3/20/2019,6.78
+698-98-5964,A,VIC,Ballarat,Normal,Female,Tikka Masala Simmer Sauce Medium,1.11,10,2917785P,1/17/2019,11.1
+718-57-9773,C,VIC,Melbourne,Normal,Female,Lemon Flavoured Drink,0.6,10,5179137P,2/3/2019,6
+651-88-7328,A,QLD,Gold Coast,Normal,Female,Quick Oats Sachets Brown Sugar & Cinnamon,0.79,9,3954878P,1/1/2019,7.11
+241-11-2261,B,SA,Adelaide,Normal,Female,Dairy Wrap Brie,65,7,4387922P,1/10/2019,455
+408-26-9866,C,SA,Adelaide,Normal,Female,Portobello Mushrooms,15.9,7,4590573P,3/2/2019,111.3
+834-83-1826,B,VIC,Geelong,Member,Female,Truffle Extra Virgin Olive Oil,2.8,5,4992577P,2/25/2019,14
+343-61-3544,B,WA,Perth,Member,Male,Organic Extra Virgin Olive Oil,2,10,4746683P,1/29/2019,20
+239-48-4278,A,ACT,Canberra,Member,Male,Up & Go Chocolate Energize,9.2,7,2918165P,3/10/2019,64.4
+355-34-6244,B,WA,Fremantle,Normal,Male,Parmesan Cheese Block,41.8,2,3274603P,1/13/2019,83.6
+550-84-8664,A,ACT,Canberra,Normal,Male,Probiotic Granola Manuka Honey & Almond,1.86,5,4310848P,3/22/2019,9.3
+339-96-8318,B,WA,Perth,Member,Male,Pot Set Greek Style Natural Yoghurt,0.8,7,7250935P,3/1/2019,5.6
+458-61-0011,B,WA,Albany,Normal,Male,Thawed Cooked Vannamei Prawns,20,4,4273050P,2/20/2019,80
+592-34-6155,C,QLD,Gold Coast,Normal,Male,Morning Tea Bags 100 pack,0.06,4,2872938P,1/14/2019,0.24
+797-88-0493,A,SA,Mount Gambier,Normal,Female,Super Manuka Peanut Butter,2.32,4,5459519P,3/26/2019,9.28
+207-73-1363,B,WA,Perth,Normal,Male,The Ultimate Black Cherry Yoghurt 4x115g,1.09,2,3310183P,3/1/2019,2.18
+390-31-6381,C,WA,Albany,Normal,Male,Sea Salt Gluten Free Popcorn,3.38,3,6772593P,1/7/2019,10.14
+443-82-0585,A,ACT,Canberra,Member,Female,Mint Collection Bag,7.5,4,5310843P,2/1/2019,30
+339-18-7061,C,SA,Mount Gambier,Member,Female,Fibre Plus Peanut Butter,1.23,2,5459461P,2/13/2019,2.46
+359-90-3665,B,WA,Perth,Member,Female,Hazelnut Chocolate Spread,1.3,4,6690772P,1/14/2019,5.2
+375-72-3056,B,ACT,Canberra,Normal,Male,Punjabi Lemon Simmer Sauce,1.52,3,3997236P,1/19/2019,4.56
+127-47-6963,A,WA,Fremantle,Normal,Male,Rosemary & Thyme Water Crackers,1.2,4,3815838P,3/9/2019,4.8
+278-86-2735,A,QLD,Brisbane,Normal,Female,Gluten Free Chocolate Bar,2,3,5192521P,3/27/2019,6
+695-28-6250,A,QLD,Gold Coast,Normal,Female,Shredded Cheddar Cheese,36,5,3274760P,2/4/2019,180
+379-17-6588,C,NSW,Newcastle,Normal,Male,Tasty Cheese Corn Thins,1.6,10,1000301P,3/14/2019,16
+227-50-3718,A,SA,Adelaide,Normal,Male,Creamy Chicken & Mushroom Simmer Sauce,0.92,5,1731089P,3/4/2019,4.6
+302-15-2162,C,WA,Fremantle,Member,Male,Yoghurt Almond & Apricot Bar,5.75,6,5604764P,3/3/2019,34.5
+788-07-8452,C,VIC,Geelong,Member,Female,Mild English Mustard,2.29,7,5435215P,1/27/2019,16.03
+560-49-6611,A,ACT,Canberra,Member,Female,Premium Espresso Extra Dark Roasted Granulated Coffee,5.35,1,8639925P,2/7/2019,5.35
+880-35-0356,A,NSW,Newcastle,Member,Female,RSPCA Approved Chicken Lovely Legs,9,3,2265720P,2/5/2019,27
+585-11-6748,B,QLD,Gold Coast,Member,Male,Peppermint Mints,8.33,3,5666932P,3/15/2019,24.99
+470-31-3286,B,SA,Adelaide,Normal,Male,Coco Belgian Milk Chocolate & Hazelnut Spread,1.38,3,4463984P,3/1/2019,4.14
+152-68-2907,A,VIC,Geelong,Normal,Male,All-Bran Original High Fibre Breakfast Cereal,1.42,3,8491915P,2/15/2019,4.26
+123-35-4896,C,NSW,Wollongong,Normal,Female,Punched Tropical Guava Flavoured Energy Drink 500mL,5.5,9,7908715P,2/17/2019,49.5
+258-69-7810,C,NT,Alice Springs,Normal,Female,Crackers Sour Cream,1.88,5,5482485P,1/26/2019,9.4
+334-64-2006,A,NT,Alice Springs,Member,Female,Vanilla Soft Drink Bottle,1.52,2,9391600P,3/24/2019,3.04
+219-61-4139,C,TAS,Devonport,Normal,Male,Chocolate Coated Raspberries,3.21,1,3709852P,1/23/2019,3.21
+881-41-7302,C,VIC,Geelong,Normal,Female,Pasta Sauce Rossoro Tom Parmigiano Reggiano,1.25,1,5308353P,1/26/2019,1.25
+373-09-4567,C,NSW,Sydney,Normal,Male,Right Start Fruit & Fibre Cereal,0.67,10,2024098P,3/14/2019,6.7
+642-30-6693,B,NSW,Sydney,Normal,Female,Low Fat Field Berries Yoghurt 4x125g,0.7,6,8169435P,3/17/2019,4.2
+484-22-8230,C,QLD,Brisbane,Member,Female,Tea Peppermint & Licorice,0.41,7,3988508P,1/8/2019,2.87
+830-58-2383,B,NSW,Wollongong,Normal,Male,Low Fat Plain Yoghurt,0.77,4,1435100P,2/8/2019,3.08
+559-98-9873,A,NT,Alice Springs,Member,Female,Almond Nut Protein Balls 3x40g,7.67,7,3895270P,2/10/2019,53.69
+544-32-5024,C,VIC,Melbourne,Member,Female,Nutrageous Chocolate Bar,2.13,4,4243810P,3/28/2019,8.52
+318-12-0304,A,TAS,Devonport,Normal,Male,Classic BBQ Rice Crackers,2.3,1,9610430P,1/23/2019,2.3
+349-97-8902,B,NT,Alice Springs,Member,Male,Salted Caramel Nut Butter Gourmet Protein Bars 5 pack,3.63,2,3387869P,1/17/2019,7.26
+421-95-9805,A,VIC,Geelong,Normal,Female,Original Potato Chips,1.23,1,7117775P,2/7/2019,1.23
+277-35-5865,C,NSW,Wollongong,Member,Female,Isotonic Blackcurrent Sports Drink Flat Cap,2.6,9,3527957P,3/9/2019,23.4
+789-23-8625,B,WA,Perth,Member,Male,Kids Vanilla Yoghurt Pouch,1.57,3,7246869P,1/24/2019,4.71
+284-54-4231,C,ACT,Canberra,Member,Male,Chewy Muesli Bars White Choc Chip 6 Pack,1.35,1,4975217P,1/19/2019,1.35
+443-59-0061,A,SA,Adelaide,Member,Male,Hazelnut Chocolate Spread,1.86,10,9468045P,2/3/2019,18.6
+509-29-3912,A,QLD,Brisbane,Member,Female,Crunchy Peanut Butter,1.44,9,130629P,3/20/2019,12.96
+327-40-9673,B,WA,Fremantle,Member,Male,Peppermint Tea Bags,0.11,6,3984799P,1/13/2019,0.66
+840-19-2096,C,ACT,Canberra,Member,Male,Fit Raspberry Yoghurt Pouch,1.43,5,3246823P,3/14/2019,7.15
+828-46-6863,A,WA,Fremantle,Member,Male,Pelagonia White Beans,0.79,6,9178850P,1/23/2019,4.74
+641-96-3695,C,NSW,Sydney,Member,Female,Flaked Almonds,40,6,5619580P,2/7/2019,240
+420-97-3340,A,NT,Alice Springs,Normal,Female,Duos Mild Twiggy Bites And Cheese,8.72,3,4380560P,3/28/2019,26.16
+436-54-4512,A,TAS,Devonport,Member,Female,Free From Tomato Pesto,2.32,1,3923160P,3/20/2019,2.32
+670-79-6321,B,QLD,Brisbane,Member,Female,Smarter White Milk,2.05,7,9759886P,1/17/2019,14.35
+852-62-7105,B,WA,Perth,Normal,Female,Natural Unsweetened Yoghurt,2.86,10,2745249P,1/12/2019,28.6
+598-06-7312,B,WA,Albany,Member,Male,Dark Coffee Ground,4.5,1,3956170P,2/16/2019,4.5
+135-13-8269,B,TAS,Devonport,Member,Female,Strawberry Raspberry & Loganberry Infusions Tea Bags,0.3,2,8729530P,1/26/2019,0.6
+816-57-2053,A,ACT,Canberra,Normal,Male,Rice Wine Vinegar,1.04,2,4605070P,3/9/2019,2.08
+628-90-8624,B,SA,Adelaide,Member,Male,Sticks Mild,8.5,10,4385723P,3/14/2019,85
+856-66-2701,A,VIC,Melbourne,Member,Male,Sharepack 12 Piece Freddo Milky Top,,3,3768862P,1/25/2019,
+308-39-1707,A,VIC,Ballarat,Normal,Female,Earl Grey Tea Bags 50 pack,0.15,1,6822217P,1/26/2019,0.15
+149-61-1929,A,WA,Albany,Normal,Male,Veggie Crackers Zucchini Almond,6.67,10,3814019P,1/19/2019,66.7
+655-07-2265,A,QLD,Gold Coast,Normal,Male,Canola Oil,0.36,3,4616484P,3/5/2019,1.08
+589-02-8023,A,ACT,Canberra,Member,Male,Fresh Seafood Salad,19,2,1026032P,1/15/2019,38
+420-04-7590,B,SA,Adelaide,Normal,Male,White Hazelnut,8.75,3,3894674P,3/18/2019,26.25
+182-88-2763,B,NSW,Wollongong,Member,Male,Honeycomb Milk Chocolate Snack & Share Bag,3.57,3,3019640P,3/20/2019,10.71
+188-55-0967,B,WA,Albany,Member,Male,Pepitas,13.33,10,3017542P,1/15/2019,133.3
+610-46-4100,A,SA,Port Lincoln,Normal,Male,Potato Chips Sweet Chilli & Sour Cream,3,7,3706082P,3/3/2019,21
+318-81-2368,C,NSW,Wollongong,Normal,Female,Smart Sweets Sour,5.71,1,5148337P,3/19/2019,5.71
+364-33-8584,B,TAS,Hobart,Member,Female,Mixers Zero Sugar Blood Orange,1.27,5,4405525P,3/8/2019,6.35
+665-63-9737,B,ACT,Canberra,Normal,Male,Up&Go Liquid Breakfast Fridge Pack Dairy Free Vanilla 12X250mL,5.27,3,4862505P,2/27/2019,15.81
+695-09-5146,B,VIC,Geelong,Member,Female,Rice Snacks Sweet Chilli & Sour Cream,1.5,3,6369003P,2/23/2019,4.5
+155-45-3814,C,SA,Adelaide,Member,Female,Romano Block,25,8,2486785P,3/19/2019,200
+794-32-2436,B,SA,Mount Gambier,Member,Male,Fruits Chewy Lollies Party Share Bag,2.78,2,2914018P,3/27/2019,5.56
+131-15-8856,C,NT,Alice Springs,Member,Female,Minis Yogurt Blue Wahoo Blueberry Blackberry Pot,1.94,8,4514655P,3/30/2019,15.52
+273-84-2164,C,WA,Albany,Member,Male,Fierce Grape Sport Drink,3.75,5,8729937P,2/16/2019,18.75
+706-36-6154,A,TAS,Launceston,Member,Male,Capsules Sydney,0.58,9,3766186P,1/18/2019,5.22
+778-89-7974,C,SA,Mount Gambier,Normal,Male,Organic Honey & Cinnamon Yoghurt,0.64,6,1436103P,3/30/2019,3.84
+574-31-8277,B,TAS,Devonport,Member,Male,Smooshed Wholefood Balls Cacao Brownie,3.26,1,3844246P,3/20/2019,3.26
+859-71-0933,C,SA,Adelaide,Member,Female,Squeeze,1.8,2,3852620P,1/16/2019,3.6
+740-11-5257,C,VIC,Ballarat,Normal,Male,Coco Pops Chex Chocolatey Breakfast Cereal,1.8,10,8494301P,2/24/2019,18
+369-82-2676,B,TAS,Launceston,Normal,Male,Red Onions Prepacked,3.5,5,8467604P,1/15/2019,17.5
+563-47-4072,B,SA,Adelaide,Normal,Female,Mini Red Cabbage,6.9,6,1473970P,1/22/2019,41.4
+742-04-5161,A,SA,Mount Gambier,Member,Male,ION4 Mountain Blast Sports Drink Sipper Cap,6.08,10,1726056P,2/3/2019,60.8
+149-15-7606,B,VIC,Melbourne,Member,Male,Crackers Sour Cream Chive,2.5,9,3449810P,3/6/2019,22.5
+133-77-3154,B,SA,Port Lincoln,Member,Male,Multipack Assorted Chips 15 Pack,1.78,4,2690828P,2/16/2019,7.12
+169-52-4504,A,QLD,Brisbane,Normal,Female,Satay Marinade,0.8,3,7714297P,3/14/2019,2.4
+250-81-7186,C,ACT,Canberra,Normal,Female,Bubble Tea Brown Sugar,1.7,1,4651339P,2/27/2019,1.7
+562-12-5430,A,SA,Adelaide,Member,Female,Ready Sauce San Choy Bao,2.4,3,3737042P,1/18/2019,7.2
+816-72-8853,A,VIC,Melbourne,Member,Female,Light Fat Milk,3.8,5,9760047P,1/29/2019,19
+491-38-3499,A,ACT,Canberra,Member,Male,Favourites Crackers Variety 15 pack,1.47,1,3182695P,2/26/2019,1.47
+322-02-2271,B,SA,Adelaide,Normal,Female,Brioche Sliders 10 Pack,3.05,3,4876420P,2/3/2019,9.15
+842-29-4695,C,NSW,Sydney,Member,Male,Cheese Cream,30.56,7,7646073P,1/16/2019,213.92
+725-67-2480,B,VIC,Geelong,Member,Female,Beef Jerky Teriyaki,16.25,6,5346727P,3/24/2019,97.5
+641-51-2661,C,NSW,Sydney,Member,Female,Camembert Oval,60,10,91673P,2/12/2019,600
+714-02-3114,C,QLD,Brisbane,Normal,Female,Turkey Breast Portion,20,2,2865240P,2/21/2019,40
+518-17-2983,A,ACT,Canberra,Normal,Female,Kombucha Orange Mango 4x250mL,8.75,4,5484833P,2/4/2019,35
+779-42-2410,B,SA,Port Lincoln,Member,Male,Simply Nuts The Crunchiest Peanut Butter,1.69,3,3605391P,2/20/2019,5.07
+190-14-3147,B,NT,Darwin,Normal,Female,Smokey BBQ Marinade,0.8,4,7715019P,2/23/2019,3.2
+408-66-6712,C,TAS,Devonport,Member,Female,Beef Roast & Onion Garlic & Red Wine Rub,17,6,4256902P,2/16/2019,102
+679-22-6530,B,VIC,Geelong,Normal,Female,Classic Gourmet Instant Coffee,4.25,2,8456958P,1/17/2019,8.5
+588-47-8641,A,SA,Adelaide,Member,Male,Flip Yogurt Limited Edition,2.5,10,4349130P,1/14/2019,25
+642-61-4706,B,ACT,Canberra,Member,Male,Allsorts Liquorice,1.07,2,3449081P,3/30/2019,2.14
+576-31-4774,B,QLD,Townsville,Normal,Female,Blended Vegetable Oil,3.7,3,4574635P,3/2/2019,11.1
+556-41-6224,C,VIC,Ballarat,Normal,Male,Medium Coffee Ground,4.5,8,3752590P,2/15/2019,36
+811-03-8790,A,TAS,Launceston,Normal,Female,Lady Finger Bananas,7.9,10,132056P,3/1/2019,79
+242-11-3142,B,ACT,Canberra,Member,Male,Elco Feta Cheese,36,2,5545687P,2/24/2019,72
+752-23-3760,B,QLD,Brisbane,Member,Female,Organic Avocados,4,7,5055611P,2/19/2019,28
+274-05-5470,A,VIC,Melbourne,Member,Female,Carisma Washed Potatoes Prepacked,3.75,4,7712327P,2/23/2019,15
+648-94-3045,C,VIC,Ballarat,Normal,Male,Digestives Tops Biscuits Milk Chocolate,1,10,5777536P,2/7/2019,10
+130-67-4723,A,TAS,Hobart,Member,Male,Freeze Dried Mountain Grown Instant Coffee,11,6,4737365P,1/11/2019,66
+528-87-5606,B,VIC,Ballarat,Member,Female,Urban Coffee Culture Strong Ground Coffee,12,1,3499705P,2/12/2019,12
+320-85-2052,B,NT,Darwin,Normal,Female,Extra Virgin Olive Oil Robust,2.62,1,8370400P,1/14/2019,2.62
+370-96-0655,C,VIC,Ballarat,Normal,Female,Flip Almond Coco Loco Yoghurt,2.5,6,2974891P,1/9/2019,15
+105-10-6182,A,SA,Adelaide,Member,Male,Nut Butter Filled Balls Double Peanut & Choc Almond Filling,8.75,2,3898609P,2/27/2019,17.5
+510-79-0415,B,TAS,Launceston,Member,Female,Kingston Biscuits,1.25,6,329560P,1/24/2019,7.5
+241-96-5076,B,ACT,Canberra,Member,Female,Weet-Bix Bites Crunchy Honey Cereal,0.88,2,9623884P,1/8/2019,1.76
+767-97-4650,B,SA,Adelaide,Member,Female,Marinated Octopus Original,47,2,3854807P,1/8/2019,94
+648-83-1321,A,SA,Adelaide,Member,Male,Honey BBQ Chicken Cooking Sauce,0.87,10,2847362P,1/16/2019,8.7
+173-57-2300,C,ACT,Canberra,Member,Male,Tasty Cheese Block,15.85,2,192411P,3/13/2019,31.7
+305-03-2383,A,WA,Albany,Normal,Female,Barramundi With Lemon Myrtle & Murray River Salt Seasoning 2 Pack,,3,3060949P,2/15/2019,
+394-55-6384,C,TAS,Hobart,Member,Female,Barbecue Sauce Value Pack Bbq Sauce,0.29,9,2359267P,1/25/2019,2.61
+266-20-6657,C,NSW,Newcastle,Member,Male,Australian Afternoon Tea Bags 10 pack,0.3,7,8930323P,3/12/2019,2.1
+689-05-1884,A,ACT,Canberra,Member,Male,Crinkle Cut Salt And Vinegar Potato Chips,1.32,10,3568353P,3/4/2019,13.2
+196-01-2849,C,VIC,Melbourne,Member,Female,Breakfast Marmalade Jam,0.6,7,131155P,2/10/2019,4.2
+372-62-5264,C,VIC,Ballarat,Normal,Female,Caro Extra Instant Beverage,4.4,9,468319P,1/16/2019,39.6
+800-09-8606,A,WA,Fremantle,Member,Female,Hawker Market Thai Red Curry Sauce,1.25,5,5765300P,1/29/2019,6.25
+182-52-7000,A,QLD,Brisbane,Member,Female,Bom Liquid Breakfast Coffee Flavoured 3x250mL,7.2,4,4187796P,1/1/2019,28.8
+826-58-8051,B,VIC,Melbourne,Normal,Male,Oat Yogurt Strawberry,2,4,5306314P,1/6/2019,8
+868-06-0466,A,QLD,Brisbane,Member,Male,Salmon Portions Lemon Infusions,46.67,9,5285382P,2/19/2019,420.03
+751-41-9720,C,NSW,Wollongong,Normal,Male,Tradicional Olive Oil,1.7,10,5118154P,1/12/2019,17
+626-43-7888,C,WA,Perth,Normal,Female,English Breakfast Tea Bags,0.2,8,3984562P,2/7/2019,1.6
+176-64-7711,B,TAS,Devonport,Normal,Male,Natural Pot Set Yoghurt,0.45,3,2273467P,3/27/2019,1.35
+191-29-0321,B,ACT,Canberra,Member,Female,Double Espresso Robusta & Arabica Iced Coffee,5.07,10,3643630P,2/27/2019,50.7
+729-06-2010,B,WA,Albany,Member,Male,Coffee Bags Espresso Blend,0.54,9,3988621P,1/6/2019,4.86
+640-48-5028,B,TAS,Devonport,Member,Female,Almond Cacao Butter,3.5,9,3851570P,3/2/2019,31.5
+186-79-9562,B,SA,Port Lincoln,Normal,Male,Espresso Barista Perfetto Beans,3.8,7,3756502P,3/29/2019,26.6
+834-45-5519,B,TAS,Launceston,Normal,Female,Tea Bags 50 pack,2.7,4,362781P,1/31/2019,10.8
+162-65-8559,C,NSW,Wollongong,Member,Male,Espresso Style Bold & Intense Instant Coffee,9.75,1,7479357P,1/21/2019,9.75
+760-27-5490,C,NSW,Sydney,Normal,Male,Roll Ups Rainbow Fruit Salad 6 Pack,3.19,8,6899175P,1/20/2019,25.52
+445-30-9252,A,NT,Darwin,Normal,Male,Snaps Pea Original Salted Big Bag,2.75,3,3951224P,1/17/2019,8.25
+786-94-2700,A,NSW,Wollongong,Member,Male,Milky Max Chocolate Dairy Snack 12 pack,0.63,6,2368938P,2/28/2019,3.78
+728-88-7867,C,QLD,Brisbane,Member,Female,Lemon Juice,10,4,5295557P,3/19/2019,40
+183-21-3799,C,SA,Port Lincoln,Normal,Female,Gluten Free Almond Natural Energy Ball,7.14,9,1499588P,2/19/2019,64.26
+268-20-3585,C,NSW,Sydney,Normal,Female,Beef 4 Star Lean Mince,16.25,9,3449773P,2/4/2019,146.25
+735-32-9839,C,TAS,Hobart,Member,Male,Kombucha Elderflower And Lemon 4x330mL,5.15,8,3529205P,1/31/2019,41.2
+258-92-7466,A,NT,Darwin,Normal,Female,Thick & Creamy Mango Passionfruit Yoghurt,1.67,5,1198515P,2/6/2019,8.35
+857-16-3520,A,QLD,Brisbane,Member,Female,Gold Original Blend Coffee,7,7,8048033P,3/28/2019,49
+482-17-1179,A,SA,Port Lincoln,Member,Male,Oil Spray Extra Virgin,1.73,3,4842199P,1/19/2019,5.19
+788-21-5741,A,TAS,Hobart,Normal,Male,Plus Protein Breakfast Cereal,0.67,3,3789487P,2/17/2019,2.01
+821-14-9046,B,QLD,Brisbane,Member,Female,Classic Tomato Pasta Sauce,0.5,6,1268144P,1/18/2019,3
+418-05-0656,B,ACT,Canberra,Normal,Female,Bulk Lamb Cutlets Rr 11x9,33,7,6546890P,2/2/2019,231
+678-79-0726,C,WA,Albany,Member,Female,Black Grapes,11.5,9,6706282P,1/18/2019,103.5
+776-68-1096,B,QLD,Gold Coast,Normal,Male,Assorted Domes,5,3,4858836P,3/18/2019,15
+592-46-1692,C,WA,Fremantle,Member,Female,Premium Australian Fish Fillets Catch Of The Day,46,7,4719476P,1/11/2019,322
+434-35-9162,B,VIC,Geelong,Member,Male,Energy Drink Can,9,4,8737185P,2/4/2019,36
+149-14-0304,C,QLD,Townsville,Member,Female,Nutri-Grain Protein Breakfast Cereal,0.92,8,5103929P,2/6/2019,7.36
+442-44-6497,C,NSW,Newcastle,Member,Male,Three Cheese Pasta Bake,0.71,3,1274613P,1/8/2019,2.13
+174-64-0215,B,QLD,Brisbane,Normal,Male,Honey & Vanilla Camomile Tea Bags,0.2,10,3984609P,3/5/2019,2
+210-74-9613,C,QLD,Townsville,Normal,Male,Free Range Chicken Breast Fillets Small Pack,19.5,4,8227768P,3/16/2019,78
+299-29-0180,B,ACT,Canberra,Member,Female,Traditional Fruit Mince Pies 6 pack,1.76,7,3787889P,3/9/2019,12.32
+247-11-2470,A,QLD,Townsville,Member,Female,Peanut Butter Smooth,1.75,4,181641P,3/1/2019,7
+635-28-5728,A,QLD,Brisbane,Normal,Male,Coffee Ground Unplugged Decaf,4.4,3,3762458P,2/28/2019,13.2
+756-49-0168,A,ACT,Canberra,Member,Male,Calming Blend Tea Bags,0.39,1,4971806P,2/8/2019,0.39
+438-23-1242,B,TAS,Devonport,Normal,Male,Soft Drink Raspberry,0.6,7,5179283P,1/24/2019,4.2
+238-45-6950,B,VIC,Ballarat,Member,Male,Granita Biscuits,1,1,328932P,3/1/2019,1
+607-65-2441,C,ACT,Canberra,Member,Male,Happy Gut White,0.47,10,4727816P,3/10/2019,4.7
+386-27-7606,C,WA,Albany,Member,Female,I'M Free From Special Flakes,1.2,7,4944439P,3/23/2019,8.4
+137-63-5492,C,WA,Fremantle,Normal,Male,Christmas Stocking,2.78,10,8553615P,1/29/2019,27.8
+197-77-7132,B,NT,Alice Springs,Member,Male,Chocolate Coated Almonds,1.05,8,2224938P,1/12/2019,8.4
+805-86-0265,A,QLD,Brisbane,Normal,Male,Organic Beetroot Prepacked,10,9,4975782P,3/20/2019,90
+733-29-1227,C,VIC,Geelong,Normal,Male,Party Mix,1.89,7,5196850P,3/23/2019,13.23
+451-73-2711,C,WA,Albany,Normal,Male,Mirandas Delight Mylk Chocolate Bars 4x40g,7.5,1,4476465P,1/14/2019,7.5
+373-14-0504,A,SA,Adelaide,Member,Female,Traditional Porridge Oats,0.65,2,254971P,2/12/2019,1.3
+546-80-2899,A,NT,Darwin,Member,Male,Peanut Milk Chocolate Bulk Party Pack,1.54,2,4328923P,2/20/2019,3.08
+345-68-9016,C,NSW,Newcastle,Member,Female,Greek Yogurt Greek Style Gourmet 6x125g,5.2,8,4748055P,1/2/2019,41.6
+390-17-5806,C,NSW,Wollongong,Member,Female,Scotch Finger Minis Biscuits 8 pack,2.25,1,2992179P,2/2/2019,2.25
+457-13-1708,B,SA,Mount Gambier,Member,Male,Dairy Free Bom Liquid Breakfast Chocolate Flavoured 3x250mL,3.6,10,5003094P,1/8/2019,36
+664-14-2882,C,QLD,Brisbane,Member,Female,Sugar Free Snackles Double Choc 10 pack,4.32,5,4256709P,1/30/2019,21.6
+487-79-6868,B,ACT,Canberra,Member,Female,Cutrera Italian Chilli Flavoured Extra Virgin Olive Oil,3,9,4322712P,3/26/2019,27
+314-23-4520,C,ACT,Canberra,Member,Male,Up&Go Liquid Breakfast Vanilla No Added Sugar Fridge Pack 12X250mL,5.27,7,3723503P,1/15/2019,36.89
+210-30-7976,B,ACT,Canberra,Member,Female,Extra Fresh Mint Gum Quit Smoking 4mg,0.31,4,2837471P,3/14/2019,1.24
+585-86-8361,A,NSW,Newcastle,Normal,Female,Salted Caramel Protein Nut Bars With 3 Superseeds 5 Pack,3.48,5,2795575P,2/3/2019,17.4
+807-14-7833,A,NT,Darwin,Member,Female,Cheese Twisties Chips 6 pack,3.6,10,7118188P,2/22/2019,36
+775-72-1988,B,NT,Alice Springs,Normal,Male,Almond Cashew & Cranberry Nut Bars,4.27,5,1018362P,1/24/2019,21.35
+288-38-3758,C,WA,Fremantle,Member,Female,Vintage Red Leicester Cheddar,63,3,3089430P,1/25/2019,189
+652-43-6591,A,SA,Mount Gambier,Normal,Female,Toasted Nutty Muesli,0.41,8,3214146P,3/9/2019,3.28
+785-96-0615,B,VIC,Geelong,Member,Female,Layers Boost,3.13,8,5148360P,2/17/2019,25.04
+406-46-7107,A,QLD,Brisbane,Normal,Female,Two Headed Snakes,2.08,6,5556617P,1/11/2019,12.48
+250-17-5703,A,NSW,Sydney,Member,Male,Traditional Rye Bread,0.79,10,5249684P,2/27/2019,7.9
+156-95-3964,A,TAS,Hobart,Normal,Female,Mango Yoghurt,0.45,4,5892512P,3/25/2019,1.8
+842-40-8179,B,SA,Mount Gambier,Member,Female,Sour Cream N Herb Mash,4.5,10,5221379P,2/11/2019,45
+525-09-8450,B,SA,Port Lincoln,Normal,Male,Organic Stir Fry,18.33,10,9573356P,1/31/2019,183.3
+410-67-1709,A,WA,Perth,Member,Female,Shortbread Car Tin,3.33,8,5446266P,1/20/2019,26.64
+587-73-4862,A,NSW,Sydney,Member,Female,Octopus Marinated Lemon Myrtle,47,5,5009385P,3/26/2019,235
+787-87-2010,A,WA,Albany,Member,Male,Espresso Dek Cremoso Intensita 7 Decaffeinated Coffee Capsules,0.78,4,3208722P,1/20/2019,3.12
+593-14-4239,B,QLD,Brisbane,Normal,Female,Dairy Milk Snack Chocolate Block,1.94,8,2351618P,3/5/2019,15.52
+801-88-0346,C,SA,Port Lincoln,Normal,Female,Minis Yogurt Pink Punch Raspberry Strawberry Pot,1.8,3,4514644P,1/5/2019,5.4
+388-76-2555,B,ACT,Canberra,Normal,Male,Strawberry Jam,0.6,6,131188P,2/13/2019,3.6
+711-31-1234,B,NSW,Wollongong,Normal,Female,99% Sugar Free Honey & Ginger Chai Tea,3.5,4,4970950P,3/16/2019,14
+886-54-6089,A,VIC,Melbourne,Normal,Female,Qualita Rossa Coffee Beans,2.5,6,3514489P,1/15/2019,15
+707-32-7409,B,NT,Darwin,Member,Female,Crispy Oat Clusters Maple & Pecan Cereal,1.7,4,2876101P,2/26/2019,6.8
+759-98-4285,C,NT,Alice Springs,Member,Female,Natural Artisan Cracker Rye Rosemary,4.2,7,3815962P,2/27/2019,29.4
+201-63-8275,C,WA,Albany,Member,Female,Black Valley Nespresso Compatible Coffee Capsules,0.45,7,4204035P,2/17/2019,3.15
+471-06-8611,C,SA,Port Lincoln,Normal,Female,Beef Round Steaks,21,1,4997435P,2/6/2019,21
+200-16-5952,C,SA,Port Lincoln,Member,Male,Tasmanian Smoked Salmon,90,2,3729747P,1/17/2019,180
+120-54-2248,B,SA,Adelaide,Normal,Female,Organic Coconut Yoghurt Vanilla Bean,1.7,5,2993466P,1/22/2019,8.5
+102-77-2261,C,VIC,Geelong,Member,Male,Brown Rice Crackers,1.35,7,2146641P,3/5/2019,9.45
+875-31-8302,B,NSW,Wollongong,Normal,Male,Extra Virgin Olive Oil,2.2,1,4484770P,1/3/2019,2.2
+102-06-2002,C,NSW,Wollongong,Member,Male,Probiotic Kefir Yoghurt Strawberry,1.33,5,5312500P,3/20/2019,6.65
+457-94-0464,B,WA,Albany,Member,Male,Quick Oats Porridge,0.9,9,152020P,1/31/2019,8.1
+629-42-4133,C,ACT,Canberra,Normal,Male,Twist & Squeeze Pure Honey,2.14,8,2212484P,2/19/2019,17.12
+534-53-3526,A,VIC,Geelong,Normal,Female,Crackers Caramelise Onion Flat Bread,3.17,4,3814165P,2/11/2019,12.68
+307-04-2070,A,NSW,Wollongong,Member,Female,Strawberry Jam,1.55,1,5935149P,2/5/2019,1.55
+468-99-7231,C,NT,Darwin,Normal,Female,Milo Duo Cereal,1.33,8,8610173P,3/3/2019,10.64
+516-77-6464,C,ACT,Canberra,Member,Female,Fermented Probiotic Milk 5 pack,12.31,5,5484243P,2/24/2019,61.55
+404-91-5964,A,NSW,Newcastle,Normal,Male,White Peppermint Sugar Free Chewing Gum,7.03,7,5727695P,2/4/2019,49.21
+886-77-9084,C,VIC,Ballarat,Normal,Male,Freeze Dried Mountain Grown Instant Coffee,6,8,4824109P,2/19/2019,48
+790-38-4466,C,ACT,Canberra,Normal,Female,Nepalese Chicken Curry,1.52,5,5193976P,1/23/2019,7.6
+704-10-4056,C,VIC,Melbourne,Member,Male,Thins Lemon Delight,0.96,3,5153654P,1/14/2019,2.88
+497-37-6538,A,SA,Adelaide,Normal,Male,5 Flavours Jelly Beans Bag,2.22,7,5319418P,1/17/2019,15.54
+651-96-5970,A,NSW,Newcastle,Normal,Male,Vintage Cheese Block,23.75,1,3274283P,3/3/2019,23.75
+400-80-4065,C,TAS,Launceston,Member,Male,Japanese Style Tonkatsu Sauce,1.8,4,4281466P,2/15/2019,7.2
+744-16-7898,B,NT,Alice Springs,Normal,Female,Veggie Cracker Cauliflower Sweet Potato,7.27,10,3814020P,1/15/2019,72.7
+263-12-5321,A,SA,Adelaide,Member,Male,Thawed Basa Fillet 5Kg,9,7,2399476P,2/27/2019,63
+702-72-0487,A,TAS,Devonport,Normal,Female,Chocolate Party Share Bag 20 pieces,1.67,2,5369981P,2/26/2019,3.34
+605-83-1050,B,SA,Adelaide,Normal,Male,Mascarpone,26,2,1865325P,3/15/2019,52
+443-60-9639,C,TAS,Devonport,Member,Female,Burgundee Creaming Soda Multipack Bottles 375mL,4.3,1,2481271P,1/24/2019,4.3
+864-24-7918,A,QLD,Brisbane,Member,Female,Lamb Mince,15,10,8850053P,2/22/2019,150
+359-94-5395,B,TAS,Devonport,Normal,Male,French Style Triple Cream Cheese,41.67,1,2262926P,3/15/2019,41.67
+401-09-4232,C,NSW,Sydney,Member,Male,Hazelnut Meal,28.57,5,3834297P,2/11/2019,142.85
+751-15-6198,B,QLD,Gold Coast,Normal,Male,Gluten Free Crusty Bread,1.82,6,7482748P,1/12/2019,10.92
+324-41-6833,C,NSW,Sydney,Member,Female,Nut Butter Filled Balls Cinnamon Bun With Cashew Butter Filling,8.75,8,3898620P,3/3/2019,70
+474-33-8305,C,TAS,Devonport,Member,Male,Cashew Satay Simmer Sauce,0.6,7,2395464P,3/23/2019,4.2
+759-29-9521,A,NSW,Sydney,Member,Female,Fit Strawberry Yoghurt Pot,1.18,9,3246743P,3/4/2019,10.62
+831-81-6575,B,SA,Adelaide,Member,Female,Fruits Chewy Lollies Box,2.22,9,1855354P,2/23/2019,19.98
+220-68-6701,A,NSW,Sydney,Normal,Female,Quick Oats Honey Flavoured Sachets 12 Pack,0.79,4,2604189P,3/17/2019,3.16
+618-34-8551,A,SA,Mount Gambier,Normal,Female,Chocolate Coated Pretzels,4.99,2,7135529P,1/16/2019,9.98
+257-60-7754,A,SA,Adelaide,Normal,Female,Cheddar Slices,27.5,4,4145118P,1/8/2019,110
+559-61-5987,B,QLD,Gold Coast,Normal,Female,Espresso Coffee Beans,3.7,1,9184897P,1/14/2019,3.7
+189-55-2313,C,SA,Mount Gambier,Normal,Female,98% Sugar Free Caramel Latte Coffee Sachets 13.5g,0.42,10,4929515P,1/31/2019,4.2
+565-91-4567,B,QLD,Brisbane,Normal,Male,Flip Mint Chocolate Chip Yoghurt,2.5,8,2974971P,3/15/2019,20
+380-60-5336,A,NT,Alice Springs,Normal,Female,Crunchy Oats & Honey Family Pack 12X42G,1.79,10,3843855P,2/24/2019,17.9
+815-04-6282,C,QLD,Brisbane,Member,Female,Raspberries,44,5,134029P,2/8/2019,220
+674-56-6360,A,QLD,Brisbane,Normal,Male,Drink Sugar Free Lemonade 10x375mL,2.91,1,8492689P,3/22/2019,2.91
+778-34-2523,A,SA,Port Lincoln,Member,Female,Mirin Seasoning,1.76,8,3743759P,1/24/2019,14.08
+499-27-7781,B,QLD,Brisbane,Normal,Female,Lemon & Ginger Infusions Tea Bags,0.3,8,5984870P,3/14/2019,2.4
+477-59-2456,C,ACT,Canberra,Normal,Female,Original BBQ Shapes,2,7,2734446P,1/23/2019,14
+832-51-6761,A,NSW,Newcastle,Normal,Male,Sliced Brioche Loaf Choc Chip,1.66,8,4876532P,1/19/2019,13.28
+869-11-3082,B,NT,Darwin,Member,Male,Weet-Bix Blends Multi-Grain Cereal,0.98,4,3214339P,1/27/2019,3.92
+190-59-3964,B,QLD,Townsville,Member,Male,Bullets Milk Chocolate,0.93,5,4332090P,2/3/2019,4.65
+366-43-6862,B,NSW,Sydney,Normal,Male,Pro-B  Milk Drink Fermented,10.98,4,8870550P,3/25/2019,43.92
+186-43-8965,A,SA,Port Lincoln,Member,Female,Tomato Squeezy Paste,1.08,2,5699410P,2/24/2019,2.16
+784-21-9238,C,NSW,Wollongong,Member,Male,Lamb Loin Chops With Sea Salt And Rosemary,28,1,5472685P,2/7/2019,28
+276-75-6884,A,ACT,Canberra,Normal,Female,On The Go Cheese Lavosh & Caramelised Onion,55.57,3,5420025P,3/4/2019,166.71
+109-86-4363,B,VIC,Melbourne,Member,Female,Regular Cream For Cooking,1.32,7,3275832P,2/14/2019,9.24
+569-76-2760,A,SA,Mount Gambier,Member,Female,Chocolate Coated Raspberries,3.21,4,3709852P,1/29/2019,12.84
+222-42-0244,B,NSW,Wollongong,Member,Female,Inca Peru Nespresso Compatible Coffee Capsules,0.45,9,4204024P,1/28/2019,4.05
+760-53-9233,A,NSW,Sydney,Member,Male,Chocolate Flavoured Milk,8.33,3,7024030P,3/26/2019,24.99
+538-22-0304,C,NSW,Sydney,Normal,Male,Rice Bubbles Multigrain Honey Flavour Breakfast Cereal,1.67,10,5292297P,3/24/2019,16.7
+416-17-9926,A,TAS,Launceston,Member,Female,Up&Go Liquid Breakfast Banana Fridge Pack 12X250mL,4.83,10,1491338P,1/1/2019,48.3
+237-44-6163,A,VIC,Ballarat,Normal,Male,Garlic Oil,2.8,8,4689954P,1/24/2019,22.4
+636-17-0325,B,QLD,Townsville,Normal,Male,Gluten Free  Multigrain Wraps,2.2,4,4654010P,2/25/2019,8.8
+343-75-9322,B,TAS,Hobart,Member,Female,Thawed Australian MSC Raw Ocean Tiger Prawns Extra Large,37,8,3918499P,1/9/2019,296
+528-14-9470,A,QLD,Brisbane,Member,Male,Sugar Free Pasito Soft Drink Bottle,,1,4397904P,2/14/2019,
+427-45-9297,B,VIC,Geelong,Member,Female,Rosemary Crackers,1.15,7,1275707P,3/12/2019,8.05
+807-34-3742,A,SA,Mount Gambier,Normal,Male,Multipack Bluey Cocoa & Oat,2.68,1,5288507P,3/26/2019,2.68
+288-62-1085,A,NT,Darwin,Member,Male,Crumbed Fish Bites Salt & Pepper,32.14,5,5528870P,1/9/2019,160.7
+670-71-7306,B,TAS,Devonport,Normal,Male,Minties,2.4,6,1385115P,1/2/2019,14.4
+660-29-7083,C,WA,Perth,Normal,Male,Pork Sirloin Steak,24,10,3035340P,1/15/2019,240
+271-77-8740,C,NSW,Wollongong,Member,Female,Roll Ups Rainbow Fruit Salad 6 Pack,3.19,6,6899175P,1/1/2019,19.14
+497-36-0989,A,VIC,Geelong,Normal,Male,Sesame Corn Thins,1.33,3,4859996P,2/15/2019,3.99
+291-59-1384,B,WA,Albany,Normal,Male,Extra Strong Peppermints,1.67,1,248709P,2/28/2019,1.67
+860-73-6466,A,QLD,Brisbane,Member,Female,Milk Chocolate Snack & Share Bag,2.78,2,5258936P,3/2/2019,5.56
+549-23-9016,C,ACT,Canberra,Member,Female,Thick & Chunky Rustic Passata,0.5,2,3637682P,2/13/2019,1
+896-34-0956,A,WA,Albany,Normal,Male,No Added Hormone Beef Butterflied Texan BBQ,20,1,4256753P,1/26/2019,20
+804-38-3935,A,ACT,Canberra,Member,Male,Apricot & Almond Cream Cheese,32.5,3,6581201P,1/30/2019,97.5
+585-90-0249,A,NT,Alice Springs,Member,Male,Mini Vol Au Vent,5.63,1,5335695P,1/27/2019,5.63
+862-29-5914,C,QLD,Gold Coast,Normal,Female,No Sugar Soft Drink Pineapple,0.8,1,5235238P,1/30/2019,0.8
+845-94-6841,C,ACT,Canberra,Member,Female,White Chocolate & Raspberry Slice 5 Pack,2.61,9,3803679P,1/8/2019,23.49
+125-45-2293,A,SA,Mount Gambier,Normal,Female,Milo Duo Cereal,1.24,6,8610173P,1/19/2019,7.44
+843-73-4724,A,TAS,Launceston,Normal,Male,Tasty Cheddar & Rosemary & Rock Salt Lavosh Crackers,5.41,1,4383739P,1/25/2019,5.41
+409-33-9708,A,VIC,Melbourne,Normal,Female,Diet Coke Soft Drink Multipack Cans 10 x 375mL,2.17,2,1849318P,2/19/2019,4.34
+658-66-3967,C,ACT,Canberra,Normal,Male,Gluten Free Artisan Seeded Cob,2.39,7,3751837P,1/14/2019,16.73
+866-70-2814,B,TAS,Hobart,Normal,Female,Free Range Pork Fillet,35,10,2741485P,2/25/2019,350
+160-22-2687,A,QLD,Townsville,Member,Female,Good Yums Chocolate Flavoured Milk,7.8,5,4187854P,1/23/2019,39
+895-03-6665,B,WA,Albany,Normal,Female,Lactose Free Plain Milk,3.15,9,3762196P,2/16/2019,28.35
+770-42-8960,B,WA,Fremantle,Normal,Male,Spread,1.59,8,6027622P,1/1/2019,12.72
+748-45-2862,A,WA,Perth,Member,Female,Really Good Smooth Peanut Butter,1.97,4,2120218P,3/7/2019,7.88
+234-36-2483,B,SA,Adelaide,Normal,Male,Classic Soft Drink Multipack Cans 30 x 375mL,2.24,6,8464796P,2/15/2019,13.44
+316-66-3011,A,NSW,Sydney,Member,Female,Crinkle Chilli Potato Chips,2.53,9,4382714P,1/23/2019,22.77
+848-95-6252,C,ACT,Canberra,Member,Female,Raspberry Yoghurt,1.18,1,1198297P,2/20/2019,1.18
+840-76-5966,A,SA,Adelaide,Member,Male,Natural Fruit Muesli,0.58,2,2870885P,1/8/2019,1.16
+152-03-4217,B,WA,Perth,Normal,Female,Donut Strawberry & Cream,3.53,9,5578493P,3/17/2019,31.77
+533-66-5566,B,QLD,Brisbane,Normal,Female,Easy Melt Colby Block,15,7,1446242P,1/12/2019,105
+124-31-1458,A,NSW,Sydney,Member,Female,Strawberry Sugar Free Chewing Gum,7.03,3,2887855P,1/8/2019,21.09
+176-78-1170,C,NSW,Newcastle,Member,Male,Beef Quick VSP Porterhouse Steak,4.44,3,3293415P,1/26/2019,13.32
+361-59-0574,B,VIC,Ballarat,Member,Male,Peanut Butter With Real Milk Chocolate 5 Bars,3.29,8,3618280P,3/15/2019,26.32
+101-81-4070,C,WA,Perth,Member,Female,Plus NSA Chocolate Flavoured Milk,7,2,3900642P,1/17/2019,14
+631-34-1880,C,VIC,Geelong,Member,Male,Greek Style Coffee,2.3,3,204328P,1/8/2019,6.9
+852-82-2749,A,WA,Albany,Normal,Male,Nut Bar Choc Coated,1.29,4,2157580P,1/6/2019,5.16
+873-14-6353,A,WA,Fremantle,Member,Male,Thin Sea Salt & Balsamic Vinegar Gluten Free Rice Cakes,1.28,7,5925768P,2/16/2019,8.96
+584-66-4073,C,NSW,Sydney,Normal,Male,Half Coated Chocolate Tiny Teddy Biscuits,1.25,1,6027746P,3/13/2019,1.25
+544-55-9589,B,NSW,Wollongong,Member,Female,Creamy Mushroom Pasta Sauce,0.61,10,1274486P,1/28/2019,6.1
+166-19-2553,A,QLD,Brisbane,Member,Male,Jumbo Cashews Salted,25,6,2522357P,1/18/2019,150
+737-88-5876,A,NSW,Newcastle,Member,Male,Light Rye Bread,0.65,4,5072836P,3/19/2019,2.6
+154-87-7367,C,SA,Mount Gambier,Normal,Male,Weet Bix Breakfast Cereal,0.73,8,2001784P,3/15/2019,5.84
+885-56-0389,C,WA,Albany,Member,Male,Mango Chutney,1.96,1,6875009P,2/12/2019,1.96
+608-05-3804,B,ACT,Canberra,Member,Male,Beef Ribs,13,1,2891502P,2/25/2019,13
+448-61-3783,A,VIC,Geelong,Normal,Female,Protein Plus Natural Peanut Butter With Five Seeds,1.39,8,3212399P,3/21/2019,11.12
+761-49-0439,B,QLD,Townsville,Member,Female,Drink Sugar Free Lemonade 10x375mL,2.91,8,8492689P,1/19/2019,23.28
+490-95-0021,B,TAS,Hobart,Member,Female,English Breakfast Leaf Tea,6,10,344597P,1/8/2019,60
+115-38-7388,C,SA,Adelaide,Member,Female,Old Gold Jamaica Rum N Raisin Block,2.78,8,2350557P,3/30/2019,22.24
+311-13-6971,B,TAS,Devonport,Member,Male,Classic Olive Oil,1,10,5489768P,2/20/2019,10
+291-55-6563,A,TAS,Hobart,Member,Female,Macadamia Halves,57.27,6,5619900P,3/30/2019,343.62
+548-48-3156,A,SA,Mount Gambier,Member,Female,Napolitana Pasta Sauce,0.42,2,47230P,3/19/2019,0.84
+460-93-5834,A,TAS,Hobart,Normal,Male,Mountain Grown Ground Coffee,4.8,7,3984380P,1/13/2019,33.6
+325-89-4209,A,NT,Alice Springs,Member,Male,Strong & Bitey Vintage Cheese Slices 15x250g,28.08,1,9759365P,2/5/2019,28.08
+884-80-6021,A,NT,Alice Springs,Member,Female,Lab Santo Coffee Beans,5.25,10,3984529P,3/23/2019,52.5
+137-74-8729,C,WA,Fremantle,Normal,Female,Classic Active Balance Maple & Almond Multigrain Flakes Cereal,1.13,8,5235533P,3/13/2019,9.04
+880-46-5796,A,SA,Adelaide,Member,Male,Flakes Almond,29,10,2749421P,3/17/2019,290
+389-70-2397,C,ACT,Canberra,Normal,Female,ION4 Lemon Lime Sports Drink Sipper Cap,6.08,5,1725993P,2/21/2019,30.4
+114-35-5271,B,QLD,Townsville,Normal,Female,Classic Yoghurt 6x160g,0.63,8,3619501P,2/7/2019,5.04
+607-76-6216,C,QLD,Brisbane,Member,Female,No Added Hormone Beef Scotch Steak With Truffle Butter,45.28,5,3582478P,3/2/2019,226.4
+715-20-1673,B,QLD,Gold Coast,Normal,Male,Caramel Flavor Infused Instant Coffee,9.47,5,9928848P,3/6/2019,47.35
+811-35-1094,B,VIC,Ballarat,Member,Male,Pork Sirloin Steak,22,6,3781703P,2/6/2019,132
+699-88-1972,B,TAS,Hobart,Normal,Male,Selection Pack Crackers,3.79,8,3815521P,1/28/2019,30.32
+781-84-8059,C,WA,Albany,Normal,Male,Blue Mountain Style Medium Roast Ground Coffee,2.2,7,344076P,1/18/2019,15.4
+409-49-6995,C,VIC,Ballarat,Member,Female,Milk Chocolate Coated Fruit & Nut,1.61,6,9893062P,2/5/2019,9.66
+725-54-0677,C,SA,Port Lincoln,Member,Male,Tea Bags 100 pack,1.85,7,496507P,3/2/2019,12.95
+146-09-5432,A,WA,Perth,Member,Male,Tasty Cheese Block,22.8,9,9182177P,2/9/2019,205.2
+377-79-7592,C,NSW,Sydney,Member,Female,Light Cruskits,2.8,9,9611783P,1/14/2019,25.2
+509-10-0516,B,WA,Perth,Normal,Male,Garlic loose,29,4,6105715P,2/9/2019,116
+595-94-9924,A,NSW,Newcastle,Member,Female,Honey Cinnamon Wings,19,5,5095616P,3/26/2019,95
+865-41-9075,A,ACT,Canberra,Normal,Male,Earl Grey Tea Bags 50 pack,0.15,7,6822217P,1/28/2019,1.05
+545-07-8534,C,ACT,Canberra,Normal,Female,Organic White Mushroom,30.56,2,3448293P,2/14/2019,61.12
+118-62-1812,C,TAS,Hobart,Member,Female,Greek Style Yoghurt & Blueberry Nut Bars 5 pack,4.06,4,1905248P,3/24/2019,16.24
+450-42-3339,C,NT,Darwin,Normal,Male,Raw & Unfiltered Honey UD Pouch,2.23,10,5487296P,2/9/2019,22.3
+851-98-3555,B,NT,Darwin,Normal,Female,Cheese Spring Onion & Chive,18.42,5,7781283P,3/24/2019,92.1
+186-71-5196,A,WA,Perth,Member,Female,Spice Chai Tea,2.92,2,7490189P,3/27/2019,5.84
+624-01-8356,B,ACT,Canberra,Normal,Female,Tradicional Olive Oil,1.5,10,134608P,1/27/2019,15
+313-66-9943,B,WA,Perth,Member,Female,Kids Yoghurt Banana,1.71,3,4348385P,3/27/2019,5.13
+151-27-8496,C,QLD,Townsville,Normal,Female,RSPCA Approved Chicken Portions With BBQ Rub,8.5,4,3024876P,1/19/2019,34
+453-33-6436,A,VIC,Geelong,Normal,Female,Honey Soy & Garlic Stir Fry Meal Base Pouch,2,8,3189504P,2/7/2019,16
+522-57-8364,A,NT,Alice Springs,Member,Male,Marinated Danish Fetta,20,8,2466450P,1/31/2019,160
+459-45-2396,A,SA,Adelaide,Member,Female,Vanilla Chai Tea Bags,0.2,3,3984664P,2/25/2019,0.6
+717-96-4189,C,TAS,Hobart,Normal,Female,White Bread Gluten Free,1.45,6,5749712P,2/2/2019,8.7
+722-13-2115,C,ACT,Canberra,Member,Male,Sourdough Crackers Pink Salt & Garlic,4.09,1,5484276P,3/14/2019,4.09
+749-81-8133,A,SA,Port Lincoln,Normal,Female,Jatz Cracked Pepper Biscuits,1.56,4,8646793P,3/11/2019,6.24
+777-67-2495,B,WA,Perth,Normal,Male,Olive Oil Light & Mild,0.9,3,5847020P,2/22/2019,2.7
+636-98-3364,B,TAS,Launceston,Member,Female,Hot Chilli Sauce,0.88,3,8830657P,3/2/2019,2.64
+246-55-6923,C,WA,Fremantle,Member,Female,Full Cream Milk,2.07,9,6167825P,3/10/2019,18.63
+181-82-6255,B,QLD,Brisbane,Normal,Female,Napolitana Pasta Sauce,0.42,6,47230P,2/8/2019,2.52
+838-02-1821,C,ACT,Canberra,Member,Female,Smooth Peanut Butter,0.66,2,3835915P,2/22/2019,1.32
+887-42-0517,C,VIC,Ballarat,Normal,Female,Hazelnut Chocolate Spread 12 pack,2.75,7,2117111P,1/10/2019,19.25
+457-12-0244,C,ACT,Canberra,Member,Female,English Breakfast Extra Strong Tea Bags 80 pack,0.08,6,2236788P,3/14/2019,0.48
+226-34-0034,B,SA,Adelaide,Normal,Female,Passage To India Butter Chicken Simmer Sauce Pouch,1.52,4,9781499P,1/10/2019,6.08
+321-49-7382,B,NT,Darwin,Member,Male,Sharepack Tomato & Sweet Basil Mini Rice Cakes,5.25,1,3757935P,2/15/2019,5.25
+397-25-8725,A,NSW,Sydney,Member,Female,Free Range Pork Shoulder Roast Boneless,12,9,2741907P,1/13/2019,108
+431-66-2305,B,WA,Albany,Normal,Female,Italian Espresso Style Coffee Bags 160g,0.24,9,4965756P,2/15/2019,2.16
+825-94-5922,B,WA,Albany,Normal,Male,Sunflower Oil,0.8,2,4615970P,3/2/2019,1.6
+641-62-7288,B,TAS,Devonport,Normal,Male,Espresso Chocolate Capsules,0.7,6,4823671P,3/24/2019,4.2
+756-93-1854,C,VIC,Melbourne,Member,Female,Taro Bubble Tea,1.6,2,4995531P,2/2/2019,3.2
+243-55-8457,A,WA,Perth,Normal,Female,Roses Tin,2.18,10,5207436P,2/27/2019,21.8
+458-10-8612,C,QLD,Gold Coast,Normal,Male,Espresso Nespresso Compatible Coffee Capsules,0.45,7,3984336P,1/20/2019,3.15
+501-61-1753,B,SA,Adelaide,Normal,Female,Indulgent Section Gift Box,4.35,6,5446313P,1/3/2019,26.1
+235-06-8510,C,WA,Albany,Member,Male,Tomatoes Kumato,11,3,8933048P,1/24/2019,33
+433-08-7822,C,TAS,Hobart,Normal,Female,Beef 3 Star Regular Mince,14,7,8850188P,1/5/2019,98
+361-85-2571,A,WA,Fremantle,Normal,Female,Chocolate Puffed Rice Bars,2.5,5,3838491P,3/30/2019,12.5
+131-70-8179,A,QLD,Brisbane,Member,Female,No Added Sugar,6.4,3,5082818P,2/17/2019,19.2
+500-02-2261,C,WA,Perth,Normal,Female,Perinaise Hot Peri-Peri Mayonnaise Sauce,1.7,6,1727638P,3/21/2019,10.2
+720-72-2436,A,QLD,Gold Coast,Normal,Male,Organic Free Range Large Eggs 6 pack,2.17,4,8460354P,3/2/2019,8.68
+702-83-5291,C,NT,Darwin,Member,Male,Natures Kitchen Vegan Chocolate Cupcake,3.08,9,4222300P,3/27/2019,27.72
+809-69-9497,A,QLD,Brisbane,Normal,Female,Organic Bolognese Pasta Sauce,0.46,10,3664834P,1/19/2019,4.6
+449-16-6770,A,NSW,Newcastle,Normal,Male,Cup Mushrooms Prepacked,15,5,4829838P,2/19/2019,75
+333-23-2632,A,ACT,Canberra,Member,Male,Sunset Tonic,5.53,7,5463312P,3/28/2019,38.71
+489-82-1237,A,SA,Port Lincoln,Normal,Female,Cheerios Low Sugar,1.37,7,5297585P,1/5/2019,9.59
+859-97-6048,C,NT,Alice Springs,Member,Male,Nerds Rainbow Concession 5oz,1.76,2,2872916P,3/26/2019,3.52
+676-10-2200,B,ACT,Canberra,Member,Male,50% Less Sugar Cereal Chocolate Bombs,1.51,1,5296560P,2/3/2019,1.51
+373-88-1424,C,SA,Port Lincoln,Member,Male,Choice Beef Rump Steak,26.09,5,3855457P,2/6/2019,130.45
+365-16-4334,B,VIC,Geelong,Normal,Female,Le Snak Cheesy Vegemite Dip & Crackers,3.79,8,5578631P,2/24/2019,30.32
+503-21-4385,B,ACT,Canberra,Member,Male,Dairy Organic Haloumi Cheese,35,3,4998880P,2/21/2019,105
+305-89-2768,B,SA,Mount Gambier,Member,Female,Bhuja Nut Mix,32.14,3,9272940P,1/9/2019,96.42
+574-80-1489,B,NT,Alice Springs,Member,Female,Lemon Flavour Sachet,0.25,4,5011740P,2/25/2019,1
+784-08-0310,C,WA,Albany,Member,Female,Sensations Recipe Base Garlic Leban Koftas,6.25,4,5218590P,1/13/2019,25
+200-40-6154,B,NSW,Newcastle,Member,Male,Velvet Cake Bar 4 Pack,5,6,4461763P,2/9/2019,30
+846-10-0341,A,TAS,Devonport,Normal,Female,Skim Cappuccino Coffee Sachets,0.7,7,4976854P,1/6/2019,4.9
+577-34-7579,C,ACT,Canberra,Member,Male,Tasmanian Salmon Portions With Lemon & Herb Crumb,35,9,3777637P,1/10/2019,315
+430-02-3888,B,TAS,Devonport,Normal,Male,Vintage Cheese Block,2,6,6995102P,2/7/2019,12
+867-47-1948,C,SA,Mount Gambier,Normal,Female,Farmers Origins India Espresso Capsules,0.52,10,3890640P,1/9/2019,5.2
+384-59-6655,A,WA,Perth,Member,Female,Ready To Roast Porchetta With Fennel & Orange Seasoning,20,9,4204396P,2/19/2019,180
+256-58-3609,C,QLD,Gold Coast,Member,Male,Light Smooth Peanut Butter,1.06,1,9059250P,3/18/2019,1.06
+324-92-3863,A,QLD,Brisbane,Member,Male,Plus Fibre Cereal,1.06,2,8930221P,2/5/2019,2.12
+593-08-5916,A,ACT,Canberra,Normal,Female,Chocolate Bar with Nougat & Caramel,3.91,1,4382587P,3/19/2019,3.91
+364-34-2972,C,SA,Mount Gambier,Member,Male,Chocolate Flavoured Milk,4.33,3,1599458P,3/30/2019,12.99
+794-42-3736,B,ACT,Canberra,Normal,Male,Pine Nuts,49.38,2,3017531P,1/26/2019,98.76
+172-42-8274,B,QLD,Gold Coast,Normal,Female,Italian White Wine Vinegar,0.5,2,7195247P,3/2/2019,1
+558-60-5016,A,WA,Fremantle,Normal,Female,Fruit Adventure,8.33,9,4147204P,3/4/2019,74.97
+195-06-0432,A,ACT,Canberra,Member,Male,Smooshed Wholefood Balls Berry Cashew & Cacao,3.26,3,3844359P,1/13/2019,9.78
+605-03-2706,A,ACT,Canberra,Normal,Female,RSPCA Approved Chicken Burgers Plain Crumb,10,3,2904025P,3/25/2019,30
+214-30-2776,B,VIC,Melbourne,Member,Female,Classics Strong Cappuccino Sachets,0.5,5,4405649P,3/11/2019,2.5
+746-04-1077,B,TAS,Hobart,Member,Female,Milk Chocolate Coated Almonds,1.79,10,9893073P,1/1/2019,17.9
+448-34-8700,B,WA,Fremantle,Member,Male,Chipotle BBQ Sauce,1.8,7,4279941P,2/10/2019,12.6
+452-04-8808,B,WA,Fremantle,Normal,Male,Thawed Squid Tubes,19,7,5936593P,1/26/2019,133
+531-56-4728,A,TAS,Devonport,Normal,Male,Soft Drink Cola 12x300mL,2.22,3,5197911P,2/11/2019,6.66
+744-82-9138,C,TAS,Devonport,Normal,Male,Nutritious Snack Cashew Sesame,4,2,3893682P,2/7/2019,8
+883-69-1285,B,WA,Perth,Member,Male,Plus Muesli Flakes,1,2,8930367P,3/6/2019,2
+221-25-5073,A,VIC,Melbourne,Normal,Female,Pineapple Drink,0.6,4,5179181P,3/4/2019,2.4
+518-71-6847,B,TAS,Launceston,Member,Male,Festive Chocolate Selection,,6,3034698P,2/26/2019,
+156-20-0370,B,NSW,Newcastle,Normal,Female,99% Sugar Free Chai Latte,2.75,1,4963397P,3/10/2019,2.75
+151-33-7434,B,NSW,Wollongong,Normal,Female,Weet-Bix Breakfast Cereal,0.42,1,9393015P,2/4/2019,0.42
+728-47-9078,C,SA,Port Lincoln,Member,Male,Super Berry Cranberry Blueberry & Goji Muesli,1.3,4,2496461P,1/19/2019,5.2
+809-46-1866,A,VIC,Ballarat,Normal,Male,Snacks High Protein Bar Salted Caramel & Chocolate Crunch,6,4,2289321P,1/23/2019,24
+139-32-4183,A,TAS,Launceston,Member,Female,Smooshed Wholefood Salted Caramel Balls,5.07,9,4514407P,3/14/2019,45.63
+148-41-7930,C,VIC,Geelong,Normal,Male,Sea Salt Potato Chips,2.43,7,2670048P,1/23/2019,17.01
+189-40-5216,C,WA,Albany,Normal,Male,All-Bran Wheat Flakes Breakfast Cereal,1.82,7,8491948P,1/9/2019,12.74
+374-38-5555,B,NSW,Newcastle,Normal,Female,Creamy Chicken & Mushroom Simmer Sauce,0.92,5,1731089P,2/7/2019,4.6
+764-44-8999,B,NSW,Newcastle,Normal,Female,Multipack 10 Pack,2.32,2,4382361P,2/18/2019,4.64
+552-44-5977,B,SA,Mount Gambier,Member,Male,Stir Through Sundried Tomato & Roasted Garlic Pasta Sauce,1.37,8,7311916P,1/3/2019,10.96
+267-62-7380,C,NSW,Newcastle,Member,Male,RSPCA Approved Free Range Chicken Breast Fillet Small Pack,17,10,3228730P,3/29/2019,170
+430-53-4718,B,TAS,Devonport,Member,Male,Organic Block Chocolate & Butterscotch,5,8,4662095P,1/28/2019,40
+886-18-2897,A,NSW,Wollongong,Normal,Female,Classic Dark Roast Instant Coffee,9,5,5018874P,3/22/2019,45
+602-16-6955,B,SA,Port Lincoln,Normal,Female,Mint Collection Bag,7.5,10,5310843P,1/24/2019,75
+745-74-0715,A,WA,Fremantle,Normal,Male,Free Range Chicken Breast Fillets Skin Off,20,2,6140080P,3/10/2019,40
+690-01-6631,B,VIC,Geelong,Normal,Male,Gluten Free Coco Pops Breakfast Cereal,1.44,10,4308813P,2/22/2019,14.4
+652-49-6720,C,NSW,Sydney,Member,Female,Joyful Crunchy Nut Bar Almond & Salted Dark Chocolate 170g,2.35,1,5446368P,2/18/2019,2.35
+233-67-5758,C,SA,Mount Gambier,Normal,Male,Freeze Dried Classic Instant Coffee,11,1,4737401P,1/29/2019,11
+303-96-2227,B,QLD,Brisbane,Normal,Female,Lower Carb Sunflower & Linseed Bread,1.02,10,4406131P,3/2/2019,10.2
+727-02-1313,A,ACT,Canberra,Member,Male,Coffee Expressi/Caffitaly Compatible Intense Capsules,0.41,1,3224875P,2/9/2019,0.41
+347-56-2442,A,WA,Fremantle,Normal,Male,Salt And Vinegar Peanuts,0.86,1,3582300P,2/22/2019,0.86
+849-09-3807,A,SA,Mount Gambier,Member,Female,Honey & Pistachio Cream Cheese,3.25,7,3029767P,2/18/2019,22.75

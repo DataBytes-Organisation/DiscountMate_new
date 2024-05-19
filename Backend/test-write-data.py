@@ -1,4 +1,4 @@
-from utils import DiscountMateDB
+from Backend.utils import DiscountMateDB
 import json
 import os
 
