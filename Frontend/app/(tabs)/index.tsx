@@ -1,70 +1,133 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const { width: viewportWidth } = Dimensions.get('window');
+
+const data = [
+  { key: '1', title: 'test item1', text: 'Description of Item 1' },
+  { key: '2', title: 'test item', text: 'Description of Item 2' },
+  { key: '3', title: 'test item1', text: 'Description of Item 3' },
+  { key: '4', title: 'test item1', text: 'Description of Item 4' },
+  { key: '5', title: 'test item1', text: 'Description of Item 5' },
+  { key: '6', title: 'test item1', text: 'Description of Item 6' },
+  { key: '7', title: 'test item1', text: 'Description of Item 7' },
+  { key: '8', title: 'test item1', text: 'Description of Item 8' },
+];
+
+const renderItem = ({ item }) => (
+  <View style={styles.carouselItem}>
+    <Text style={styles.carouselTitle}>{item.title}</Text>
+    <Text style={styles.carouselText}>{item.text}</Text>
+  </View>
+);
 
 export default function HomeScreen() {
+  const flatListRef = useRef(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+
+  const handleNext = () => {
+    const newOffset = scrollOffset + viewportWidth * 0.3 + 10;
+    flatListRef.current?.scrollToOffset({
+      offset: newOffset,
+      animated: true,
+    });
+    setScrollOffset(newOffset);
+  };
+
+  const handlePrev = () => {
+    const newOffset = Math.max(scrollOffset - (viewportWidth * 0.3 + 10), 0);
+    flatListRef.current?.scrollToOffset({
+      offset: newOffset,
+      animated: true,
+    });
+    setScrollOffset(newOffset);
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <View style={styles.container}>
+      <Text style={styles.title}>Dashboard</Text>
+      <View style={styles.carouselContainer}>
+        <TouchableOpacity style={[styles.arrowButton, styles.arrowButtonLeft]} onPress={handlePrev}>
+          <Text style={styles.arrowText}>‹</Text>
+        </TouchableOpacity>
+        <FlatList
+          ref={flatListRef}
+          data={data}
+          renderItem={renderItem}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={item => item.key}
+          contentContainerStyle={styles.carouselContentContainer}
+          initialNumToRender={1}
+          onScroll={(event) => setScrollOffset(event.nativeEvent.contentOffset.x)}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        <TouchableOpacity style={[styles.arrowButton, styles.arrowButtonRight]} onPress={handleNext}>
+          <Text style={styles.arrowText}>›</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  carouselContainer: {
+    position: 'relative',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  carouselContentContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  carouselItem: {
+    width: viewportWidth * 0.3,
+    backgroundColor: 'lightgray',
+    borderRadius: 5,
+    height: 150,
+    padding: 20,
+    marginHorizontal: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  carouselTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  carouselText: {
+    fontSize: 16,
+  },
+  arrowButton: {
     position: 'absolute',
+    top: '50%',
+    padding: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 20,
+    zIndex: 1,
+  },
+  arrowButtonLeft: {
+    left: 10,
+    transform: [{ translateY: -20 }],
+  },
+  arrowButtonRight: {
+    right: 10,
+    transform: [{ translateY: -20 }],
+  },
+  arrowText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#000',
   },
 });

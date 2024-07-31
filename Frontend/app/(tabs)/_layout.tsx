@@ -1,15 +1,17 @@
 import { Tabs, useNavigation } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+const { width: viewportWidth } = Dimensions.get('window');
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(viewportWidth < 768);
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -25,6 +27,14 @@ export default function TabLayout() {
             placeholder="Search..."
             placeholderTextColor="#888"
           />
+        </View>
+        <View style={styles.headerIcons}>
+          <TouchableOpacity onPress={() => navigation.navigate('notifications')} style={styles.iconButton}>
+            <TabBarIcon name="notifications-outline" color="#000" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('profile')} style={styles.iconButton}>
+            <TabBarIcon name="person-outline" color="#000" />
+          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.mainContent}>
@@ -62,7 +72,7 @@ export default function TabLayout() {
             screenOptions={{
               tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
               headerShown: false,
-              tabBarStyle: { display: 'none' }, // Hid the bottom tab bar. This tab bar should be used for mobile versions of the app. 
+              tabBarStyle: { display: 'none' }, // Hide the bottom tab bar. This tab bar should be used for mobile versions of the app. 
             }}
           >
             <Tabs.Screen
@@ -134,41 +144,46 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginRight: 20,
   },
   searchContainer: {
     flex: 1,
     alignItems: 'center',
   },
   searchBox: {
-    width: '60%',
+    width: '80%',
     height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
   },
+  headerIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   mainContent: {
     flex: 1,
     flexDirection: 'row',
   },
   sidebar: {
-    width: 200,
+    width: 150,
     paddingVertical: 20,
-    paddingHorizontal: 10,
+    paddingHorizontal: 13,
     backgroundColor: '#f8f8f8',
     borderRightWidth: 1,
     borderRightColor: '#ddd',
     position: 'relative',
   },
   sidebarCollapsed: {
-    width: 50,
+    width: 1,
   },
   toggleButton: {
     position: 'absolute',
     top: 10,
+    left: 10,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
@@ -178,7 +193,7 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   sidebarButtons: {
-    marginTop: 20,
+    marginTop: 30,
     flexDirection: 'column',
     gap: 10,
   },
