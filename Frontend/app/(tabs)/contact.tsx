@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+//Main Contact us page displaying the contact us info
 
 export default function Contact() {
   return (

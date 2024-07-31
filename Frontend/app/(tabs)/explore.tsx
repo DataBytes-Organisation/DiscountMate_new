@@ -6,6 +6,7 @@ import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+//Main Explore page displaying the product explore items (should change function name)
 
 export default function TabTwoScreen() {
   return (

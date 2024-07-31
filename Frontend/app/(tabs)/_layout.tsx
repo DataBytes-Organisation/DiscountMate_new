@@ -6,6 +6,9 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+//Main Layout page displaying the top header and side taskbar for each page
+
+
 const { width: viewportWidth } = Dimensions.get('window');
 
 export default function TabLayout() {

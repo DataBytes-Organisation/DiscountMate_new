@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 
 const { width: viewportWidth } = Dimensions.get('window');
+//Main Home  page displaying the main dashboard 
 
 const data = [
   { key: '1', title: 'test item1', text: 'Description of Item 1' },
