@@ -1,13 +1,9 @@
 import { Tabs, useNavigation } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
-
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Button } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
-//Main Layout page displaying the top header and side taskbar for each page
-
 
 const { width: viewportWidth } = Dimensions.get('window');
 
@@ -15,9 +11,14 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(viewportWidth < 768);
+  const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
+
+  const toggleNotifications = () => {
+    setIsNotificationsVisible(!isNotificationsVisible);
   };
 
   return (
@@ -32,7 +33,7 @@ export default function TabLayout() {
           />
         </View>
         <View style={styles.headerIcons}>
-          <TouchableOpacity onPress={() => navigation.navigate('notifications')} style={styles.iconButton}>
+          <TouchableOpacity onPress={toggleNotifications} style={styles.iconButton}>
             <TabBarIcon name="notifications-outline" color="#000" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('profile')} style={styles.iconButton}>
@@ -40,6 +41,13 @@ export default function TabLayout() {
           </TouchableOpacity>
         </View>
       </View>
+      {isNotificationsVisible && (
+        <View style={styles.notificationsPanel}>
+          <Text style={styles.notificationsTitle}>Notifications</Text>
+          {/* Section where we can fetch and print  notifications from backend  */}
+          <Text style={styles.notificationItem}>No new notifications</Text>
+        </View> 
+      )}
       <View style={styles.mainContent}>
         <View style={[styles.sidebar, isSidebarCollapsed ? styles.sidebarCollapsed : null]}>
           <TouchableOpacity onPress={toggleSidebar} style={styles.toggleButton}>
@@ -163,9 +171,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   headerIcons: {
+    marginRight:10,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 20,
+  },
+  notificationsPanel: {
+    position: 'absolute',
+    top: 60,
+    right: 10,
+    width: 250,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    zIndex: 1000,
+  },
+  notificationsTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  notificationItem: {
+    fontSize: 14,
+    paddingVertical: 5,
   },
   mainContent: {
     flex: 1,
@@ -181,7 +211,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   sidebarCollapsed: {
-    width: 1,
+    width: 20,
   },
   toggleButton: {
     position: 'absolute',
@@ -196,9 +226,9 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   sidebarButtons: {
-    marginTop: 30,
+    marginTop: 35,
     flexDirection: 'column',
-    gap: 10,
+    gap: 20,
   },
   iconButton: {
     flexDirection: 'row',

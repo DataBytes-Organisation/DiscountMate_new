@@ -46,7 +46,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Dashboard</Text>
+      <Text style={styles.title}>Welcome to DiscountMate</Text>
       <View style={styles.carouselContainer}>
         <TouchableOpacity style={[styles.arrowButton, styles.arrowButtonLeft]} onPress={handlePrev}>
           <Text style={styles.arrowText}>‹</Text>
