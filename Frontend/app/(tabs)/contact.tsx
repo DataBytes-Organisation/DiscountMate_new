@@ -1,18 +1,41 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-//color schemes and design needs work. Soon as color schemes and other design aspects are agreed upon I will edit the implementation for this. 
-// Main Contact us page displaying the contact us info
+
 export default function Contact() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
   const handleSubmit = () => {
-    // Just refresh the page for now (in reality, you would make a POST request here : need to contact backend team to carry out this implementation)
-    Alert.alert('Feedback Submitted', 'Thank you for your feedback!', [{ text: 'OK' }]);
-    setName('');
-    setEmail('');
-    setMessage('');
+    // API endpoint where the form data will be sent
+    const url = 'http://localhost:5000/contact';
+
+    // Prepare the data to be sent in the POST request
+    const data = {
+      name: name,
+      email: email,
+      message: message,
+    };
+
+    // Send the data using fetch API
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        Alert.alert('Feedback Submitted', 'Thank you for your feedback!', [{ text: 'OK' }]);
+        setName('');
+        setEmail('');
+        setMessage('');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        Alert.alert('Error', 'Something went wrong. Please try again later.', [{ text: 'OK' }]);
+      });
   };
 
   return (
