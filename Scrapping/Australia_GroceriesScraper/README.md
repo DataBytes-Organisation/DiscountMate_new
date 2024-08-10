@@ -1,6 +1,6 @@
 ## Overview
 
-* Groceries are too goddamn expensive so this is something to make cross-checking easier. 
+* Groceries are too expensive so this is something to make cross-checking easier. 
 
 * These are basic web-scraping scripts for Australian supermarket websites Coles and Woolworths.
 
