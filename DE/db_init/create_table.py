@@ -69,7 +69,7 @@ def create_database(db_password="password",db_user="postgres",db_host="postgres"
     Base = declarative_base()
 
     class User(Base):
-        __tablename__ = 'USER'
+        __tablename__ = 'user'
         user_id = Column(Integer, primary_key=True, autoincrement=True)
         account_user_name = Column(String(255), nullable=False)
         date_of_birth = Column(Date)
@@ -84,7 +84,7 @@ def create_database(db_password="password",db_user="postgres",db_host="postgres"
         latitude = Column(DECIMAL(10, 7))
 
     class Store(Base):
-        __tablename__ = 'STORE'
+        __tablename__ = 'store'
         store_id = Column(Integer, primary_key=True, autoincrement=True)
         store_name = Column(String(255), nullable=False)
         store_chain = Column(String(255))
@@ -96,7 +96,7 @@ def create_database(db_password="password",db_user="postgres",db_host="postgres"
         latitude = Column(DECIMAL(10, 7))
 
     class Product(Base):
-        __tablename__ = 'PRODUCT'
+        __tablename__ = 'product'
         product_id = Column(Integer, primary_key=True, autoincrement=True)
         product_code = Column(String(255), nullable=False)
         product_name = Column(String(255), nullable=False)
@@ -110,25 +110,25 @@ def create_database(db_password="password",db_user="postgres",db_host="postgres"
         link_image = Column(String(255))
 
     class ProductPricing(Base):
-        __tablename__ = 'PRODUCT_PRICING'
+        __tablename__ = 'product_pricing'
         product_pricing_id = Column(Integer, primary_key=True, autoincrement=True)
-        product_id = Column(Integer, ForeignKey('PRODUCT.product_id'), nullable=False)
+        product_id = Column(Integer, ForeignKey('product.product_id'), nullable=False)
         date = Column(Date, nullable=False)
         price = Column(DECIMAL(10, 2), nullable=False)
 
     class Wish(Base):
-        __tablename__ = 'WISH'
+        __tablename__ = 'wish'
         wish_id = Column(Integer, primary_key=True, autoincrement=True)
-        product_id = Column(Integer, ForeignKey('PRODUCT.product_id'), nullable=False)
-        store_id = Column(Integer, ForeignKey('STORE.store_id'), nullable=False)
+        product_id = Column(Integer, ForeignKey('product.product_id'), nullable=False)
+        store_id = Column(Integer, ForeignKey('store.store_id'), nullable=False)
         quantity = Column(Integer, nullable=False)
         total_price = Column(DECIMAL(10, 2), nullable=False)
 
     class Wishlist(Base):
-        __tablename__ = 'WISHLIST'
+        __tablename__ = 'wishlist'
         wishlist_id = Column(Integer, primary_key=True, autoincrement=True)
-        user_id = Column(Integer, ForeignKey('USER.user_id'), nullable=False)
-        wish_id = Column(Integer, ForeignKey('WISH.wish_id'), nullable=False)
+        user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
+        wish_id = Column(Integer, ForeignKey('wish.wish_id'), nullable=False)
         date_created = Column(Date)
 
     # Encode the password for the connection string
@@ -139,10 +139,6 @@ def create_database(db_password="password",db_user="postgres",db_host="postgres"
 
     # Create all tables
     Base.metadata.create_all(engine)
-
-    # Create a session
-    Session = sessionmaker(bind=engine)
-    session = Session()
 
 
 if __name__ == "__main__":
