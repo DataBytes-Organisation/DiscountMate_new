@@ -1,3 +1,5 @@
 express@^4.17.1
-bcryptjs@^2.4.3
 body-parser@^1.19.0
+cors@^2.8.5
+nodemailer@^6.6.3
+bcryptjs@^2.4.3
