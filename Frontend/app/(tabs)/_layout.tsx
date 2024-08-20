@@ -1,11 +1,14 @@
-import { Tabs, useNavigation } from 'expo-router';
+import { Tabs, useNavigation, Link } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Button } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 const { width: viewportWidth } = Dimensions.get('window');
+
+// Temporary variable for testing
+const isUserLoggedIn = false; // Set this to false to test login/signup scenario
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -21,6 +24,12 @@ export default function TabLayout() {
     setIsNotificationsVisible(!isNotificationsVisible);
   };
 
+  const handleSignOut = () => {
+    // Implement sign out logic here
+    console.log('User signed out');
+    // You would typically reset the isUserLoggedIn state here
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -33,6 +42,15 @@ export default function TabLayout() {
           />
         </View>
         <View style={styles.headerIcons}>
+          {isUserLoggedIn ? (
+            <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+              <Text style={styles.signOutText}>Sign Out</Text>
+            </TouchableOpacity>
+          ) : (
+            <Link href="/login" style={styles.loginSignupButton}>
+              <Text style={styles.loginSignupText}>Login/Signup</Text>
+            </Link>
+          )}
           <TouchableOpacity onPress={toggleNotifications} style={styles.iconButton}>
             <TabBarIcon name="notifications-outline" color="#000" />
           </TouchableOpacity>
@@ -44,7 +62,6 @@ export default function TabLayout() {
       {isNotificationsVisible && (
         <View style={styles.notificationsPanel}>
           <Text style={styles.notificationsTitle}>Notifications</Text>
-          {/* Section where we can fetch and print  notifications from backend  */}
           <Text style={styles.notificationItem}>No new notifications</Text>
         </View> 
       )}
@@ -83,7 +100,7 @@ export default function TabLayout() {
             screenOptions={{
               tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
               headerShown: false,
-              tabBarStyle: { display: 'none' }, // Hide the bottom tab bar. This tab bar should be used for mobile versions of the app. 
+              tabBarStyle: { display: 'none' },
             }}
           >
             <Tabs.Screen
@@ -171,10 +188,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   headerIcons: {
-    marginRight:10,
+    marginRight: 10,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 20,
+  },
+  loginSignupButton: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  loginSignupText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  signOutButton: {
+    backgroundColor: '#f44336',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  signOutText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 12,
   },
   notificationsPanel: {
     position: 'absolute',
