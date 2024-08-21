@@ -39,7 +39,7 @@ encoded_password = quote(db_password)
 # Connect to the PostgreSQL database
 engine = create_engine(f'postgresql+psycopg2://{db_user}:{encoded_password}@{db_host}/{db_name}')
 
-# Insert data into the PRODUCT table
+# Insert data into the product table
 with engine.connect() as conn:
-    df.to_sql('PRODUCT', conn, if_exists='append', index=False)
+    df.to_sql('product', conn, if_exists='append', index=False)
     print("Data inserted into 'product' table successfully.")
