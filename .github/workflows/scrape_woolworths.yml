@@ -12,12 +12,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4  # Updated to the latest version
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5  # Updated to the latest version
         with:
-          python-version: '3.11.8'  
+          python-version: '3.11.8'  # Updated to use Python version 3.11.8
 
       - name: Install dependencies
         run: |
