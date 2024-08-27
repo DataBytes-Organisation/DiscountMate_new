@@ -61,38 +61,38 @@ def with_retries(operation, retries=3):
 collected_data = []
 
 # Retrieve configuration values
-#config = configparser.ConfigParser()
-#configFile = 'Scrapping/Australia_GroceriesScraper/configuration.ini'
-#config.read(configFile)
+config = configparser.ConfigParser()
+configFile = 'Scrapping/Australia_GroceriesScraper/configuration.ini'
+config.read(configFile)
 
 # Main scraping logic including interaction with the webpage, parsing elements and appending data to array
-#folderpath = os.path.join(os.getcwd(), "Scrapping/Australia_GroceriesScraper")
-#delay = int(config.get('Woolworths','DelaySeconds'))
-#category_ignore = str(config.get('Woolworths','IgnoredCategories'))
+folderpath = os.path.join(os.getcwd(), "Scrapping/Australia_GroceriesScraper")
+delay = int(config.get('Woolworths','DelaySeconds'))
+category_ignore = str(config.get('Woolworths','IgnoredCategories'))
 
-#if config.get('Woolworths','Resume_Active') == "TRUE":
-#    resume_active = True
-#else:
-#    resume_active = False
+if config.get('Woolworths','Resume_Active') == "TRUE":
+    resume_active = True
+else:
+    resume_active = False
 
-#resume_category = config.get('Woolworths','Resume_Category')
-#resume_page = int(config.get('Woolworths','Resume_Page'))
+resume_category = config.get('Woolworths','Resume_Category')
+resume_page = int(config.get('Woolworths','Resume_Page'))
 
 # Create a new csv file for Woolworths
-#filename = "Woolworths.csv"
-#filepath = os.path.join(folderpath, filename)
+filename = "Woolworths.csv"
+filepath = os.path.join(folderpath, filename)
 
-#if resume_active:
- #   print("Resuming at page " + str(resume_page) + " of " + str(resume_category))
-#else:
-#    print("Resume data not found, starting anew...")
-#    if os.path.exists(filepath):
-#        os.remove(filepath)
+if resume_active:
+    print("Resuming at page " + str(resume_page) + " of " + str(resume_category))
+else:
+    print("Resume data not found, starting anew...")
+    if os.path.exists(filepath):
+        os.remove(filepath)
 
- #   with open(filepath, "a", newline="") as f:
- #       writer = csv.writer(f)
- #       writer.writerow(["Product Code", "Category", "Item Name", "Best Price", "Best Unit Price", "Item Price", "Unit Price", "Price Was", "Special Text", "Complex Promo Text", "Link", "Date Time Stamp"])
- #   f.close()
+    with open(filepath, "a", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["Product Code", "Category", "Item Name", "Best Price", "Best Unit Price", "Item Price", "Unit Price", "Price Was", "Special Text", "Complex Promo Text", "Link", "Date Time Stamp"])
+    f.close()
 
 print("Saving to " + filepath)
 
