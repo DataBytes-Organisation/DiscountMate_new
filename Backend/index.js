@@ -1,9 +1,18 @@
+const admin = require('firebase-admin');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const nodemailer = require('nodemailer'); 
+const nodemailer = require('nodemailer');
 
+// Initialize Firebase Admin SDK
+const serviceAccount = require('./discountmate-e8cbb-firebase-adminsdk-qj67v-934f4bf808.json'); 
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+const db = admin.firestore(); // Initialize Firestore
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,40 +21,92 @@ const PORT = process.env.PORT || 5000;
 const transporter = nodemailer.createTransport({
     service: 'gmail', // Use the appropriate email service (e.g., Gmail, Outlook)
     auth: {
-        user: 'testingnodemailer3@gmail.com', // Replace with your email - ensure that the email has nodemailer setup with a passkey.
-        pass: 'obml zgob pycg dbei', // Replace with your email password or app password
+        user: 'testingnodemailer3@gmail.com',
+        pass: 'obml zgob pycg dbei', 
     },
 });
 
 app.use(cors());
-// Middleware to parse JSON requests
 app.use(bodyParser.json());
+// const { initializeApp } = require("firebase/app");
+// const express = require('express');
+// const bcrypt = require('bcryptjs');
+// const bodyParser = require('body-parser');
+// const cors = require('cors');
+// const nodemailer = require('nodemailer'); 
 
-const users = []; // Temporary in-memory "database" for users
+
+// // TODO: Add SDKs for Firebase products that you want to use
+// // https://firebase.google.com/docs/web/setup#available-libraries
+
+// // Your web app's Firebase configuration
+// // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// // Your Firebase configuration
+// const firebaseConfig = {
+//     apiKey: "AIzaSyBzN5tFuf_Ds-zh5ARTo7629kTS7qe8EIA",
+//     authDomain: "discountmate-e8cbb.firebaseapp.com",
+//     projectId: "discountmate-e8cbb",
+//     storageBucket: "discountmate-e8cbb.appspot.com",
+//     messagingSenderId: "332192323726",
+//     appId: "1:332192323726:web:f7a859f36aadc894bc11df",
+//     measurementId: "G-7VXJQ0WSFM"
+//   };
+
+// // Initialize Firebase
+// // Initialize Firebase
+// const firebaseapp = initializeApp(firebaseConfig);
+
+// const app = express();
+// const PORT = process.env.PORT || 5000;
+
+// // Nodemailer transporter configuration
+// const transporter = nodemailer.createTransport({
+//     service: 'gmail', // Use the appropriate email service (e.g., Gmail, Outlook)
+//     auth: {
+//         user: 'testingnodemailer3@gmail.com', // Replace with your email - ensure that the email has nodemailer setup with a passkey.
+//         pass: 'obml zgob pycg dbei', // Replace with your email password or app password
+//     },
+// });
+
+// app.use(cors());
+// // Middleware to parse JSON requests
+// app.use(bodyParser.json());
+
+// const users = []; // Temporary in-memory "database" for users
 
 // Signup API
 app.post('/signup', async (req, res) => {
     const { useremail, password } = req.body;
 
-    // Check if user already exists
-    const userExists = users.find(user => user.useremail === useremail);
-    if (userExists) {
-        return res.status(400).json({ message: 'User already exists' });
+    try {
+        // Check if the user already exists in Firestore
+        const userRef = db.collection('users').doc(useremail);
+        const doc = await userRef.get();
+
+        if (doc.exists) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Save the new user to Firestore
+        await userRef.set({
+            email: useremail,
+            password: hashedPassword,
+        });
+
+        res.status(201).json({ message: 'User created successfully' });
+    } catch (error) {
+        console.error("Error signing up user:", error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Save the new user
-    users.push({ useremail, password: hashedPassword });
-
-    res.status(201).json({ message: 'User created successfully' });
 });
 
 // Signin API
 app.post('/signin', async (req, res) => {
     const { useremail, password } = req.body;
-
+    console.log("Request Recieved");
     // Find the user
     const user = users.find(user => user.useremail === useremail);
     if (!user) {

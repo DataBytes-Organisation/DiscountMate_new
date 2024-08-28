@@ -11,10 +11,79 @@ export default function Login() {
   const [verifyPassword, setVerifyPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
 
-  const handleSubmit = () => {
-    // Handle login/signup logic here
-    console.log('Submitted:', { email, password, verifyPassword });
+  const handleSubmit = async () => {
+    try {
+      const url = isLogin ? 'http://localhost:5000/signin' : 'http://localhost:5000/signup';
+      const body = isLogin
+        ? JSON.stringify({ useremail: email, password: password })
+        : JSON.stringify({ useremail: email, password: password, verifyPassword: verifyPassword });
+  
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        // Handle successful login or signup
+        console.log(`${isLogin ? 'Signin' : 'Signup'} successful:`, data.message);
+        // Navigate to a different screen if login/signup is successful
+        // navigation.navigate('Home');
+      } else {
+        // Handle error
+        console.error(`${isLogin ? 'Signin' : 'Signup'} failed:`, data.message);
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error(`Error during ${isLogin ? 'signin' : 'signup'}:`, error);
+      alert('An error occurred. Please try again.');
+    }
   };
+  
+
+    // const handleSubmit = async () => {
+    //   if (isLogin) {
+    //     try {
+    //       console.log("request started")
+    //       // Prepare the data to send in the request
+    //       const response = await fetch('http://localhost:5000/signin', {
+    //         method: 'POST',
+    //         headers: {
+    //           'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify({
+    //           useremail: email,
+    //           password: password,
+    //         }),
+    //       });
+    
+    //       const data = await response.json();
+    
+    //       if (response.ok) {
+    //         // Handle successful login
+    //         console.log('Signin successful:', data.message);
+    //         // Navigate to a different screen if login is successful
+    //         // navigation.navigate('Home');
+    //       } else {
+    //         // Handle error
+    //         console.error('Signin failed:', data.message);
+    //         alert(data.message);
+    //       }
+    //     } catch (error) {
+    //       console.error('Error during signin:', error);
+    //       alert('An error occurred. Please try again.');
+    //     }
+    //   } else {
+    //     // Handle signup logic if required
+    //     console.log('Signup logic to be implemented');
+      
+    // };
+    
+  // };
 
   return (
     <SafeAreaView style={styles.container}>
