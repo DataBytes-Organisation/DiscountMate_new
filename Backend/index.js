@@ -1,18 +1,30 @@
-const admin = require('firebase-admin');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
+const { Client } = require('pg');
+const jwt = require('jsonwebtoken');
 
-// Initialize Firebase Admin SDK
-const serviceAccount = require('./discountmate-e8cbb-firebase-adminsdk-qj67v-934f4bf808.json'); 
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+// PostgreSQL client configuration
+const client = new Client({
+    user: 'postgres',  // Replace with your PostgreSQL username
+    host: 'localhost',     // Replace with your PostgreSQL host
+    database: 'discountmate', // Replace with your PostgreSQL database name
+    password: 'password',  // Replace with your PostgreSQL password
+    port: 5432,            // Replace with your PostgreSQL port if different
 });
 
-const db = admin.firestore(); // Initialize Firestore
+// Connect to PostgreSQL
+client.connect(err => {
+    if (err) {
+        console.error('Connection error', err.stack);
+    } else {
+        console.log('Connected to PostgreSQL');
+    }
+});
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,76 +38,45 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:8081', // Replace with your frontend origin
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true
+}));
+
 app.use(bodyParser.json());
-// const { initializeApp } = require("firebase/app");
-// const express = require('express');
-// const bcrypt = require('bcryptjs');
-// const bodyParser = require('body-parser');
-// const cors = require('cors');
-// const nodemailer = require('nodemailer'); 
-
-
-// // TODO: Add SDKs for Firebase products that you want to use
-// // https://firebase.google.com/docs/web/setup#available-libraries
-
-// // Your web app's Firebase configuration
-// // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// // Your Firebase configuration
-// const firebaseConfig = {
-//     apiKey: "AIzaSyBzN5tFuf_Ds-zh5ARTo7629kTS7qe8EIA",
-//     authDomain: "discountmate-e8cbb.firebaseapp.com",
-//     projectId: "discountmate-e8cbb",
-//     storageBucket: "discountmate-e8cbb.appspot.com",
-//     messagingSenderId: "332192323726",
-//     appId: "1:332192323726:web:f7a859f36aadc894bc11df",
-//     measurementId: "G-7VXJQ0WSFM"
-//   };
-
-// // Initialize Firebase
-// // Initialize Firebase
-// const firebaseapp = initializeApp(firebaseConfig);
-
-// const app = express();
-// const PORT = process.env.PORT || 5000;
-
-// // Nodemailer transporter configuration
-// const transporter = nodemailer.createTransport({
-//     service: 'gmail', // Use the appropriate email service (e.g., Gmail, Outlook)
-//     auth: {
-//         user: 'testingnodemailer3@gmail.com', // Replace with your email - ensure that the email has nodemailer setup with a passkey.
-//         pass: 'obml zgob pycg dbei', // Replace with your email password or app password
-//     },
-// });
-
-// app.use(cors());
-// // Middleware to parse JSON requests
-// app.use(bodyParser.json());
-
-// const users = []; // Temporary in-memory "database" for users
 
 // Signup API
 app.post('/signup', async (req, res) => {
-    const { useremail, password } = req.body;
+    const { useremail, password, verifyPassword, user_fname, user_lname, address, phone_number } = req.body;
 
     try {
-        // Check if the user already exists in Firestore
-        const userRef = db.collection('users').doc(useremail);
-        const doc = await userRef.get();
-
-        if (doc.exists) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
+        // Log the received data to the console
+        console.log('Received signup data:', {
+            useremail,
+            password,
+            verifyPassword,
+            user_fname,
+            user_lname,
+            address,
+            phone_number
+        });
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Save the new user to Firestore
-        await userRef.set({
-            email: useremail,
-            password: hashedPassword,
-        });
+        // Generate a unique user ID (using UUID for simplicity)
+        const userId = Math.floor(Math.random() * 1000000); // Replace with UUID if needed
 
+        // Insert the new user into the PostgreSQL database
+        const query = `
+            INSERT INTO "user" (user_id, account_user_name, email, encrypted_password, user_fname, user_lname, address, phone_number)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `;
+        const values = [userId, useremail, useremail, hashedPassword, user_fname, user_lname, address, phone_number];
+        await client.query(query, values);
+
+        // Send a success response
         res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
         console.error("Error signing up user:", error);
@@ -103,24 +84,39 @@ app.post('/signup', async (req, res) => {
     }
 });
 
-// Signin API
+
+
+
+// Inside your signin API
 app.post('/signin', async (req, res) => {
     const { useremail, password } = req.body;
-    console.log("Request Recieved");
-    // Find the user
-    const user = users.find(user => user.useremail === useremail);
-    if (!user) {
-        return res.status(400).json({ message: 'Invalid credentials' });
-    }
+    try {
+        const query = 'SELECT encrypted_password FROM "user" WHERE email = $1';
+        const values = [useremail];
+        const result = await client.query(query, values);
 
-    // Compare the password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-        return res.status(400).json({ message: 'Invalid credentials' });
-    }
+        if (result.rows.length === 0) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
 
-    res.status(200).json({ message: 'Signin successful' });
+        const userPassword = result.rows[0].encrypted_password;
+        const isMatch = await bcrypt.compare(password, userPassword);
+
+        if (isMatch) {
+            // Generate JWT
+            const token = jwt.sign({ useremail }, 'your_jwt_secret', { expiresIn: '1h' });
+            return res.status(200).json({ message: 'Signin successful', token });
+        } else {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+    } catch (error) {
+        console.error("Error during signin:", error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
 });
+
+
+
 
 // Contact Form Submission API
 app.post('/contact', (req, res) => {
