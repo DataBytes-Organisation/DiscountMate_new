@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { Image } from 'react-native'; // Import the Image component
 
 const { width: viewportWidth } = Dimensions.get('window');
 
@@ -33,7 +34,13 @@ export default function TabLayout() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Discount Mate</Text>
+
+      <TouchableOpacity onPress={() => navigation.navigate('index')}>
+          <Image 
+            source={require('@/assets/images/logo.png')} // Replace with your actual logo path
+            style={styles.logo}
+          />
+        </TouchableOpacity>
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchBox}
@@ -160,9 +167,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  header: {
-    paddingTop: 10,
-    paddingBottom: 20,
+  header: {   
     backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
@@ -170,6 +175,13 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
     paddingHorizontal: 10,
     justifyContent: 'space-between',
+    height: 60, // Ensure a consistent height for the header. Without this, the image size increases header space
+
+  },
+  logo: {
+    width: 100, 
+    height: 180,  
+    resizeMode: 'contain', 
   },
   title: {
     fontSize: 20,
