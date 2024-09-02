@@ -4,18 +4,25 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Image } from 'react-native'; // Import the Image component
+import { AuthProvider, useAuth } from './AuthContext'; // Import AuthProvider and useAuth
+
 
 const { width: viewportWidth } = Dimensions.get('window');
 
-// Temporary variable for testing
-const isUserLoggedIn = false; // Set this to false to test login/signup scenario
-
 export default function TabLayout() {
+  return (
+    <AuthProvider>
+      <TabLayoutContent />
+    </AuthProvider>
+  );
+}
+
+function TabLayoutContent() {
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(viewportWidth < 768);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
+  const { isAuthenticated, logout } = useAuth(); // Use authentication context
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -26,9 +33,8 @@ export default function TabLayout() {
   };
 
   const handleSignOut = () => {
-    // Implement sign out logic here
+    logout(); // Call logout from AuthContext
     console.log('User signed out');
-    // You would typically reset the isUserLoggedIn state here
   };
 
   return (
@@ -49,7 +55,7 @@ export default function TabLayout() {
           />
         </View>
         <View style={styles.headerIcons}>
-          {isUserLoggedIn ? (
+          {isAuthenticated ? ( // Check if the user is authenticated
             <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
               <Text style={styles.signOutText}>Sign Out</Text>
             </TouchableOpacity>
@@ -70,7 +76,7 @@ export default function TabLayout() {
         <View style={styles.notificationsPanel}>
           <Text style={styles.notificationsTitle}>Notifications</Text>
           <Text style={styles.notificationItem}>No new notifications</Text>
-        </View> 
+        </View>
       )}
       <View style={styles.mainContent}>
         <View style={[styles.sidebar, isSidebarCollapsed ? styles.sidebarCollapsed : null]}>
@@ -161,6 +167,7 @@ export default function TabLayout() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

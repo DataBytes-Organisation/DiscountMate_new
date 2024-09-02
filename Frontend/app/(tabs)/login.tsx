@@ -1,23 +1,43 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from './AuthContext';  // Import the useAuth hook
 
 const windowWidth = Dimensions.get('window').width;
 
 export default function Login() {
   const navigation = useNavigation();
+  const { login } = useAuth();  // Use the login function from AuthContext
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [verifyPassword, setVerifyPassword] = useState('');
+  const [userFname, setUserFname] = useState('');
+  const [userLname, setUserLname] = useState('');
+  const [address, setAddress] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [isLogin, setIsLogin] = useState(true);
 
   const handleSubmit = async () => {
     try {
+      console.log('handleSubmit called');  // Debug statement
+
       const url = isLogin ? 'http://localhost:5000/signin' : 'http://localhost:5000/signup';
+      console.log('API URL:', url);  // Debug statement
+
       const body = isLogin
         ? JSON.stringify({ useremail: email, password: password })
-        : JSON.stringify({ useremail: email, password: password, verifyPassword: verifyPassword });
-  
+        : JSON.stringify({
+            useremail: email,
+            password: password,
+            verifyPassword: verifyPassword,
+            user_fname: userFname,
+            user_lname: userLname,
+            address: address,
+            phone_number: phoneNumber
+          });
+
+      console.log('Request Body:', body);  // Debug statement
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -25,65 +45,27 @@ export default function Login() {
         },
         body: body,
       });
-  
+
+      console.log('Response received:', response);  // Debug statement
+
       const data = await response.json();
-  
-      if (response.ok) {
-        // Handle successful login or signup
-        console.log(`${isLogin ? 'Signin' : 'Signup'} successful:`, data.message);
-        // Navigate to a different screen if login/signup is successful
-        // navigation.navigate('Home');
-      } else {
-        // Handle error
-        console.error(`${isLogin ? 'Signin' : 'Signup'} failed:`, data.message);
+      console.log('Response JSON:', data);  // Debug statement
+
+      if (response.ok && isLogin) {
+        console.log('Signin successful:', data.message);
+
+        // Use the login function to update the auth context and navigate to profile
+        login(data.token);
+
+      } else if (!response.ok) {
+        console.error('Signin failed:', data.message);
         alert(data.message);
       }
     } catch (error) {
-      console.error(`Error during ${isLogin ? 'signin' : 'signup'}:`, error);
+      console.error('Error during signin:', error);
       alert('An error occurred. Please try again.');
     }
   };
-  
-
-    // const handleSubmit = async () => {
-    //   if (isLogin) {
-    //     try {
-    //       console.log("request started")
-    //       // Prepare the data to send in the request
-    //       const response = await fetch('http://localhost:5000/signin', {
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify({
-    //           useremail: email,
-    //           password: password,
-    //         }),
-    //       });
-    
-    //       const data = await response.json();
-    
-    //       if (response.ok) {
-    //         // Handle successful login
-    //         console.log('Signin successful:', data.message);
-    //         // Navigate to a different screen if login is successful
-    //         // navigation.navigate('Home');
-    //       } else {
-    //         // Handle error
-    //         console.error('Signin failed:', data.message);
-    //         alert(data.message);
-    //       }
-    //     } catch (error) {
-    //       console.error('Error during signin:', error);
-    //       alert('An error occurred. Please try again.');
-    //     }
-    //   } else {
-    //     // Handle signup logic if required
-    //     console.log('Signup logic to be implemented');
-      
-    // };
-    
-  // };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -107,13 +89,40 @@ export default function Login() {
           secureTextEntry
         />
         {!isLogin && (
-          <TextInput
-            style={styles.input}
-            placeholder="Verify Password"
-            value={verifyPassword}
-            onChangeText={setVerifyPassword}
-            secureTextEntry
-          />
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="Verify Password"
+              value={verifyPassword}
+              onChangeText={setVerifyPassword}
+              secureTextEntry
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="First Name"
+              value={userFname}
+              onChangeText={setUserFname}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Last Name"
+              value={userLname}
+              onChangeText={setUserLname}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Address"
+              value={address}
+              onChangeText={setAddress}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              keyboardType="phone-pad"
+            />
+          </>
         )}
         <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
           <Text style={styles.submitButtonText}>{isLogin ? 'Login' : 'Sign Up'}</Text>
