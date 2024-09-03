@@ -21,3 +21,5 @@ COPY . /app/
 
 # Run the create_table script
 CMD ["python", "create_table.py"]
+
+EXPOSE 5432
