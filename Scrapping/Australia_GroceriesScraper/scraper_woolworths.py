@@ -1,28 +1,29 @@
-import json
-import sys
-import os
-import time
-import configparser
+# Import necessary libraries
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from datetime import datetime
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import WebDriverException, TimeoutException, JavascriptException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
-import csv
-from datetime import datetime
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import WebDriverException, TimeoutException, JavascriptException
+from urllib.parse import quote_plus
+import time
+import configparser
+import os
+import sys
+from bs4 import BeautifulSoup  # Ensure BeautifulSoup is imported
 
 def initialize_driver():
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    service = Service(ChromeDriverManager().install())
+    options = webdriver.ChromeOptions()
+    # Run Chrome in headless mode for GitHub Actions
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--window-size=1920,1080')
     try:
-        driver = webdriver.Chrome(service=service, options=options)
+        driver = webdriver.Chrome(options=options)
     except WebDriverException:
         sys.exit("Error initializing web driver")
     return driver
@@ -57,76 +58,98 @@ def with_retries(operation, retries=3):
     print("All attempts failed.")
     return None
 
-# Initialize the array to store data
-collected_data = []
+# Setup MongoDB connection using environment variables or default to hardcoded credentials
+from dotenv import load_dotenv
+
+# Load environment variables from .env file if it exists
+load_dotenv()
+
+username = os.getenv('MONGO_USERNAME', 'discountmate')
+password = os.getenv('MONGO_PASSWORD', 'discountmate1')
+
+# Encode credentials for MongoDB URI
+encoded_username = quote_plus(username)
+encoded_password = quote_plus(password)
+
+# MongoDB URI construction
+uri = f'mongodb+srv://{encoded_username}:{encoded_password}@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster'
+
+# Initialize MongoDB client
+client = MongoClient(uri, server_api=ServerApi('1'))
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
+    sys.exit()
+
+# MongoDB database and collection
+db = client['ScrappedData']
+
+# Generate the custom string with the current date and time
+current_date_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+custom_string = f"{current_date_time}_Woolies"
+
+# Define collection based on the custom string
+collection = db[custom_string]
 
 # Retrieve configuration values
 config = configparser.ConfigParser()
-configFile = 'Scrapping/Australia_GroceriesScraper/configuration.ini'
+configFile = os.path.join('DiscountMate_new', 'Scrapping', 'Australia_GroceriesScraper', 'configuration.ini')
 config.read(configFile)
 
-# Main scraping logic including interaction with the webpage, parsing elements and appending data to array
-folderpath = os.path.join(os.getcwd(), "Scrapping/Australia_GroceriesScraper")
-delay = int(config.get('Woolworths','DelaySeconds'))
-category_ignore = str(config.get('Woolworths','IgnoredCategories'))
+delay = int(config.get('Woolworths', 'DelaySeconds'))
+category_ignore = str(config.get('Woolworths', 'IgnoredCategories'))
 
-if config.get('Woolworths','Resume_Active') == "TRUE":
-    resume_active = True
-else:
-    resume_active = False
+resume_active = config.get('Woolworths', 'Resume_Active') == "TRUE"
+resume_category = config.get('Woolworths', 'Resume_Category')
+resume_page = int(config.get('Woolworths', 'Resume_Page'))
 
-resume_category = config.get('Woolworths','Resume_Category')
-resume_page = int(config.get('Woolworths','Resume_Page'))
-
-# Create a new csv file for Woolworths
-filename = "Woolworths.csv"
-filepath = os.path.join(folderpath, filename)
-
-if resume_active:
-    print("Resuming at page " + str(resume_page) + " of " + str(resume_category))
-else:
-    print("Resume data not found, starting anew...")
-    if os.path.exists(filepath):
-        os.remove(filepath)
-
-    with open(filepath, "a", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["Product Code", "Category", "Item Name", "Best Price", "Best Unit Price", "Item Price", "Unit Price", "Price Was", "Special Text", "Complex Promo Text", "Link", "Date Time Stamp"])
-    f.close()
-
-print("Saving to " + filepath)
-
+# Start WebDriver
+print("Starting Woolworths...")
 driver = initialize_driver()
+
+# Navigate to the Woolies Website
 url = "https://www.woolworths.com.au"
 safe_get_url(driver, url)
 time.sleep(delay)
 
+# Open the menu drawer to get the category list
 driver.find_element(By.XPATH, "//button[@class='wx-header__drawer-button browseMenuDesktop']").click()
 time.sleep(delay)
 
+# Parse the page content
 page_contents = BeautifulSoup(driver.page_source, "html.parser")
+
+# Find all product categories on the page
 categories = page_contents.find_all("a", class_="item ng-star-inserted")
 
+# Remove categories earlier than the resume point
 if resume_active:
     found_resume_point = False
     for category in reversed(categories):
         category_name = category.text.strip()
         if found_resume_point:
             categories.remove(category)
-        elif resume_category == category_name:
-            found_resume_point = True
+        else:
+            if resume_category == category_name:
+                found_resume_point = True
 
+# Remove ignored categories
 for category in reversed(categories):
     category_endpoint = category.get("href").replace("/shop/browse/", "")
     if category_ignore.find(category_endpoint) != -1:
         categories.remove(category)
 
+# Show the user the categories to scrape
 print("Categories to Scrape:")
 for category in categories:
     print(category.text)
 
 time.sleep(delay)
-driver.close()
+driver.quit()
+
+collected_data = []
 
 for category in categories:
     driver = initialize_driver()
@@ -134,32 +157,42 @@ for category in categories:
     category_name = category.text.strip()
     print("Loading Category: " + category_name)
 
+    # Save resume data
     config.set('Woolworths', 'Resume_Category', category_name)
-    with open(configFile, 'w') as cfgFile:
-        config.write(cfgFile)
-    cfgFile.close()
+    try:
+        with open(configFile, 'w') as cfgFile:
+            config.write(cfgFile)
+    except:
+        print("Failed to write Config this time...")
 
+    # Follow the link to the category page
     safe_get_url(driver, category_link + "?pageNumber=1&sortBy=TraderRelevance&filter=SoldBy(Woolworths)")
     time.sleep(delay)
 
+    # Parse page content
     page_contents = BeautifulSoup(driver.page_source, "html.parser")
+
+    # Get the number of pages in this category
     try:
         pageselement = driver.find_element(By.XPATH, "//span[@class='page-count']")
         total_pages = int(pageselement.get_attribute('innerText'))
     except:
         total_pages = 1
-
+    
     first_page = resume_page if resume_active else 1
+
     for page in range(first_page, total_pages + 1):
         config.set('Woolworths', 'Resume_Page', str(page))
-        with open(configFile, 'w') as cfgFile:
-            config.write(cfgFile)
-        cfgFile.close()
+        try:
+            with open(configFile, 'w') as cfgFile:
+                config.write(cfgFile)
+        except:
+            print("Failed to write Config this time...")
 
         page_contents = BeautifulSoup(driver.page_source, "html.parser")
         productsgrid = page_contents.find("shared-grid", class_="grid-v2")
 
-        if not productsgrid:
+        if productsgrid is None:
             print("Waiting Longer....")
             time.sleep(delay)
             page_contents = BeautifulSoup(driver.page_source, "html.parser")
@@ -170,108 +203,82 @@ for category in categories:
         print(category_name + ": Page " + str(page) + " of " + str(total_pages) + " | Products on this page: " + str(productsCount2))
 
         for productCounter in range(productsCount2):
-            current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            name = driver.execute_script("return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('title')[0].innerText")
+            current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Current date and time
+
+            # Scrape product data
+            try:
+                scriptContents = "return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('title')[0].innerText"
+                name = driver.execute_script(scriptContents)
+            except:
+                name = ""
 
             try:
-                itemprice = driver.execute_script("return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('primary')[0].innerText")
+                scriptContents = "return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('primary')[0].innerText"
+                itemprice = driver.execute_script(scriptContents)
             except:
                 itemprice = ""
 
             try:
-                unitprice = driver.execute_script("return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('price-per-cup')[0].innerText")
+                scriptContents = "return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('price-per-cup')[0].innerText"
+                unitprice = driver.execute_script(scriptContents)
             except:
                 unitprice = ""
 
             try:
-                specialtext = driver.execute_script("return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('product-tile-label')[0].innerText")
+                scriptContents = "return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('product-tile-label')[0].innerText"
+                specialtext = driver.execute_script(scriptContents)
             except:
                 specialtext = ""
 
             try:
-                promotext = driver.execute_script("return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('product-tile-promo-info')[0].innerText")
+                scriptContents = "return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('product-tile-promo-info')[0].innerText"
+                promotext = driver.execute_script(scriptContents)
             except:
                 promotext = ""
 
             try:
-                price_was_struckout = driver.execute_script("return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('was-price ')[0].innerText")
+                scriptContents = "return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('price-was-struckout')[0].innerText"
+                price_was_struckout = driver.execute_script(scriptContents)
             except:
                 price_was_struckout = ""
 
             try:
-                productLink = driver.execute_script("return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByTagName('a')[0].href")
+                scriptContents = "return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('product-tile-image__container')[0].children[0].src"
+                imageurl = driver.execute_script(scriptContents)
             except:
-                productLink = ""
+                imageurl = ""
 
-            productcode = productLink.split("/")[-2]
+            try:
+                scriptContents = "return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('product-badges')[0].children[0].children[0].innerText"
+                alertmsg = driver.execute_script(scriptContents)
+            except:
+                alertmsg = ""
 
-            if productcode == "productdetails":
-                productcode = productLink.split("/")[-1]
+            try:
+                scriptContents = "return document.getElementsByClassName('grid-v2')[0].getElementsByTagName('wc-product-tile')[" + str(productCounter) + "].shadowRoot.children[0].getElementsByClassName('stock-messaging')[0].innerText"
+                stockstatus = driver.execute_script(scriptContents)
+            except:
+                stockstatus = ""
 
-            if name and itemprice:
-                name = name.strip()
-                itemprice = itemprice.strip()
-                unitprice = unitprice.strip()
-                specialtext = specialtext.strip()
-                best_price = itemprice
-                best_unitprice = unitprice
-                link = productLink
-
-                if price_was_struckout:
-                    price_was = price_was_struckout.strip()
-                else:
-                    price_was = None
-
-                if promotext:
-                    promotext = promotext.strip()
-                    if promotext.find("Was ") != -1 or promotext.find("Range was ") != -1:
-                        price_was = promotext[promotext.find("$"):promotext.find(" - ")]
-
-                    if promotext.find("Member Price") != -1 or promotext.find(" for ") != -1:
-                        if promotext.find("Member Price") != -1:
-                            promotext = promotext.replace("Member Price", "").strip()
-
-                        try:
-                            promo_itemcount = int(promotext[0:promotext.find(" for")])
-                            promo_price = float(promotext[promotext.find("$")+1:promotext.find(" - ")])
-                            best_price = "$" + str(round(promo_price / promo_itemcount, 2))
-                            if promotext.find(" - ") != -1:
-                                best_unitprice = promotext[promotext.find(" - ")+3:len(promotext)]
-                        except:
-                            print("Member Price Error for " + str(promotext))
-                            best_price = itemprice
-                            best_unitprice = unitprice
-                else:
-                    promotext = None
-
-                with open(filepath, "a", newline="") as f:
-                    writer = csv.writer(f)
-                    writer.writerow([productcode, category_name, name, best_price, best_unitprice, itemprice, unitprice, price_was, specialtext, promotext, link, current_timestamp])
-
-            next_page_link = f"{category_link}?pageNumber={page + 1}" + "&sortBy=TraderRelevance&filter=SoldBy(Woolworths)"
-
-            if (page % 50 == 0):
-                print("Restaring Browser...")
-                driver.close()
-                driver = initialize_driver()
-
-            if total_pages > 1 and page + 1 <= total_pages:
-                safe_get_url(driver, next_page_link)
-            time.sleep(delay)
+            # Save data to MongoDB
+            collection.insert_one({
+                "Category": category_name,
+                "Timestamp": current_timestamp,
+                "Name": name,
+                "ItemPrice": itemprice,
+                "UnitPrice": unitprice,
+                "SpecialText": specialtext,
+                "PromoText": promotext,
+                "StruckoutWasPrice": price_was_struckout,
+                "ImageURL": imageurl,
+                "AlertMessage": alertmsg,
+                "StockStatus": stockstatus,
+            })
 
         time.sleep(delay)
-        driver.close()
+        print("Finished scraping page", page, "of", total_pages, "in category:", category_name)
+        safe_get_url(driver, category_link + "?pageNumber=" + str(page + 1) + "&sortBy=TraderRelevance&filter=SoldBy(Woolworths)")
 
     driver.quit()
 
-    f.close()
-
-    config.set('Woolworths', 'Resume_Active', "FALSE")
-    config.set('Woolworths', 'Resume_Category', "null")
-    config.set('Woolworths', 'Resume_Page', "0")
-
-    with open(configFile, 'w') as cfgFile:
-        config.write(cfgFile)
-    cfgFile.close()
-
-print("Finished")
+print("Script completed successfully!")
