@@ -19,7 +19,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11.8'  # Specify the Python version
+        python-version: '3.11.8'  
 
     - name: Install dependencies
       run: |
@@ -33,7 +33,7 @@ jobs:
 
     - name: Run Scraper
       run: |
-        python path/to/your_script.py
+        python DiscountMate_new/Scrapping/Australia_GroceriesScraper/scraper_woolworths.py
 
     - name: Upload MongoDB logs
       if: failure()
