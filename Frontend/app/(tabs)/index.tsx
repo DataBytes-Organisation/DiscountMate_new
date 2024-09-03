@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icons
+import Icon from 'react-native-vector-icons/FontAwesome'; // Make sure this is correctly imported
 
 
 const { width: viewportWidth } = Dimensions.get('window');
@@ -41,18 +41,18 @@ const renderItem = ({ item }) => (
 
 const renderBigItem = ({ item }) => (
   <View style={styles.bigItem}>
-    <Image source={{ uri: item.image }} style={styles.bigItemImage} />
+    <Image source={{ uri: item.image }} style={styles.bigItemImage} /> {/* Correct usage */}
     <View style={styles.bigItemContent}>
       <Text style={styles.bigItemName}>{item.name}</Text>
       <Text style={styles.bigItemDescription}>{item.description}</Text>
       <Text style={styles.bigItemPrice}>{item.price}</Text>
       <View style={styles.bigItemButtons}>
-      <TouchableOpacity style={styles.bigItemButtonSave}>
+        <TouchableOpacity style={styles.bigItemButtonSave}>
           <Icon name="heart" size={16} color="#fff" />
         </TouchableOpacity>
       </View>
       <View style={styles.bigItemButtons}>
-      <TouchableOpacity style={styles.bigItemButtonCart}>
+        <TouchableOpacity style={styles.bigItemButtonCart}>
           <Text style={styles.bigItemButtonText}>Add To Cart</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bigItemButton}>
@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
   bigItemContent: {
     flex: 1,
     padding: 10,
+    
     justifyContent: 'center',
   },
   bigItemName: {
