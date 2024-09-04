@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Link, useNavigation } from 'expo-router';
 
 // Temporary variable for testing
-const isUserLoggedIn = false; // Set this to false to test login/signup scenario
+const isUserLoggedIn = true; // Set this to false to test login/signup scenario
 
 export default function Profile() {
   const navigation = useNavigation();
@@ -21,12 +21,13 @@ export default function Profile() {
       <Text style={styles.title}>Profile Page</Text>
       {isUserLoggedIn ? (
         <View style={styles.loggedInContainer}>
-          <Text style={styles.message}>User is logged in</Text>
-          {/* Add more profile content here */}
+          {/* Add more profile content here, need to connect to backend*/}
           <View style={styles.profileInfo}>
             <Text style={styles.infoText}>Name: John Doe</Text>
             <Text style={styles.infoText}>Email: john.doe@example.com</Text>
-            <Text style={styles.infoText}>Member since: January 1, 2023</Text>
+            <Text style={styles.infoText}>Location: Australia</Text>
+            <Text style={styles.infoText}>Member since: January 1, 2024</Text>
+            <Text style={styles.infoText}>Biography: 40 year old man looking for discounts for family of 4</Text>
           </View>
           <TouchableOpacity style={styles.button} onPress={handleSignOut}>
             <Text style={styles.buttonText}>Sign Out</Text>
@@ -76,6 +77,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   infoText: {
     fontSize: 16,
