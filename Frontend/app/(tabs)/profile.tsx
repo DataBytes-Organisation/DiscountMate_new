@@ -1,12 +1,31 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Link, useNavigation } from 'expo-router';
+import { useState } from 'react';
+import { Button, Image } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 // Temporary variable for testing
 const isUserLoggedIn = true; // Set this to false to test login/signup scenario
 
 export default function Profile() {
+  const [image, setImage] = useState<string | null>(null);
   const navigation = useNavigation();
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   const handleSignOut = () => {
     // Implement sign out logic here
@@ -23,6 +42,11 @@ export default function Profile() {
         <View style={styles.loggedInContainer}>
           {/* Add more profile content here, need to connect to backend*/}
           <View style={styles.profileInfo}>
+            <View style={styles.container}>
+              <Button title="Pick an image from camera roll" onPress={pickImage} />
+              {image && <Image source={{ uri: image }} style={styles.image} />}
+
+            </View>
             <Text style={styles.infoText}>Name: John Doe</Text>
             <Text style={styles.infoText}>Email: john.doe@example.com</Text>
             <Text style={styles.infoText}>Location: Australia</Text>
@@ -48,6 +72,10 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
+  image: {
+    width: 200,
+    height: 200,
+  },
   container: {
     flex: 1,
     alignItems: 'center',
