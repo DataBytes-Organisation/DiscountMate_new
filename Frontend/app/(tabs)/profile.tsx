@@ -4,15 +4,17 @@ import { Link, useNavigation } from 'expo-router';
 import { useState } from 'react';
 import { Button, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import Entypo from 'react-native-vector-icons/Entypo';
 
-// Temporary variable for testing
 const isUserLoggedIn = true; // Set this to false to test login/signup scenario
+
+// Import the default image
+const defaultImageUri = require('@/assets/images/defaultprofileimage.png');
 
 export default function Profile() {
   const [image, setImage] = useState<string | null>(null);
-  const navigation = useNavigation();
+
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -20,19 +22,13 @@ export default function Profile() {
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
   };
 
   const handleSignOut = () => {
-    // Implement sign out logic here
     console.log('User signed out');
-    // You would typically reset the isUserLoggedIn state here
-    // and navigate to the home page or login page
-    // navigation.navigate('index');
   };
 
   return (
@@ -40,12 +36,15 @@ export default function Profile() {
       <Text style={styles.title}>Profile Page</Text>
       {isUserLoggedIn ? (
         <View style={styles.loggedInContainer}>
-          {/* Add more profile content here, need to connect to backend*/}
           <View style={styles.profileInfo}>
             <View style={styles.container}>
-              <Button title="Pick an image from camera roll" onPress={pickImage} />
-              {image && <Image source={{ uri: image }} style={styles.image} />}
-
+              <Image
+                source={image ? { uri: image } : defaultImageUri}
+                style={styles.image}
+              />
+              <View style={styles.entypoContainer}>
+                <Entypo name="pencil" size={30} onPress={pickImage} />
+              </View>
             </View>
             <Text style={styles.infoText}>Name: John Doe</Text>
             <Text style={styles.infoText}>Email: john.doe@example.com</Text>
@@ -75,12 +74,17 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
+    borderRadius: 100,
   },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+  },
+  entypoContainer:{
+    marginLeft: 150,
+    marginTop:-20
   },
   title: {
     fontSize: 24,
