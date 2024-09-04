@@ -95,8 +95,7 @@ collection = db[custom_string]
 
 # Retrieve configuration values
 config = configparser.ConfigParser()
-configFile = os.path.join('DiscountMate_new', 'Scrapping', 'Australia_GroceriesScraper', 'configuration.ini')
-config.read(configFile)
+config.read('configuration.ini')
 
 delay = int(config.get('Woolworths', 'DelaySeconds'))
 category_ignore = str(config.get('Woolworths', 'IgnoredCategories'))
