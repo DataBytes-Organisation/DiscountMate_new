@@ -6,7 +6,7 @@ import { Button, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Entypo from 'react-native-vector-icons/Entypo';
 
-const isUserLoggedIn = true; // Set this to false to test login/signup scenario
+const isUserLoggedIn = false; // Set this to false to test login/signup scenario
 
 // Import the default image
 const defaultImageUri = require('@/assets/images/defaultprofileimage.png');
@@ -72,15 +72,15 @@ export default function Profile() {
 
 const styles = StyleSheet.create({
   image: {
-    width: 200,
-    height: 200,
+    width: 160,
+    height: 160,
     borderRadius: 100,
   },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: 7,
   },
   entypoContainer:{
     marginLeft: 150,
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 0,
   },
   loggedInContainer: {
     alignItems: 'center',
