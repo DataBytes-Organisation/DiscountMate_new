@@ -20,22 +20,18 @@ jobs:
         with:
           python-version: '3.11.8'
 
-      - name: Install Chrome
+      - name: Install Chrome and ChromeDriver
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
+          sudo apt-get install -y chromium-chromedriver
           google-chrome --version
+          chromedriver --version
 
-      - name: Install dependencies and webdrivers
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r Scrapping/Australia_GroceriesScraper/requirements.txt
-          pip install webdrivers
-
-      - name: Install ChromeDriver using webdrivers
-        run: |
-          python -c "import webdrivers; webdrivers.ChromeDriver().install()"
-          chromedriver --version
 
       - name: Set up environment variables
         run: |
