@@ -10,20 +10,29 @@ import {
 } from "react-native";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
+import { Image } from "react-native";
+
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { AuthProvider, useAuth } from "./AuthContext"; // Import AuthProvider and useAuth
 
 const { width: viewportWidth } = Dimensions.get("window");
 
-// Temporary variable for testing
-const isUserLoggedIn = false; // Set this to false to test login/signup scenario
-
 export default function TabLayout() {
+  return (
+    <AuthProvider>
+      <TabLayoutContent />
+    </AuthProvider>
+  );
+}
+
+function TabLayoutContent() {
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
     viewportWidth < 768
   );
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
+  const { isAuthenticated, logout } = useAuth(); // Use authentication context
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -34,15 +43,19 @@ export default function TabLayout() {
   };
 
   const handleSignOut = () => {
-    // Implement sign out logic here
+    logout(); // Call logout from AuthContext
     console.log("User signed out");
-    // You would typically reset the isUserLoggedIn state here
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Discount Mate</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("index")}>
+          <Image
+            source={require("@/assets/images/logo.png")} // Replace with your actual logo path
+            style={styles.logo}
+          />
+        </TouchableOpacity>
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchBox}
@@ -51,7 +64,7 @@ export default function TabLayout() {
           />
         </View>
         <View style={styles.headerIcons}>
-          {isUserLoggedIn ? (
+          {isAuthenticated ? ( // Check if the user is authenticated
             <TouchableOpacity
               onPress={handleSignOut}
               style={styles.signOutButton}
@@ -235,8 +248,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   header: {
-    paddingTop: 10,
-    paddingBottom: 20,
     backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
@@ -244,6 +255,12 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ddd",
     paddingHorizontal: 10,
     justifyContent: "space-between",
+    height: 60, // Ensure a consistent height for the header. Without this, the image size increases header space
+  },
+  logo: {
+    width: 100,
+    height: 180,
+    resizeMode: "contain",
   },
   title: {
     fontSize: 20,
