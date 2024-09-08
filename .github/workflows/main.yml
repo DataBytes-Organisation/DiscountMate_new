@@ -12,42 +12,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11.8'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11.8'
 
-      - name: Install Chrome and ChromeDriver
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-          sudo apt-get install -y chromium-chromedriver
-          google-chrome --version
-          chromedriver --version
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r Scrapping/Australia_GroceriesScraper/requirements.txt
 
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r Scrapping/Australia_GroceriesScraper/requirements.txt
+    - name: Set up environment variables
+      run: |
+        echo "MONGO_USERNAME=discountmate" >> .env
+        echo "MONGO_PASSWORD=discountmate1" >> .env
 
-      - name: Set up environment variables
-        run: |
-          echo "MONGO_USERNAME=discountmate" >> $GITHUB_ENV
-          echo "MONGO_PASSWORD=discountmate1" >> $GITHUB_ENV
+    - name: Run Woolworths scraper script
+      run: |
+        python Scrapping/Australia_GroceriesScraper/scraper_woolworths.py
 
-      - name: Run Woolworths scraper script
-        run: |
-          python Scrapping/Australia_GroceriesScraper/scraper_woolworths.py
-        env:
-          MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
-          MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
-
-      - name: Upload MongoDB logs
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: logs
-          path: mongodb_logs.txt
+    - name: Upload MongoDB logs
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: logs
+        path: mongodb_logs.txt
