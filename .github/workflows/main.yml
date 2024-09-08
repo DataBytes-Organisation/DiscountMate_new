@@ -18,7 +18,24 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11.8'  
+          python-version: '3.11.8'
+
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+          google-chrome --version
+
+      - name: Set up ChromeDriver
+        run: |
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          echo "Chrome version: $CHROME_VERSION"
+          CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+          echo "Downloading ChromeDriver version: $CHROMEDRIVER_VERSION"
+          curl -sS -o /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+          sudo unzip -q /tmp/chromedriver.zip -d /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
+          chromedriver --version
 
       - name: Install dependencies
         run: |
@@ -27,12 +44,15 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          echo "MONGO_USERNAME=discountmate" >> .env
-          echo "MONGO_PASSWORD=discountmate1" >> .env
+          echo "MONGO_USERNAME=discountmate" >> $GITHUB_ENV
+          echo "MONGO_PASSWORD=discountmate1" >> $GITHUB_ENV
 
       - name: Run Woolworths scraper script
         run: |
           python Scrapping/Australia_GroceriesScraper/scraper_woolworths.py
+        env:
+          MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
+          MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
 
       - name: Upload MongoDB logs
         if: failure()
