@@ -1,18 +1,20 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Make sure this is correctly imported
-
+import React, { useRef, useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image, Animated } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const { width: viewportWidth } = Dimensions.get('window');
-//Main Home  page displaying the main dashboard 
 
+// Main Home page displaying the main dashboard
 const data = [
   { key: '1', title: 'test item1', text: 'Description of Item 1' },
   { key: '2', title: 'test item', text: 'Description of Item 2' },
   { key: '3', title: 'test item1', text: 'Description of Item 3' },
   { key: '4', title: 'test item1', text: 'Description of Item 4' },
   { key: '5', title: 'test item1', text: 'Description of Item 5' },
-
+  { key: '6', title: 'test item1', text: 'Description of Item 6' },
+  { key: '7', title: 'test item1', text: 'Description of Item 7' },
+  { key: '8', title: 'test item1', text: 'Description of Item 8' },
+  { key: '9', title: 'test item1', text: 'Description of Item 9' },
 ];
 
 const bigItemsData = [
@@ -41,7 +43,7 @@ const renderItem = ({ item }) => (
 
 const renderBigItem = ({ item }) => (
   <View style={styles.bigItem}>
-    <Image source={{ uri: item.image }} style={styles.bigItemImage} /> {/* Correct usage */}
+    <Image source={{ uri: item.image }} style={styles.bigItemImage} />
     <View style={styles.bigItemContent}>
       <Text style={styles.bigItemName}>{item.name}</Text>
       <Text style={styles.bigItemDescription}>{item.description}</Text>
@@ -64,26 +66,45 @@ const renderBigItem = ({ item }) => (
 );
 
 export default function HomeScreen() {
-  const flatListRef = useRef(null);
+  const flatListRef = useRef<FlatList>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
+  const animatedScroll = useRef(new Animated.Value(0)).current;
+
+  const itemWidth = viewportWidth * 0.3; // Adjust item width
+
+  const handleScroll = (newOffset) => {
+    Animated.timing(animatedScroll, {
+      toValue: newOffset,
+      duration: 300, // Animation duration (ms)
+      useNativeDriver: false,
+    }).start(() => {
+      setScrollOffset(newOffset);
+    });
+  };
 
   const handleNext = () => {
-    const newOffset = scrollOffset + viewportWidth * 0.3 + 10;
-    flatListRef.current?.scrollToOffset({
-      offset: newOffset,
-      animated: true,
-    });
-    setScrollOffset(newOffset);
+    const newOffset = scrollOffset + itemWidth;
+    const maxOffset = (data.length - 1) * itemWidth;
+    if (newOffset <= maxOffset) {
+      handleScroll(newOffset);
+    }
   };
 
   const handlePrev = () => {
-    const newOffset = Math.max(scrollOffset - (viewportWidth * 0.3 + 10), 0);
-    flatListRef.current?.scrollToOffset({
-      offset: newOffset,
-      animated: true,
-    });
-    setScrollOffset(newOffset);
+    const newOffset = Math.max(scrollOffset - itemWidth, 0);
+    handleScroll(newOffset);
   };
+
+  useEffect(() => {
+    // Synchronize FlatList scrolling with the animated value
+    animatedScroll.addListener(({ value }) => {
+      flatListRef.current?.scrollToOffset({ offset: value, animated: false });
+    });
+
+    return () => {
+      animatedScroll.removeAllListeners();
+    };
+  }, [animatedScroll]);
 
   return (
     <View style={styles.container}>
@@ -97,12 +118,11 @@ export default function HomeScreen() {
         horizontal
         showsHorizontalScrollIndicator={false}
       />
-      
-      
-      <Text style={styles.subTitle}>Explore our current deals </Text>
+
+      <Text style={styles.subTitle}>Explore our current deals</Text>
       <View style={styles.carouselContainer}>
         <TouchableOpacity style={[styles.arrowButton, styles.arrowButtonLeft]} onPress={handlePrev}>
-          <Text style={styles.arrowText}>‹</Text>
+          <Icon name="chevron-left" size={24} color="#000" />
         </TouchableOpacity>
         <FlatList
           ref={flatListRef}
@@ -112,11 +132,14 @@ export default function HomeScreen() {
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => item.key}
           contentContainerStyle={styles.carouselContentContainer}
-          initialNumToRender={1}
-          onScroll={(event) => setScrollOffset(event.nativeEvent.contentOffset.x)}
+          getItemLayout={(data, index) => ({
+            length: itemWidth,
+            offset: itemWidth * index,
+            index,
+          })}
         />
         <TouchableOpacity style={[styles.arrowButton, styles.arrowButtonRight]} onPress={handleNext}>
-          <Text style={styles.arrowText}>›</Text>
+          <Icon name="chevron-right" size={24} color="#000" />
         </TouchableOpacity>
       </View>
     </View>
@@ -133,32 +156,30 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     fontSize: 24,
-    color: "#6595a3", 
+    color: '#6595a3',
     fontWeight: 'bold',
     marginBottom: 20,
   },
   subTitle: {
     fontSize: 22,
-    color: "#6595a3", 
+    color: '#6595a3',
     marginBottom: 20,
-  },
-  carouselContainer: {
-    position: 'relative',
-    width: '100%',
+  }, carouselContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
   carouselContentContainer: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   carouselItem: {
-    width: viewportWidth * 0.15,
+    width: viewportWidth * 0.23,
     backgroundColor: 'lightgray',
-    borderRadius: 5,
+    borderRadius: 10,
     height: 150,
     padding: 20,
-    marginHorizontal: 30,
+    marginHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -169,48 +190,32 @@ const styles = StyleSheet.create({
   carouselText: {
     fontSize: 16,
   },
-  arrowButton: {
-    position: 'absolute',
-    top: '50%',
-    padding: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 20,
-    zIndex: 1,
-  },
   arrowButtonLeft: {
-    left: 10,
-    transform: [{ translateY: -20 }],
+    padding: 10,
   },
   arrowButtonRight: {
-    right: 10,
-    transform: [{ translateY: -20 }],
-  },
-  arrowText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000',
+    padding: 10,
   },
   bigItemsContainer: {
     marginBottom: 20,
-    alignItems: 'center',   
+    alignItems: 'center',
   },
   bigItem: {
     flexDirection: 'row',
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
     overflow: 'hidden',
-    marginRight: 20, // Space between items
-    width: 400, // Fixed width
-    height: 230, // Fixed height
+    marginRight: 20,
+    width: 400,
+    height: 230,
   },
   bigItemImage: {
     width: 200,
-    height: '100%', //  image fill the height of the container
+    height: '100%',
   },
   bigItemContent: {
     flex: 1,
     padding: 10,
-    
     justifyContent: 'center',
   },
   bigItemName: {

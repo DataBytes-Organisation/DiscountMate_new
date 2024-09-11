@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import {  Image } from 'react-native';
-
+import Icon from 'react-native-vector-icons/FontAwesome';  // Import FontAwesome icons
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth } from './AuthContext'; // Import AuthProvider and useAuth
 
@@ -50,12 +50,16 @@ function TabLayoutContent() {
           />
         </TouchableOpacity>
         <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchBox}
-            placeholder="Search..."
-            placeholderTextColor="#888"
-          />
+          <View style={styles.searchBoxWrapper}>
+            <Icon name="search" size={20} color="#888" style={styles.searchIcon} />
+            <TextInput
+              style={styles.searchBox}
+              placeholder="Search..."
+              placeholderTextColor="#888"
+            />
+          </View>
         </View>
+
         <View style={styles.headerIcons}>
           {isAuthenticated ? ( // Check if the user is authenticated
             <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
@@ -81,9 +85,9 @@ function TabLayoutContent() {
         </View>
       )}
       <View style={styles.mainContent}>
-        <View style={[styles.sidebar, isSidebarCollapsed ? styles.sidebarCollapsed : null]}>
+      <View style={[styles.sidebar, isSidebarCollapsed ? styles.sidebarCollapsed : null]}>
           <TouchableOpacity onPress={toggleSidebar} style={styles.toggleButton}>
-            <Text style={styles.toggleButtonText}>{isSidebarCollapsed ? 'Expand' : 'Collapse'}</Text>
+            <Icon name={isSidebarCollapsed ? "arrow-right" : "arrow-left"} size={15} color="#888" /> 
           </TouchableOpacity>
           {!isSidebarCollapsed && (
             <View style={styles.sidebarButtons}>
@@ -184,29 +188,33 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
     paddingHorizontal: 10,
     justifyContent: 'space-between',
-    height: 60, // Ensure a consistent height for the header. Without this, the image size increases header space
-
+    height: 60, 
   },
   logo: {
     width: 100, 
     height: 180,  
     resizeMode: 'contain', 
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
   searchContainer: {
     flex: 1,
     alignItems: 'center',
   },
-  searchBox: {
+  searchBoxWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     width: '80%',
-    height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
+    height: 40,
     paddingHorizontal: 10,
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchBox: {
+    flex: 1,  
+    height: '100%',
   },
   headerIcons: {
     marginRight: 10,
@@ -266,14 +274,16 @@ const styles = StyleSheet.create({
   sidebar: {
     width: 150,
     paddingVertical: 20,
+    borderRightColor: "white",
     paddingHorizontal: 13,
     backgroundColor: '#f8f8f8',
     borderRightWidth: 1,
-    borderRightColor: '#ddd',
     position: 'relative',
   },
   sidebarCollapsed: {
+    borderRightColor: "white",
     width: 20,
+    backgroundColor: "whitw",
   },
   toggleButton: {
     position: 'absolute',
@@ -305,4 +315,5 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
   },
+  
 });
