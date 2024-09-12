@@ -21,10 +21,10 @@ export default function Login() {
   const handleSubmit = async () => {
     try {
       console.log('handleSubmit called');  // Debug statement
-
+  
       const url = isLogin ? 'http://localhost:5000/signin' : 'http://localhost:5000/signup';
       console.log('API URL:', url);  // Debug statement
-
+  
       const body = isLogin
         ? JSON.stringify({ useremail: email, password: password })
         : JSON.stringify({
@@ -37,9 +37,9 @@ export default function Login() {
             phone_number: phoneNumber,
             admin: isAdmin // Include admin field
           });
-
+  
       console.log('Request Body:', body);  // Debug statement
-
+  
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -47,27 +47,34 @@ export default function Login() {
         },
         body: body,
       });
-
+  
       console.log('Response received:', response);  // Debug statement
-
+  
       const data = await response.json();
       console.log('Response JSON:', data);  // Debug statement
-
+  
       if (response.ok && isLogin) {
         console.log('Signin successful:', data.message);
-
+        
         // Use the login function to update the auth context and navigate to profile
         login(data.token);
-
-      } else if (!response.ok) {
-        console.error('Signin failed:', data.message);
+  
+      } else if (response.ok && !isLogin) {
+        console.log('Signup successful, switching to login');
+        alert('Signup successful, please login');
+        
+        // Switch to login form after successful signup
+        setIsLogin(true);  // Switch the form to login mode
+      } else {
+        console.error('Request failed:', data.message);
         alert(data.message);
       }
     } catch (error) {
-      console.error('Error during signin:', error);
+      console.error('Error during request:', error);
       alert('An error occurred. Please try again.');
     }
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
