@@ -18,7 +18,7 @@ let db;
 async function connectToMongoDB() {
     try {
         const client = await MongoClient.connect(uri); // No need for useUnifiedTopology
-        db = client.db('user-auth-test'); // Use your database name here
+        db = client.db('user-data'); // Use your database name here
         console.log('Connected to MongoDB Atlas');
     } catch (err) {
         console.error('Connection error to MongoDB:', err);
@@ -47,7 +47,7 @@ app.use(bodyParser.json());
 
 // Signup API
 app.post('/signup', async (req, res) => {
-    const { useremail, password, verifyPassword, user_fname, user_lname, address, phone_number } = req.body;
+    const { useremail, password, verifyPassword, user_fname, user_lname, address, phone_number, admin } = req.body;
 
     try {
         console.log('Received signup data:', req.body);
@@ -68,7 +68,8 @@ app.post('/signup', async (req, res) => {
             user_fname,
             user_lname,
             address,
-            phone_number
+            phone_number,
+            admin: admin || false, // Include the admin field, default to false if not provided
         };
 
         const result = await db.collection('users').insertOne(user);
@@ -80,6 +81,7 @@ app.post('/signup', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
 
 // Signin API
 app.post('/signin', async (req, res) => {
@@ -99,8 +101,8 @@ app.post('/signin', async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.encrypted_password);
 
         if (isMatch) {
-            const token = jwt.sign({ useremail }, 'your_jwt_secret', { expiresIn: '1h' });
-            return res.status(200).json({ message: 'Signin successful', token });
+            const token = jwt.sign({ useremail, admin: user.admin }, 'your_jwt_secret', { expiresIn: '1h' });
+            return res.status(200).json({ message: 'Signin successful', token, admin: user.admin });
         } else {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
@@ -109,6 +111,7 @@ app.post('/signin', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
 
 // Profile API to return user details if logged in
 app.get('/profile', async (req, res) => {
@@ -134,13 +137,14 @@ app.get('/profile', async (req, res) => {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            // Send back user profile details, excluding sensitive info
+            // Send back user profile details, including the admin field
             return res.status(200).json({ 
                 user_fname: user.user_fname,
                 user_lname: user.user_lname,
                 email: user.email,
                 address: user.address,
-                phone_number: user.phone_number
+                phone_number: user.phone_number,
+                admin: user.admin  // Include the admin field
             });
         });
     } catch (error) {
@@ -148,6 +152,7 @@ app.get('/profile', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
 
 // Contact Form Submission API
 app.post('/contact', (req, res) => {
