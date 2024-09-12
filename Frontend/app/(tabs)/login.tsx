@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, Switch } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from './AuthContext';  // Import the useAuth hook
 
@@ -16,6 +16,7 @@ export default function Login() {
   const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isLogin, setIsLogin] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false); // Admin checkbox state
 
   const handleSubmit = async () => {
     try {
@@ -33,7 +34,8 @@ export default function Login() {
             user_fname: userFname,
             user_lname: userLname,
             address: address,
-            phone_number: phoneNumber
+            phone_number: phoneNumber,
+            admin: isAdmin // Include admin field
           });
 
       console.log('Request Body:', body);  // Debug statement
@@ -122,6 +124,14 @@ export default function Login() {
               onChangeText={setPhoneNumber}
               keyboardType="phone-pad"
             />
+            {/* Admin checkbox using Switch */}
+            <View style={styles.checkboxContainer}>
+              <Text style={styles.checkboxLabel}>Admin</Text>
+              <Switch
+                value={isAdmin}
+                onValueChange={setIsAdmin}
+              />
+            </View>
           </>
         )}
         <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
@@ -201,5 +211,13 @@ const styles = StyleSheet.create({
   },
   switchButtonText: {
     color: '#4CAF50',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  checkboxLabel: {
+    marginRight: 10,
   },
 });
