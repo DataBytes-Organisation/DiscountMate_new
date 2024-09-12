@@ -9,7 +9,7 @@ const fetchProducts = async () => {
   try {
     const response = await fetch('http://localhost:5000/products'); // current product api endpoint
     const data = await response.json();
-    return data;
+    return Array.isArray(data) ? data : []; // Ensure the result is always an array
   } catch (error) {
     console.error(error);
     return [];
