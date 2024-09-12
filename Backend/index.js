@@ -110,6 +110,45 @@ app.post('/signin', async (req, res) => {
     }
 });
 
+// Profile API to return user details if logged in
+app.get('/profile', async (req, res) => {
+    try {
+        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({ message: 'No token provided, please log in' });
+        }
+
+        // Verify the JWT token
+        jwt.verify(token, 'your_jwt_secret', async (err, decoded) => {
+            if (err) {
+                return res.status(401).json({ message: 'Invalid token, please log in again' });
+            }
+
+            const useremail = decoded.useremail;
+
+            // Fetch the user details from the database
+            const user = await db.collection('users').findOne({ email: useremail }, { projection: { encrypted_password: 0 } });
+
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            // Send back user profile details, excluding sensitive info
+            return res.status(200).json({ 
+                user_fname: user.user_fname,
+                user_lname: user.user_lname,
+                email: user.email,
+                address: user.address,
+                phone_number: user.phone_number
+            });
+        });
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
 // Contact Form Submission API
 app.post('/contact', (req, res) => {
     const { name, email, message } = req.body;
