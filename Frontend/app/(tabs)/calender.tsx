@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import Calendar from 'react-calendar';
+import './calendar.css'; // Make sure to import the default styles
 
 export default function Calender() {
+    const [value, onChange] = useState(new Date());
+
     return (
-        <View>
-            <Text>This is the Calendar Screen</Text>
+        <View style={styles.container}>
+            <Calendar 
+                onChange={onChange} 
+                value={value} 
+                onClickDay={() => {}}
+                className="styled-calendar" // Custom class
+            />
         </View>
     );
 }
@@ -18,43 +24,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 20,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    loggedInContainer: {
-        alignItems: 'center',
-        width: '100%',
-    },
-    loggedOutContainer: {
-        alignItems: 'center',
-    },
-    message: {
-        fontSize: 18,
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    profileInfo: {
-        width: '100%',
-        backgroundColor: '#f0f0f0',
-        padding: 20,
-        borderRadius: 10,
-        marginBottom: 20,
-    },
-    infoText: {
-        fontSize: 16,
-        marginBottom: 10,
-    },
-    button: {
-        backgroundColor: '#4CAF50',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 5,
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
+        backgroundColor: '#f0f8ff', // Light blue background
     },
 });
