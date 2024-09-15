@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'; 
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Linking from 'expo-linking';  // Use Linking for navigation
-import { useAuth } from './AuthContext';  // Import useAuth from AuthContext
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Link } from "expo-router";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Linking from "expo-linking"; // Use Linking for navigation
+import { useAuth } from "./AuthContext"; // Import useAuth from AuthContext
 
 // Define the type for the profile data
 interface Profile {
@@ -24,19 +24,23 @@ export default function Profile() {
     const fetchProfile = async () => {
       try {
         // Get token from AsyncStorage
-        const token = await AsyncStorage.getItem('authToken');
+        const token = await AsyncStorage.getItem("authToken");
+        console.log("check token from fetching profile: ", token);
         if (!token) {
           return;
         }
 
         // Make API call to get profile data
-        const response = await axios.get<Profile>('http://localhost:5000/profile', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get<Profile>(
+          "http://localhost:5000/api/users/profile",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         setProfile(response.data);
       } catch (error) {
-        console.log('Error fetching profile:', error);
+        console.log("Error fetching profile:", error);
       }
     };
 
@@ -57,11 +61,15 @@ export default function Profile() {
         <View style={styles.loggedInContainer}>
           <Text style={styles.message}>User is logged in</Text>
           <View style={styles.profileInfo}>
-            <Text style={styles.infoText}>First Name: {profile.user_fname}</Text>
+            <Text style={styles.infoText}>
+              First Name: {profile.user_fname}
+            </Text>
             <Text style={styles.infoText}>Last Name: {profile.user_lname}</Text>
             <Text style={styles.infoText}>Email: {profile.email}</Text>
             <Text style={styles.infoText}>Address: {profile.address}</Text>
-            <Text style={styles.infoText}>Phone Number: {profile.phone_number}</Text>
+            <Text style={styles.infoText}>
+              Phone Number: {profile.phone_number}
+            </Text>
           </View>
           <TouchableOpacity style={styles.button} onPress={handleSignOut}>
             <Text style={styles.buttonText}>Sign Out</Text>
@@ -69,8 +77,10 @@ export default function Profile() {
         </View>
       ) : (
         <View style={styles.loggedOutContainer}>
-          <Text style={styles.message}>Please log in or sign up to view your profile</Text>
-          <Link href="/login" asChild>  
+          <Text style={styles.message}>
+            Please log in or sign up to view your profile
+          </Text>
+          <Link href="/login" asChild>
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>Login/Signup</Text>
             </TouchableOpacity>
@@ -84,30 +94,30 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
   },
   loggedInContainer: {
-    alignItems: 'center',
-    width: '100%',
+    alignItems: "center",
+    width: "100%",
   },
   loggedOutContainer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   message: {
     fontSize: 18,
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   profileInfo: {
-    width: '100%',
-    backgroundColor: '#f0f0f0',
+    width: "100%",
+    backgroundColor: "#f0f0f0",
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
@@ -117,13 +127,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
