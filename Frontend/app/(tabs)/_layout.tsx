@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
-import {  Image } from 'react-native';
+import { Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';  // Import FontAwesome icons
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth } from './AuthContext'; // Import AuthProvider and useAuth
@@ -43,8 +43,8 @@ function TabLayoutContent() {
     <View style={styles.container}>
       <View style={styles.header}>
 
-      <TouchableOpacity onPress={() => navigation.navigate('index')}>
-          <Image 
+        <TouchableOpacity onPress={() => navigation.navigate('index')}>
+          <Image
             source={require('@/assets/images/logo.png')} // Replace with your actual logo path
             style={styles.logo}
           />
@@ -85,9 +85,9 @@ function TabLayoutContent() {
         </View>
       )}
       <View style={styles.mainContent}>
-      <View style={[styles.sidebar, isSidebarCollapsed ? styles.sidebarCollapsed : null]}>
+        <View style={[styles.sidebar, isSidebarCollapsed ? styles.sidebarCollapsed : null]}>
           <TouchableOpacity onPress={toggleSidebar} style={styles.toggleButton}>
-            <Icon name={isSidebarCollapsed ? "arrow-right" : "arrow-left"} size={15} color="#888" /> 
+            <Icon name={isSidebarCollapsed ? "arrow-right" : "arrow-left"} size={15} color="#888" />
           </TouchableOpacity>
           {!isSidebarCollapsed && (
             <View style={styles.sidebarButtons}>
@@ -111,6 +111,11 @@ function TabLayoutContent() {
                 <TabBarIcon name="document-text-outline" color="#000" />
                 <Text style={styles.iconButtonText}>Blog</Text>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('calender')} style={styles.iconButton}>
+                <Icon name="calendar" size={20} color="#000" />
+                <Text style={styles.iconButtonText}>Calendar</Text>
+              </TouchableOpacity>
+
             </View>
           )}
         </View>
@@ -167,6 +172,15 @@ function TabLayoutContent() {
                 ),
               }}
             />
+            <Tabs.Screen
+              name="calender"
+              options={{
+                title: 'Calendar',
+                tabBarIcon: ({ color, focused }) => (
+                  <TabBarIcon name="calendar" size={focused ? 24 : 20} color={color} />
+                ),
+              }}
+            />
           </Tabs>
         </View>
       </View>
@@ -180,7 +194,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  header: {   
+  header: {
     backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
@@ -188,12 +202,12 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
     paddingHorizontal: 10,
     justifyContent: 'space-between',
-    height: 60, 
+    height: 60,
   },
   logo: {
-    width: 100, 
-    height: 180,  
-    resizeMode: 'contain', 
+    width: 100,
+    height: 180,
+    resizeMode: 'contain',
   },
   searchContainer: {
     flex: 1,
@@ -213,7 +227,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   searchBox: {
-    flex: 1,  
+    flex: 1,
     height: '100%',
   },
   headerIcons: {
@@ -315,5 +329,5 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
   },
-  
+
 });
