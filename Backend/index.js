@@ -3,43 +3,42 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
-const { Client } = require('pg');
+const { MongoClient } = require('mongodb');
 const jwt = require('jsonwebtoken');
 
-
-// PostgreSQL client configuration
-const client = new Client({
-    user: 'postgres',  // Replace with your PostgreSQL username
-    host: 'localhost',     // Replace with your PostgreSQL host
-    database: 'discountmate', // Replace with your PostgreSQL database name
-    password: 'password',  // Replace with your PostgreSQL password
-    port: 5432,            // Replace with your PostgreSQL port if different
-});
-
-// Connect to PostgreSQL
-client.connect(err => {
-    if (err) {
-        console.error('Connection error', err.stack);
-    } else {
-        console.log('Connected to PostgreSQL');
-    }
-});
-
+// MongoDB Atlas connection string
+const uri = 'mongodb+srv://discountmate:discountmate1@discountmatecluster.u80y7ta.mongodb.net/user-auth-test?retryWrites=true&w=majority&appName=DiscountMateCluster';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+let db;
+
+// Async function to connect to MongoDB Atlas
+async function connectToMongoDB() {
+    try {
+        const client = await MongoClient.connect(uri); // No need for useUnifiedTopology
+        db = client.db('user-data'); // Use your database name here
+        console.log('Connected to MongoDB Atlas');
+    } catch (err) {
+        console.error('Connection error to MongoDB:', err);
+    }
+}
+
+// Connect to MongoDB when the server starts
+connectToMongoDB();
+
 // Nodemailer transporter configuration
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // Use the appropriate email service (e.g., Gmail, Outlook)
+    service: 'gmail',
     auth: {
         user: 'testingnodemailer3@gmail.com',
-        pass: 'obml zgob pycg dbei', 
+        pass: 'obml zgob pycg dbei',
     },
 });
 
 app.use(cors({
-    origin: 'http://localhost:8081', // Replace with your frontend origin
+    origin: "*",
     methods: 'GET,POST,PUT,DELETE',
     credentials: true
 }));
@@ -48,74 +47,111 @@ app.use(bodyParser.json());
 
 // Signup API
 app.post('/signup', async (req, res) => {
-    const { useremail, password, verifyPassword, user_fname, user_lname, address, phone_number } = req.body;
+    const { useremail, password, verifyPassword, user_fname, user_lname, address, phone_number, admin } = req.body;
 
     try {
-        // Log the received data to the console
-        console.log('Received signup data:', {
-            useremail,
-            password,
-            verifyPassword,
-            user_fname,
-            user_lname,
-            address,
-            phone_number
-        });
+        console.log('Received signup data:', req.body);
+
+        // Check if database is initialized
+        if (!db) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Generate a unique user ID (using UUID for simplicity)
-        const userId = Math.floor(Math.random() * 1000000); // Replace with UUID if needed
+        // Insert the new user into the MongoDB database
+        const user = {
+            account_user_name: useremail,
+            email: useremail,
+            encrypted_password: hashedPassword,
+            user_fname,
+            user_lname,
+            address,
+            phone_number,
+            admin: admin || false, // Include the admin field, default to false if not provided
+        };
 
-        // Insert the new user into the PostgreSQL database
-        const query = `
-            INSERT INTO "user" (user_id, account_user_name, email, encrypted_password, user_fname, user_lname, address, phone_number)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        `;
-        const values = [userId, useremail, useremail, hashedPassword, user_fname, user_lname, address, phone_number];
-        await client.query(query, values);
+        const result = await db.collection('users').insertOne(user);
 
         // Send a success response
-        res.status(201).json({ message: 'User created successfully' });
+        res.status(201).json({ message: 'User created successfully', userId: result.insertedId });
     } catch (error) {
-        console.error("Error signing up user:", error);
+        console.error('Error signing up user:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
 
-
-
-// Inside your signin API
+// Signin API
 app.post('/signin', async (req, res) => {
     const { useremail, password } = req.body;
-    try {
-        const query = 'SELECT encrypted_password FROM "user" WHERE email = $1';
-        const values = [useremail];
-        const result = await client.query(query, values);
 
-        if (result.rows.length === 0) {
+    try {
+        if (!db) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
+
+        const user = await db.collection('users').findOne({ email: useremail });
+
+        if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        const userPassword = result.rows[0].encrypted_password;
-        const isMatch = await bcrypt.compare(password, userPassword);
+        const isMatch = await bcrypt.compare(password, user.encrypted_password);
 
         if (isMatch) {
-            // Generate JWT
-            const token = jwt.sign({ useremail }, 'your_jwt_secret', { expiresIn: '1h' });
-            return res.status(200).json({ message: 'Signin successful', token });
+            const token = jwt.sign({ useremail, admin: user.admin }, 'your_jwt_secret', { expiresIn: '1h' });
+            return res.status(200).json({ message: 'Signin successful', token, admin: user.admin });
         } else {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
     } catch (error) {
-        console.error("Error during signin:", error);
+        console.error('Error during signin:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
 
+// Profile API to return user details if logged in
+app.get('/profile', async (req, res) => {
+    try {
+        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({ message: 'No token provided, please log in' });
+        }
+
+        // Verify the JWT token
+        jwt.verify(token, 'your_jwt_secret', async (err, decoded) => {
+            if (err) {
+                return res.status(401).json({ message: 'Invalid token, please log in again' });
+            }
+
+            const useremail = decoded.useremail;
+
+            // Fetch the user details from the database
+            const user = await db.collection('users').findOne({ email: useremail }, { projection: { encrypted_password: 0 } });
+
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            // Send back user profile details, including the admin field
+            return res.status(200).json({ 
+                user_fname: user.user_fname,
+                user_lname: user.user_lname,
+                email: user.email,
+                address: user.address,
+                phone_number: user.phone_number,
+                admin: user.admin  // Include the admin field
+            });
+        });
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 
 // Contact Form Submission API
@@ -151,4 +187,3 @@ app.get('/future-api', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
