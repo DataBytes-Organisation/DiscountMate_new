@@ -1,18 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput, Modal, Alert } from 'react-native';
-import { useAuth } from './AuthContext';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from './AuthContext'; // Reintroduce useAuth
+
+// Define the type for blog and news items
+interface ContentItem {
+  heading: string;
+  date: string;
+  description: string;
+}
 
 export default function BlogNews() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth(); // Get isAuthenticated from AuthContext
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [modalType, setModalType] = useState<'Blog' | 'News'>('Blog');
   const [heading, setHeading] = useState<string>('');
   const [content, setContent] = useState<string>('');
+  const [blogs, setBlogs] = useState<ContentItem[]>([]);
+  const [news, setNews] = useState<ContentItem[]>([]);
 
+  // Fetch blogs and news from APIs
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const blogsResponse = await axios.get('http://localhost:5000/blogs');
+        const newsResponse = await axios.get('http://localhost:5000/news');
+        
+        setBlogs(blogsResponse.data);
+        setNews(newsResponse.data);
+      } catch (error) {
+        console.error('Error fetching blogs or news:', error);
+      }
+    };
+
+    fetchContent();
+  }, []);
+
+  // Fetch user profile if authenticated
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -55,7 +82,7 @@ export default function BlogNews() {
         heading,
         date: currentDate,
         description: content,
-        user: user.email, // Send the user's email
+        user: user?.email || 'Anonymous', // Send the user's email or 'Anonymous' if not logged in
       };
 
       await axios.post(apiUrl, data);
@@ -72,17 +99,25 @@ export default function BlogNews() {
     <ScrollView style={styles.container}>
       <Text style={styles.pageTitle}>Blog & News</Text>
 
+      {/* Blogs Section */}
       <View style={styles.headerContainer}>
-        <Text style={styles.sectionTitle}>Blog</Text>
+        <Text style={styles.sectionTitle}>Blogs</Text>
         {isAuthenticated && (
           <TouchableOpacity style={styles.addButton} onPress={() => openModal('Blog')}>
             <Text style={styles.addButtonText}>Add Blog</Text>
           </TouchableOpacity>
         )}
       </View>
-      
-      {/* Blog and News content rendering goes here */}
-      
+
+      {blogs.map((post, index) => (
+        <View key={index} style={styles.post}>
+          <Text style={styles.postTitle}>{post.heading}</Text>
+          <Text style={styles.postDate}>{new Date(post.date).toLocaleDateString()}</Text>
+          <Text style={styles.postDescription}>{post.description}</Text>
+        </View>
+      ))}
+
+      {/* News Section */}
       <View style={styles.headerContainer}>
         <Text style={styles.sectionTitle}>News</Text>
         {isAuthenticated && isAdmin && (
@@ -91,6 +126,14 @@ export default function BlogNews() {
           </TouchableOpacity>
         )}
       </View>
+
+      {news.map((article, index) => (
+        <View key={index} style={styles.post}>
+          <Text style={styles.postTitle}>{article.heading}</Text>
+          <Text style={styles.postDate}>{new Date(article.date).toLocaleDateString()}</Text>
+          <Text style={styles.postDescription}>{article.description}</Text>
+        </View>
+      ))}
 
       {/* Modal for adding Blog/News */}
       <Modal
@@ -150,6 +193,28 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: 10,
+  },
+  post: {
+    backgroundColor: '#ffffff',
+    marginBottom: 20,
+    borderRadius: 8,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+  },
+  postTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  postDate: {
+    fontSize: 14,
+    color: '#888',
+    marginBottom: 10,
+  },
+  postDescription: {
+    fontSize: 16,
   },
   addButton: {
     backgroundColor: '#007bff',
