@@ -179,34 +179,60 @@ app.post('/contact', (req, res) => {
 });
 
 // Blog Submission API
-app.post('/submit-blog', (req, res) => {
+app.post('/submit-blog', async (req, res) => {
     const { heading, date, description, user } = req.body;
 
-    // Print the received data to the console
-    console.log('Received blog submission:');
-    console.log('Heading:', heading);
-    console.log('Date:', date);
-    console.log('Description:', description);
-    console.log('User:', user);
+    try {
+        // Check if database is initialized
+        if (!db) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
 
-    // Send back a success response
-    res.status(200).json({ message: 'Blog data received successfully' });
+        // Insert blog data into the 'blogs' collection
+        const result = await db.collection('blogs').insertOne({
+            heading,
+            description,
+            date,
+            user,  // The user who submitted the blog
+            created_at: new Date()  // Timestamp of when the blog was created
+        });
+
+        // Send back a success response with the inserted blog ID
+        res.status(201).json({ message: 'Blog data received and saved successfully', blogId: result.insertedId });
+    } catch (error) {
+        console.error('Error submitting blog:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
 });
+
 
 // News Submission API
-app.post('/submit-news', (req, res) => {
+app.post('/submit-news', async (req, res) => {
     const { heading, date, description, user } = req.body;
 
-    // Print the received data to the console
-    console.log('Received news submission:');
-    console.log('Heading:', heading);
-    console.log('Date:', date);
-    console.log('Description:', description);
-    console.log('User:', user);
+    try {
+        // Check if database is initialized
+        if (!db) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
 
-    // Send back a success response
-    res.status(200).json({ message: 'News data received successfully' });
+        // Insert news data into the 'news' collection
+        const result = await db.collection('news').insertOne({
+            heading,
+            description,
+            date,
+            user,  // The user who submitted the news
+            created_at: new Date()  // Timestamp of when the news was created
+        });
+
+        // Send back a success response with the inserted news ID
+        res.status(201).json({ message: 'News data received and saved successfully', newsId: result.insertedId });
+    } catch (error) {
+        console.error('Error submitting news:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
 });
+
 
 
 // Placeholder for future APIs
