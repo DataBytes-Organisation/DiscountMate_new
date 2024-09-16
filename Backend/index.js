@@ -178,6 +178,37 @@ app.post('/contact', (req, res) => {
     });
 });
 
+// Blog Submission API
+app.post('/submit-blog', (req, res) => {
+    const { heading, date, description, user } = req.body;
+
+    // Print the received data to the console
+    console.log('Received blog submission:');
+    console.log('Heading:', heading);
+    console.log('Date:', date);
+    console.log('Description:', description);
+    console.log('User:', user);
+
+    // Send back a success response
+    res.status(200).json({ message: 'Blog data received successfully' });
+});
+
+// News Submission API
+app.post('/submit-news', (req, res) => {
+    const { heading, date, description, user } = req.body;
+
+    // Print the received data to the console
+    console.log('Received news submission:');
+    console.log('Heading:', heading);
+    console.log('Date:', date);
+    console.log('Description:', description);
+    console.log('User:', user);
+
+    // Send back a success response
+    res.status(200).json({ message: 'News data received successfully' });
+});
+
+
 // Placeholder for future APIs
 app.get('/future-api', (req, res) => {
     res.send('This is a placeholder for future APIs');
