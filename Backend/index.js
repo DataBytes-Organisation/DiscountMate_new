@@ -178,6 +178,101 @@ app.post('/contact', (req, res) => {
     });
 });
 
+// Blog Submission API
+app.post('/submit-blog', async (req, res) => {
+    const { heading, date, description, user } = req.body;
+
+    try {
+        // Check if database is initialized
+        if (!db) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
+
+        // Insert blog data into the 'blogs' collection
+        const result = await db.collection('blogs').insertOne({
+            heading,
+            description,
+            date,
+            user,  // The user who submitted the blog
+            created_at: new Date()  // Timestamp of when the blog was created
+        });
+
+        // Send back a success response with the inserted blog ID
+        res.status(201).json({ message: 'Blog data received and saved successfully', blogId: result.insertedId });
+    } catch (error) {
+        console.error('Error submitting blog:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+
+// News Submission API
+app.post('/submit-news', async (req, res) => {
+    const { heading, date, description, user } = req.body;
+
+    try {
+        // Check if database is initialized
+        if (!db) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
+
+        // Insert news data into the 'news' collection
+        const result = await db.collection('news').insertOne({
+            heading,
+            description,
+            date,
+            user,  // The user who submitted the news
+            created_at: new Date()  // Timestamp of when the news was created
+        });
+
+        // Send back a success response with the inserted news ID
+        res.status(201).json({ message: 'News data received and saved successfully', newsId: result.insertedId });
+    } catch (error) {
+        console.error('Error submitting news:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+// Get All Blogs - ordered by newest first
+app.get('/blogs', async (req, res) => {
+    try {
+        // Check if the database is initialized
+        if (!db) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
+
+        // Retrieve all blogs from the 'blogs' collection, sorted by date (newest first)
+        const blogs = await db.collection('blogs').find().sort({ date: -1 }).toArray();
+
+        // Send the blogs back in the response
+        res.status(200).json(blogs);
+    } catch (error) {
+        console.error('Error retrieving blogs:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+// Get All News - ordered by newest first
+app.get('/news', async (req, res) => {
+    try {
+        // Check if the database is initialized
+        if (!db) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
+
+        // Retrieve all news from the 'news' collection, sorted by date (newest first)
+        const news = await db.collection('news').find().sort({ date: -1 }).toArray();
+
+        // Send the news back in the response
+        res.status(200).json(news);
+    } catch (error) {
+        console.error('Error retrieving news:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+
+
 // Placeholder for future APIs
 app.get('/future-api', (req, res) => {
     res.send('This is a placeholder for future APIs');
