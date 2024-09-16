@@ -7,26 +7,41 @@ const { MongoClient } = require('mongodb');
 const jwt = require('jsonwebtoken');
 
 // MongoDB Atlas connection string
-const uri = 'mongodb+srv://discountmate:discountmate1@discountmatecluster.u80y7ta.mongodb.net/user-auth-test?retryWrites=true&w=majority&appName=DiscountMateCluster';
+const uri = "mongodb+srv://discountmate:discountmate1@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 let db;
+let client; // Declare client globally
 
 // Async function to connect to MongoDB Atlas
 async function connectToMongoDB() {
     try {
-        const client = await MongoClient.connect(uri); // No need for useUnifiedTopology
-        db = client.db('user-data'); // Use your database name here
+        client = await MongoClient.connect(uri); // Assign to global client
+        db = client.db('user-data'); // Default database for user data
         console.log('Connected to MongoDB Atlas');
     } catch (err) {
         console.error('Connection error to MongoDB:', err);
     }
 }
 
-// Connect to MongoDB when the server starts
-connectToMongoDB();
+// Connect to MongoDB and start the server after a successful connection
+connectToMongoDB().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}).catch(err => {
+    console.error('Failed to connect to MongoDB:', err);
+});
+
+app.use(cors({
+    origin: "*",
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true
+}));
+
+app.use(bodyParser.json());
 
 // Nodemailer transporter configuration
 const transporter = nodemailer.createTransport({
@@ -37,13 +52,35 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-app.use(cors({
-    origin: "*",
-    methods: 'GET,POST,PUT,DELETE',
-    credentials: true
-}));
+// Root route to avoid 404 error
+app.get('/', (req, res) => {
+    res.send('Welcome to the DiscountMate API!');
+});
 
-app.use(bodyParser.json());
+// Endpoint to get products from 'SampleData.Sample_Product_Master'
+app.get('/products', async (req, res) => {
+    try {
+        console.log('Fetching products from MongoDB...');
+        
+        if (!client) {
+            return res.status(500).json({ message: 'Database client not initialized' });
+        }
+        
+        const sampleDataDb = client.db('SampleData'); // Connect to the 'SampleData' database
+        const products = await sampleDataDb.collection('Sample_Product_Master').find().toArray();
+        
+        if (products.length === 0) {
+            console.log('No products found');
+        } else {
+            console.log('Products fetched:', products);
+        }
+        
+        res.json(products);
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
 
 // Signup API
 app.post('/signup', async (req, res) => {
@@ -82,7 +119,6 @@ app.post('/signup', async (req, res) => {
     }
 });
 
-
 // Signin API
 app.post('/signin', async (req, res) => {
     const { useremail, password } = req.body;
@@ -112,7 +148,6 @@ app.post('/signin', async (req, res) => {
     }
 });
 
-
 // Profile API to return user details if logged in
 app.get('/profile', async (req, res) => {
     try {
@@ -138,7 +173,7 @@ app.get('/profile', async (req, res) => {
             }
 
             // Send back user profile details, including the admin field
-            return res.status(200).json({ 
+            return res.status(200).json({
                 user_fname: user.user_fname,
                 user_lname: user.user_lname,
                 email: user.email,
@@ -152,7 +187,6 @@ app.get('/profile', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
-
 
 // Contact Form Submission API
 app.post('/contact', (req, res) => {
@@ -204,7 +238,6 @@ app.post('/submit-blog', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
-
 
 // News Submission API
 app.post('/submit-news', async (req, res) => {
@@ -271,14 +304,8 @@ app.get('/news', async (req, res) => {
     }
 });
 
-
-
 // Placeholder for future APIs
 app.get('/future-api', (req, res) => {
     res.send('This is a placeholder for future APIs');
 });
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
