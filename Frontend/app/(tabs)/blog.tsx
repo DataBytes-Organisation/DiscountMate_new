@@ -1,38 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput, Modal, Alert } from 'react-native';
 import { useAuth } from './AuthContext';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const blogPosts = [
-  {
-    title: 'Top 10 Grocery Saving Tips',
-    date: 'August 7, 2024',
-    image: 'https://via.placeholder.com/150',
-    description: 'Learn the best tips to save on your grocery shopping every week.',
-  },
-  {
-    title: 'Healthy Eating on a Budget',
-    date: 'August 5, 2024',
-    image: 'https://via.placeholder.com/150',
-    description: 'Discover how you can eat healthy without breaking the bank.',
-  },
-];
-
-const newsArticles = [
-  {
-    title: 'DiscountMate Launches New Features',
-    date: 'August 6, 2024',
-    image: 'https://via.placeholder.com/150',
-    description: 'We have launched new features to help you save more on groceries.',
-  },
-  {
-    title: 'Grocery Price Trends in 2024',
-    date: 'August 4, 2024',
-    image: 'https://via.placeholder.com/150',
-    description: 'A look at how grocery prices have changed over the year.',
-  },
-];
 
 export default function BlogNews() {
   const { isAuthenticated } = useAuth();
@@ -76,10 +46,32 @@ export default function BlogNews() {
     setContent('');
   };
 
+  const handleSubmit = async () => {
+    try {
+      const currentDate = new Date().toISOString();
+      const apiUrl = modalType === 'Blog' ? 'http://localhost:5000/submit-blog' : 'http://localhost:5000/submit-news';
+
+      const data = {
+        heading,
+        date: currentDate,
+        description: content,
+        user: user.email, // Send the user's email
+      };
+
+      await axios.post(apiUrl, data);
+      
+      Alert.alert(`${modalType} submitted successfully`);
+      closeModal(); // Close the modal after successful submission
+    } catch (error) {
+      console.error(`Error submitting ${modalType}:`, error);
+      Alert.alert(`Error submitting ${modalType}`);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.pageTitle}>Blog & News</Text>
-      
+
       <View style={styles.headerContainer}>
         <Text style={styles.sectionTitle}>Blog</Text>
         {isAuthenticated && (
@@ -88,16 +80,8 @@ export default function BlogNews() {
           </TouchableOpacity>
         )}
       </View>
-      {blogPosts.map((post, index) => (
-        <View key={index} style={styles.post}>
-          <Image source={{ uri: post.image }} style={styles.image} />
-          <View style={styles.textContainer}>
-            <Text style={styles.postTitle}>{post.title}</Text>
-            <Text style={styles.postDate}>{post.date}</Text>
-            <Text style={styles.postDescription}>{post.description}</Text>
-          </View>
-        </View>
-      ))}
+      
+      {/* Blog and News content rendering goes here */}
       
       <View style={styles.headerContainer}>
         <Text style={styles.sectionTitle}>News</Text>
@@ -107,16 +91,6 @@ export default function BlogNews() {
           </TouchableOpacity>
         )}
       </View>
-      {newsArticles.map((article, index) => (
-        <View key={index} style={styles.article}>
-          <Image source={{ uri: article.image }} style={styles.image} />
-          <View style={styles.textContainer}>
-            <Text style={styles.articleTitle}>{article.title}</Text>
-            <Text style={styles.articleDate}>{article.date}</Text>
-            <Text style={styles.articleDescription}>{article.description}</Text>
-          </View>
-        </View>
-      ))}
 
       {/* Modal for adding Blog/News */}
       <Modal
@@ -145,7 +119,7 @@ export default function BlogNews() {
               value={content}
               onChangeText={setContent}
             />
-            <TouchableOpacity style={styles.submitButton} onPress={() => alert(`Submitting ${modalType}`)}>
+            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
               <Text style={styles.submitButtonText}>Submit {modalType}</Text>
             </TouchableOpacity>
           </View>
@@ -170,52 +144,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 28,
     fontWeight: 'bold',
-  },
-  post: {
-    backgroundColor: '#ffffff',
-    marginBottom: 20,
-    borderRadius: 8,
-    overflow: 'hidden',
-    flexDirection: 'row',
-  },
-  article: {
-    backgroundColor: '#ffffff',
-    marginBottom: 20,
-    borderRadius: 8,
-    overflow: 'hidden',
-    flexDirection: 'row',
-  },
-  image: {
-    width: 100,
-    height: 100,
-  },
-  textContainer: {
-    flex: 1,
-    padding: 10,
-  },
-  postTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  articleTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  postDate: {
-    fontSize: 14,
-    color: '#888',
-    marginVertical: 4,
-  },
-  articleDate: {
-    fontSize: 14,
-    color: '#888',
-    marginVertical: 4,
-  },
-  postDescription: {
-    fontSize: 16,
-  },
-  articleDescription: {
-    fontSize: 16,
   },
   headerContainer: {
     flexDirection: 'row',
