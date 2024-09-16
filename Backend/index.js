@@ -233,6 +233,44 @@ app.post('/submit-news', async (req, res) => {
     }
 });
 
+// Get All Blogs - ordered by newest first
+app.get('/blogs', async (req, res) => {
+    try {
+        // Check if the database is initialized
+        if (!db) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
+
+        // Retrieve all blogs from the 'blogs' collection, sorted by date (newest first)
+        const blogs = await db.collection('blogs').find().sort({ date: -1 }).toArray();
+
+        // Send the blogs back in the response
+        res.status(200).json(blogs);
+    } catch (error) {
+        console.error('Error retrieving blogs:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+// Get All News - ordered by newest first
+app.get('/news', async (req, res) => {
+    try {
+        // Check if the database is initialized
+        if (!db) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
+
+        // Retrieve all news from the 'news' collection, sorted by date (newest first)
+        const news = await db.collection('news').find().sort({ date: -1 }).toArray();
+
+        // Send the news back in the response
+        res.status(200).json(news);
+    } catch (error) {
+        console.error('Error retrieving news:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
 
 
 // Placeholder for future APIs
