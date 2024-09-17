@@ -1,12 +1,13 @@
 import { Tabs, useNavigation, Link } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Button } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import {  Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';  // Import FontAwesome icons
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth } from './AuthContext'; // Import AuthProvider and useAuth
+import NotifBell, { BellNotification, sendTestNotification, loadNotifications } from './notifications';
 
 
 const { width: viewportWidth } = Dimensions.get('window');
@@ -25,6 +26,8 @@ function TabLayoutContent() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(viewportWidth < 768);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const { isAuthenticated, logout } = useAuth(); // Use authentication context
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [notifications, setNotifications] = useState<BellNotification[]>([]);
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -33,6 +36,14 @@ function TabLayoutContent() {
   const toggleNotifications = () => {
     setIsNotificationsVisible(!isNotificationsVisible);
   };
+
+  React.useEffect(() =>{
+    loadNotifications(setNotifications);
+  }, []);
+
+  React.useEffect(() => {
+    setUnreadCount(notifications.filter(notifs => !notifs.read).length);
+  }, [notifications]);
 
   const handleSignOut = () => {
     logout(); // Call logout from AuthContext
@@ -72,6 +83,11 @@ function TabLayoutContent() {
           )}
           <TouchableOpacity onPress={toggleNotifications} style={styles.iconButton}>
             <TabBarIcon name="notifications-outline" color="#000" />
+            {unreadCount > 0 && (
+              <View style={styles.badgeContainer}>
+                <Text style={styles.badgeText}>{unreadCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('profile')} style={styles.iconButton}>
             <TabBarIcon name="person-outline" color="#000" />
@@ -80,8 +96,13 @@ function TabLayoutContent() {
       </View>
       {isNotificationsVisible && (
         <View style={styles.notificationsPanel}>
+          <Button title="send test notif" onPress={() => sendTestNotification(notifications, setNotifications)} //delete this when no longer needed for testing
+            />
           <Text style={styles.notificationsTitle}>Notifications</Text>
-          <Text style={styles.notificationItem}>No new notifications</Text>
+          <NotifBell
+          notifications={notifications}
+          setNotifications={setNotifications}
+          />
         </View>
       )}
       <View style={styles.mainContent}>
@@ -270,6 +291,22 @@ const styles = StyleSheet.create({
   notificationItem: {
     fontSize: 14,
     paddingVertical: 5,
+  },
+  badgeContainer: {
+    position: 'absolute',
+    right: -6,
+    top: -3,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   mainContent: {
     flex: 1,
