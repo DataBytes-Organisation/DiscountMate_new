@@ -103,6 +103,10 @@ function TabLayoutContent() {
                 <TabBarIcon name="person-outline" color="#000" />
                 <Text style={styles.iconButtonText}>Profile</Text>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('basketsummary')} style={styles.iconButton}>
+                <TabBarIcon name="basket-outline" color="#000" />
+                <Text style={styles.iconButtonText}>My Basket</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate('contact')} style={styles.iconButton}>
                 <TabBarIcon name="call-outline" color="#000" />
                 <Text style={styles.iconButtonText}>Contact Us</Text>
