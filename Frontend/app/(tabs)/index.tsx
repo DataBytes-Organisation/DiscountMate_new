@@ -1,8 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image, Animated, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSegments } from 'expo-router';
 
 const { width: viewportWidth } = Dimensions.get('window');
+let basketItems;
 
 // Function to fetch product data from the API
 const fetchProducts = async () => {
@@ -14,33 +17,6 @@ const fetchProducts = async () => {
     console.error(error);
     return [];
   }
-};
-
-const renderBigItem = ({ item }) => {
-  console.log("Big Item Image URL:", item.link_image);  // Log to check image URL
-  return (
-    <View style={styles.bigItem}>
-      <Image source={{ uri: item.link_image }} style={styles.bigItemImage} />
-      <View style={styles.bigItemContent}>
-        <Text style={styles.bigItemName}>{item.product_name}</Text>
-        <Text style={styles.bigItemDescription}>{item.sub_category_1}</Text>
-        <Text style={styles.bigItemPrice}>${item.current_price}</Text>
-        <View style={styles.bigItemButtons}>
-          <TouchableOpacity style={styles.bigItemButtonSave}>
-            <Icon name="heart" size={16} color="#fff" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.bigItemButtons}>
-          <TouchableOpacity style={styles.bigItemButtonCart}>
-            <Text style={styles.bigItemButtonText}>Add To Cart</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bigItemButton}>
-            <Text style={styles.bigItemButtonText}>Buy Now</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
 };
 
 const renderCarouselItem = ({ item }) => {
@@ -63,8 +39,74 @@ export default function HomeScreen() {
   const flatListRef = useRef<FlatList>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
   const [bigItemsData, setBigItemsData] = useState([]); // Initialize state for bigItemsData
+  const [basketData, setBasketData] = useState([]); // Initialize state for bigItemsData
   const animatedScroll = useRef(new Animated.Value(0)).current;
   const itemWidth = viewportWidth * 0.3; // Adjust item width
+  const segments = useSegments();
+
+  const addToBasket = async(item) => {
+    console.log("Adding basket item ", item);
+    const url = 'http://localhost:5000/addtobasket';
+    const token = await AsyncStorage.getItem('authToken');
+    const data = {
+      productId: item.product_id
+    };
+    if (!token) {
+      return;
+    }
+  
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log("Added items=", data);
+        setBasketData(data);
+      })
+      .catch(err => console.error(err.message));
+  }
+  
+  const getBasket = async() => {
+    console.log("Getting basket items");
+    const url = 'http://localhost:5000/getbasket';
+    const token = await AsyncStorage.getItem('authToken');
+  
+    if (!token) {
+      return;
+    }
+  
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        setBasketData(data);
+      })
+      .catch(err => console.error(err.message));
+  };
+  
+  const doesItemExistInBasket = (item) =>
+    {
+      let itemPresent = false;
+      const basketItem = basketData?.find(currentItem => item.product_id == currentItem.productId);
+      console.log("Inside check and item=", basketItem);
+      if (basketItem == null)
+        console.log("Null");
+      else
+      console.log("not null");
+  
+      return basketItem != null;
+    };
+  
 
   const handleScroll = (newOffset) => {
     Animated.timing(animatedScroll, {
@@ -89,6 +131,13 @@ export default function HomeScreen() {
     handleScroll(newOffset);
   };
 
+  useEffect(() => {
+    const fetchAndSetBasket = async () => {
+      await getBasket();
+    };
+    fetchAndSetBasket();
+  }, [segments]);
+
   // Fetch product data from API and map it to the bigItems
   useEffect(() => {
     const fetchAndSetProducts = async () => {
@@ -108,6 +157,34 @@ export default function HomeScreen() {
       animatedScroll.removeAllListeners();
     };
   }, [animatedScroll]);
+
+  const renderBigItem = ({ item }) => {
+    console.log("Big Item Image URL:", item.link_image);  // Log to check image URL
+    const shouldDisableAddToBasket = doesItemExistInBasket(item);
+    return (
+      <View style={styles.bigItem}>
+        <Image source={{ uri: item.link_image }} style={styles.bigItemImage} />
+        <View style={styles.bigItemContent}>
+          <Text style={styles.bigItemName}>{item.product_name}</Text>
+          <Text style={styles.bigItemDescription}>{item.sub_category_1}</Text>
+          <Text style={styles.bigItemPrice}>${item.current_price}</Text>
+          <View style={styles.bigItemButtons}>
+            <TouchableOpacity style={styles.bigItemButtonSave}>
+              <Icon name="heart" size={16} color="#fff" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.bigItemButtons}>
+          <TouchableOpacity disabled={shouldDisableAddToBasket} onPress={() => addToBasket(item)} style={shouldDisableAddToBasket ? styles.bigItemButtonBasketDisabled : styles.bigItemButtonBasket}>
+              <Text style={styles.bigItemButtonText}>Add To Basket</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.bigItemButton}>
+              <Text style={styles.bigItemButtonText}>Buy Now</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  };
 
   // Split the bigItems into first two main items and the rest in carousel
   const bigItems = bigItemsData.slice(0, 2);  // Only the first two items
@@ -243,8 +320,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
   },
-  bigItemButtonCart: {
+  bigItemButtonBasket: {
     backgroundColor: '#6595a3',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  bigItemButtonBasketDisabled: {
+    backgroundColor: '#ddd',
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,

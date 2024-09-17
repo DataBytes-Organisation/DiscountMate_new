@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import BasketSummaryItem from './basketsummaryitem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSegments } from 'expo-router';
 
 interface Basket
 {
@@ -20,63 +21,66 @@ interface BasketSummaryItemState
 interface BasketSummaryItemProps
 {
 }
-class basketsummary extends Component<BasketSummaryItemProps, BasketSummaryItemState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      basket: [],
-    };
-  }
 
-    componentDidMount() {
-        this.getBasketItems();
-    }
-    async getBasketItems() {
-        const url = 'http://localhost:5000/getbasket';
-        const token = await AsyncStorage.getItem('authToken');
-   
-        if (!token) {
-          return;
-        }
-   
-        fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        })
-          .then(res => res.json())
-          .then(data => {
-            this.setState({
-              basket: data
-            });
-          })
-          .catch(err => console.error(err.message));
+export default function basketsummary() { 
+  const [basketData, setBasketData] = useState([]);
+  const segments = useSegments();
+
+  useEffect(() => {
+    const fetchAndSetBasket = async () => {
+      await getBasketItems();
+      console.log("Fetched basket in use effect:", basketData);
+      //setBasketData(basketItems); // Set the API data to bigItems
+    };
+    fetchAndSetBasket();
+  }, [segments]);
+  const getBasketItems = async () => {
+      console.log("Getting basket items");
+      const url = 'http://localhost:5000/getbasket';
+      const token = await AsyncStorage.getItem('authToken');
+  
+      if (!token) {
+        return;
       }
-  addToBasket = (productId: number) =>
+  
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log("Got items=", data);
+          setBasketData(data);
+        })
+        .catch(err => console.error(err.message));
+    }
+  const addToBasket = (productId: number) =>
   {
     console.log("clicked add to basket", productId);
-    const basketItem = this.state.basket.find(item => item.productId == productId);
+    const basketItem = basketData.find(item => item.productId == productId);
     const quantity = basketItem?.quantity == undefined ? 0 : basketItem.quantity + 1;
 
-    this.updateQuantity(productId, quantity);
+    updateQuantity(productId, quantity);
   }
 
-  removeFromBasket = (productId: number) =>
+  const removeFromBasket = (productId: number) =>
   {
     console.log("clicked remove from basket", productId);
-    const basketItem = this.state.basket.find(item => item.productId == productId);
+    const basketItem = basketData.find(item => item.productId == productId);
     const quantity = basketItem?.quantity == undefined ? 0 : basketItem.quantity - 1;
 
-    this.updateQuantity(productId, quantity);
+    updateQuantity(productId, quantity);
   }
 
-  deleteItemFromBasket = async(productId: number) =>
+  const deleteItemFromBasket = async(productId: number) =>
   {
+    console.log("Clicked delete from basket");
     const url = 'http://localhost:5000/deleteitemfrombasket';
     const token = await AsyncStorage.getItem('authToken');
-   
+    
     if (!token) {
       return;
     }
@@ -95,14 +99,13 @@ class basketsummary extends Component<BasketSummaryItemProps, BasketSummaryItemS
     })
       .then(res => res.json())
       .then(data => {
-        this.setState({
-          basket: data
-        });
+        console.log("Response of add data=", data);
+        setBasketData(data);
       })
       .catch(err => console.error(err.message));
 
   }
-  private async updateQuantity(productId: number, quantity: number) {
+  const updateQuantity = async (productId: number, quantity: number) => {
     const url = 'http://localhost:5000/updatequantity';
     const token = await AsyncStorage.getItem('authToken');
     const data = {
@@ -110,7 +113,7 @@ class basketsummary extends Component<BasketSummaryItemProps, BasketSummaryItemS
       productId: productId
     };
 
-    console.log("Add to basket for product id=", productId);
+    console.log("Clicked add to basket for product id=", productId);
     fetch(url, {
       method: 'POST',
       headers: {
@@ -121,14 +124,13 @@ class basketsummary extends Component<BasketSummaryItemProps, BasketSummaryItemS
     })
       .then(res => res.json())
       .then(data => {
-        this.setState({
-          basket: data
-        });
+        console.log("Response of add data=", data);
+        setBasketData(data);
       })
       .catch(err => console.error(err.message));
   }
 
-    getTotal(basket: Basket[]) {
+  const getTotal= (basket: Basket[]) => {
         let total = 0;
         for (var i = 0; i < basket.length; i++) {
             total += basket[i].price * basket[i].quantity;
@@ -136,21 +138,18 @@ class basketsummary extends Component<BasketSummaryItemProps, BasketSummaryItemS
         return total;
     }
 
-    formattedCurrency(price: number) {
+  const formattedCurrency = (price: number) => {
         const formatter = new Intl.NumberFormat('en-AU', {
             style: 'currency',
             currency: 'AUD'
         });
         return formatter.format(price);
     }
-
-  render() {
     
-    const total = this.getTotal(this.state.basket);
+  const total = getTotal(basketData);
+  const array = basketData;
 
-    const array = this.state.basket;
-
-    return (
+  return (
       <ScrollView>
         <View style={styles.fadeIn}>
           <View style={styles.row}>
@@ -159,11 +158,11 @@ class basketsummary extends Component<BasketSummaryItemProps, BasketSummaryItemS
           </View>
           <View style={[styles.row, styles.my2]}>
             <View style={[styles.col, { alignItems: 'center'}]}>
-              <Text style={[styles.h3, styles.textDark]}>My Basket</Text>
+              <Text style={[styles.h3, styles.textDark, styles.ml3]}>My Basket</Text>
             </View>
             {/*<View style={[styles.col, styles.textRight]}>
-              <Text style={[styles.h4, styles.textDark, styles.mr3, { fontWeight: 'bold' }]}>
-                Basket Total: {total > 0 ? this.formattedCurrency(total) : ''}
+              <Text style={[styles.h4, styles.textSecondary, styles.mr3]}>
+                Basket Total: {total > 0 ? formattedCurrency(total) : ''}
               </Text>
             </View>*/}
           </View>
@@ -183,9 +182,9 @@ class basketsummary extends Component<BasketSummaryItemProps, BasketSummaryItemS
                       shortDescription={shortDescription}
                       quantity={quantity}
                       basketItemId={basketItemId}
-                      addToBasket={this.addToBasket}
-                      removeFromBasket={this.removeFromBasket}
-                      deleteItemFromBasket={this.deleteItemFromBasket}
+                      addToBasket={addToBasket}
+                      removeFromBasket={removeFromBasket}
+                      deleteItemFromBasket={deleteItemFromBasket}
                     />
                   );
                 })}
@@ -200,14 +199,13 @@ class basketsummary extends Component<BasketSummaryItemProps, BasketSummaryItemS
           <View style={[styles.row, styles.my2]}>
             <View style={[styles.col, styles.textLeft, styles.ml3, styles.myAuto]}>
               <Text style={[styles.h4, styles.textDark, { fontWeight: 'bold' }]}>
-                Basket Total: {total > 0 ? this.formattedCurrency(total) : ''}
+                Basket Total: {total > 0 ? formattedCurrency(total) : ''}
               </Text>
             </View>
           </View>
         </View>
       </ScrollView>
     );
-  }
 }
 const styles = StyleSheet.create({
   fadeIn: {
@@ -288,5 +286,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-export default basketsummary;

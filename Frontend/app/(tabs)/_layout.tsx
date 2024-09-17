@@ -154,6 +154,15 @@ function TabLayoutContent() {
               }}
             />
             <Tabs.Screen
+              name="basketsummary"
+              options={{
+                title: 'My Basket',
+                tabBarIcon: ({ color, focused }) => (
+                  <TabBarIcon name={focused ? 'basket' : 'basket-outline'} color={color} />
+                ),
+              }}
+            />
+            <Tabs.Screen
               name="contact"
               options={{
                 title: 'Contact Us',

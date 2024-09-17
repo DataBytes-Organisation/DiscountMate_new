@@ -57,7 +57,7 @@ app.get('/', (req, res) => {
     res.send('Welcome to the DiscountMate API!');
 });
 
-// Endpoint to get products from 'SampleData.Sample_Product_Master'
+// Endpoint to get products from 'user-data'
 app.get('/products', async (req, res) => {
     try {
         console.log('Fetching products from MongoDB...');
@@ -66,8 +66,8 @@ app.get('/products', async (req, res) => {
             return res.status(500).json({ message: 'Database client not initialized' });
         }
         
-        const sampleDataDb = client.db('SampleData'); // Connect to the 'SampleData' database
-        const products = await sampleDataDb.collection('Sample_Product_Master').find().toArray();
+        const sampleDataDb = client.db('user-data'); 
+        const products = await sampleDataDb.collection('product').find().toArray();
         
         if (products.length === 0) {
             console.log('No products found');
@@ -318,7 +318,7 @@ const getUserFromToken = async(token) =>
             const useremail = decoded.useremail;
     
             // Fetch the user details from the database
-            user = await db.collection('USER').findOne({ email: useremail }, { projection: { encrypted_password: 0 } });
+            user = await db.collection('users').findOne({ email: useremail }, { projection: { encrypted_password: 0 } });
         });
         return user;
     }
@@ -328,7 +328,7 @@ app.post('/getproduct', async (req, res) => {
     try
     {
         // Fetch the product details from the product
-        const product =  await db.collection('PRODUCT').findOne({ product_id: req.body.productId });
+        const product =  await db.collection('product').findOne({ product_id: req.body.productId });
 
         //Send back product details
         return res.json({
@@ -349,7 +349,8 @@ app.post('/getbasket', async (req, res) => {
     try
     {
         // Fetch the basket details from the database
-        const baskets =  await db.collection('BASKET').find().toArray();
+        
+        const baskets =  await db.collection('basket').find().toArray();
         const getProductUrl = 'http://localhost:5000/getproduct';
 
         if (!baskets) {
@@ -360,7 +361,7 @@ app.post('/getbasket', async (req, res) => {
     
         const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
         const user = await getUserFromToken(token);
-        const basket = await db.collection('BASKET').find({ user_id: user._id.toString() }).toArray();
+        const basket = await db.collection('basket').find({ user_id: user._id.toString() }).toArray();
         console.log("Basket for a particular user contains=", basket);
         let response = [];
         // Get product details for each product id
@@ -406,6 +407,42 @@ app.post('/getbasket', async (req, res) => {
     }
 });
 
+// Add item to basket
+app.post('/addtobasket', async (req, res) => {
+    try
+    {
+        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+        const user = await getUserFromToken(token);
+
+        const basketItem = {
+            user_id: user._id.toString(),
+            quantity: 1,
+            product_id: req.body.productId
+        };
+
+        const result = await db.collection('basket').insertOne(basketItem);
+
+        const getBasketUrl = "http://localhost:5000/getbasket";
+       
+        await fetch(getBasketUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+          })
+            .then(res1 => res1.json())
+            .then(data => {
+              res.json(data);
+            })
+            .catch(err => console.error(err.message));
+    }
+    catch(error)
+    {
+        console.log("Error=", error);
+    }
+});
+
 //Update the Quantity in Basket
 app.post('/updatequantity', async(req, res) => {
     try
@@ -418,7 +455,7 @@ app.post('/updatequantity', async(req, res) => {
             "product_id": req.body.productId
         };
 
-        const updateResult = await db.collection('BASKET').updateOne(
+        const updateResult = await db.collection('basket').updateOne(
             query, // filter to find the document
             { $set: { quantity: req.body.quantity } } // update operation
           );
@@ -460,7 +497,7 @@ app.delete('/deleteitemfrombasket', async(req, res) => {
         "product_id": req.body.productId
     };
 
-    const deleteResult = await db.collection('BASKET').deleteOne(query);
+    const deleteResult = await db.collection('basket').deleteOne(query);
     console.log(`Deleted ${deleteResult.deletedCount} document(s)`);
 
     // Get the basket for the user and return
