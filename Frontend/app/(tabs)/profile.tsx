@@ -146,6 +146,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   infoText: {
     fontSize: 16,
