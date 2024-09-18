@@ -48,6 +48,14 @@ function TabLayoutContent() {
     setIsNotificationsVisible(!isNotificationsVisible);
   };
 
+  React.useEffect(() =>{
+    loadNotifications(setNotifications);
+  }, []);
+
+  React.useEffect(() => {
+    setUnreadCount(notifications.filter(notifs => !notifs.read).length);
+  }, [notifications]);
+
   const handleSignOut = () => {
     logout(); 
     console.log('User signed out');
@@ -128,6 +136,11 @@ function TabLayoutContent() {
           )}
           <TouchableOpacity onPress={toggleNotifications} style={styles.iconButton}>
             <TabBarIcon name="notifications-outline" color="#000" />
+            {unreadCount > 0 && (
+              <View style={styles.badgeContainer}>
+                <Text style={styles.badgeText}>{unreadCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('profile')} style={styles.iconButton}>
             <TabBarIcon name="person-outline" color="#000" />
@@ -137,8 +150,13 @@ function TabLayoutContent() {
 
       {isNotificationsVisible && (
         <View style={styles.notificationsPanel}>
+          <Button title="send test notif" onPress={() => sendTestNotification(notifications, setNotifications)} //delete this when no longer needed for testing
+            />
           <Text style={styles.notificationsTitle}>Notifications</Text>
-          <Text style={styles.notificationItem}>No new notifications</Text>
+          <NotifBell
+          notifications={notifications}
+          setNotifications={setNotifications}
+          />
         </View>
       )}
 
@@ -156,6 +174,10 @@ function TabLayoutContent() {
               <TouchableOpacity onPress={() => navigation.navigate('profile')} style={styles.iconButton}>
                 <TabBarIcon name="person-outline" color="#000" />
                 <Text style={styles.iconButtonText}>Profile</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('basketsummary')} style={styles.iconButton}>
+                <TabBarIcon name="basket-outline" color="#000" />
+                <Text style={styles.iconButtonText}>My Basket</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate('contact')} style={styles.iconButton}>
                 <TabBarIcon name="call-outline" color="#000" />
@@ -300,6 +322,22 @@ const styles = StyleSheet.create({
   notificationItem: {
     fontSize: 14,
     paddingVertical: 5,
+  },
+  badgeContainer: {
+    position: 'absolute',
+    right: -6,
+    top: -3,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   mainContent: {
     flex: 1,

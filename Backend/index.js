@@ -304,6 +304,183 @@ app.get('/news', async (req, res) => {
     }
 });
 
+// Gets the User from Token Basket
+const getUserFromToken = async(token) =>
+    {       
+        let user;
+        // Verify the JWT token
+        await jwt.verify(token, 'your_jwt_secret', async (err, decoded) => {
+            if (err) {
+                console.log("Error in token verification=", err);
+                return null;
+            }
+    
+            const useremail = decoded.useremail;
+    
+            // Fetch the user details from the database
+            user = await db.collection('USER').findOne({ email: useremail }, { projection: { encrypted_password: 0 } });
+        });
+        return user;
+    }
+
+// Get Product Basket
+app.post('/getproduct', async (req, res) => {
+    try
+    {
+        // Fetch the product details from the product
+        const product =  await db.collection('PRODUCT').findOne({ product_id: req.body.productId });
+
+        //Send back product details
+        return res.json({
+            "product_id": product.product_id,
+            "product_name": product.product_name,
+            "link_image": product.link_image,
+            "current_price": product.current_price
+        });
+    }
+    catch(error)
+    {
+        console.log("Error", error);
+    }
+});
+
+// Get Basket
+app.post('/getbasket', async (req, res) => {
+    try
+    {
+        // Fetch the basket details from the database
+        const baskets =  await db.collection('BASKET').find().toArray();
+        const getProductUrl = 'http://localhost:5000/getproduct';
+
+        if (!baskets) {
+            return res.status(404).json({ message: 'Basket not found' });
+        }
+
+        console.log("All baskets=", baskets);
+    
+        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+        const user = await getUserFromToken(token);
+        const basket = await db.collection('BASKET').find({ user_id: user._id.toString() }).toArray();
+        console.log("Basket for a particular user contains=", basket);
+        let response = [];
+        // Get product details for each product id
+
+        for(var i = 0; i < basket.length; i++)
+        {
+            const currentProductId = basket[i].product_id;
+            let responseItem = {};
+
+            console.log(currentProductId);
+            const getProductData = {
+                productId: currentProductId
+            };
+
+            await fetch(getProductUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(getProductData),
+              })
+                .then(res1 => res1.json())
+                .then(data => {
+                   console.log("Product details=", data);
+                  responseItem.productId = data.product_id;
+                  responseItem.name = data.product_name;
+                  responseItem.price = data.current_price;
+                  responseItem.image = data.link_image;
+                  responseItem.quantity = basket[i].quantity;
+
+                  response.push(responseItem);
+                })
+                .catch(err => console.error(err.message));
+        }
+       
+        // Send back user profile details, including the admin field
+        res.json(response);
+       
+    }
+    catch(error)
+    {
+        console.log("Error fetching basket items=>" + error);
+    }
+});
+
+//Update the Quantity in Basket
+app.post('/updatequantity', async(req, res) => {
+    try
+    {
+        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+        const user = await getUserFromToken(token);
+        // Update the quantity in the db
+        const query = {
+            "user_id": user._id.toString(),
+            "product_id": req.body.productId
+        };
+
+        const updateResult = await db.collection('BASKET').updateOne(
+            query, // filter to find the document
+            { $set: { quantity: req.body.quantity } } // update operation
+          );
+       
+          if (updateResult.modifiedCount === 0) {
+            console.log('No documents were updated. The document may not exist or the quantity was the same as before.');
+        } else {
+            console.log('Document updated successfully.');
+        }
+        // Get the basket for the user and return
+        const getBasketUrl = "http://localhost:5000/getbasket";
+       
+        await fetch(getBasketUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+          })
+            .then(res1 => res1.json())
+            .then(data => {
+              res.json(data);
+            })
+            .catch(err => console.error(err.message));
+    }
+    catch(error)
+    {
+        console.log("Encoutered ", error);
+    }
+});
+
+// Delete From Basket
+app.delete('/deleteitemfrombasket', async(req, res) => {
+    const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+    const user = await getUserFromToken(token);
+
+    const query = {
+        "user_id": user._id.toString(),
+        "product_id": req.body.productId
+    };
+
+    const deleteResult = await db.collection('BASKET').deleteOne(query);
+    console.log(`Deleted ${deleteResult.deletedCount} document(s)`);
+
+    // Get the basket for the user and return
+    const getBasketUrl = "http://localhost:5000/getbasket";
+   
+    await fetch(getBasketUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      })
+        .then(res1 => res1.json())
+        .then(data => {
+          res.json(data);
+        })
+        .catch(err => console.error(err.message));
+});
+
+
 // Placeholder for future APIs
 app.get('/future-api', (req, res) => {
     res.send('This is a placeholder for future APIs');
