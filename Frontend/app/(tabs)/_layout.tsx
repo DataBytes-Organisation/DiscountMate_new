@@ -1,6 +1,6 @@
 import { Tabs, useNavigation, Link } from 'expo-router'; 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, ScrollView, Button } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { Image } from 'react-native';
@@ -22,6 +22,17 @@ const fetchProducts = async (query = '') => {
   }
 };
 
+// Simulated loadNotifications function
+const loadNotifications = async (setNotifications) => {
+  // Simulate fetching notifications from an API or database
+  const simulatedNotifications = [
+    { id: 1, text: 'New product available', read: false },
+    { id: 2, text: 'Your order has been shipped', read: true },
+    { id: 3, text: 'Discount on selected items', read: false },
+  ];
+  setNotifications(simulatedNotifications);
+};
+
 export default function TabLayout() {
   return (
     <AuthProvider>
@@ -39,6 +50,8 @@ function TabLayoutContent() {
   const [searchQuery, setSearchQuery] = useState(''); 
   const [searchResults, setSearchResults] = useState([]); 
   const [isFetching, setIsFetching] = useState(false);
+  const [notifications, setNotifications] = useState([]); // Define notifications state
+  const [unreadCount, setUnreadCount] = useState(0); // Define unreadCount state
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -48,12 +61,14 @@ function TabLayoutContent() {
     setIsNotificationsVisible(!isNotificationsVisible);
   };
 
-  React.useEffect(() =>{
+  useEffect(() => {
+    // Call the simulated loadNotifications function
     loadNotifications(setNotifications);
   }, []);
 
-  React.useEffect(() => {
-    setUnreadCount(notifications.filter(notifs => !notifs.read).length);
+  useEffect(() => {
+    // Update unread count whenever notifications change
+    setUnreadCount(notifications.filter(notif => !notif.read).length);
   }, [notifications]);
 
   const handleSignOut = () => {
@@ -154,8 +169,8 @@ function TabLayoutContent() {
             />
           <Text style={styles.notificationsTitle}>Notifications</Text>
           <NotifBell
-          notifications={notifications}
-          setNotifications={setNotifications}
+            notifications={notifications}
+            setNotifications={setNotifications}
           />
         </View>
       )}
@@ -205,6 +220,8 @@ function TabLayoutContent() {
     </View>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
