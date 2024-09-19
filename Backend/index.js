@@ -66,8 +66,8 @@ app.get('/products', async (req, res) => {
             return res.status(500).json({ message: 'Database client not initialized' });
         }
         
-        const sampleDataDb = client.db('SampleData'); // Connect to the 'SampleData' database
-        const products = await sampleDataDb.collection('Sample_Product_Master').find().toArray();
+        const sampleDataDb = client.db('MasterCollections'); // Connect to the 'SampleData' database
+        const products = await sampleDataDb.collection('PRODUCT').find().toArray();
         
         if (products.length === 0) {
             console.log('No products found');
