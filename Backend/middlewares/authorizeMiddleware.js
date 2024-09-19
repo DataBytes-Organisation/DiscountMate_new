@@ -2,6 +2,10 @@
 const authorize = (req, res, next) => {
   const { userId } = req.params;
 
+  if (req.user.isAdmin) {
+    return next(); //admin can do everything
+  }
+
   if (req.user && req.user.userId === userId) {
     next(); // User is authorized to access/modify their own data
   } else {

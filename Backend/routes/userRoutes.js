@@ -1,40 +1,43 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
-const authMiddleware = require("../middleware/authMiddleware");
-const isAdminMiddleware = require("../middleware/isAdminMiddleware");
-const authorizeMiddleware = require("../middleware/authorizeMiddleware");
+const authMiddleware = require("../middlewares/authMiddleware");
+const isAdminMiddleware = require("../middlewares/isAdminMiddleware");
+const userAuthorizeMiddleware = require("../middlewares/userAuthorizeMiddleware");
 const {
   userValidationRules,
+  userUpdateValidationRules,
   validate,
-} = require("../middleware/userValidationRules");
+} = require("../middlewares/userValidationRules");
 
-// User Routes
-router.post("/signup", userValidationRules, validate, userController.signup); // Validate user on signup
-router.post("/signin", userController.signin); // Login route (no validation middleware needed here)
+router.post("/signup", userValidationRules, validate, userController.signup);
 
-// Routes that require authentication
-router.get("/profile", authMiddleware, userController.getProfile); // Requires user to be logged in
+router.post("/signin", userController.signin);
 
-// Update user details, only the user themselves can update their profile
+router.get("/profile", authMiddleware, userController.getProfile);
+
 router.put(
   "/:userId",
   authMiddleware,
-  authorizeMiddleware,
-  userValidationRules,
+  userAuthorizeMiddleware,
+  userUpdateValidationRules,
   validate,
   userController.updateUser
 );
 
-// Delete a user, only admins can delete users
 router.delete(
   "/:userId",
   authMiddleware,
-  isAdminMiddleware,
+  (req, res, next) => {
+    if (req.user.userId === req.params.userId || req.user.isAdmin) {
+      next();
+    } else {
+      res.status(403).json({ message: "Access denied, admin only" });
+    }
+  },
   userController.deleteUser
 );
 
-// Get all users, only admins can access this
 router.get("/", authMiddleware, isAdminMiddleware, userController.getAllUsers);
 
 module.exports = router;

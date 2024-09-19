@@ -8,6 +8,9 @@ const morgan = require("morgan");
 // Import routes
 const userRoutes = require("./routes/userRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const postRoutes = require("./routes/postRoutes");
+const commentRoutes = require("./routes/commentRoutes");
+const replyRoutes = require("./routes/replyRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -28,8 +31,11 @@ app.use(morgan("dev")); // HTTP request logger
 app.use(express.json()); // Parse incoming JSON request bodies
 
 // Use routes
-app.use("/api/users", userRoutes); // User-related routes
-app.use("/api/contact", contactRoutes); // Contact form submission route
+app.use("/api/users", userRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api/posts", postRoutes);
+app.use("/api/comments", commentRoutes);
+app.use("/api/replies", replyRoutes);
 
 // Basic error handling middleware
 app.use((err, req, res, next) => {

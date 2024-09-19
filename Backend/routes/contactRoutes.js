@@ -4,7 +4,7 @@ const contactController = require("../controllers/contactController");
 const {
   contactValidationRules,
   validate,
-} = require("../middleware/contactValidationRules");
+} = require("../middlewares/contactValidationRules");
 
 // Contact form submission route (No DB)
 router.post(

@@ -63,8 +63,9 @@ exports.signin = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    // Include userId in the JWT token payload
     const token = jwt.sign(
-      { useremail, admin: user.admin },
+      { userId: user._id, useremail: user.email, admin: user.admin },
       jwtSecret, // Use the environment variable here
       { expiresIn: "1h" }
     );
@@ -158,10 +159,10 @@ exports.deleteUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    await user.remove();
+    await user.deleteOne(); // This deletes the user
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    console.error("Error deleting user:", error);
+    console.error("Error deleting user:", error); // Ensure this logs any errors
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
