@@ -22,7 +22,7 @@ const fetchProducts = async (query = '') => {
   }
 };
 
-// Simulated loadNotifications function
+// Simulated loadNotiications function
 const loadNotifications = async (setNotifications) => {
   // Simulate fetching notifications from an API or database
   const simulatedNotifications = [
