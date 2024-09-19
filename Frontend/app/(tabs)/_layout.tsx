@@ -1,12 +1,13 @@
 import { Tabs, useNavigation, Link } from 'expo-router'; 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, ScrollView, Button } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth } from './AuthContext'; 
+import NotifBell, { sendTestNotification,  BellNotification, loadNotifications } from "./notifications"
 
 const { width: viewportWidth } = Dimensions.get('window');
 
@@ -21,6 +22,17 @@ const fetchProducts = async (query = '') => {
     return [];
   }
 };
+
+// Simulated loadNotifications function
+// const loadNotifications = async (setNotifications) => {
+//   // Simulate fetching notifications from an API or database
+//   const simulatedNotifications = [
+//     { id: 1, message: 'New product available', read: false },
+//     { id: 2, message: 'Your order has been shipped', read: true },
+//     { id: 3, message: 'Discount on selected items', read: false },
+//   ];
+//   setNotifications(simulatedNotifications);
+// };
 
 export default function TabLayout() {
   return (
@@ -39,6 +51,8 @@ function TabLayoutContent() {
   const [searchQuery, setSearchQuery] = useState(''); 
   const [searchResults, setSearchResults] = useState([]); 
   const [isFetching, setIsFetching] = useState(false);
+  const [notifications, setNotifications] = useState([]); // Define notifications state
+  const [unreadCount, setUnreadCount] = useState(0); // Define unreadCount state
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -48,12 +62,14 @@ function TabLayoutContent() {
     setIsNotificationsVisible(!isNotificationsVisible);
   };
 
-  React.useEffect(() =>{
+  useEffect(() => {
+    // Call the simulated loadNotifications function
     loadNotifications(setNotifications);
   }, []);
 
-  React.useEffect(() => {
-    setUnreadCount(notifications.filter(notifs => !notifs.read).length);
+  useEffect(() => {
+    // Update unread count whenever notifications change
+    setUnreadCount(notifications.filter(notif => !notif.read).length);
   }, [notifications]);
 
   const handleSignOut = () => {
@@ -154,8 +170,8 @@ function TabLayoutContent() {
             />
           <Text style={styles.notificationsTitle}>Notifications</Text>
           <NotifBell
-          notifications={notifications}
-          setNotifications={setNotifications}
+            notifications={notifications}
+            setNotifications={setNotifications}
           />
         </View>
       )}
@@ -199,67 +215,14 @@ function TabLayoutContent() {
               tabBarStyle: { display: 'none' },
             }}
           >
-            <Tabs.Screen
-              name="index"
-              options={{
-                title: 'Home',
-                tabBarIcon: ({ color, focused }) => (
-                  <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="explore"
-              options={{
-                title: 'Explore',
-                tabBarIcon: ({ color, focused }) => (
-                  <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="profile"
-              options={{
-                title: 'Profile',
-                tabBarIcon: ({ color, focused }) => (
-                  <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="basketsummary"
-              options={{
-                title: 'My Basket',
-                tabBarIcon: ({ color, focused }) => (
-                  <TabBarIcon name={focused ? 'basket' : 'basket-outline'} color={color} />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="contact"
-              options={{
-                title: 'Contact Us',
-                tabBarIcon: ({ color, focused }) => (
-                  <TabBarIcon name={focused ? 'call' : 'call-outline'} color={color} />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="blog"
-              options={{
-                title: 'Blog',
-                tabBarIcon: ({ color, focused }) => (
-                  <TabBarIcon name={focused ? 'document-text' : 'document-text-outline'} color={color} />
-                ),
-              }}
-            />
-
           </Tabs>
         </View>
       </View>
     </View>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
