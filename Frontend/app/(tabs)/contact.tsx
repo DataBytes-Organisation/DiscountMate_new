@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 
 export default function Contact() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = () => {
     // API endpoint where the form data will be sent
-    const url = 'http://localhost:5000/contact';
+    const url = "http://localhost:5000/api/contact/submit";
 
     // Prepare the data to be sent in the POST request
     const data = {
@@ -19,22 +19,26 @@ export default function Contact() {
 
     // Send the data using fetch API
     fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((data) => {
-        Alert.alert('Feedback Submitted', 'Thank you for your feedback!', [{ text: 'OK' }]);
-        setName('');
-        setEmail('');
-        setMessage('');
+        Alert.alert("Feedback Submitted", "Thank you for your feedback!", [
+          { text: "OK" },
+        ]);
+        setName("");
+        setEmail("");
+        setMessage("");
       })
       .catch((error) => {
-        console.error('Error:', error);
-        Alert.alert('Error', 'Something went wrong. Please try again later.', [{ text: 'OK' }]);
+        console.error("Error:", error);
+        Alert.alert("Error", "Something went wrong. Please try again later.", [
+          { text: "OK" },
+        ]);
       });
   };
 
@@ -43,7 +47,7 @@ export default function Contact() {
       <Text style={styles.title}>Contact Us</Text>
       <Text style={styles.contactDetails}>Phone: +1234567890</Text>
       <Text style={styles.contactDetails}>Email: testemail@example.com</Text>
-      
+
       <Text style={styles.subtitle}>We value your feedback</Text>
       <TextInput
         style={styles.input}
@@ -74,14 +78,14 @@ export default function Contact() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 20,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: "#f8f8f8",
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   contactDetails: {
@@ -90,28 +94,28 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginVertical: 20,
   },
   input: {
-    width: '100%',
+    width: "100%",
     height: 40,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 10,
     paddingLeft: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   textArea: {
-    width: '100%',
+    width: "100%",
     height: 100,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 10,
     paddingLeft: 8,
     paddingTop: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
 });
