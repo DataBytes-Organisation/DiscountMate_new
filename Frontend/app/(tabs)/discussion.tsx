@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,237 +6,217 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Image,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const initialDiscussionTopics = [
-  {
-    id: 1,
-    title: "Latest Tech in Supermarkets",
-    date: "August 10, 2024",
-    description:
-      "Discuss the newest technologies being implemented in supermarkets around the world.",
-    likes: 12,
-    dislikes: 3,
-    commentsCount: 2,
-    comments: [
-      {
-        id: 1,
-        user: "Techie123",
-        comment:
-          "It's incredible how AI is being used to manage stock levels now!",
-        likes: 5,
-        dislikes: 0,
-        replies: [],
-        image: null,
-      },
-      {
-        id: 2,
-        user: "GroceryGuru",
-        comment:
-          "I saw a robot assisting customers at my local store. The future is here.",
-        likes: 7,
-        dislikes: 1,
-        replies: [],
-        image: null,
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "Budgeting Tips for Families",
-    date: "August 9, 2024",
-    description:
-      "Share your best budgeting tips that help save money for families.",
-    likes: 25,
-    dislikes: 5,
-    commentsCount: 2,
-    comments: [
-      {
-        id: 1,
-        user: "SaveMore",
-        comment: "Planning meals ahead really helps cut costs!",
-        likes: 10,
-        dislikes: 2,
-        replies: [],
-        image: null,
-      },
-      {
-        id: 2,
-        user: "FamilyFirst",
-        comment: "We started buying in bulk, saves a lot of money.",
-        likes: 12,
-        dislikes: 1,
-        replies: [],
-        image: null,
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "Home Automation Trends",
-    date: "September 5, 2024",
-    description: "Discuss the latest trends in home automation technology.",
-    likes: 30,
-    dislikes: 2,
-    commentsCount: 4,
-    comments: [
-      {
-        id: 1,
-        user: "TechSavvy",
-        comment: "Smart lighting has become much more advanced recently.",
-        likes: 8,
-        dislikes: 0,
-        replies: [],
-        image: null,
-      },
-      {
-        id: 2,
-        user: "HomeGeek",
-        comment:
-          "I love using voice-controlled assistants for my smart home devices!",
-        likes: 10,
-        dislikes: 1,
-        replies: [],
-        image: null,
-      },
-      {
-        id: 3,
-        user: "Innovator",
-        comment: "AI-powered security systems are becoming the norm.",
-        likes: 5,
-        dislikes: 2,
-        replies: [],
-        image: null,
-      },
-      {
-        id: 4,
-        user: "GadgetFan",
-        comment: "Automated thermostats are helping me save energy!",
-        likes: 7,
-        dislikes: 1,
-        replies: [],
-        image: null,
-      },
-    ],
-  },
-];
+const API_URL = "http://localhost:5000/api"; // Replace with your backend API URL
 
 const DiscussionPage = () => {
-  const [topics, setTopics] = useState(initialDiscussionTopics);
+  const [topics, setTopics] = useState([]);
   const [visibleComments, setVisibleComments] = useState({});
   const [newComment, setNewComment] = useState({});
-  const [searchTerm, setSearchTerm] = useState("");
-  const [image, setImage] = useState({});
   const [replies, setReplies] = useState({});
-  const [commentsShown, setCommentsShown] = useState(2);
+  const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState(null);
 
-  // Toggle visibility of comments
+  // Fetch discussion topics from the backend on component mount
+  useEffect(() => {
+    fetchTopics();
+  }, [sortBy]);
+
+  const fetchTopics = async () => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) throw new Error("No auth token found");
+
+      const response = await fetch(`${API_URL}/posts?sort=${sortBy}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Error fetching posts");
+      const data = await response.json();
+
+      // Initialize comments as empty arrays to avoid undefined errors
+      if (Array.isArray(data)) {
+        setTopics(
+          data.map((topic) => ({
+            ...topic,
+            comments: topic.comments || [],
+          }))
+        );
+      } else {
+        setTopics([]);
+      }
+    } catch (error) {
+      console.error("Error fetching topics:", error);
+      setTopics([]);
+    }
+  };
+
+  const fetchComments = async (postId, index) => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) throw new Error("No auth token found");
+
+      const response = await fetch(
+        `${API_URL}/comments/post/${postId}/comments`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to load comments");
+      const comments = await response.json();
+
+      const updatedTopics = [...topics];
+      updatedTopics[index].comments = comments || [];
+      setTopics(updatedTopics);
+    } catch (error) {
+      console.error("Error loading comments:", error);
+    }
+  };
+
   const toggleComments = (index) => {
+    const postId = topics[index]._id;
+    if (!visibleComments[index]) {
+      fetchComments(postId, index);
+    }
     setVisibleComments((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  // Handle comment input changes
   const handleCommentChange = (index, value) => {
     setNewComment((prev) => ({ ...prev, [index]: value }));
   };
 
-  // Add new comment to a topic
-  const addComment = (index) => {
+  const addComment = async (postId, index) => {
     if (newComment[index]?.trim() === "") return;
 
-    const updatedTopics = [...topics];
-    updatedTopics[index].comments.push({
-      id: updatedTopics[index].comments.length + 1,
-      user: "NewUser",
-      comment: newComment[index],
-      likes: 0,
-      dislikes: 0,
-      replies: [],
-      image: image[index] || null,
-    });
-    updatedTopics[index].commentsCount += 1;
-    setTopics(updatedTopics);
-    setNewComment((prev) => ({ ...prev, [index]: "" }));
-  };
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) throw new Error("No auth token found");
 
-  // Like/dislike post
-  const likePost = (index) => {
-    const updatedTopics = [...topics];
-    updatedTopics[index].likes += 1;
-    setTopics(updatedTopics);
-  };
+      const response = await fetch(
+        `${API_URL}/comments/post/${postId}/comment`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ comment: newComment[index] }),
+        }
+      );
 
-  const dislikePost = (index) => {
-    const updatedTopics = [...topics];
-    updatedTopics[index].dislikes += 1;
-    setTopics(updatedTopics);
-  };
+      if (!response.ok) throw new Error("Failed to add comment");
+      const commentData = await response.json();
 
-  // Image picker for comments
-  const pickImage = async (index) => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.cancelled) {
-      setImage((prev) => ({ ...prev, [index]: result.uri }));
+      const updatedTopics = [...topics];
+      updatedTopics[index].comments.push(commentData);
+      setTopics(updatedTopics);
+      setNewComment((prev) => ({ ...prev, [index]: "" }));
+    } catch (error) {
+      console.error("Error adding comment:", error);
     }
   };
 
-  // Reply to a comment
-  const replyToComment = (topicIndex, commentId, value) => {
-    const updatedTopics = [...topics];
-    const commentIndex = updatedTopics[topicIndex].comments.findIndex(
-      (comment) => comment.id === commentId
-    );
+  const deleteComment = async (commentId, topicIndex, commentIndex) => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) throw new Error("No auth token found");
 
-    updatedTopics[topicIndex].comments[commentIndex].replies.push({
-      user: "ReplyUser",
-      reply: value,
-    });
-    setReplies((prev) => ({ ...prev, [topicIndex]: "" }));
-    setTopics(updatedTopics);
+      const response = await fetch(`${API_URL}/comments/comment/${commentId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to delete comment");
+
+      const updatedTopics = [...topics];
+      updatedTopics[topicIndex].comments.splice(commentIndex, 1);
+      setTopics(updatedTopics);
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
   };
 
-  // Like/dislike comment
-  const likeComment = (topicIndex, commentIndex) => {
-    const updatedTopics = [...topics];
-    updatedTopics[topicIndex].comments[commentIndex].likes += 1;
-    setTopics(updatedTopics);
+  const replyToComment = async (commentId, value, topicIndex, commentIndex) => {
+    if (value.trim() === "") return;
+
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) throw new Error("No auth token found");
+
+      const response = await fetch(
+        `${API_URL}/replies/comment/${commentId}/reply`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ replyText: value }),
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to add reply");
+      const replyData = await response.json();
+
+      const updatedTopics = [...topics];
+      updatedTopics[topicIndex].comments[commentIndex].replies.push(
+        replyData.reply
+      );
+      setTopics(updatedTopics);
+      setReplies((prev) => ({ ...prev, [commentIndex]: "" }));
+    } catch (error) {
+      console.error("Error adding reply:", error);
+    }
   };
 
-  const dislikeComment = (topicIndex, commentIndex) => {
-    const updatedTopics = [...topics];
-    updatedTopics[topicIndex].comments[commentIndex].dislikes += 1;
-    setTopics(updatedTopics);
+  const deleteReply = async (replyId, topicIndex, commentIndex, replyIndex) => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) throw new Error("No auth token found");
+
+      const response = await fetch(`${API_URL}/replies/reply/${replyId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to delete reply");
+
+      const updatedTopics = [...topics];
+      updatedTopics[topicIndex].comments[commentIndex].replies.splice(
+        replyIndex,
+        1
+      );
+      setTopics(updatedTopics);
+    } catch (error) {
+      console.error("Error deleting reply:", error);
+    }
   };
 
-  // Sort topics based on likes or comments
+  const handleReplyChange = (index, value) => {
+    setReplies((prev) => ({ ...prev, [index]: value }));
+  };
+
   const sortTopics = (sortType) => {
-    if (sortBy === sortType) {
-      setTopics(initialDiscussionTopics); // Reset to initial order
-      setSortBy(null); // Reset sortBy to null
-    } else {
-      let sortedTopics;
-      if (sortType === "likes") {
-        sortedTopics = [...topics].sort((a, b) => b.likes - a.likes);
-      } else if (sortType === "comments") {
-        sortedTopics = [...topics].sort(
-          (a, b) => b.commentsCount - a.commentsCount
-        );
-      }
-      setTopics(sortedTopics);
-      setSortBy(sortType);
-    }
+    setSortBy(sortType === sortBy ? null : sortType);
   };
 
-  // Filter and sort topics
   const filteredTopics = topics.filter((topic) =>
     topic.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -245,7 +225,6 @@ const DiscussionPage = () => {
     <ScrollView style={styles.container}>
       <Text style={styles.pageTitle}>Discussion Topics</Text>
 
-      {/* Search Bar */}
       <TextInput
         style={styles.searchInput}
         placeholder="Search topics..."
@@ -253,7 +232,6 @@ const DiscussionPage = () => {
         onChangeText={(text) => setSearchTerm(text)}
       />
 
-      {/* Sort Buttons */}
       <View style={styles.sortContainer}>
         <TouchableOpacity
           style={[styles.sortButton, sortBy === "likes" && styles.sortActive]}
@@ -273,17 +251,19 @@ const DiscussionPage = () => {
       </View>
 
       {filteredTopics.map((topic, index) => (
-        <View key={topic.id} style={styles.post}>
+        <View key={topic._id} style={styles.post}>
           <View style={styles.textContainer}>
             <Text style={styles.postTitle}>{topic.title}</Text>
-            <Text style={styles.postDate}>{topic.date}</Text>
+            <Text style={styles.postDate}>
+              {new Date(topic.date).toDateString()}
+            </Text>
             <Text style={styles.postDescription}>{topic.description}</Text>
             <View style={styles.interactionContainer}>
               <View style={styles.likeDislikeContainer}>
-                <TouchableOpacity onPress={() => likePost(index)}>
+                <TouchableOpacity onPress={() => likePost(topic._id, index)}>
                   <Text style={styles.buttonText}>👍 {topic.likes}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => dislikePost(index)}>
+                <TouchableOpacity onPress={() => dislikePost(topic._id, index)}>
                   <Text style={styles.buttonText}>👎 {topic.dislikes}</Text>
                 </TouchableOpacity>
               </View>
@@ -292,76 +272,101 @@ const DiscussionPage = () => {
                 onPress={() => toggleComments(index)}
               >
                 <Text style={styles.buttonText}>
-                  {topic.commentsCount} Comments
+                  {topic.comments?.length || 0} Comments
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Share</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Save</Text>
-              </TouchableOpacity>
             </View>
+
             {visibleComments[index] && (
               <>
-                {topic.comments.slice(0, commentsShown).map((comment, idx) => (
-                  <View key={comment.id} style={styles.comment}>
-                    <Text style={styles.commentUser}>{comment.user}:</Text>
-                    <Text style={styles.commentText}>{comment.comment}</Text>
-                    {comment.image && (
-                      <Image
-                        source={{ uri: comment.image }}
-                        style={styles.commentImage}
-                      />
-                    )}
+                {(topic.comments || []).map((comment, cIndex) => (
+                  <View key={comment._id || cIndex} style={styles.comment}>
+                    <Text style={styles.commentUser}>
+                      {comment.user
+                        ? `${comment.user.user_fname || "Unknown"} ${
+                            comment.user.user_lname || "User"
+                          }`
+                        : "Unknown User"}
+                      :
+                    </Text>
+
+                    <Text style={styles.commentText}>
+                      {comment.comment ? comment.comment : ""}
+                    </Text>
+
                     <View style={styles.likeDislikeContainer}>
-                      <TouchableOpacity onPress={() => likeComment(index, idx)}>
+                      <TouchableOpacity
+                        onPress={() => likeComment(index, comment._id, cIndex)}
+                      >
                         <Text style={styles.buttonText}>
                           👍 {comment.likes}
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        onPress={() => dislikeComment(index, idx)}
+                        onPress={() =>
+                          dislikeComment(index, comment._id, cIndex)
+                        }
                       >
                         <Text style={styles.buttonText}>
                           👎 {comment.dislikes}
                         </Text>
                       </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() =>
+                          deleteComment(comment._id, index, cIndex)
+                        }
+                      >
+                        <Text style={styles.buttonText}>🗑 Delete</Text>
+                      </TouchableOpacity>
                     </View>
 
-                    {/* Reply Section */}
-                    {comment.replies.map((reply, replyIndex) => (
-                      <View key={replyIndex} style={styles.reply}>
-                        <Text style={styles.replyUser}>{reply.user}:</Text>
-                        <Text style={styles.replyText}>{reply.reply}</Text>
+                    {(comment.replies || []).map((reply, rIndex) => (
+                      <View key={reply._id || rIndex} style={styles.reply}>
+                        <Text style={styles.replyUser}>
+                          {reply.user
+                            ? `${reply.user.user_fname || "Anonymous"} ${
+                                reply.user.user_lname || ""
+                              }`
+                            : "Anonymous"}
+                          :
+                        </Text>
+
+                        <Text style={styles.replyText}>
+                          {reply.replyText ? reply.replyText : ""}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() =>
+                            deleteReply(reply._id, index, cIndex, rIndex)
+                          }
+                        >
+                          <Text style={styles.buttonText}>🗑 Delete Reply</Text>
+                        </TouchableOpacity>
                       </View>
                     ))}
-                    <TextInput
-                      style={styles.replyInput}
-                      placeholder="Write a reply..."
-                      value={replies[index] || ""}
-                      onChangeText={(text) =>
-                        setReplies((prev) => ({ ...prev, [index]: text }))
-                      }
-                    />
-                    <TouchableOpacity
-                      style={styles.replyButton}
-                      onPress={() =>
-                        replyToComment(index, comment.id, replies[index] || "")
-                      }
-                    >
-                      <Text style={styles.replyButtonText}>Reply</Text>
-                    </TouchableOpacity>
+
+                    <View style={styles.commentInputContainer}>
+                      <TextInput
+                        style={styles.commentInput}
+                        placeholder="Write a reply..."
+                        value={replies[cIndex] || ""}
+                        onChangeText={(text) => handleReplyChange(cIndex, text)}
+                      />
+                      <TouchableOpacity
+                        style={styles.commentButton}
+                        onPress={() =>
+                          replyToComment(
+                            comment._id,
+                            replies[cIndex],
+                            index,
+                            cIndex
+                          )
+                        }
+                      >
+                        <Text style={styles.commentButtonText}>Reply</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 ))}
-                {commentsShown < topic.comments.length && (
-                  <TouchableOpacity
-                    style={styles.loadMoreButton}
-                    onPress={() => setCommentsShown(commentsShown + 2)}
-                  >
-                    <Text style={styles.loadMoreButtonText}>Load More</Text>
-                  </TouchableOpacity>
-                )}
                 <View style={styles.commentInputContainer}>
                   <TextInput
                     style={styles.commentInput}
@@ -369,12 +374,9 @@ const DiscussionPage = () => {
                     value={newComment[index] || ""}
                     onChangeText={(text) => handleCommentChange(index, text)}
                   />
-                  <TouchableOpacity onPress={() => pickImage(index)}>
-                    <Text style={styles.buttonText}>📷</Text>
-                  </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.commentButton}
-                    onPress={() => addComment(index)}
+                    onPress={() => addComment(topic._id, index)}
                   >
                     <Text style={styles.commentButtonText}>Comment</Text>
                   </TouchableOpacity>
@@ -470,11 +472,6 @@ const styles = StyleSheet.create({
   commentText: {
     fontSize: 14,
   },
-  commentImage: {
-    width: 100,
-    height: 100,
-    marginTop: 5,
-  },
   reply: {
     marginLeft: 20,
     borderLeftWidth: 1,
@@ -486,21 +483,6 @@ const styles = StyleSheet.create({
   },
   replyText: {
     fontSize: 14,
-  },
-  replyInput: {
-    marginTop: 5,
-    padding: 8,
-    backgroundColor: "#e1e1e1",
-    borderRadius: 4,
-  },
-  replyButton: {
-    padding: 8,
-    backgroundColor: "#4caf50",
-    borderRadius: 4,
-    marginTop: 5,
-  },
-  replyButtonText: {
-    color: "#ffffff",
   },
   commentInputContainer: {
     flexDirection: "row",
@@ -522,15 +504,6 @@ const styles = StyleSheet.create({
   commentButtonText: {
     color: "#ffffff",
     fontSize: 14,
-  },
-  loadMoreButton: {
-    padding: 8,
-    backgroundColor: "#4caf50",
-    borderRadius: 4,
-    marginTop: 10,
-  },
-  loadMoreButtonText: {
-    color: "#ffffff",
   },
 });
 
