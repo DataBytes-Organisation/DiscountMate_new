@@ -1,15 +1,26 @@
-import { Tabs, useNavigation, Link } from 'expo-router';
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { Tabs, useNavigation, Link } from 'expo-router'; 
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
-import {  Image } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';  // Import FontAwesome icons
+import { Image } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome'; 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { AuthProvider, useAuth } from './AuthContext'; // Import AuthProvider and useAuth
-
+import { AuthProvider, useAuth } from './AuthContext'; 
 
 const { width: viewportWidth } = Dimensions.get('window');
+
+// Updated fetch function with optional query parameter for search
+const fetchProducts = async (query = '') => {
+  try {
+    const response = await fetch(`http://localhost:5000/products?search=${query}`); 
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
 
 export default function TabLayout() {
   return (
@@ -24,7 +35,10 @@ function TabLayoutContent() {
   const navigation = useNavigation();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(viewportWidth < 768);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
-  const { isAuthenticated, logout } = useAuth(); // Use authentication context
+  const { isAuthenticated, logout } = useAuth(); 
+  const [searchQuery, setSearchQuery] = useState(''); 
+  const [searchResults, setSearchResults] = useState([]); 
+  const [isFetching, setIsFetching] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -34,18 +48,47 @@ function TabLayoutContent() {
     setIsNotificationsVisible(!isNotificationsVisible);
   };
 
+  React.useEffect(() =>{
+    loadNotifications(setNotifications);
+  }, []);
+
+  React.useEffect(() => {
+    setUnreadCount(notifications.filter(notifs => !notifs.read).length);
+  }, [notifications]);
+
   const handleSignOut = () => {
-    logout(); // Call logout from AuthContext
+    logout(); 
     console.log('User signed out');
   };
+
+  // Fetch products based on the search query
+  const fetchAndSetProducts = useCallback(async () => {
+    if (searchQuery.trim() === '') {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsFetching(true);  
+    const products = await fetchProducts(searchQuery); 
+    setSearchResults(products);
+    setIsFetching(false); 
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      const timeoutId = setTimeout(fetchAndSetProducts, 300); 
+      return () => clearTimeout(timeoutId); 
+    } else {
+      setSearchResults([]); 
+    }
+  }, [searchQuery, fetchAndSetProducts]);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-
-      <TouchableOpacity onPress={() => navigation.navigate('index')}>
+        <TouchableOpacity onPress={() => navigation.navigate('index')}>
           <Image 
-            source={require('@/assets/images/logo.png')} // Replace with your actual logo path
+            source={require('@/assets/images/logo.png')} 
             style={styles.logo}
           />
         </TouchableOpacity>
@@ -56,12 +99,33 @@ function TabLayoutContent() {
               style={styles.searchBox}
               placeholder="Search..."
               placeholderTextColor="#888"
+              value={searchQuery} 
+              onChangeText={setSearchQuery} 
             />
           </View>
+
+          {/* Display the search results box when there's input in the search bar */}
+          {searchQuery.trim() !== '' && (
+            <View style={styles.searchResultsContainer}>
+              <ScrollView style={styles.searchResultsBox}>
+                {isFetching ? (
+                  <Text style={styles.noResultsText}>Searching...</Text>
+                ) : searchResults.length > 0 ? (
+                  searchResults.map((product, index) => (
+                    <TouchableOpacity key={index} style={styles.resultItem} onPress={() => navigation.navigate('product', { id: product._id })}>
+                      <Text>{product.product_name}</Text>
+                    </TouchableOpacity>
+                  ))
+                ) : (
+                  <Text style={styles.noResultsText}>No products found</Text>
+                )}
+              </ScrollView>
+            </View>
+          )}
         </View>
 
         <View style={styles.headerIcons}>
-          {isAuthenticated ? ( // Check if the user is authenticated
+          {isAuthenticated ? ( 
             <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
               <Text style={styles.signOutText}>Sign Out</Text>
             </TouchableOpacity>
@@ -72,20 +136,32 @@ function TabLayoutContent() {
           )}
           <TouchableOpacity onPress={toggleNotifications} style={styles.iconButton}>
             <TabBarIcon name="notifications-outline" color="#000" />
+            {unreadCount > 0 && (
+              <View style={styles.badgeContainer}>
+                <Text style={styles.badgeText}>{unreadCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('profile')} style={styles.iconButton}>
             <TabBarIcon name="person-outline" color="#000" />
           </TouchableOpacity>
         </View>
       </View>
+
       {isNotificationsVisible && (
         <View style={styles.notificationsPanel}>
+          <Button title="send test notif" onPress={() => sendTestNotification(notifications, setNotifications)} //delete this when no longer needed for testing
+            />
           <Text style={styles.notificationsTitle}>Notifications</Text>
-          <Text style={styles.notificationItem}>No new notifications</Text>
+          <NotifBell
+          notifications={notifications}
+          setNotifications={setNotifications}
+          />
         </View>
       )}
+
       <View style={styles.mainContent}>
-      <View style={[styles.sidebar, isSidebarCollapsed ? styles.sidebarCollapsed : null]}>
+        <View style={[styles.sidebar, isSidebarCollapsed ? styles.sidebarCollapsed : null]}>
           <TouchableOpacity onPress={toggleSidebar} style={styles.toggleButton}>
             <Icon name={isSidebarCollapsed ? "arrow-right" : "arrow-left"} size={15} color="#888" /> 
           </TouchableOpacity>
@@ -94,10 +170,6 @@ function TabLayoutContent() {
               <TouchableOpacity onPress={() => navigation.navigate('index')} style={styles.iconButton}>
                 <TabBarIcon name="home-outline" color="#000" />
                 <Text style={styles.iconButtonText}>Home</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate('explore')} style={styles.iconButton}>
-                <TabBarIcon name="code-slash-outline" color="#000" />
-                <Text style={styles.iconButtonText}>Explore</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate('profile')} style={styles.iconButton}>
                 <TabBarIcon name="person-outline" color="#000" />
@@ -118,6 +190,7 @@ function TabLayoutContent() {
             </View>
           )}
         </View>
+
         <View style={styles.content}>
           <Tabs
             screenOptions={{
@@ -180,13 +253,13 @@ function TabLayoutContent() {
                 ),
               }}
             />
+
           </Tabs>
         </View>
       </View>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -202,6 +275,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     justifyContent: 'space-between',
     height: 60, 
+    zIndex: 100, 
   },
   logo: {
     width: 100, 
@@ -211,6 +285,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flex: 1,
     alignItems: 'center',
+    position: 'relative', 
   },
   searchBoxWrapper: {
     flexDirection: 'row',
@@ -228,6 +303,29 @@ const styles = StyleSheet.create({
   searchBox: {
     flex: 1,  
     height: '100%',
+  },
+  searchResultsContainer: {
+    position: 'absolute',
+    top: 50, 
+    width: '80%',
+    zIndex: 2000, 
+  },
+  searchResultsBox: {
+    maxHeight: 200, 
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    padding: 10,
+  },
+  resultItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  noResultsText: {
+    textAlign: 'center',
+    color: '#888',
   },
   headerIcons: {
     marginRight: 10,
@@ -280,6 +378,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingVertical: 5,
   },
+  badgeContainer: {
+    position: 'absolute',
+    right: -6,
+    top: -3,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
   mainContent: {
     flex: 1,
     flexDirection: 'row',
@@ -306,10 +420,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 1,
   },
-  toggleButtonText: {
-    fontSize: 12,
-    color: '#888',
-  },
   sidebarButtons: {
     marginTop: 35,
     flexDirection: 'column',
@@ -328,5 +438,4 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
   },
-  
 });
