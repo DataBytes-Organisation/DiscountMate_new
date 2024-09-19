@@ -5,6 +5,12 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Linking from "expo-linking"; // Use Linking for navigation
 import { useAuth } from "./AuthContext"; // Import useAuth from AuthContext
+import { Button, Image } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import Entypo from "react-native-vector-icons/Entypo";
+
+// Import the default image
+const defaultImageUri = require("@/assets/images/defaultprofileimage.png");
 
 // Define the type for the profile data
 interface Profile {
@@ -53,13 +59,32 @@ export default function Profile() {
     logout(); // Use logout from AuthContext to handle sign out
     setProfile(null);
   };
+  const [image, setImage] = useState<string | null>(null);
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Profile Page</Text>
       {isAuthenticated && profile ? (
         <View style={styles.loggedInContainer}>
-          <Text style={styles.message}>User is logged in</Text>
+          <Image
+            source={image ? { uri: image } : defaultImageUri}
+            style={styles.image}
+          />
+          <View style={styles.entypoContainer}>
+            <Entypo name="pencil" size={30} onPress={pickImage} />
+          </View>
           <View style={styles.profileInfo}>
             <Text style={styles.infoText}>
               First Name: {profile.user_fname}
@@ -92,11 +117,20 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
+  image: {
+    width: 160,
+    height: 160,
+    borderRadius: 100,
+  },
   container: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    padding: 7,
+  },
+  entypoContainer: {
+    marginLeft: 150,
+    marginTop: -20,
   },
   title: {
     fontSize: 24,
@@ -121,6 +155,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
   infoText: {
     fontSize: 16,
