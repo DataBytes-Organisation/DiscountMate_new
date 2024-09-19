@@ -32,7 +32,7 @@ const renderBigItem = ({ item }) => {
         </View>
         <View style={styles.bigItemButtons}>
           <TouchableOpacity style={styles.bigItemButtonCart}>
-            <Text style={styles.bigItemButtonText}>Add To Cart</Text>
+            <Text style={styles.bigItemButtonText}>Add To Basket</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.bigItemButton}>
             <Text style={styles.bigItemButtonText}>Buy Now</Text>
