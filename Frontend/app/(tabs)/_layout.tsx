@@ -7,6 +7,7 @@ import { Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth } from './AuthContext'; 
+import NotifBell, { sendTestNotification,  BellNotification, loadNotifications } from "./notifications"
 
 const { width: viewportWidth } = Dimensions.get('window');
 
@@ -23,15 +24,15 @@ const fetchProducts = async (query = '') => {
 };
 
 // Simulated loadNotifications function
-const loadNotifications = async (setNotifications) => {
-  // Simulate fetching notifications from an API or database
-  const simulatedNotifications = [
-    { id: 1, text: 'New product available', read: false },
-    { id: 2, text: 'Your order has been shipped', read: true },
-    { id: 3, text: 'Discount on selected items', read: false },
-  ];
-  setNotifications(simulatedNotifications);
-};
+// const loadNotifications = async (setNotifications) => {
+//   // Simulate fetching notifications from an API or database
+//   const simulatedNotifications = [
+//     { id: 1, message: 'New product available', read: false },
+//     { id: 2, message: 'Your order has been shipped', read: true },
+//     { id: 3, message: 'Discount on selected items', read: false },
+//   ];
+//   setNotifications(simulatedNotifications);
+// };
 
 export default function TabLayout() {
   return (
