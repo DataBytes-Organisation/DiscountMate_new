@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, FlatList, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 /*
 TODO
 add notifications to go to logged in user via fetching a uuid or something
 retrieve information from backend about products and wait till a users favourite item has a new deal and send to user
 change notif aesthetic as its not the best
-use asyncstorage later if starting app development
 */
 export interface BellNotification {
   id: string;
@@ -40,11 +40,14 @@ export const sendTestNotification = (
   addNotification(setNotifications, newNotification);
 };
 
-export const loadNotifications = (
+export const loadNotifications = async (
   setNotifications: React.Dispatch<React.SetStateAction<BellNotification[]>>) => {
-  const savedNotifications = localStorage.getItem('notifications');
-  if (savedNotifications) {
-    setNotifications(JSON.parse(savedNotifications));
+  try {
+    const savedNotifications = await AsyncStorage.getItem('notifications');
+    if (savedNotifications) {
+      setNotifications(JSON.parse(savedNotifications));
+    }
+  } catch (e) {
   }
 };
 
@@ -60,8 +63,11 @@ const NotifBell: React.FC<NotifBellProps> = ({notifications, setNotifications}) 
     );
   };
 
-  const saveNotifications = (notifications: BellNotification[]) => {
-    localStorage.setItem('notifications', JSON.stringify(notifications));
+  const saveNotifications = async(notifications: BellNotification[]) => {
+    try {
+      await AsyncStorage.setItem('notifications', JSON.stringify(notifications));
+    } catch(e) {
+    }
   };
 
   React.useEffect(() => {
