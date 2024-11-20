@@ -1,0 +1,1 @@
+To Scrape a catalogue a pdf to text converter can be used e.g. https://xodo.com/pdf-to-text. This python file uses that in txt format
