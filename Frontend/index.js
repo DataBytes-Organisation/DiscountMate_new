@@ -101,3 +101,10 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+//Product page - design and implement a product page 
+//where the user can view information about the product
+import { registerRootComponent } from 'expo';
+import App from './app/App';
+
+registerRootComponent(App);
