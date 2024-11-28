@@ -5,6 +5,35 @@ const cors = require('cors');
 const nodemailer = require('nodemailer');
 const { MongoClient } = require('mongodb');
 const jwt = require('jsonwebtoken');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
+
+// Swagger options
+const swaggerOptions = {
+    swaggerDefinition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'DiscountMate Basket API',
+        version: '1.0.0',
+        description: 'API documentation for the DiscountMate Basket application',
+      },
+      components: {
+        securitySchemes: {
+            bearerAuth: {
+                type: "http",
+                scheme: "bearer",
+                bearerFormat: "JWT",
+                },
+            },
+        },
+      servers: [
+        {
+          url: 'http://localhost:5000',
+        },
+      ],
+    },
+    apis: ['./index.js'], // Path to the API docs
+  };
 
 // MongoDB Atlas connection string
 const uri = "mongodb+srv://discountmate:discountmate1@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster";
@@ -323,6 +352,49 @@ const getUserFromToken = async(token) =>
         return user;
     }
 
+    app.use(cors());
+    const swaggerDocs = swaggerJsDoc(swaggerOptions);
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs)); //Setup Swagger UI
+
+/**
+ * @swagger
+ * /getproduct:
+ *   post:
+ *     summary: Get product details by product ID
+ *     requestBody:
+ *       description: Provide Product Details
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               productId:
+ *                  type: string
+ *     responses:
+ *       200:
+ *         description: Successful retrieval of product details.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             product_id:
+ *               type: string
+ *               example: "12345"
+ *             product_name:
+ *               type: string
+ *               example: "Sample Product"
+ *             link_image:
+ *               type: string
+ *               example: "http://example.com/image.jpg"
+ *             current_price:
+ *               type: number
+ *               example: 99.99
+ *       404:
+ *         description: Product not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
 // Get Product Basket
 app.post('/getproduct', async (req, res) => {
     try
@@ -344,6 +416,53 @@ app.post('/getproduct', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /getbasket:
+ *   post:
+ *     summary: Get user basket details
+ *     description: Fetches the basket details for the authenticated user.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         description: Bearer token for user authentication.
+ *         schema:
+ *           type: string
+ *           example: "Bearer your_jwt_token"
+ *     responses:
+ *       200:
+ *         description: Successfully fetched the basket items.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   productId:
+ *                     type: string
+ *                     description: ID of the product.
+ *                   name:
+ *                     type: string
+ *                     description: Name of the product.
+ *                   price:
+ *                     type: number
+ *                     description: Current price of the product.
+ *                   image:
+ *                     type: string
+ *                     description: Link to the product image.
+ *                   quantity:
+ *                     type: number
+ *                     description: Quantity of the product in the basket.
+ *       404:
+ *         description: Basket not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
 // Get Basket
 app.post('/getbasket', async (req, res) => {
     try
@@ -356,10 +475,13 @@ app.post('/getbasket', async (req, res) => {
         if (!baskets) {
             return res.status(404).json({ message: 'Basket not found' });
         }
-
-        console.log("All baskets=", baskets);
     
         const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+
+        // Log the token to the console for debugging
+        console.log("JWT Token:", token);
+        console.log("Incoming Headers:", req.headers);
+
         const user = await getUserFromToken(token);
         const basket = await db.collection('basket').find({ user_id: user._id.toString() }).toArray();
         console.log("Basket for a particular user contains=", basket);
@@ -407,6 +529,45 @@ app.post('/getbasket', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /addtobasket:
+ *   post:
+ *     summary: Add an item to the user's basket
+ *     description: Adds a specified product to the authenticated user's basket.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       description: Provide Product Details
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               productId:
+ *                 type: string
+ *                 description: ID of the product to be added to the basket.
+ *     responses:
+ *       200:
+ *         description: Successfully added the product to the basket.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 productId:
+ *                   type: string
+ *                   description: ID of the added product.
+ *                 quantity:
+ *                   type: number
+ *                   description: Quantity of the added product.
+ *       400:
+ *         description: Invalid input or product not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
 // Add item to basket
 app.post('/addtobasket', async (req, res) => {
     try
@@ -442,6 +603,50 @@ app.post('/addtobasket', async (req, res) => {
         console.log("Error=", error);
     }
 });
+
+/**
+ * @swagger
+ * /updatequantity:
+ *   post:
+ *     summary: Update the quantity of a product in the user's basket
+ *     description: Updates the quantity of a specified product in the authenticated user's basket.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *      description: Details for updating product quantity
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              productId:
+ *                type: string
+ *                description: ID of the product whose quantity is to be updated.
+ *              quantity:
+ *                type: number
+ *                description: New quantity of the product.
+ *     responses:
+ *       200:
+ *         description: Successfully updated the quantity in the basket.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   productId:
+ *                     type: string
+ *                     description: ID of the updated product.
+ *                   quantity:
+ *                     type: number
+ *                     description: New quantity of the product.
+ *       400:
+ *         description: Invalid input or product not found in the basket.
+ *       500:
+ *         description: Internal server error.
+ */
 
 //Update the Quantity in Basket
 app.post('/updatequantity', async(req, res) => {
@@ -486,6 +691,44 @@ app.post('/updatequantity', async(req, res) => {
         console.log("Encoutered ", error);
     }
 });
+
+/**
+ * @swagger
+ * /deleteitemfrombasket:
+ *   delete:
+ *     summary: Delete a product from the user's basket
+ *     description: Removes a specified product from the authenticated user's basket.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       description: ID of the product to be deleted from the basket.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               productId:
+ *                 type: string
+ *                 description: ID of the product to be removed.
+ *     responses:
+ *       200:
+ *         description: Successfully deleted the product from the basket.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     description: Confirmation message of the deletion.
+ *       404:
+ *         description: Product not found in the basket.
+ *       500:
+ *         description: Internal server error.
+ */
 
 // Delete From Basket
 app.delete('/deleteitemfrombasket', async(req, res) => {
