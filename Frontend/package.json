@@ -37,7 +37,7 @@
     "mongoose": "^8.6.2",
     "npm": "^10.8.2",
     "react": "^18.3.1",
-    "react-calendar": "^5.0.0",
+    "react-calendar": "^5.1.0",
     "react-dom": "^18.3.1",
     "react-native": "^0.75.2",
     "react-native-gesture-handler": "~2.16.1",
