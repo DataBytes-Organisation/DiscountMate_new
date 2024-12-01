@@ -26,8 +26,8 @@ export default function BlogNews() {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const blogsResponse = await axios.get('http://localhost:5000/blogs');
-        const newsResponse = await axios.get('http://localhost:5000/news');
+        const blogsResponse = await axios.get('http://localhost:3000/api/blogs');
+        const newsResponse = await axios.get('http://localhost:3000/api/news');
         
         setBlogs(blogsResponse.data);
         setNews(newsResponse.data);
@@ -46,7 +46,7 @@ export default function BlogNews() {
         const token = await AsyncStorage.getItem('authToken');
         if (!token) return;
 
-        const response = await axios.get('http://localhost:5000/profile', {
+        const response = await axios.get('http://localhost:3000/api/users/profile', {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -76,7 +76,7 @@ export default function BlogNews() {
   const handleSubmit = async () => {
     try {
       const currentDate = new Date().toISOString();
-      const apiUrl = modalType === 'Blog' ? 'http://localhost:5000/submit-blog' : 'http://localhost:5000/submit-news';
+      const apiUrl = modalType === 'Blog' ? 'http://localhost:3000/api/blogs/submit-blog' : 'http://localhost:3000/api/news/submit-news';
 
       const data = {
         heading,

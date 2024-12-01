@@ -22,13 +22,13 @@ export default function Login() {
     try {
       console.log('handleSubmit called');  // Debug statement
   
-      const url = isLogin ? 'http://localhost:5000/signin' : 'http://localhost:5000/signup';
+      const url = isLogin ? 'http://localhost:3000/api/users/signin' : 'http://localhost:3000/api/users/signup';
       console.log('API URL:', url);  // Debug statement
   
       const body = isLogin
-        ? JSON.stringify({ useremail: email, password: password })
+        ? JSON.stringify({ email: email, password: password })
         : JSON.stringify({
-            useremail: email,
+            email: email,
             password: password,
             verifyPassword: verifyPassword,
             user_fname: userFname,

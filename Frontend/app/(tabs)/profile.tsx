@@ -1,166 +1,217 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Linking from 'expo-linking';  // Use Linking for navigation
-import { useAuth } from './AuthContext';  // Import useAuth from AuthContext
-import { Button, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { useAuth } from './AuthContext';  // Ensure you have AuthContext for authentication state
 import Entypo from 'react-native-vector-icons/Entypo';
 
-// Import the default image
 const defaultImageUri = require('@/assets/images/defaultprofileimage.png');
 
-// Define the type for the profile data
+interface ProfileImage {
+  mime: string; // MIME type of the image
+  content: Buffer; // Image binary content
+}
+
 interface Profile {
   user_fname: string;
   user_lname: string;
   email: string;
   address: string;
   phone_number: string;
+  profile_image?: ProfileImage | null;
 }
 
 export default function Profile() {
-  const { isAuthenticated, logout } = useAuth(); // Get isAuthenticated and logout from AuthContext
+  const { isAuthenticated, logout } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [image, setImage] = useState<string | null>(null);
 
-  // Fetch profile data when component mounts
+  const getImage = (profileImage: { mime: string; content: string } | null): string => {
+    if (!profileImage) {
+      return defaultImageUri as string;
+    }
+  
+    return `data:${profileImage.mime};base64,${profileImage.content}`;
+  };
+  
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // Get token from AsyncStorage
         const token = await AsyncStorage.getItem('authToken');
-        if (!token) {
-          return;
-        }
-
-        // Make API call to get profile data
-        const response = await axios.get<Profile>('http://localhost:5000/profile', {
+        if (!token) return;
+  
+        const response = await axios.get<Profile>('http://localhost:3000/api/users/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
-
+  
         setProfile(response.data);
+  
+        if (response.data.profile_image) {
+          const imageContent =
+            typeof response.data.profile_image.content === 'string'
+              ? response.data.profile_image.content
+              : response.data.profile_image.content.toString('base64');
+  
+          setImage(
+            getImage({
+              mime: response.data.profile_image.mime,
+              content: imageContent,
+            })
+          );
+        }
       } catch (error) {
-        console.log('Error fetching profile:', error);
+        console.error('Error fetching profile:', error);
       }
     };
-
+  
     if (isAuthenticated) {
       fetchProfile();
     }
   }, [isAuthenticated]);
-
+  
   const handleSignOut = async () => {
-    logout(); // Use logout from AuthContext to handle sign out
+    logout();
     setProfile(null);
   };
-  const [image, setImage] = useState<string | null>(null);
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
+    if (!result.canceled && result.assets[0].uri) {
+      const imageUri = result.assets[0].uri;
+      setImage(imageUri); 
+      uploadImage(imageUri, result.assets[0].fileName!);
+    } else {
+      console.log('Image picker was canceled');
     }
   };
 
+  const uploadImage = async (uri: string, imageName: string) => {
+    const token = await AsyncStorage.getItem('authToken');
+    if (!token) {
+      console.log('No token available');
+      return;
+    }
+  
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+  
+      const formData = new FormData();
+      formData.append('image', blob, imageName);
+  
+      await axios.post('http://localhost:3000/api/users/upload-profile-image', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      console.log('Image uploaded successfully');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Profile Page</Text>
-      {isAuthenticated && profile ? (
-        <View style={styles.loggedInContainer}>
-          <Image
-            source={image ? { uri: image } : defaultImageUri}
-            style={styles.image}
-          />
-          <View style={styles.entypoContainer}>
-            <Entypo name="pencil" size={30} onPress={pickImage} />
-          </View>
-          <View style={styles.profileInfo}>
-            <Text style={styles.infoText}>First Name: {profile.user_fname}</Text>
-            <Text style={styles.infoText}>Last Name: {profile.user_lname}</Text>
-            <Text style={styles.infoText}>Email: {profile.email}</Text>
-            <Text style={styles.infoText}>Address: {profile.address}</Text>
-            <Text style={styles.infoText}>Phone Number: {profile.phone_number}</Text>
-          </View>
-          <TouchableOpacity style={styles.button} onPress={handleSignOut}>
-            <Text style={styles.buttonText}>Sign Out</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={styles.loggedOutContainer}>
-          <Text style={styles.message}>Please log in or sign up to view your profile</Text>
-          <Link href="/login" asChild>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Login/Signup</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
-      )}
-    </View>
+    <ScrollView style={styles.container}>
+      <View style={styles.profileCard}>
+        <Image source={{ uri: image || defaultImageUri }} style={styles.image} />
+        <Text style={styles.name}>{profile?.user_fname} {profile?.user_lname}</Text>
+        <Text style={styles.email}>{profile?.email}</Text>
+        <Text style={styles.phone}>{profile?.phone_number}</Text>
+        <Text style={styles.address}>{profile?.address}</Text>
+
+        <TouchableOpacity onPress={pickImage} style={styles.uploadButton}>
+          <Entypo name="camera" size={24} color="#fff" />
+          <Text style={styles.uploadButtonText}>Change Profile Picture</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+          <Text style={styles.signOutButtonText}>Sign Out</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  image: {
-    width: 160,
-    height: 160,
-    borderRadius: 100,
-  },
   container: {
     flex: 1,
+    backgroundColor: '#f2f2f2',
+    paddingTop: 20,
+    paddingHorizontal: 16,
+  },
+  profileCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 24,
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 7,
-  },
-  entypoContainer: {
-    marginLeft: 150,
-    marginTop: -20
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
     marginBottom: 20,
   },
-  loggedInContainer: {
-    alignItems: 'center',
-    width: '100%',
-  },
-  loggedOutContainer: {
-    alignItems: 'center',
-  },
-  message: {
-    fontSize: 18,
+  image: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     marginBottom: 20,
+    borderWidth: 3,
+    borderColor: '#eee',
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
+  email: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 4,
+  },
+  phone: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 4,
+  },
+  address: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 16,
     textAlign: 'center',
   },
-  profileInfo: {
-    width: '100%',
-    backgroundColor: '#f0f0f0',
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
-    justifyContent: 'center',
+  uploadButton: {
+    flexDirection: 'row',
     alignItems: 'center',
-  },
-  infoText: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  button: {
     backgroundColor: '#4CAF50',
-    paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 5,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginBottom: 20,
   },
-  buttonText: {
+  uploadButtonText: {
+    fontSize: 16,
     color: '#fff',
-    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  signOutButton: {
+    backgroundColor: '#FF5722',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  signOutButtonText: {
+    fontSize: 16,
+    color: '#fff',
   },
 });
