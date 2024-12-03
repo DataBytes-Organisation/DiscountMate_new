@@ -1,0 +1,2 @@
+The `scraper_costco.py` script is designed to scrape data specifically from the Costco website. 
+While Costco's website offers a wider range of items beyond groceries, we have opted not to scrape data from Costco.
