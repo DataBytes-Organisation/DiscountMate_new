@@ -1,0 +1,3 @@
+This python script gets data from https://www.aldi.com.au/groceries/super-savers/ and loads it to MongoDB Atlas. 
+It also classifies the items into categories. 
+If running this again, make sure to change the collection name (because the date will be different)

@@ -8,6 +8,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth } from './AuthContext'; 
 import NotifBell, { sendTestNotification,  BellNotification, loadNotifications } from "./notifications"
+import BrowseProductsDropdown from './BrowseProductsDropdown';
+import Chatbot from './Chatbot'; 
 
 const { width: viewportWidth } = Dimensions.get('window');
 
@@ -108,6 +110,11 @@ function TabLayoutContent() {
             style={styles.logo}
           />
         </TouchableOpacity>
+        <BrowseProductsDropdown onSelectCategory={(category) => {
+    // Handle category selection here
+         console.log('Selected category:', category);
+    // You might want to update your search or navigate to a category page
+        }} />
         <View style={styles.searchContainer}>
           <View style={styles.searchBoxWrapper}>
             <Icon name="search" size={20} color="#888" style={styles.searchIcon} />
@@ -218,6 +225,7 @@ function TabLayoutContent() {
           </Tabs>
         </View>
       </View>
+      <Chatbot />
     </View>
   );
 }
