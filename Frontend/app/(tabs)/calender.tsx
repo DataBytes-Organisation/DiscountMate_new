@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -6,23 +6,30 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 const localizer = momentLocalizer(moment);
 
 export default function CalendarComponent() {
-  const [events, setEvents] = useState([
-    {
-      title: 'Meeting with Team',
-      start: new Date(2024, 10, 27, 10, 0), // Example date: Nov 27, 2024, 10:00 AM
-      end: new Date(2024, 10, 27, 11, 0),
-    },
-    {
-      title: 'Lunch Break',
-      start: new Date(2024, 10, 27, 12, 0),
-      end: new Date(2024, 10, 27, 13, 0),
-    },
-    {
-      title: 'December Event', // Event with a date range
-      start: new Date(2024, 11, 1), // December 1, 2024
-      end: new Date(2024, 11, 30), // December 30, 2024
-    },
-  ]);
+  const [events, setEvents] = useState([]);
+
+  // Fetch events from the backend API
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/calender-dates'); // Replace with your API URL
+        const data = await response.json();
+
+        // Transform the data into the format required by react-big-calendar
+        const formattedEvents = data.map((event) => ({
+          title: event.occasion, // Occasion contains the event title
+          start: new Date(event.start_year, event.start_month - 1, event.start_day), // Convert to Date object
+          end: new Date(event.end_year, event.end_month - 1, event.end_day), // Convert to Date object
+        }));
+
+        setEvents(formattedEvents);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
+
+    fetchEvents();
+  }, []); // Empty dependency array ensures this runs once when the component mounts
 
   return (
     <div style={{ height: '80vh', padding: '20px', display: 'flex', justifyContent: 'flex-start' }}>
