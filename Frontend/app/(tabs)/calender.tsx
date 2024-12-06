@@ -17,6 +17,11 @@ export default function CalendarComponent() {
       start: new Date(2024, 10, 27, 12, 0),
       end: new Date(2024, 10, 27, 13, 0),
     },
+    {
+      title: 'December Event', // Event with a date range
+      start: new Date(2024, 11, 1), // December 1, 2024
+      end: new Date(2024, 11, 30), // December 30, 2024
+    },
   ]);
 
   return (

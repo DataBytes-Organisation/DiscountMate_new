@@ -18,7 +18,8 @@ let db;
 async function connectToMongoDB() {
     try {
         const client = await MongoClient.connect(uri); // No need for useUnifiedTopology
-        db = client.db('user-data'); // Use your database name here
+        db = client.db('user-data'); // To get data from the user details database
+        db2 = client.db('calender-data');  // To get data from the calender details database
         console.log('Connected to MongoDB Atlas');
     } catch (err) {
         console.error('Connection error to MongoDB:', err);
