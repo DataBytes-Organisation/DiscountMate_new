@@ -12,7 +12,7 @@ export default function CalendarComponent() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:5000/calender-dates'); // Replace with your API URL
+        const response = await fetch('http://localhost:5000/calender-dates'); // API coming from running the backend folder
         const data = await response.json();
 
         // Transform the data into the format required by react-big-calendar
