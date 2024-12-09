@@ -8,7 +8,6 @@ const localizer = momentLocalizer(moment);
 export default function CalendarComponent() {
   const [dealsEvents, setDealsEvents] = useState([]);
   const [seasonalEvents, setSeasonalEvents] = useState([]);
-  const [fruitsAndVeg, setFruitsAndVeg] = useState<string>('');
   const [calendarMode, setCalendarMode] = useState('dealsCalendar'); // 'dealsCalendar' or 'seasonalCalendar'
 
   useEffect(() => {
@@ -31,16 +30,9 @@ export default function CalendarComponent() {
           title: event.occasion,
           start: new Date(event.start_year, event.start_month - 1, event.start_day),
           end: new Date(event.end_year, event.end_month - 1, event.end_day),
-          fruits: event.fruits_and_veg
+          fruits: event.fruits_and_veg,  // Store fruits_and_veg in the event
         }));
         setSeasonalEvents(formattedSeasonalEvents);
-
-        // Extract fruits and vegetables information
-        // setFruitsAndVeg(data2.fruits_and_veg);
-        // console.log('Fruits and Veg:', data2);
-        // console.log('Fruits and Veg value:', data2.fruits_and_veg);
-        // console.log('Type of fruits_and_veg:', typeof data2.fruits_and_veg);
-        // console.log('State value:', fruitsAndVeg);
       } catch (error) {
         console.error('Error fetching events:', error);
       }
@@ -67,7 +59,13 @@ export default function CalendarComponent() {
       {calendarMode === 'seasonalCalendar' && (
         <div style={{ marginBottom: '20px' }}>
           <h3>Fruits and Vegetables in Season:</h3>
-          {fruitsAndVeg}
+          <ul>
+            {seasonalEvents.map((event, index) => (
+              <li key={index}>
+                <strong>{event.title}</strong>: {event.fruits ? event.fruits.join(', ') : 'No data available'}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
