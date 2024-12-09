@@ -180,7 +180,7 @@ app.post('/contact', (req, res) => {
 });
 
 
-app.get('/calender-dates', async (req, res) => {
+app.get('/deal-dates', async (req, res) => {
     try {
         if (!db2) {
             return res.status(500).json({ message: 'Database not initialized' });
@@ -200,6 +200,28 @@ app.get('/calender-dates', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
+app.get('/seasonal-dates', async (req, res) => {
+    try {
+        if (!db2) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
+
+        // Fetch all documents from the 'deal-dates' collection
+        const occasionDates = await db2.collection('seasonal-dates').find().toArray();
+
+        if (!occasionDates || occasionDates.length === 0) {
+            return res.status(404).json({ message: 'No dates found' });
+        }
+
+        // Send back the data
+        res.status(200).json(occasionDates);
+    } catch (error) {
+        console.error('Error fetching calendar dates:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
 
 
 
