@@ -18,8 +18,12 @@ let client; // Declare client globally
 // Async function to connect to MongoDB Atlas
 async function connectToMongoDB() {
     try {
-        client = await MongoClient.connect(uri); // Assign to global client
-        db = client.db('user-data'); // Default database for user data
+
+        const client = await MongoClient.connect(uri); // No need for useUnifiedTopology
+        db = client.db('user-data'); // To get data from the user details database
+        db2 = client.db('calender-data');  // To get data from the calender details database
+
+
         console.log('Connected to MongoDB Atlas');
     } catch (err) {
         console.error('Connection error to MongoDB:', err);
@@ -212,7 +216,47 @@ app.post('/contact', (req, res) => {
     });
 });
 
-// Blog Submission API
+
+app.get('/deal-dates', async (req, res) => {
+    try {
+        if (!db2) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
+
+        // Fetch all documents from the 'deal-dates' collection
+        const occasionDates = await db2.collection('deal-dates').find().toArray();
+
+        if (!occasionDates || occasionDates.length === 0) {
+            return res.status(404).json({ message: 'No dates found' });
+        }
+
+        // Send back the data
+        res.status(200).json(occasionDates);
+    } catch (error) {
+        console.error('Error fetching calendar dates:', error);
+    }
+});
+      
+app.get('/seasonal-dates', async (req, res) => {
+    try {
+        if (!db2) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
+
+        // Fetch all documents from the 'deal-dates' collection
+        const occasionDates = await db2.collection('seasonal-dates').find().toArray();
+
+        if (!occasionDates || occasionDates.length === 0) {
+            return res.status(404).json({ message: 'No dates found' });
+        }
+
+        // Send back the data
+        res.status(200).json(occasionDates);
+    } catch (error) {
+        console.error('Error fetching calendar dates:', error);
+    }
+});
+
 app.post('/submit-blog', async (req, res) => {
     const { heading, date, description, user } = req.body;
 
@@ -266,6 +310,7 @@ app.post('/submit-news', async (req, res) => {
     }
 });
 
+
 // Get All Blogs - ordered by newest first
 app.get('/blogs', async (req, res) => {
     try {
@@ -303,6 +348,7 @@ app.get('/news', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
 
 // Gets the User from Token Basket
 const getUserFromToken = async(token) =>
