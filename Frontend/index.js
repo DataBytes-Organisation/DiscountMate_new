@@ -41,27 +41,60 @@ const productSchema = new mongoose.Schema({
 // Name of the collection in MongoDB
 const Product = mongoose.model('Sample_Product_Master', productSchema, 'Sample_Product_Master');
 
-// Root route to avoid 404 error
+// Root  to avoid 404 error
 app.get('/', (req, res) => {
   res.send('Welcome to the DiscountMate API!');
 });
 
-// Define an API route to get products from 'Sample_Product_Master'
+//basic search function
+// Define an API route to get products from sample_Product_Master
+// app.get('/products', async (req, res) => {
+//   try {
+//     console.log('Fetching products from MongoDB...');
+//     const products = await Product.find();
+//     if (products.length === 0) {
+//       console.log('No products found');
+//     } else {
+//       console.log('Products fetched:', products);
+//     }
+//     res.json(products);
+//   } catch (error) {
+//     console.error('Error fetching products:', error);
+//     res.status(500).json({ message: error.message });
+//   }
+
+  
+// });
+
+
 app.get('/products', async (req, res) => {
+  const { search } = req.query;
+
   try {
     console.log('Fetching products from MongoDB...');
-    const products = await Product.find();
+    
+    // \ regex to match the exact sequence of characters entered by the user
+    let query = {};
+    if (search) {
+      query = { product_name: { $regex: `^${search}`, $options: 'i' } }; // Match start of string, case insensitive
+    }
+
+    // Limit the result to a maximum of 30 products
+    const products = await Product.find(query).limit(30);
+
     if (products.length === 0) {
       console.log('No products found');
     } else {
       console.log('Products fetched:', products);
     }
+    
     res.json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ message: error.message });
   }
 });
+
 
 // Start the server
 const port = process.env.PORT || 5000;
