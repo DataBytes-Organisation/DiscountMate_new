@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Use the MONGODB_URI from the environment variables
-const uri = "mongodb+srv://discountmate:discountmate1@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster";
+const uri = process.env.MONGO_URI;
 
 // Check if the URI is defined
 if (!uri) {

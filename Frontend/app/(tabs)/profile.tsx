@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Modal, Pressable } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
@@ -26,33 +26,34 @@ export default function Profile() {
   const { isAuthenticated, logout } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [image, setImage] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const getImage = (profileImage: { mime: string; content: string } | null): string => {
     if (!profileImage) {
       return defaultImageUri as string;
     }
-  
+
     return `data:${profileImage.mime};base64,${profileImage.content}`;
   };
-  
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = await AsyncStorage.getItem('authToken');
         if (!token) return;
-  
+
         const response = await axios.get<Profile>('http://localhost:3000/api/users/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
+
         setProfile(response.data);
-  
+
         if (response.data.profile_image) {
           const imageContent =
             typeof response.data.profile_image.content === 'string'
               ? response.data.profile_image.content
               : response.data.profile_image.content.toString('base64');
-  
+
           setImage(
             getImage({
               mime: response.data.profile_image.mime,
@@ -64,12 +65,12 @@ export default function Profile() {
         console.error('Error fetching profile:', error);
       }
     };
-  
+
     if (isAuthenticated) {
       fetchProfile();
     }
   }, [isAuthenticated]);
-  
+
   const handleSignOut = async () => {
     logout();
     setProfile(null);
@@ -85,8 +86,9 @@ export default function Profile() {
 
     if (!result.canceled && result.assets[0].uri) {
       const imageUri = result.assets[0].uri;
-      setImage(imageUri); 
-      uploadImage(imageUri, result.assets[0].fileName!);
+      setImage(imageUri);
+      await uploadImage(imageUri, result.assets[0].fileName!);
+      setModalVisible(true); // Show success dialog
     } else {
       console.log('Image picker was canceled');
     }
@@ -98,21 +100,21 @@ export default function Profile() {
       console.log('No token available');
       return;
     }
-  
+
     try {
       const response = await fetch(uri);
       const blob = await response.blob();
-  
+
       const formData = new FormData();
       formData.append('image', blob, imageName);
-  
+
       await axios.post('http://localhost:3000/api/users/upload-profile-image', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       console.log('Image uploaded successfully');
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -137,6 +139,25 @@ export default function Profile() {
           <Text style={styles.signOutButtonText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Profile picture uploaded successfully!</Text>
+            <Pressable
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>OK</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -213,5 +234,39 @@ const styles = StyleSheet.create({
   signOutButtonText: {
     fontSize: 16,
     color: '#fff',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: '500',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  closeButton: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    color: '#fff',
+    textAlign: 'center',
   },
 });

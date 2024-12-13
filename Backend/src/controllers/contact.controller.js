@@ -4,8 +4,8 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'testingnodemailer3@gmail.com',
-        pass: 'obml zgob pycg dbei', // Use the correct password
+        user: process.env.EMAIL,
+        pass: process.env.PASS, // Use the correct password
     },
 });
 
@@ -15,7 +15,7 @@ const handleContactFormSubmission = (req, res) => {
 
     const mailOptions = {
         from: email,
-        to: 'testingnodemailer3@gmail.com',
+        to: process.env.EMAIL,
         subject: 'New Contact Form Submission',
         text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
     };

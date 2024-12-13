@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 
 // MongoDB Atlas connection string
-const uri = 'mongodb+srv://discountmate:discountmate1@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster';
+const uri = process.env.MONGO_URI;
 
 // Predefined user data
 const userData = {

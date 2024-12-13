@@ -10,6 +10,7 @@ const contactRoutes = require('./routers/contact.router');
 const basketRoutes = require('./routers/basket.router');
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config();
 
 
 const app = express();
