@@ -186,7 +186,7 @@ function TabLayoutContent() {
       <View style={styles.mainContent}>
         <View style={[styles.sidebar, isSidebarCollapsed ? styles.sidebarCollapsed : null]}>
           <TouchableOpacity onPress={toggleSidebar} style={styles.toggleButton}>
-            <Icon name={isSidebarCollapsed ? "arrow-right" : "arrow-left"} size={15} color="#888" /> 
+            <Icon name={isSidebarCollapsed ? "arrow-right" : "arrow-left"} size={15} color="#888" />
           </TouchableOpacity>
           {!isSidebarCollapsed && (
             <View style={styles.sidebarButtons}>
@@ -210,6 +210,11 @@ function TabLayoutContent() {
                 <TabBarIcon name="document-text-outline" color="#000" />
                 <Text style={styles.iconButtonText}>Blog</Text>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('calender')} style={styles.iconButton}>
+                <Icon name="calendar" size={20} color="#000" />
+                <Text style={styles.iconButtonText}>Calendar</Text>
+              </TouchableOpacity>
+
             </View>
           )}
         </View>
@@ -237,7 +242,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  header: {   
+  header: {
     backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
@@ -249,9 +254,9 @@ const styles = StyleSheet.create({
     zIndex: 100, 
   },
   logo: {
-    width: 100, 
-    height: 180,  
-    resizeMode: 'contain', 
+    width: 100,
+    height: 180,
+    resizeMode: 'contain',
   },
   searchContainer: {
     flex: 1,
@@ -272,7 +277,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   searchBox: {
-    flex: 1,  
+    flex: 1,
     height: '100%',
   },
   searchResultsContainer: {
