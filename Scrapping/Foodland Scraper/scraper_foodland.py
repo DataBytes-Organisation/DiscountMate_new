@@ -42,8 +42,8 @@ def setup_mongo():
     load_dotenv()
     
     # MongoDB credentials
-    username = os.getenv('MONGO_USERNAME', 'discountmate')
-    password = os.getenv('MONGO_PASSWORD', 'discountmate1')
+    username = os.getenv('MONGO_USERNAME', 'example')
+    password = os.getenv('MONGO_PASSWORD', 'example1')
     
     # Encode credentials for MongoDB URI
     encoded_username = quote_plus(username)
