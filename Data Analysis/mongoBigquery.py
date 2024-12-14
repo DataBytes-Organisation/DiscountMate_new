@@ -6,7 +6,7 @@ import pandas as pd
 print("Connecting to MongoDB Atlas...")
 try:
     mongo_client = MongoClient(
-        "mongodb+srv://<username>:<password>@discountmatecluster.u80y7ta.mongodb.net/",
+        "CopyConnectionstring",
         tlsAllowInvalidCertificates=True
     )
     db = mongo_client['Databasename']  # MongoDB Database
