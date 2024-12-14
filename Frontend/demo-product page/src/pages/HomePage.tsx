@@ -17,7 +17,7 @@ const HomePage: React.FC = () => {
   const { addToCart } = useCart();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // 处理 "Add to Cart" 按钮
+  // Handling the "Add to Cart" Button
   const handleAddToCart = (product: Product) => {
     addToCart({ ...product, quantity: 1 });
     toast.success(`${product.name} has been added to the cart!`, {
@@ -30,22 +30,22 @@ const HomePage: React.FC = () => {
     });
   };
 
-  // 处理 "View Details" 按钮
+  // Handling the "View Details" button
   const handleViewDetails = (product: Product) => {
     setSelectedProduct(product);
   };
 
-  // 关闭覆盖界面
+  // Close overlay interface
   const handleCloseDetails = () => {
     setSelectedProduct(null);
   };
 
   return (
     <div>
-      {/* React Toastify 容器 */}
+      {/* React Toastify Container */}
       <ToastContainer />
 
-      {/* 商品列表 */}
+      {/* Product List */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
         {products.map((product) => (
           <ProductCard
@@ -60,7 +60,7 @@ const HomePage: React.FC = () => {
         ))}
       </div>
 
-      {/* 弹出覆盖界面 */}
+      {/* Pop-up overlay interface */}
       {selectedProduct && (
         <div
           style={{

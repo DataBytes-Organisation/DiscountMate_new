@@ -3,11 +3,11 @@ import { useParams } from 'react-router-dom';
 import { products } from '../services/products';
 
 const ProductPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // 从路由获取产品 ID
-  const product = products.find((p) => p.id === Number(id)); // 根据 ID 查找产品
+  const { id } = useParams<{ id: string }>(); // Get product ID from route
+  const product = products.find((p) => p.id === Number(id)); // Find products by ID
 
   if (!product) {
-    return <h1>Product not found</h1>; // 如果产品不存在，显示错误信息
+    return <h1>Product not found</h1>; // If the product does not exist, an error message is displayed
   }
 
   return (
