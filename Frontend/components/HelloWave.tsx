@@ -6,6 +6,7 @@ import Animated, {
   withRepeat,
   withSequence,
 } from 'react-native-reanimated';
+import React from 'react';
 
 import { ThemedText } from '@/components/ThemedText';
 

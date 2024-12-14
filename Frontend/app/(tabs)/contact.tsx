@@ -8,7 +8,7 @@ export default function Contact() {
 
   const handleSubmit = () => {
     // API endpoint where the form data will be sent
-    const url = 'http://localhost:5000/contact';
+    const url = 'http://localhost:3000/api/contact';
 
     // Prepare the data to be sent in the POST request
     const data = {
