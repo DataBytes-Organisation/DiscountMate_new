@@ -36,7 +36,7 @@ export default function Profile() {
         }
 
         // Make API call to get profile data
-        const response = await axios.get<Profile>('http://localhost:5000/profile', {
+        const response = await axios.get<Profile>('http://localhost:5002/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
 

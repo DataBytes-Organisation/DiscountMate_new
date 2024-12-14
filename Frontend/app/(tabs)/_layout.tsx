@@ -1,4 +1,4 @@
-import { Tabs, useNavigation, Link } from 'expo-router'; 
+import { Tabs, useNavigation, Link, usePathname } from 'expo-router'; 
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, ScrollView, Button } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
@@ -10,13 +10,13 @@ import { AuthProvider, useAuth } from './AuthContext';
 import NotifBell, { sendTestNotification,  BellNotification, loadNotifications } from "./notifications"
 import BrowseProductsDropdown from './BrowseProductsDropdown';
 import Chatbot from './Chatbot'; 
-
+import DashboardEmbed from './DashboardEmbed';
 const { width: viewportWidth } = Dimensions.get('window');
 
 // Updated fetch function with optional query parameter for search
 const fetchProducts = async (query = '') => {
   try {
-    const response = await fetch(`http://localhost:5000/products?search=${query}`); 
+    const response = await fetch(`http://localhost:5002/products?search=${query}`); 
     const data = await response.json();
     return data;
   } catch (error) {
@@ -55,6 +55,8 @@ function TabLayoutContent() {
   const [isFetching, setIsFetching] = useState(false);
   const [notifications, setNotifications] = useState([]); // Define notifications state
   const [unreadCount, setUnreadCount] = useState(0); // Define unreadCount state
+  const currentRoute = usePathname();
+
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -215,6 +217,7 @@ function TabLayoutContent() {
         </View>
 
         <View style={styles.content}>
+        {currentRoute === '/' && <DashboardEmbed />}
           <Tabs
             screenOptions={{
               tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -229,8 +232,6 @@ function TabLayoutContent() {
     </View>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   container: {
