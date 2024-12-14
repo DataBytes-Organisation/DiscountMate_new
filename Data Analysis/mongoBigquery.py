@@ -6,11 +6,11 @@ import pandas as pd
 print("Connecting to MongoDB Atlas...")
 try:
     mongo_client = MongoClient(
-        "mongodb+srv://discountmate_read_and_write:discountmate@discountmatecluster.u80y7ta.mongodb.net/",
+        "mongodb+srv://<username>:<password>@discountmatecluster.u80y7ta.mongodb.net/",
         tlsAllowInvalidCertificates=True
     )
-    db = mongo_client['CleanedData']  # MongoDB Database
-    collection = db['Coles']          # MongoDB Collection
+    db = mongo_client['Databasename']  # MongoDB Database
+    collection = db['Collectionname']          # MongoDB Collection
     print("Successfully connected to MongoDB!")
 except Exception as e:
     print("Error connecting to MongoDB:", e)
@@ -31,15 +31,15 @@ except Exception as e:
 # BigQuery Connection
 print("Connecting to BigQuery...")
 try:
-    bq_client = bigquery.Client.from_service_account_json("thinking-armor-443911-j4-71eddf71fcfa.json")
+    bq_client = bigquery.Client.from_service_account_json("jsonfilename.json")
     print("Successfully connected to BigQuery!")
 except Exception as e:
     print("Error connecting to BigQuery:", e)
     exit(1)
 
 # Dataset and Table IDs
-dataset_id = "thinking-armor-443911-j4.Cleaned_Data"  # Replace with your correct dataset
-table_id = "thinking-armor-443911-j4.Cleaned_Data.Coles"  # Replace with your correct table name
+dataset_id = "jsonfilename.Datasetname"  # Replace with your correct dataset
+table_id = "jsonfilename.Datasetname.tablename"  # Replace with your correct table name
 
 # Check if Dataset Exists or Create It
 from google.cloud.exceptions import NotFound
