@@ -7,7 +7,7 @@ const { MongoClient } = require('mongodb');
 const jwt = require('jsonwebtoken');
 
 // MongoDB Atlas connection string
-const uri = "mongodb+srv://discountmate:discountmate1@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster";
+const uri = ""; 
 const VERIFICATION_CODE_EXPIRY = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 const app = express();
