@@ -93,7 +93,7 @@ const conversationContext = new ConversationContext();
 
 const generateRecipe = async (ingredients: string): Promise<string> => {
   try {
-    const API_KEY = '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'; //Replace the API Here
+    const API_KEY = ''; //Replace the API Here
     // API call to Hugging Face model
     const response = await axios.post(
       'https://api-inference.huggingface.co/models/flax-community/t5-recipe-generation',
