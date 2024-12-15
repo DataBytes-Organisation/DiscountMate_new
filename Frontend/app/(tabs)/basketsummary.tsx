@@ -36,7 +36,7 @@ export default function basketsummary() {
   }, [segments]);
   const getBasketItems = async () => {
       console.log("Getting basket items");
-      const url = 'http://localhost:3000/api/baskets/getbasket';
+      const url = 'http://localhost:5002/getbasket';
       const token = await AsyncStorage.getItem('authToken');
   
       if (!token) {
