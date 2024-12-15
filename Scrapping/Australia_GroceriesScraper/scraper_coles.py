@@ -4,10 +4,8 @@ import time
 import configparser
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 # Retrieve configuration values
 config = configparser.ConfigParser()
@@ -232,8 +230,25 @@ for category in categories:
     driver.close()
 
 driver.quit()
+
+current_date = datetime.today().strftime('%Y_%m_%d')
 json_data = json.dumps(collected_data, indent=4)
-filepath = os.path.join(folderpath, 'test2.json')
+filepath = os.path.join(folderpath, f'{datetime}_Coles_data.json')
 with open(filepath, 'w', encoding='utf-8') as f:
     json.dump(collected_data, f, ensure_ascii=False, indent=4)
+
+from pymongo import MongoClient
+
+client = MongoClient('mongodb+srv://discountmate_read_and_write:discountmate@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster')
+
+# with open('test2.json', 'r') as file:
+#     collected_data = json.load(file)
+
+db = client['ScrappedData']
+collection = db[f'{current_date}_Coles']
+
+insert_doc = collection.insert_many(collected_data)
+print("Data inserted successfully.")
+
+client.close()
 print("Finished")

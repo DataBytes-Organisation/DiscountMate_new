@@ -10,7 +10,7 @@ let basketItems;
 // Function to fetch product data from the API
 const fetchProducts = async () => {
   try {
-    const response = await fetch('http://localhost:5000/products'); // current product api endpoint
+    const response = await fetch('http://localhost:3000/api/products'); // current product api endpoint
     const data = await response.json();
     return Array.isArray(data) ? data : []; // Ensure the result is always an array
   } catch (error) {
@@ -46,7 +46,7 @@ export default function HomeScreen() {
 
   const addToBasket = async(item) => {
     console.log("Adding basket item ", item);
-    const url = 'http://localhost:5000/addtobasket';
+    const url = 'http://localhost:3000/api/baskets/addtobasket';
     const token = await AsyncStorage.getItem('authToken');
     const data = {
       productId: item.product_id
@@ -73,7 +73,7 @@ export default function HomeScreen() {
   
   const getBasket = async() => {
     console.log("Getting basket items");
-    const url = 'http://localhost:5000/getbasket';
+    const url = 'http://localhost:3000/api/baskets/getbasket';
     const token = await AsyncStorage.getItem('authToken');
   
     if (!token) {
