@@ -33,8 +33,6 @@ const getBasket = async (req, res) => {
         return res.status(404).json({ message: 'Basket not found' });
       }
   
-      console.log('All baskets=', baskets);
-  
       const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
       const user = await getUserFromToken(token);
       const basket = await db.collection('basket').find({ user_id: user._id.toString() }).toArray();
@@ -56,7 +54,6 @@ const getBasket = async (req, res) => {
           });
   
           const data = await productResponse.json();
-          console.log('Product details=', data);
   
           response.push({
             productId: data.product_id,
