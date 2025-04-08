@@ -13,8 +13,6 @@ const signup = async (req, res) => {
         // Establish MongoDB connection and get the db object
         const db = await connectToMongoDB(); // Await the connection to get the db object
 
-        console.log('Received signup data:', req.body);
-
         // Check if the passwords match
         if (password !== verifyPassword) {
             return res.status(400).json({ message: 'Passwords do not match' });
@@ -50,8 +48,6 @@ const signup = async (req, res) => {
 // Signin Controller
 const signin = async (req, res) => {
     const { email, password } = req.body;
-    console.log('Email:', email);
-    console.log('Password:', password);
     try {
         const db = await connectToMongoDB(); 
         
@@ -66,7 +62,7 @@ const signin = async (req, res) => {
         }
 
         const isMatch = await bcrypt.compare(password, user.encrypted_password);
-        console.log('Password Match:', isMatch); 
+
         if (isMatch) {
             const token = jwt.sign({ email, admin: user.admin }, 'your_jwt_secret', { expiresIn: '1h' });
             return res.status(200).json({ message: 'Signin successful', token, admin: user.admin });
@@ -100,12 +96,10 @@ const getProfile = async (req, res) => {
         }
         // Fetch the user details from the database
         const user = await db.collection('users').findOne({ email }, { projection: { encrypted_password: 0 } });
-        console.log('Fetched user:', user);
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-
-        console.log('Profile image value:', user.profile_image);
 
         // Send back user profile details, including the admin field
         return res.status(200).json({
