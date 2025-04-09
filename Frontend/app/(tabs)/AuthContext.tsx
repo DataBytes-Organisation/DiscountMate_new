@@ -1,7 +1,5 @@
-
-
-import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { useRouter } from 'expo-router';  // Use expo-router for navigation
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { useRouter } from 'expo-router'; // Use expo-router for navigation
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -13,18 +11,26 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const router = useRouter();  // Use useRouter from expo-router
+  const router = useRouter(); 
 
+  // Check for the authToken in localStorage when the component mounts
+  useEffect(() => {
+    const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
+    setIsAuthenticated(!!token); // If the token exists, user is authenticated
+  }, []);  
+
+  // Login function
   const login = (token: string) => {
-    localStorage.setItem('authToken', token);  // Store the token in localStorage
+    localStorage.setItem('authToken', token); // Store the token in localStorage
     setIsAuthenticated(true);
-    router.push('/profile');  // Redirect to profile page after login
+    router.push('/profile'); // Redirect to profile page after login
   };
 
+  // Logout function
   const logout = () => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('authToken'); // Remove the token from localStorage
     setIsAuthenticated(false);
-    router.push('/login');  // Redirect to login page after logout
+    router.push('/login'); // Redirect to login page after logout
   };
 
   return (

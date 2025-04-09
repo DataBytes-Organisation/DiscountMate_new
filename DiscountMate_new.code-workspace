@@ -1,0 +1,53 @@
+{
+	"folders": [
+		{
+			"path": "Backend",
+			"name": "Backend"
+		},
+		{
+			"path": "Data",
+			"name": "Data"
+		},
+		{
+			"path": "Data Analysis",
+			"name": "Data Analysis"
+		},
+		{
+			"path": "DE",
+			"name": "DE"
+		},
+		{
+			"path": "Documentation",
+			"name": "Documentation"
+		},
+		{
+			"path": "Documentation discountmate",
+			"name": "Documentation discountmate"
+		},
+		{
+			"path": "Frontend",
+			"name": "Frontend"
+		},
+		{
+			"path": "ML",
+			"name": "ML"
+		},
+		{
+			"path": "Resources",
+			"name": "Resources"
+		},
+		{
+			"path": "Scrapping",
+			"name": "Scrapping"
+		},
+		{
+			"path": "KNN",
+			"name": "KNN"
+		},
+		{
+			"path": "TfidVectorizer",
+			"name": "TfidVectorizer"
+		}
+	],
+	"settings": {}
+}

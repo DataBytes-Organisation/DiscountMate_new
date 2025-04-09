@@ -1,4 +1,4 @@
-import { Tabs, useNavigation, Link } from 'expo-router'; 
+import { Tabs, useNavigation, Link, usePathname } from 'expo-router'; 
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, ScrollView, Button } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
@@ -8,13 +8,16 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth } from './AuthContext'; 
 import NotifBell, { sendTestNotification,  BellNotification, loadNotifications } from "./notifications"
+import BrowseProductsDropdown from './BrowseProductsDropdown';
+import Chatbot from './Chatbot'; 
+import DashboardEmbed from './DashboardEmbed';
 
 const { width: viewportWidth } = Dimensions.get('window');
 
 // Updated fetch function with optional query parameter for search
 const fetchProducts = async (query = '') => {
   try {
-    const response = await fetch(`http://localhost:5000/products?search=${query}`); 
+    const response = await fetch(`http://localhost:5002/products?search=${query}`); 
     const data = await response.json();
     return data;
   } catch (error) {
@@ -53,6 +56,8 @@ function TabLayoutContent() {
   const [isFetching, setIsFetching] = useState(false);
   const [notifications, setNotifications] = useState([]); // Define notifications state
   const [unreadCount, setUnreadCount] = useState(0); // Define unreadCount state
+  const currentRoute = usePathname();
+
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -108,6 +113,11 @@ function TabLayoutContent() {
             style={styles.logo}
           />
         </TouchableOpacity>
+        <BrowseProductsDropdown onSelectCategory={(category) => {
+    // Handle category selection here
+         console.log('Selected category:', category);
+    // You might want to update your search or navigate to a category page
+        }} />
         <View style={styles.searchContainer}>
           <View style={styles.searchBoxWrapper}>
             <Icon name="search" size={20} color="#888" style={styles.searchIcon} />
@@ -187,6 +197,10 @@ function TabLayoutContent() {
                 <TabBarIcon name="home-outline" color="#000" />
                 <Text style={styles.iconButtonText}>Home</Text>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('productpage')} style={styles.iconButton}>
+                <TabBarIcon name="search" color="#000" />
+                <Text style={styles.iconButtonText}>Product Page</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate('profile')} style={styles.iconButton}>
                 <TabBarIcon name="person-outline" color="#000" />
                 <Text style={styles.iconButtonText}>Profile</Text>
@@ -208,6 +222,7 @@ function TabLayoutContent() {
         </View>
 
         <View style={styles.content}>
+        {currentRoute === '/' && <DashboardEmbed />}
           <Tabs
             screenOptions={{
               tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -218,11 +233,10 @@ function TabLayoutContent() {
           </Tabs>
         </View>
       </View>
+      <Chatbot />
     </View>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   container: {

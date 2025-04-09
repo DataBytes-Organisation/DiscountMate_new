@@ -36,7 +36,7 @@ export default function basketsummary() {
   }, [segments]);
   const getBasketItems = async () => {
       console.log("Getting basket items");
-      const url = 'http://localhost:5000/getbasket';
+      const url = 'http://localhost:5002/getbasket';
       const token = await AsyncStorage.getItem('authToken');
   
       if (!token) {
@@ -78,7 +78,7 @@ export default function basketsummary() {
   const deleteItemFromBasket = async(productId: number) =>
   {
     console.log("Clicked delete from basket");
-    const url = 'http://localhost:5000/deleteitemfrombasket';
+    const url = 'http://localhost:3000/api/baskets/deleteitemfrombasket';
     const token = await AsyncStorage.getItem('authToken');
     
     if (!token) {
@@ -106,7 +106,7 @@ export default function basketsummary() {
 
   }
   const updateQuantity = async (productId: number, quantity: number) => {
-    const url = 'http://localhost:5000/updatequantity';
+    const url = 'http://localhost:3000/api/baskets/updatequantity';
     const token = await AsyncStorage.getItem('authToken');
     const data = {
       quantity: quantity,
