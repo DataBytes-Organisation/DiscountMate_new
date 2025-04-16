@@ -66,10 +66,6 @@ def pipeline():
             processed_paths.append(processed)
         return processed_paths
 
-    @task
-    def aggregate_processed_files(processed_file_paths: list):
-        return processed_file_paths
-
     load_to_dw = DockerOperator(
         task_id="load_to_dw",
         image="spark-app",
@@ -89,7 +85,7 @@ def pipeline():
             "POSTGRES_SCHEMA": POSTGRES_SCHEMA,
             "POSTGRES_USER": POSTGRES_USER,
             "POSTGRES_PASSWORD": POSTGRES_PASSWORD,
-            "PROCESSED_FILE_PATH_LIST_STR": "{{ task_instance.xcom_pull(task_ids='aggregate_processed_files') | tojson }}",
+            "PROCESSED_FILE_PATH_LIST_STR": "{{ task_instance.xcom_pull(task_ids='process_file') | tojson }}",
         },
     )
 
@@ -97,8 +93,7 @@ def pipeline():
     bucket_check = check_minio_buckets()
     raw_file_path = ingest_from_mongo_to_minio()
     processed_file_path = process_file(raw_file_path)
-    processed_file_list = aggregate_processed_files(processed_file_path)
 
-    bucket_check >> raw_file_path >> processed_file_path >> processed_file_list >> load_to_dw
+    bucket_check >> raw_file_path >> processed_file_path >> load_to_dw
 
 dag = pipeline()
