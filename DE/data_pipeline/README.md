@@ -68,6 +68,8 @@ POSTGRES_HOST=postgres
 POSTGRES_PORT=5432
 POSTGRES_DATABASE=discountmate
 POSTGRES_SCHEMA=landing
+MONGO_URI=your_URI
+MONGO_DB=your_DB
 ```
 
 3. Start the services:
@@ -82,7 +84,7 @@ or
 docker-compose up --build -d
 ```
 
-then
+then, you have to download 
 
 ```bash
 cd docker/spark-app
