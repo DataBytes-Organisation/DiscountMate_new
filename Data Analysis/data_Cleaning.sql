@@ -11,9 +11,10 @@ FROM woolies_data;
 DELETE FROM cleaned_coles_data
 WHERE category = 'Bonus Ovenware Credits';
 
--- Filter rows based on category (for Woolworths)
+-- Filter rows based on category (for Woolies)
 DELETE FROM cleaned_woolies_data
-WHERE category = "Electronics", "Home & Lifestyle"
+WHERE category = 'Electronics' OR category ='Home & Lifestyle';
+
 
 -- Convert price columns to numeric (remove non-numeric characters)
 UPDATE cleaned_coles_data
@@ -33,13 +34,13 @@ DELETE FROM cleaned_coles_data
 WHERE best_price IS NULL
    OR item_price IS NULL
    OR best_unit_price IS NULL
-   OR price_was IS NULL
    OR unit_price IS NULL;
 
 DELETE FROM cleaned_woolies_data
 WHERE best_price IS NULL
    OR item_price IS NULL
    OR best_unit_price IS NULL
+
    OR price_was IS NULL
    OR unit_price IS NULL;
 
@@ -50,3 +51,4 @@ HAVING COUNT(*) > 1;
 
 SELECT * FROM cleaned_coles_data LIMIT 5;
 SELECT * FROM cleaned_woolies_data LIMIT 5;
+
