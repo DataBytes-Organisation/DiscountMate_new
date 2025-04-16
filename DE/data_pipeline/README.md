@@ -52,28 +52,42 @@ The project uses a modern data engineering stack with the following components:
 1. Clone the repository:
 ```bash
 git clone https://github.com/DataBytes-Organisation/DiscountMate_new.git
-git checkout
-cd pipeline
+cd DE/data_pipeline
 ```
 
 2. Create a `.env` file with the following variables:
 ```
-PGADMIN_DEFAULT_EMAIL=your_email@example.com
-PGADMIN_DEFAULT_PASSWORD=your_password
-MINIO_ACCESS_KEY_ID=your_access_key
-MINIO_SECRET_ACCESS_KEY=your_secret_key
+PGADMIN_DEFAULT_EMAIL=pgadmin@localhost.com
+PGADMIN_DEFAULT_PASSWORD=pgadmin
+MINIO_ACCESS_KEY_ID=minio
+MINIO_SECRET_ACCESS_KEY=minio123
 MINIO_ENDPOINT=minio:9000
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_password
+POSTGRES_PASSWORD=postgres
 POSTGRES_HOST=postgres
 POSTGRES_PORT=5432
-POSTGRES_DATABASE=airflow
-POSTGRES_SCHEMA=public
+POSTGRES_DATABASE=discountmate
+POSTGRES_SCHEMA=landing
 ```
 
 3. Start the services:
 ```bash
-docker-compose up -d
+# Based on your docker version, the syntax may be different, please try the second syntax
+# if the first syntax cannot run
+
+docker compose up --build -d
+
+or
+
+docker-compose up --build -d
+```
+
+then
+
+```bash
+cd docker/spark-app
+
+docker build -t spark-app .
 ```
 
 ### Accessing Services
@@ -82,28 +96,44 @@ docker-compose up -d
 - **PgAdmin**: http://localhost:5050
 - **MinIO**: http://localhost:9001
 - **Spark Master**: http://localhost:8082
-- **Spark Worker**: http://localhost:8081
 
-## Development
+## Running the Pipeline
 
-### Adding New DAGs
-Place new Airflow DAGs in the `airflow/dags` directory. The DAGs will be automatically loaded by Airflow.
+Once all services are up and running, you can trigger the data pipeline as follows:
 
-### Database Changes
-To modify the database schema:
-1. Update `discountmate_schema.sql`
-2. Apply changes through PgAdmin or direct SQL commands
+1. **Access Airflow**  
+Open the browser and navigate to [http://localhost:8086](http://localhost:8086). Use the default credentials if prompted: 
+    ```
+    Username: airflow
+    Password: airflow
+    ```
 
-## Future Plans
+1. **Trigger a DAG**  
+- Navigate to the DAGs page.
+- Locate the DAG corresponding to data pipeline (pipeline)
+- Toggle it **On** and click the **Play** (▶) button to trigger a manual run.
 
-The project includes plans to migrate to Snowflake for enhanced data warehousing capabilities. The `snowflake_setup.md` file contains the configuration for this future transition.
+1. **Monitor DAG Run**  
+Use the **Graph View** or **Tree View** in Airflow to monitor the status of tasks within the DAG. Check logs for detailed output or error messages.
 
-## Contributing
+1. **Data Verification**  
+Once the DAG finishes running:
+- Open **PgAdmin** at [http://localhost:5050](http://localhost:5050)
+- Log in using your credentials:
+    ```
+    Email: pgadmin@localhost.com  
+    Password: pgadmin
+    ```
+- In the PgAdmin interface:
+    1. Right-click on **Servers** → **Create** → **Server**
+    2. Under the **General** tab, name the server anything (e.g., `local`)
+    3. Under the **Connection** tab, fill in the following:
+        - **Host name/address**: `postgres`
+        - **Port**: `5432`
+        - **Username**: `postgres`
+        - **Password**: `postgres`
+     . Click **Save**
 
-1. Create a new branch for your feature
-2. Make your changes
-3. Submit a pull request
-
-## License
-
-[Add your license information here] 
+- Expand the server and connect to the `discountmate` database
+- Navigate to the `landing` schema
+- Run SQL queries to inspect the ingested and transformed data.
