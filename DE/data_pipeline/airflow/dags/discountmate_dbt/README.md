@@ -32,7 +32,7 @@ The following files should NOT be committed to version control:
 - Git
 - Virtual environment (recommended)
 
-## Installation
+## Set up
 
 1. Create and activate a virtual environment:
 ```bash
@@ -63,16 +63,7 @@ git clone <discountmate-repository-url>
 cd DE/data_pipeline/discountmate_dbt
 ```
 
-5. Install project dependencies:
-```bash
-dbt deps
-```
-
-## Configuration
-
-### Profile Setup
-
-1. Create or modify `~/.dbt/profiles.yml`:
+1. Create `profiles.yml`:
 ```yaml
 discountmate_dbt:
   target: dev
@@ -88,9 +79,14 @@ discountmate_dbt:
       threads: 1
 ```
 
-2. Verify your connection:
+1. Verify your connection:
 ```bash
 dbt debug
+```
+
+1. Install project dependencies:
+```bash
+dbt deps
 ```
 
 ## Project Structure
@@ -109,42 +105,6 @@ discountmate_dbt/
 ├── profiles.yml   # Database connection (gitignored)
 ├── packages.yml   # dbt package dependencies
 └── dbt_project.yml # Project configuration
-```
-
-## Collaboration Initiation
-
-1. **Clone the Repository**
-```bash
-git clone <repository-url>
-cd DE/data_pipeline/airflow/dags/discountmate_dbt
-```
-
-2. **Set Up Local Environment**
-```bash
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install dbt-core dbt-postgres
-dbt deps
-```
-
-3. **Configure Database Connection**
-Create `~/.dbt/profiles.yml` or `profiles.yml` in dbt folder with local database credentials:
-```yaml
-discountmate_dbt:
-  target: dev
-  outputs:
-    dev:
-      type: postgres
-      host: localhost
-      port: 5432
-      user: postgres
-      password: postgres
-      dbname: discountmate
-      schema: marts
-      threads: 1
 ```
 
 ## Development Workflow
