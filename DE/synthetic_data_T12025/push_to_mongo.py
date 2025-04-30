@@ -1,29 +1,19 @@
-# Import library
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
+# push_to_mongodb.py
+# Script to push CSV data into MongoDB, overwriting existing documents (upsert)
+
+import os
 import pandas as pd
-from datetime import datetime
-import os 
+from pymongo import MongoClient, errors
 from dotenv import load_dotenv
-load_dotenv()  
 
-uri = os.getenv("MONGO_URI")
+# Load environment variables
+load_dotenv()
 
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
+# Configuration
+MONGO_URI = os.getenv('MONGO_URI')
+DB_NAME = os.getenv('MONGO_DB', 'SampleData')
 
-# Send a notification to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
-
-# DB 
-db_name = os.getenv("MONGO_DB")
-db = client[db_name]
-
-# Define mapping 
+# Map CSV filenames to MongoDB collection names
 file_collection_map = {
     "users.csv": "users",
     "stores.csv": "stores",
@@ -34,12 +24,42 @@ file_collection_map = {
     "shopping_list_items.csv": "shopping_list_items",
 }
 
-for file_name, collection_name in file_collection_map.items():
-    try:
-        df = pd.read_csv(file_name)
-        data_to_insert = df.to_dict('records')
-        collection = db[collection_name]
-        result = collection.insert_many(data_to_insert)
-        print(f"Data from {file_name} inserted into collection '{collection_name}' with IDs: {result.inserted_ids}")
-    except Exception as e:
-        print(f"An error occurred while processing {file_name}: {e}")
+
+def main():
+    # Connect to MongoDB
+    client = MongoClient(MONGO_URI)
+    db = client[DB_NAME]
+
+    for file_name, coll_name in file_collection_map.items():
+        try:
+            # Read CSV
+            df = pd.read_csv(file_name)
+
+            # Convert to list of dicts
+            docs = df.to_dict('records')
+
+            collection = db[coll_name]
+
+            # Upsert each document by its _id field (overwrite if exists)
+            upserted = 0
+            for doc in docs:
+                # Ensure _id exists for upsert key; if missing, insert new
+                if '_id' in doc:
+                    key = {'_id': doc['_id']}
+                else:
+                    key = {}  # will insert as new
+
+                # Perform replace_one with upsert
+                collection.replace_one(key, doc, upsert=True)
+                upserted += 1
+
+            print(f"Processed {file_name} → {coll_name}: upserted/inserted {upserted} documents.")
+
+        except errors.PyMongoError as e:
+            print(f"MongoDB error on {file_name}: {e}")
+        except Exception as e:
+            print(f"Error processing {file_name}: {e}")
+
+
+if __name__ == '__main__':
+    main()
