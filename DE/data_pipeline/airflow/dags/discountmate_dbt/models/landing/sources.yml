@@ -2,7 +2,7 @@ sources:
   - name: landing
     description: Landing zone for data loaded from data lake
     schema: landing
-    database: ecom
+    database: discountmate
     tables:
       - name: users
         identifier: lnd_users
