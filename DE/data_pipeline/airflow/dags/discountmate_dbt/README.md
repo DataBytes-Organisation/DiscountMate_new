@@ -45,13 +45,25 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install dbt-core dbt-postgres
 ```
 
-3. Clone this repository:
+3. Set up dbt Extensions
+
+- Download the `power user for dbt`, `Jinja`, `Better Jinja` extension to ease interaction with dbt.
+
+- Find `open user settings (json)` (can be accessed through Ctrl+Shift+P), then modify the json settings file to include:
+```
+"files.associations": {
+    "*.sql": "jinja-sql",
+    "*.yml": "yaml"
+}
+```
+
+4. Clone this repository:
 ```bash
 git clone <discountmate-repository-url>
 cd DE/data_pipeline/discountmate_dbt
 ```
 
-4. Install project dependencies:
+5. Install project dependencies:
 ```bash
 dbt deps
 ```
