@@ -15,6 +15,19 @@ SELECT DISTINCT
     COALESCE(longitude, 0) AS longitude
 FROM users_dirty;
 
+-- Drop any redundant columns
+DO $$
+DECLARE
+    col RECORD;
+BEGIN
+    FOR col IN 
+        SELECT column_name FROM information_schema.columns 
+        WHERE table_name='users_clean' AND column_name LIKE 'redundant_%'
+    LOOP
+        EXECUTE format('ALTER TABLE users_clean DROP COLUMN %I', col.column_name);
+    END LOOP;
+END$$;
+
 DROP TABLE users_dirty;
 ALTER TABLE users_clean RENAME TO users;
 
@@ -33,6 +46,19 @@ SELECT DISTINCT
     TRIM(COALESCE(phone_number, '0000000000')) AS phone_number,
     TRIM(COALESCE(link_image, '')) AS link_image
 FROM stores_dirty;
+
+-- Drop any redundant columns
+DO $$
+DECLARE
+    col RECORD;
+BEGIN
+    FOR col IN 
+        SELECT column_name FROM information_schema.columns 
+        WHERE table_name='stores_clean' AND column_name LIKE 'redundant_%'
+    LOOP
+        EXECUTE format('ALTER TABLE stores_clean DROP COLUMN %I', col.column_name);
+    END LOOP;
+END$$;
 
 DROP TABLE stores_dirty;
 ALTER TABLE stores_clean RENAME TO stores;
@@ -53,6 +79,19 @@ SELECT DISTINCT
     TRIM(COALESCE(link_image, '')) AS link_image
 FROM products_dirty;
 
+-- Drop any redundant columns
+DO $$
+DECLARE
+    col RECORD;
+BEGIN
+    FOR col IN 
+        SELECT column_name FROM information_schema.columns 
+        WHERE table_name='products_clean' AND column_name LIKE 'redundant_%'
+    LOOP
+        EXECUTE format('ALTER TABLE products_clean DROP COLUMN %I', col.column_name);
+    END LOOP;
+END$$;
+
 DROP TABLE products_dirty;
 ALTER TABLE products_clean RENAME TO products;
 
@@ -66,6 +105,19 @@ SELECT DISTINCT
     COALESCE(date, CURRENT_TIMESTAMP) AS date,
     COALESCE(price, 0) AS price
 FROM product_pricing_dirty;
+
+-- Drop any redundant columns
+DO $$
+DECLARE
+    col RECORD;
+BEGIN
+    FOR col IN 
+        SELECT column_name FROM information_schema.columns 
+        WHERE table_name='product_pricing_clean' AND column_name LIKE 'redundant_%'
+    LOOP
+        EXECUTE format('ALTER TABLE product_pricing_clean DROP COLUMN %I', col.column_name);
+    END LOOP;
+END$$;
 
 DROP TABLE product_pricing_dirty;
 ALTER TABLE product_pricing_clean RENAME TO product_pricing;
@@ -84,6 +136,19 @@ SELECT DISTINCT
     COALESCE(total_price, 0) AS total_price
 FROM baskets_dirty;
 
+-- Drop any redundant columns
+DO $$
+DECLARE
+    col RECORD;
+BEGIN
+    FOR col IN 
+        SELECT column_name FROM information_schema.columns 
+        WHERE table_name='baskets_clean' AND column_name LIKE 'redundant_%'
+    LOOP
+        EXECUTE format('ALTER TABLE baskets_clean DROP COLUMN %I', col.column_name);
+    END LOOP;
+END$$;
+
 DROP TABLE baskets_dirty;
 ALTER TABLE baskets_clean RENAME TO baskets;
 
@@ -96,6 +161,19 @@ SELECT DISTINCT
     COALESCE(user_id, 'unknown') AS user_id,
     COALESCE(date_created, CURRENT_TIMESTAMP) AS date_created
 FROM shopping_lists_dirty;
+
+-- Drop any redundant columns
+DO $$
+DECLARE
+    col RECORD;
+BEGIN
+    FOR col IN 
+        SELECT column_name FROM information_schema.columns 
+        WHERE table_name='shopping_lists_clean' AND column_name LIKE 'redundant_%'
+    LOOP
+        EXECUTE format('ALTER TABLE shopping_lists_clean DROP COLUMN %I', col.column_name);
+    END LOOP;
+END$$;
 
 DROP TABLE shopping_lists_dirty;
 ALTER TABLE shopping_lists_clean RENAME TO shopping_lists;
@@ -112,9 +190,20 @@ SELECT DISTINCT
     TRIM(COALESCE(note, '')) AS note
 FROM shopping_list_items_dirty;
 
+-- Drop any redundant columns
+DO $$
+DECLARE
+    col RECORD;
+BEGIN
+    FOR col IN 
+        SELECT column_name FROM information_schema.columns 
+        WHERE table_name='shopping_list_items_clean' AND column_name LIKE 'redundant_%'
+    LOOP
+        EXECUTE format('ALTER TABLE shopping_list_items_clean DROP COLUMN %I', col.column_name);
+    END LOOP;
+END$$;
+
 DROP TABLE shopping_list_items_dirty;
 ALTER TABLE shopping_list_items_clean RENAME TO shopping_list_items;
 
 COMMIT;
-
--- End of data_cleaning.sql

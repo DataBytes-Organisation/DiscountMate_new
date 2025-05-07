@@ -40,6 +40,14 @@ def add_dirty_data(df, na_prob=0.1, trim_prob=0.5, duplicate_prob=0.1):
         df_dirty = pd.concat([df_dirty, duplicates], ignore_index=True)
     
     return df_dirty
+    
+    # 4. Add one redundant column
+    if len(df_dirty.columns) > 0:
+        col_to_copy = random.choice(df_dirty.columns.tolist())
+        df_dirty[f"redundant_{col_to_copy}"] = df_dirty[col_to_copy]
+
+    return df_dirty
+
 
 # List of original CSV files
 files = [
