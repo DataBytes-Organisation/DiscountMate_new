@@ -38,38 +38,41 @@ def save_to_csv(data, filename):
 #         return max(page_numbers, default=1)
 #     return 1
 
-# # Setup MongoDB connection
-# def setup_mongo():
-#     # Load environment variables from .env file if it exists
-#     load_dotenv()
+#Setup MongoDB connection
+def setup_mongo():
+    # Load environment variables from .env file if it exists
+    load_dotenv()
     
-#     # MongoDB credentials
-#     username = os.getenv('MONGO_USERNAME', 'example')
-#     password = os.getenv('MONGO_PASSWORD', 'example1')
+    # MongoDB credentials
+    username = os.getenv('MONGO_USERNAME')
+    password = os.getenv('MONGO_PASSWORD')
+
+    if not username or not password:
+        raise ValueError("❌ MONGO_USERNAME or MONGO_PASSWORD not set. Please check your .env file.")
     
-#     # Encode credentials for MongoDB URI
-#     encoded_username = quote_plus(username)
-#     encoded_password = quote_plus(password)
+    # Encode credentials for MongoDB URI
+    encoded_username = quote_plus(username)
+    encoded_password = quote_plus(password)
     
-#     # MongoDB URI construction
-#     uri = f'mongodb+srv://{encoded_username}:{encoded_password}@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster'
+    # # MongoDB URI construction
+    uri = f'mongodb+srv://scraper:scraper@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster'
     
-#     # Initialize MongoDB client
-#     client = MongoClient(uri, server_api=ServerApi('1'))
+    # Initialize MongoDB client
+    client = MongoClient(uri, server_api=ServerApi('1'))
     
-#     try:
-#         client.admin.command('ping')
-#         print("Successfully connected to MongoDB!")
-#     except Exception as e:
-#         print(f"MongoDB connection failed: {e}")
-#         exit()
+    try:
+        client.admin.command('ping')
+        print("Successfully connected to MongoDB!")
+    except Exception as e:
+        print(f"MongoDB connection failed: {e}")
+        exit()
     
-#     # MongoDB database and collection
-#     db = client['ScrappedData']
+    # MongoDB database and collection
+    db = client['ScrappedData']
     
-#     # Generate collection name with timestamp
-#     collection_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_Foodland"
-#     return db[collection_name]
+    # Generate collection name with timestamp
+    collection_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_Foodland"
+    return db[collection_name]
 
 def scrape_foodland():
     url = "https://foodlandbalaklava.com.au/search?page=1"
@@ -79,6 +82,8 @@ def scrape_foodland():
     print(f"Total Pages: {total_pages} Balaklava")
 
     results = []
+    collection = setup_mongo()
+
     for current_page in range(1, total_pages + 1):
         print(f"Scraping Page: {current_page}")
         url = f"https://foodlandbalaklava.com.au/search?page={current_page}"
@@ -99,6 +104,9 @@ def scrape_foodland():
                     "Unit Price": get_text_or_default(product.find('span', class_='talker__prices__comparison--UnitPrice')),
                     "Product Link": "https://foodlandbalaklava.com.au/" + product.find('a').get('href')
                 })
+
+                # results.append(record)
+                # collection.insert_one(record)
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     filename = f"foodland_balaklava_{timestamp}.csv"
