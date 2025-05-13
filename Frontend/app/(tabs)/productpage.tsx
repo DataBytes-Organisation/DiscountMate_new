@@ -1,63 +1,101 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Button, Picker } from "react-native";
+import * as Papa from "papaparse";
 
 interface Product {
   name: string;
   description: string;
   price: number;
+  bestPrice: number;
+  bestUnitPrice: number;
+  unitPrice: number;
+  originalPrice: number;
+  discountPrice: number;
 }
 
 const ProductPage = () => {
-  const [products, setProducts] = useState<Product[]>([]); // Changed state to an array of products
+  const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [sortOption, setSortOption] = useState<string>('desc'); // state for sorting option
 
   useEffect(() => {
-    // Mock data (replace API call with mock data for now)
-    const mockProducts: Product[] = [
-      {
-        name: "Sample Product 1",
-        description: "This is a sample product description 1.",
-        price: 29.99,
-      },
-      {
-        name: "Sample Product 2",
-        description: "This is a sample product description 2.",
-        price: 49.99,
-      },
-      {
-        name: "Sample Product 3",
-        description: "This is a sample product description 3.",
-        price: 19.99,
-      },
-    ];
+    const loadCSV = async () => {
+      try {
+        const urls = [
+          "/public/woolworths_cleaned.csv",
+          "/public/coles_synthetic_dataset_8_weeks.csv",
+        ];
 
-    // Simulate API delay
-    setTimeout(() => {
-      setProducts(mockProducts);
-    }, 1000); // 1 second delay to simulate loading
+        const allProducts: Product[] = [];
 
-    // Commented out actual API call for now
-    // const fetchProducts = async () => {
-    //   try {
-    //     const response = await fetch("https://api.example.com/products"); // Will draw in API data from the backend
-    //
-    //     // Handle non-OK responses
-    //     if (!response.ok) {
-    //       throw new Error(`HTTP error! Status: ${response.status}`);
-    //     }
-    //
-    //     const data: Product[] = await response.json();
-    //     setProducts(data);
-    //   } catch (err) {
-    //     console.error("Failed to fetch products:", err);
-    //     setError("Failed to load products. Please try again later.");
-    //   }
-    // };
-    //
-    // fetchProducts();
+        for (const url of urls) {
+          const response = await fetch(url);
+          const text = await response.text();
+
+          Papa.parse(text, {
+            header: true,
+            skipEmptyLines: true,
+            complete: (results) => {
+              const parsedProducts = results.data
+                .filter((item: any) =>
+                  item["Category"] === "Fruit & Veg" ||
+                  item["category"] === "Fruit & Vegetables"
+                )
+                .map((item: any) => ({
+                  name: item["item_name"]?.trim() ||
+                  item["Item Name"]?.trim() ||
+                  "Unnamed Product",
+                  description: item["description"]?.trim()
+                    ? item["description"]
+                    : url.includes("coles")
+                      ? "Coles Pricing:"
+                      : "Woolworths Pricing:",
+                  price: parseFloat(item["item_price"] || item["Item Price"]) || 0,
+                  bestPrice: parseFloat(item["best_price"] || item["Best Price"]) || 0,
+                  bestUnitPrice: parseFloat(item["best_unit_price"] || item["Best Unit Price"]) || 0,
+                  unitPrice: parseFloat(item["unit_price"] || item["Unit Price"]) || 0,
+                  originalPrice: parseFloat(item["item_price"] || item["Item Price"]) || 0,
+                  discountPrice: parseFloat(item["DiscountedPrice"] || item["Discount Price"]) || 0,
+                }));
+
+              allProducts.push(...parsedProducts);
+              setProducts([...allProducts]);
+            },
+            error: (err) => {
+              console.error(`CSV parsing error for ${url}:`, err);
+              setError("Failed to parse one or more CSVs.");
+            },
+          });
+        }
+      } catch (err) {
+        console.error("File read error:", err);
+        setError("Failed to load products.");
+      }
+    };
+
+    loadCSV();
   }, []);
 
-  // Display error message if API fails
+  const handleSortChange = (option: string) => {
+    setSortOption(option);
+  };
+
+  // Filters out duplicate items in datasets
+  const uniqueProductsMap = new Map();
+  products.forEach((product) => {
+    uniqueProductsMap.set(product.name, product);
+  });
+  const uniqueProducts = Array.from(uniqueProductsMap.values());
+  
+  const sortedProducts = [...uniqueProducts].sort((a, b) => {
+    if (sortOption === "asc") {
+      return a.price - b.price;
+    } else {
+      return b.price - a.price;
+    }
+  });
+  
+
   if (error) {
     return (
       <View style={styles.errorContainer}>
@@ -66,7 +104,6 @@ const ProductPage = () => {
     );
   }
 
-  // Show loading while fetching
   if (products.length === 0) {
     return (
       <View style={styles.loadingContainer}>
@@ -77,14 +114,31 @@ const ProductPage = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Title of the Product Page */}
       <Text style={styles.title}>Product Page</Text>
 
-      {products.map((product, index) => (
+      {/* Sort Filter Dropdown */}
+      <View style={styles.sortContainer}>
+        <Text>Sort by Price</Text>
+        <Picker
+          selectedValue={sortOption}
+          onValueChange={handleSortChange}
+          style={styles.picker}
+        >
+          <Picker.Item label="Highest to Lowest" value="desc" />
+          <Picker.Item label="Lowest to Highest" value="asc" />
+        </Picker>
+      </View>
+
+      {sortedProducts.map((product, index) => (
         <View key={index} style={styles.productContainer}>
           <Text style={styles.productName}>{product.name}</Text>
           <Text style={styles.productDescription}>{product.description}</Text>
-          <Text style={styles.productPrice}>{`$${product.price.toFixed(2)}`}</Text>
+          <Text style={styles.productPrice}>Item Price: ${product.price.toFixed(2)}</Text>
+          <Text style={styles.productPrice}>Best Price: ${product.bestPrice.toFixed(2)}</Text>
+          <Text style={styles.productPrice}>Best Unit Price: ${product.bestUnitPrice.toFixed(2)}</Text>
+          <Text style={styles.productPrice}>Unit Price: ${product.unitPrice.toFixed(2)}</Text>
+          <Text style={styles.productPrice}>Original Price: ${product.originalPrice.toFixed(2)}</Text>
+          <Text style={styles.productPrice}>Discount Price: ${product.discountPrice.toFixed(2)}</Text>
         </View>
       ))}
     </ScrollView>
@@ -122,38 +176,67 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     color: "#333",
-    textAlign: "center", // Center the title
-    marginBottom: 20, // Add space below the title
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  sortContainer: {
+    marginBottom: 20,
+  },
+  picker: {
+    height: 50,
+    width: 150,
   },
   productContainer: {
-    marginBottom: 20,
-    padding: 10,
+    marginBottom: 12, 
+    padding: 8,        
     backgroundColor: "#f9f9f9",
-    borderRadius: 8,
+    borderRadius: 8,   
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 1 }, 
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,    
   },
+  
   productName: {
-    fontSize: 24,
+    fontSize: 20,  
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 6,
   },
   productDescription: {
-    fontSize: 16,
+    fontSize: 14,  
     color: "#555",
-    marginBottom: 10,
+    marginBottom: 6,
   },
   productPrice: {
-    fontSize: 18,
+    fontSize: 16, 
     fontWeight: "bold",
     color: "#1a9bfc",
   },
+  
 });
 
 export default ProductPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
