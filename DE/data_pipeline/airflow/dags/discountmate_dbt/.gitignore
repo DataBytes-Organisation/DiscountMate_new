@@ -28,4 +28,5 @@ ENV/
 # Sensitive files
 profiles.yml
 .user.yml
+package-lock.yml
 
