@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
-import pandas as pd
+from pymongo.mongo_client import MongoClient
 from datetime import datetime
 import time
 
@@ -15,6 +15,13 @@ driver = webdriver.Chrome(options=options)
 
 def get_text_or_default(value, default="N/A"):
     return value.text.strip() if value else default
+
+def setup_mongo():
+    client = MongoClient("mongodb+srv://discountmate_read_and_write:discountmate@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster")
+    db = client['ScrappedData']
+    timestamp = datetime.now().strftime("%Y_%m_%d_%H%M%S")
+    collection = db[f"{timestamp}_AdelaidesFinest"]
+    return collection
 
 def scrape_adelaides_finest_all_pages():
     url = "https://shop.adelaidesfinest.com.au/category/all"
@@ -35,31 +42,32 @@ def scrape_adelaides_finest_all_pages():
 
         for product in products:
             product_name = get_text_or_default(product.find("h3", class_="title"))
-            product_size = product_name.split()[-1] if product_name else "N/A"
             integral = get_text_or_default(product.find('span', class_='integral'))
             fractional = get_text_or_default(product.find('span', class_='fractional'))
-            discounted_price = f"{integral}.{fractional}" if integral.isdigit() and fractional.isdigit() else "N/A"
-            price = get_text_or_default(product.find('span', class_='price__discount')).split('$')[-1].strip()
+            best_price = f"{integral}.{fractional}" if integral.isdigit() and fractional.isdigit() else "N/A"
 
+            price_raw = get_text_or_default(product.find('span', class_='price__discount')).split('$')[-1].strip()
             try:
-                original_price = float(price) + float(discounted_price) if discounted_price != "N/A" else "N/A"
+                item_price = float(price_raw) + float(best_price) if best_price != "N/A" else "N/A"
             except:
-                original_price = "N/A"
+                item_price = "N/A"
 
-            uom_div = product.find('div', class_='card__product-uom')
-            unit_price = get_text_or_default(uom_div.find('p') if uom_div else None)
+            unit_price = get_text_or_default(product.find('div', class_='card__product-uom'))
             product_link = "https://shop.adelaidesfinest.com.au/" + product.find('a', class_="card__product-link").get('href') if product.find('a', class_="card__product-link") else "No link available"
 
-            results.append({
-                "Store": "Adelaide's Finest",
-                "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "Product Name": product_name,
-                "Size": product_size,
-                "Original Price": original_price,
-                "Discounted Price": discounted_price,
-                "Unit Price": unit_price,
-                "Product Link": product_link
-            })
+            data = {
+                "product_code": "N/A",
+                "category": "N/A",
+                "item_name": product_name,
+                "item_price": item_price,
+                "best_price": best_price,
+                "unit_price": unit_price,
+                "special_text": "N/A",
+                "promo_text": "N/A",
+                "link": product_link
+            }
+
+            results.append(data)
 
         try:
             next_button = driver.find_element(By.CSS_SELECTOR, 'a[aria-label="Next page"]')
@@ -75,11 +83,12 @@ def scrape_adelaides_finest_all_pages():
             print("Next page button not found. Ending.")
             break
 
-    # Save to CSV
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"adelaides_finest_{timestamp}.csv"
-    pd.DataFrame(results).to_csv(filename, index=False, encoding='utf-8')
-    print(f"\n✅ Done! Saved {len(results)} products to {filename}")
+    if results:
+        collection = setup_mongo()
+        collection.insert_many(results)
+        print("Scraping completed successfully!")
+    else:
+        print("No products scraped.")
 
 if __name__ == "__main__":
     print("Starting full scrape...")
