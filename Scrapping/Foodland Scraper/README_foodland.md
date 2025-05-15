@@ -1,100 +1,85 @@
-# FoodlandScraper ReadMe
+# FoodlandScraper README
 
 ## Table of Contents
-1. [Overview](#overview)  
-2. [Dependencies](#dependencies)  
-3. [Usage](#usage)  
-4. [Features](#features)  
-5. [Output](#output)  
-6. [Need-to-Know Information](#need-to-know-information)  
-7. [License](#license)
+1. [Overview](#overview)
+2. [Dependencies](#dependencies)
+3. [Usage](#usage)
+4. [Features](#features)
+5. [Output](#output)
+6. [Database Integration](#database-integration)
+7. [Notes](#notes)
+8. [License](#license)
 
 ---
 
 ## Overview
-**FoodlandScraper** is a Python-based web scraping tool designed to extract product details from two Foodland store websites:  
-- **Foodland Balaklava** (`foodlandbalaklava.com.au`)  
-- **Adelaide’s Finest** (`shop.adelaidesfinest.com.au`)  
+**FoodlandScraper** is a Python-based tool designed to extract product data from the **Foodland Balaklava** website:  
+('https://foodlandbalaklava.com.au')
 
-The script collects product information such as name, prices, sizes, and links, compiles the data into a structured format, and saves it as a CSV file.
+It collects product information such as item name, prices, product codes, promo messages, and links. The data is then stored directly into DiscountMate's MongoDB collection 'Scrapped Data'
 
 ---
 
 ## Dependencies
-The script requires the following Python packages:
-- **`requests`**: For making HTTP requests to fetch webpage content.  
-- **`BeautifulSoup`** (`bs4`): For parsing and navigating HTML content.  
-- **`pandas`**: For data manipulation and exporting to CSV.  
+Required Python packages:
+- `requests`
+- `beautifulsoup4`
+- `pandas`
+- `pymongo`
 
-### Install dependencies
-Install these packages using `pip`:
+Install with:
 ```bash
-pip install requests beautifulsoup4 pandas
+pip install requests beautifulsoup4 pandas pymongo python-dotenv
 ```
 
 ---
 
 ## Usage
 ### Running the Script
-1. Ensure you have Python installed (3.x recommended).
-2. Save the script to a `.py` file (e.g., `FoodlandScraper.py`).
-3. Run the script:
-   ```bash
-   python FoodlandScraper.py
-   ```
-
+```bash
+python scraper_foodland.py
+```
 ### Expected Execution
-- The script will fetch product details from the specified websites.  
-- It handles pagination to scrape data from multiple pages.  
-- After processing, the data is saved in a CSV file named `new_all_products.csv`.
+- Automatically detects and loops through all pages on Foodland Balaklava.
+- Scraped results are uploaded to a timestamped MongoDB collection.
 
 ---
 
 ## Features
-1. **Custom User-Agent Headers**  
-   Prevents potential blocking by servers.
-   
-2. **Pagination Support**  
-   Automatically detects the number of pages to scrape.
-
-3. **Flexible Data Extraction**  
-   Handles missing or partial data gracefully using helper functions.
-
-4. **Multiple Websites**  
-   Scrapes data from both **Foodland Balaklava** and **Adelaide's Finest**.
-
-5. **CSV Export**  
-   Compiles all product data into a CSV file for easy analysis.
+-**Dynamic Pagination**: Detects and scrapes through multiple pages.
+-**Structured Output**: Extracts key product attributes:
+  - `product_code`
+  - `category`
+  - `item_name`
+  - `item_price`
+  - `best_price`
+  - `unit_price`
+  - `special_text`
+  - `promo_text`
+  - `link`
+-**MongoDB Integration**: Inserts directly into DiscountMate's MongoDB Atlas database.
+-**Fail-Safe Defaults**: Missing fields are filled with `"N/A"`.
 
 ---
 
 ## Output
-The final output is saved in a file called `new_all_products.csv`.  
+Data is stored in a MongoDB collection within the `ScrappedData` database.
 
-### CSV File Structure
-| Column Name        | Description                                                | Example                     |
-|--------------------|------------------------------------------------------------|-----------------------------|
-| `product_name`     | Name of the product                                        | "Milk Full Cream 1L"       |
-| `discounted_price` | Discounted price, if available                             | "3.50"                     |
-| `unit_price`       | Price per unit (e.g., per kg, per L), if available         | "2.50/kg"                  |
-| `original_price`   | Original price before discount                             | "4.00"                     |
-| `product_size`     | Size or quantity of the product                            | "1L"                       |
-| `product_link`     | URL of the product’s page                                  | "https://foodlandbalaklava.com.au/example" |
+**Collection Format:**
+```
+YYYY_MM_DD_HHMMSS_Foodland
+```
+
+Each document includes all scraped product attributes.
 
 ---
-
-## Need-to-Know Information
-1. **Network Connection**: Ensure a stable internet connection to avoid request failures.
-2. **Anti-Scraping Measures**:  
-   - The script uses a standard user-agent header, but additional measures may be needed if the server blocks requests.
-   - For large-scale scraping, consider introducing delays (`time.sleep`) between requests.
-3. **Data Consistency**:  
-   - Missing fields are replaced with `"N/A"`.
-   - The script skips products where critical details (e.g., price or link) are entirely unavailable.
-4. **Output File**:  
-   - The output CSV overwrites existing files with the same name (`new_all_products.csv`).
+## Notes
+- Make sure the site structure hasn’t changed. If so, update class selectors.
+- Avoid overloading the server—add delays (`time.sleep`) for large scrapes.
+- Ensure your MongoDB user has write access to `ScrappedData`.
 
 ---
 
 ## License
-This script is free to use and modify. Please ensure compliance with the [website terms of service](https://www.foodland.com.au) before scraping data.
+This script is free to use for educational or personal projects.
+Always ensure compliance with [Foodland's website terms of service](https://www.foodland.com.au).
