@@ -1,4 +1,4 @@
-import { Tabs, useNavigation, Link } from 'expo-router'; 
+import { Tabs, useNavigation, Link, router } from 'expo-router'; 
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, ScrollView, Button } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
@@ -114,6 +114,8 @@ function TabLayoutContent() {
         <BrowseProductsDropdown onSelectCategory={(category) => {
     // Handle category selection here
          console.log('Selected category:', category);
+      router.push(`/category/${category}`);
+
     // You might want to update your search or navigate to a category page
         }} />
         <View style={styles.searchContainer}>
