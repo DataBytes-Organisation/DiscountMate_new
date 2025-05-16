@@ -42,7 +42,8 @@ export default function Profile() {
         const token = await AsyncStorage.getItem('authToken');
         if (!token) return;
 
-        const response = await axios.get<Profile>('http://localhost:3000/api/users/profile', {
+        // Make API call to get profile data
+        const response = await axios.get<Profile>('http://localhost:5002/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
