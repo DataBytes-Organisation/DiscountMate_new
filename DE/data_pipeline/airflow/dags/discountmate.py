@@ -92,9 +92,6 @@ def pipeline():
 
     dbt_Path = "/opt/airflow/dags/discountmate_dbt"
 
-    # check_dbt_server = BashOperator(task_id = "check_dbt_server_up",
-    #                                        bash_command = (f"cd {dbt_Path} && dbt debug"))
-
     install_packages_in_dbt = BashOperator(task_id = "install_extensions_for_dbt",
                                            bash_command = (f"cd {dbt_Path} && dbt deps"))
 
