@@ -14,7 +14,7 @@ require('dotenv').config();
 const setupSwagger = require('./src/config/swagger');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 // CORS Configuration
 app.use(cors({
