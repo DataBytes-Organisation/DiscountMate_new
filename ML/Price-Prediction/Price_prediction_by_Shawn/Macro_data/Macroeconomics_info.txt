@@ -1,0 +1,56 @@
+All the dataset contains to columns which is Date and Close (The final price of the commodity at close time)
+World Brent Oil Price: the changes in real-time world Brent Crude Oil prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/brent-crude-oil
+
+World Cocoa Price: the changes in real-time world Cocoa prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/cocoa
+
+World Coffee Price: the changes in real-time world Coffee prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/coffee
+
+World Corn Price: the changes in real-time world Corn prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/corn
+
+World Cotton Price: the changes in real-time world Cotton prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/cotton
+
+World Feeder Cattle Price: the changes in real-time world Feeder Cattle prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/feeder-cattle
+
+World Heating Oil Price: the changes in real-time world Heating Oil prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/heating-oil
+
+World Live Cattle Price: the changes in real-time world Live Cattle prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/live-cattle
+
+World Milk Price: the changes in real-time world Milk prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/milk
+
+World Natural Gas Price: the changes in real-time world Natural Gas prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/natural-gas
+
+World Oats Price: the changes in real-time world Oat prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/oat
+
+World Orange Juice Price: the changes in real-time world Orange Juice prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/orange-juice
+
+World Pork Price: the changes in real-time world Pork prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/lean-hogs
+
+World Rough Rice Price: the changes in real-time world Rough Rice prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/rice
+
+World Soybean Oil Price: the changes in real-time world Soybean Oil prices from August 1st 2024 to April 3rd 2025
+link: https://au.investing.com/commodities/us-soybean-oil
+
+World Soybean Price: the changes in real-time world Soybean prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/soybeans
+
+World Sugar Price: the changes in real-time world Sugar prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/sugar
+
+World Wheat Price: the changes in real-time world Wheat prices from August 1st 2024 to April 3rd 2025
+link: https://tradingeconomics.com/commodity/wheat
+
+
