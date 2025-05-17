@@ -11,13 +11,14 @@ import NotifBell, { sendTestNotification,  BellNotification, loadNotifications }
 import BrowseProductsDropdown from './BrowseProductsDropdown';
 import Chatbot from './Chatbot'; 
 import DashboardEmbed from './DashboardEmbed';
+import { ToastProvider } from 'react-native-toast-notifications';
 
 const { width: viewportWidth } = Dimensions.get('window');
 
 // Updated fetch function with optional query parameter for search
 const fetchProducts = async (query = '') => {
   try {
-    const response = await fetch(`http://localhost:5002/products?search=${query}`); 
+    const response = await fetch(`http://localhost:3000/products?search=${query}`); 
     const data = await response.json();
     return data;
   } catch (error) {
@@ -40,7 +41,13 @@ const fetchProducts = async (query = '') => {
 export default function TabLayout() {
   return (
     <AuthProvider>
-      <TabLayoutContent />
+    <ToastProvider
+         placement="top" // Appear at the top of the screen
+         duration={3000} // Visible for 3 seconds
+         animationType="slide-in" // Slide in from the top
+      >
+        <TabLayoutContent />
+      </ToastProvider>
     </AuthProvider>
   );
 }
@@ -222,7 +229,7 @@ function TabLayoutContent() {
         </View>
 
         <View style={styles.content}>
-        {currentRoute === '/' && <DashboardEmbed />}
+        {/* {currentRoute === '/' && <DashboardEmbed />} */}
           <Tabs
             screenOptions={{
               tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
