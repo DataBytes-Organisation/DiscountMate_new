@@ -1,5 +1,8 @@
 const { connectToMongoDB } = require('../config/database'); 
 const jwt = require('jsonwebtoken');
+require('dotenv').config()
+const BASE_URL = process.env.BASE_URL;
+const JWT_SECRET = process.env.JWT_SECRET
 
 // basketController.js
 
@@ -8,7 +11,7 @@ const fetch = require('node-fetch');
 
 const getUserFromToken = async (token) => {
     let user;
-    await jwt.verify(token, 'your_jwt_secret', async (err, decoded) => {
+    await jwt.verify(token, `${JWT_SECRET}`, async (err, decoded) => {
         if (err) {
             console.log("Error in token verification=", err);
             return null;
@@ -27,7 +30,7 @@ const getBasket = async (req, res) => {
       // Fetch the basket details from the database
       const db = await connectToMongoDB()
       const baskets = await db.collection('basket').find().toArray();
-      const getProductUrl = 'http://localhost:3000/api/products/getproduct';
+      const getProductUrl = `${BASE_URL}/api/products/getproduct`;
   
       if (!baskets) {
         return res.status(404).json({ message: 'Basket not found' });
@@ -126,7 +129,7 @@ const updateQuantity = async (req, res, db) => {
             console.log('Document updated successfully.');
         }
 
-        const getBasketUrl = "http://localhost:3000/api/baskets/getbasket";
+        const getBasketUrl = `${BASE_URL}/api/baskets/getbasket`;
         
         await fetch(getBasketUrl, {
             method: 'POST',
@@ -156,7 +159,7 @@ const deleteFromBasket = async (req, res, db) => {
         const deleteResult = await db.collection('basket').deleteOne(query);
         console.log(`Deleted ${deleteResult.deletedCount} document(s)`);
 
-        const getBasketUrl = "http://localhost:3000/api/baskets/getbasket";
+        const getBasketUrl = `${BASE_URL}/api/baskets/getbasket`;
         
         await fetch(getBasketUrl, {
             method: 'POST',
