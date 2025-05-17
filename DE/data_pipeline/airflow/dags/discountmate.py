@@ -113,14 +113,21 @@ def pipeline():
     run_marts = BashOperator(task_id = "construct_marts_layer",
                                            bash_command = (f"cd {dbt_Path} && dbt run --select marts"))
     
-    
-
-
     # Define DAG chain
     bucket_check = check_minio_buckets()
     raw_file_path = ingest_from_mongo_to_minio()
     processed_file_path = process_file(raw_file_path)
 
-    bucket_check >> raw_file_path >> processed_file_path >> load_to_dw >> install_packages_in_dbt >> dbt_check_error >> dbt_seed >> run_staging >> run_snapshots >> run_intermediate >> run_marts
+    (bucket_check >> 
+    raw_file_path >> 
+    processed_file_path >> 
+    load_to_dw >> 
+    install_packages_in_dbt >> 
+    dbt_check_error >> 
+    dbt_seed >> 
+    run_staging >> 
+    run_snapshots >> 
+    run_intermediate >> 
+    run_marts)
 
 dag = pipeline()
