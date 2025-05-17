@@ -1,0 +1,16 @@
+# Core scraping libraries
+selenium==4.15.2
+beautifulsoup4==4.12.3
+requests==2.31.0
+
+# MongoDB connector
+pymongo==4.6.3
+
+# WebDriver manager for Chrome
+webdriver-manager==3.9.1
+
+# Optional: For parsing configuration files
+configparser==6.0.0
+
+# Optional: Timestamp and environment
+python-dateutil==2.9.0.post0
