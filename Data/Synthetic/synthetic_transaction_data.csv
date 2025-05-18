@@ -1,0 +1,1001 @@
+transaction ID,date,item ID,category,subcategory,brand,unit price,best price,quantity,discount,total,store name,customer ID,payment type,gender,location
+40a25423-d636-409b-b724-4bfb798d863f,2024-11-02,396816,Snacks,Chips,Cheetos,16.27,15.44,2,3.26,27.62,Flores-Merritt,28427,Cash,Female,Sydney
+e4a1b81f-527c-428d-9f55-7bb3f9f28fe3,2024-12-19,284581,Dairy,Milk,Anchor,25.36,23.44,2,6.51,40.37,Newman-Martin,91658,Credit Card,Other,Sydney
+0ba10188-3e59-4699-b1e7-b00d64f72122,2024-10-09,219619,Electronics,TVs,Samsung,21.37,20.6,5,1.51,101.49,"Quinn, Wade and Hall",65270,EFTPOS,Other,Melbourne
+dcd87457-beb6-458d-925e-62b3fc963591,2024-10-24,363426,Snacks,Chips,Cheetos,22.0,19.89,4,11.35,68.21,"Smith, Eaton and Shaffer",74671,Online,Male,Sydney
+262e41d2-7a91-477d-bcaa-4951884227ee,2024-04-25,595988,Electronics,TVs,Samsung,5.78,4.76,1,0.54,4.22,Skinner and Sons,70268,EFTPOS,Other,Sydney
+7687184b-c77c-4a37-9dc6-aa8566016b22,2024-11-19,587321,Dairy,Cheese,Bega,19.85,16.2,3,8.91,39.69,"Clark, Washington and Gould",12340,Cash,Other,Brisbane
+64e697c0-372f-4809-b71c-a6a2e468fa77,2024-12-20,342182,Beverages,Soda,Coca-Cola,23.45,22.9,2,0.12,45.68,Bond-Thompson,58978,EFTPOS,Male,Brisbane
+7578bc1b-e6ae-49dc-b371-26e8ee169342,2024-04-09,725683,Beverages,Soda,Nestle,16.9,14.63,5,11.93,61.22,White LLC,47190,EFTPOS,Male,Melbourne
+696d64bb-4468-4fd1-b50a-3948c06780ba,2024-12-20,234494,Beverages,Water,Lipton,33.24,31.87,4,17.58,109.9,Vargas-Ross,99434,Online,Female,Melbourne
+3fa975ca-238e-480a-8655-0e2f8186681b,2024-10-20,316342,Electronics,Phones,LG,14.13,12.42,1,2.01,10.41,"Jimenez, Cooper and Christensen",59898,EFTPOS,Other,Brisbane
+626f5933-4b44-49af-92ec-573387d897ac,2024-09-30,437204,Snacks,Popcorn,Doritos,21.61,21.47,4,7.05,78.83,Stanley-Heath,32627,EFTPOS,Other,Perth
+9a7e60ff-f52a-4989-a3b3-bb112799663c,2025-01-14,429935,Electronics,Phones,Samsung,18.89,15.23,2,0.43,30.03,Ruiz-Henson,72805,Credit Card,Other,Brisbane
+0db322f4-3df1-4089-99a8-0fd8635c2726,2024-07-07,115973,Electronics,Laptops,Samsung,12.58,12.48,3,6.66,30.78,Nicholson Ltd,33011,Cash,Male,Melbourne
+d162ce86-c4e2-4001-adf0-cd05b244c45e,2024-06-07,639326,Beverages,Water,Nestle,18.87,18.8,3,9.54,46.86,Wood Group,91450,Online,Female,Perth
+d5f9697c-6453-4ab8-b15b-19ad7ad60b72,2024-08-15,444394,Dairy,Cheese,Danone,25.27,22.69,2,8.54,36.84,"Henderson, Decker and Silva",43181,Credit Card,Male,Perth
+3718ca01-076f-4875-bd14-b595bae6e37d,2024-08-29,472252,Electronics,Phones,Samsung,25.57,20.51,1,2.61,17.9,Alvarez and Sons,16411,Online,Female,Sydney
+d7acc134-0e1a-491c-b270-7a2ab3740cb2,2024-08-21,812209,Beverages,Water,Lipton,23.95,23.78,5,13.39,105.51,Nicholson-Gonzales,22739,Credit Card,Male,Adelaide
+43ba7ac8-f895-4af5-8aac-70b3d22dccbb,2024-06-19,872042,Beverages,Soda,Nestle,18.47,14.94,1,2.95,11.99,Johnson-Guerrero,33006,EFTPOS,Other,Sydney
+ed23afbe-4e40-4e49-9dd5-a8a2b04a73de,2025-02-25,192241,Beverages,Soda,Lipton,23.41,21.49,3,5.44,59.03,Gonzalez-Brown,68131,Cash,Other,Brisbane
+9ac755ab-77ed-4c08-8052-6a23961807b0,2025-01-03,834613,Electronics,TVs,Apple,15.33,12.91,3,6.67,32.06,"Fisher, Fisher and Murray",52465,EFTPOS,Female,Brisbane
+84243bbc-efa5-4eba-925a-873c78f0a386,2025-02-27,807013,Electronics,Phones,Samsung,20.19,16.81,5,10.45,73.6,"Mckee, Evans and Jones",32062,Credit Card,Other,Perth
+458a4519-f4a7-424c-b614-26aca067aa75,2024-08-27,909150,Beverages,Juice,Nestle,11.31,9.85,4,2.93,36.47,"Murray, Cunningham and Gillespie",95319,Online,Male,Brisbane
+6910ac59-41d2-4bab-8722-42806a04246a,2024-05-07,883724,Dairy,Milk,Bega,25.69,24.72,4,16.62,82.26,Kim PLC,69333,Cash,Other,Brisbane
+6cb5a9c0-9d4a-4f89-9666-f678cfc29f81,2025-02-16,895766,Snacks,Chips,Cheetos,19.03,17.48,2,2.98,31.98,Charles and Sons,83270,Cash,Male,Adelaide
+1924f694-a463-4425-8a70-4133881cbd96,2024-11-07,998241,Snacks,Biscuits,Pringles,18.85,15.41,1,3.05,12.36,Rodriguez PLC,25357,Credit Card,Male,Sydney
+61254bd9-3deb-4d90-b6d3-af2985d7c16e,2024-05-22,773832,Beverages,Water,Pepsi,19.48,17.02,1,1.58,15.44,Stewart and Sons,93586,Credit Card,Male,Perth
+cb7004ec-d6be-4669-a35f-debf39aa584e,2024-12-31,701602,Beverages,Soda,Pepsi,18.81,18.14,4,1.8,70.76,Davis-Roberts,57353,EFTPOS,Other,Adelaide
+d6b13ec0-1c7f-449a-9ae8-232c63e20921,2025-01-09,520549,Beverages,Water,Pepsi,13.87,11.65,2,1.01,22.29,"Pearson, Olson and English",78159,Credit Card,Other,Brisbane
+c4393bfe-7206-4dfd-b0fc-dbeb7f534d55,2024-07-05,555487,Dairy,Yogurt,Anchor,20.51,18.07,1,1.93,16.14,Reeves Ltd,62956,EFTPOS,Female,Brisbane
+2f6ee287-9d12-4324-9c06-daea122d0d87,2024-07-04,510921,Snacks,Popcorn,Pringles,17.98,14.68,1,2.72,11.96,"Hicks, Mcknight and Walker",50808,Credit Card,Male,Melbourne
+c41244a6-f061-4041-94cb-e4836a322b46,2024-06-16,940025,Dairy,Cheese,Bega,23.46,18.95,5,18.38,76.37,"Gordon, Scott and Young",88131,EFTPOS,Female,Perth
+eedd6f3f-3bdf-4d91-9319-13db44e8ad7e,2024-12-16,932580,Snacks,Popcorn,Pringles,14.91,12.59,2,0.83,24.35,Harris Ltd,54494,Online,Male,Perth
+2d3cb725-a841-4f56-a301-ec75e2c81b04,2024-07-13,980214,Electronics,TVs,LG,18.79,15.48,1,0.97,14.51,Johnson Inc,12713,Cash,Female,Perth
+cfb009aa-1693-429d-8d74-48a1856bed63,2024-09-16,746326,Electronics,Phones,LG,17.77,14.51,2,3.36,25.66,Peters-Ellis,10858,Cash,Other,Sydney
+e241c569-d390-4733-b7d7-68ebea1adb41,2025-02-25,270117,Snacks,Popcorn,Doritos,6.93,5.97,1,0.77,5.2,Hamilton-Lowe,88651,Credit Card,Male,Perth
+7a985186-7920-465b-90f8-e17221cec1b8,2024-06-04,476104,Snacks,Biscuits,Cheetos,24.36,23.14,4,17.59,74.97,Lane PLC,62972,Online,Male,Adelaide
+52c69b0e-88f7-4e09-931a-44d53da231bf,2025-02-06,524348,Beverages,Juice,Nestle,24.19,22.09,4,9.31,79.05,Lloyd LLC,70901,Online,Other,Sydney
+79dfb76c-952b-4ff4-8e48-fadb92250e0f,2025-03-11,845500,Electronics,Phones,Apple,20.0,16.45,1,0.47,15.98,"Solis, Harris and Perez",87579,Credit Card,Male,Sydney
+6d39180c-bd5b-4924-a563-a58f9aaae750,2025-01-08,389232,Electronics,TVs,Sony,23.46,20.88,2,3.28,38.48,Hubbard-Preston,99446,Credit Card,Female,Perth
+b72adda9-c614-41d2-8020-4077fd12e7cb,2024-11-12,299262,Dairy,Yogurt,Yoplait,17.12,14.23,4,0.56,56.36,Montgomery LLC,90528,EFTPOS,Other,Perth
+0475ab0b-edc8-4328-a20d-5a1fe50a442c,2025-02-08,994014,Snacks,Popcorn,Lays,17.29,16.03,5,0.49,79.66,"Smith, Jenkins and Price",75073,Credit Card,Female,Adelaide
+7ccdda99-7cb4-4927-92a4-9cfb41f444a7,2024-07-05,659700,Beverages,Water,Nestle,20.41,20.13,3,6.14,54.25,Medina LLC,25750,Online,Male,Brisbane
+3b746656-7f3b-437b-9304-1083a973ac42,2024-11-12,845792,Snacks,Popcorn,Lays,18.61,15.55,3,9.17,37.48,Larsen-Hall,18253,EFTPOS,Other,Melbourne
+e359f0d7-72ee-43e9-a443-c38feba68ae9,2024-08-19,172467,Beverages,Juice,Coca-Cola,16.21,14.83,3,5.96,38.53,"Miranda, Quinn and Morales",36124,Cash,Male,Brisbane
+1c43b909-c9d2-4823-89c7-608f03674dc5,2024-11-23,476530,Dairy,Milk,Anchor,18.72,18.05,4,1.24,70.96,Hayes-Gonzalez,66712,Online,Female,Perth
+4949e4eb-b83d-4106-9819-17ba8764d822,2025-02-20,523676,Beverages,Soda,Lipton,15.31,14.52,3,0.42,43.14,"Jackson, Ramirez and Hamilton",17865,EFTPOS,Female,Melbourne
+9b426004-a5e0-4ff6-8439-2b76a80a1a06,2024-11-27,125027,Dairy,Cheese,Danone,13.45,12.65,1,2.21,10.44,"Jones, Underwood and Tate",48948,Credit Card,Male,Sydney
+70e83cd9-e85e-4a9b-bba3-fa5cd3ce1b95,2025-03-25,931863,Snacks,Popcorn,Lays,18.15,14.72,3,1.43,42.73,"Bauer, Cobb and Gonzalez",93210,Online,Female,Perth
+07056ba7-0997-4f9c-a974-06ceceddc161,2024-11-10,148856,Dairy,Yogurt,Anchor,15.67,12.64,1,1.85,10.79,"Palmer, Franklin and Neal",95015,Online,Other,Adelaide
+140c190f-8698-44d7-8505-9aa32626c172,2024-12-02,285874,Dairy,Milk,Bega,26.11,21.7,1,2.75,18.95,Gibbs-Wallace,78302,Credit Card,Female,Perth
+8258af7b-dbf5-4f5f-916e-1769993287d3,2024-11-22,933844,Snacks,Popcorn,Cheetos,12.31,10.37,4,6.36,35.12,"Murray, Ferguson and Anderson",41390,Online,Female,Melbourne
+3856a980-13bb-422a-9397-7b9612ae0a31,2024-05-29,363136,Electronics,Phones,LG,17.66,15.78,1,1.83,13.95,Mitchell-Simmons,28429,Credit Card,Male,Brisbane
+1b3f1a94-fbcb-4b61-9223-2e9c616328aa,2024-07-24,327763,Snacks,Popcorn,Cheetos,22.85,22.14,2,4.43,39.85,"Braun, Fuller and Harris",47687,EFTPOS,Female,Adelaide
+83e685c6-f032-4996-81e7-f454ace4e2e1,2025-03-27,248217,Beverages,Water,Coca-Cola,21.74,21.21,2,2.81,39.61,Allen LLC,88190,Credit Card,Other,Perth
+e97c1955-98a1-44f2-b764-151271569446,2024-04-28,252737,Dairy,Milk,Yoplait,16.53,15.77,1,2.24,13.53,Benitez-Smith,16148,EFTPOS,Other,Brisbane
+fd0a287d-1a55-4a16-bdcd-067d30a105f6,2024-04-27,508045,Dairy,Yogurt,Anchor,13.38,11.97,4,7.25,40.63,Booth PLC,11610,Cash,Other,Adelaide
+0e74c8e5-ea4d-4ac2-a35e-106a9a5b516d,2024-12-24,968767,Snacks,Popcorn,Cheetos,20.32,17.77,2,6.65,28.89,Pierce Ltd,27801,Credit Card,Male,Brisbane
+c70eb825-ab89-429e-b0f4-2fa211f97606,2024-11-13,747109,Electronics,TVs,Sony,14.75,13.88,3,2.04,39.6,Graham Group,23472,Credit Card,Female,Perth
+4049dcf0-9d44-49d8-b995-22e383ea454b,2024-07-23,908998,Beverages,Soda,Coca-Cola,21.58,20.62,1,3.19,17.43,Roach-Walsh,48228,Cash,Male,Sydney
+33fcab8b-4d07-448c-8f83-3f60cb0ee2b1,2024-07-02,502918,Electronics,TVs,LG,20.38,19.61,5,15.44,82.61,"Morgan, Charles and King",34035,EFTPOS,Female,Brisbane
+033f51d1-4400-4edb-acd1-7162c6835314,2025-03-28,370604,Electronics,Phones,Apple,12.85,10.77,3,1.91,30.4,Hines PLC,29930,Cash,Female,Sydney
+b0379567-f1c6-4162-bca6-2e1277e56de4,2024-11-26,355181,Electronics,Laptops,LG,16.0,13.28,3,5.68,34.16,Smith-Martin,95440,Cash,Other,Perth
+9639855e-e372-47c3-80af-efd4a9b2e03a,2025-03-05,596555,Electronics,TVs,Sony,23.93,21.3,2,7.85,34.75,"Lewis, Woods and Diaz",63426,Credit Card,Other,Brisbane
+6ef5c4fe-7360-4ee2-8890-e42fce31009d,2024-04-23,262412,Electronics,Laptops,Sony,25.86,23.45,4,15.01,78.79,Williams PLC,35051,Online,Other,Melbourne
+684864a3-f2d9-489f-85b0-8a92f2ec7d43,2025-03-06,205076,Dairy,Yogurt,Anchor,27.1,22.87,5,6.21,108.14,Nguyen-Galvan,13721,Cash,Other,Perth
+43b92d80-f64a-4170-94e2-bf27b2399eae,2025-03-10,240895,Dairy,Cheese,Danone,18.61,17.06,3,5.77,45.41,Murphy and Sons,18633,Cash,Female,Sydney
+851d3428-b330-4a6e-b975-1f1f0f44354f,2025-03-04,439062,Beverages,Water,Nestle,16.71,14.19,5,0.99,69.96,"Gray, White and Hart",47060,Online,Female,Perth
+7ba3ce23-96d0-4d92-8cdc-2712a3d3400c,2024-09-29,644379,Dairy,Yogurt,Yoplait,30.37,30.2,5,12.77,138.23,"Kelly, Jones and Gonzalez",19625,Online,Male,Brisbane
+67306bf2-c904-4015-beaa-6da06ed158ab,2024-06-21,678489,Snacks,Biscuits,Cheetos,17.9,15.67,3,8.21,38.8,Dickson Group,98138,Cash,Male,Adelaide
+de74132b-520a-4093-80d7-3edcadf60bb9,2025-01-22,629324,Beverages,Soda,Pepsi,24.86,21.51,4,10.73,75.31,Garcia-Adams,25085,Online,Other,Brisbane
+89e9ba47-8448-4400-9ee4-6c9db3762eaa,2024-04-14,116862,Electronics,TVs,LG,18.41,16.43,5,9.08,73.07,Rodriguez-Walker,62106,Cash,Other,Perth
+0ec8b728-0f42-4593-90aa-924316aa35a6,2024-05-02,954036,Snacks,Popcorn,Doritos,24.7,23.27,5,6.52,109.83,Horn-Ross,60883,Online,Other,Melbourne
+8fc257e3-e8bf-4ae0-b350-e844f104ce67,2025-01-24,963973,Snacks,Biscuits,Cheetos,12.86,10.92,4,8.57,35.11,Blevins and Sons,92758,Credit Card,Female,Sydney
+97249017-2b28-4776-9010-21f8640aade2,2025-03-19,306578,Dairy,Yogurt,Yoplait,15.03,12.45,5,6.03,56.22,Martinez Inc,43003,EFTPOS,Other,Perth
+5f780aa8-473b-4b37-914b-0781d553c796,2024-10-23,752734,Dairy,Milk,Yoplait,14.31,11.91,1,2.06,9.85,Crawford LLC,10567,Cash,Male,Adelaide
+9713a41a-38e6-4783-93c0-d123b1c7ec53,2024-05-30,796932,Snacks,Popcorn,Doritos,15.05,12.32,4,4.8,44.48,Owens-Todd,42321,Cash,Other,Sydney
+0aee4eb3-de54-4a84-a179-232e54ba75f0,2024-05-30,189907,Beverages,Water,Coca-Cola,16.85,16.0,2,6.03,25.97,"Bryant, Carter and Valdez",84363,Cash,Female,Adelaide
+bfea6c65-893b-4c2e-9bb2-d551b3f3f1db,2024-12-16,776946,Electronics,Laptops,Sony,11.58,10.98,5,5.2,49.7,"Snyder, Stephens and Brown",31058,EFTPOS,Female,Adelaide
+3ec8f507-d86d-4f1c-afae-a8f79f7fc773,2024-05-27,435652,Beverages,Water,Coca-Cola,28.45,25.65,4,16.93,85.67,"West, Watkins and Jensen",43150,Credit Card,Other,Melbourne
+17793704-7e36-4f8e-ba39-b34e6b357853,2024-09-04,657369,Electronics,TVs,LG,20.25,19.07,1,0.46,18.61,"Walter, Harris and Rhodes",70515,Cash,Other,Sydney
+cd1fc35d-eb16-4a4f-a260-c45ec45d964b,2025-02-18,721295,Beverages,Soda,Pepsi,17.12,14.79,1,1.49,13.3,Smith-Yoder,24594,Credit Card,Female,Melbourne
+ae52d35b-840c-48ed-9ece-2012eae8d045,2024-06-01,706653,Snacks,Popcorn,Doritos,28.63,26.6,2,6.98,46.22,Cantu-Brown,53084,Online,Female,Melbourne
+0f4dbb26-01bb-4fb8-ada5-68f230e375f3,2024-09-11,817225,Snacks,Biscuits,Lays,25.41,23.86,4,2.17,93.27,Watson Group,82966,EFTPOS,Female,Melbourne
+91ef5814-b0b9-4d06-9aba-954d55dc49db,2024-06-07,736686,Dairy,Milk,Anchor,24.08,23.12,5,7.9,107.7,Powell-Tucker,33261,Cash,Female,Sydney
+adf6a586-975e-48b4-8147-ca72ffd80aea,2024-12-18,624064,Electronics,Phones,Sony,21.02,19.9,1,3.13,16.77,Levy-Wagner,78931,Online,Male,Adelaide
+54654f19-087d-44b8-9c9c-d717f88c0465,2025-03-21,815378,Dairy,Yogurt,Yoplait,22.02,18.51,5,7.63,84.92,Green-Murphy,29966,Cash,Male,Sydney
+8539173b-337f-45c0-b186-03ab7a83a69d,2025-01-01,182343,Snacks,Popcorn,Pringles,17.01,15.22,1,1.36,13.86,"Hernandez, Smith and Thompson",68294,Credit Card,Other,Melbourne
+a52bafca-59b5-408c-b416-5b40c7971945,2025-01-31,969966,Snacks,Biscuits,Cheetos,31.43,30.74,5,30.65,123.05,"Morse, Smith and Flores",59567,Credit Card,Other,Perth
+04845886-8043-4491-8deb-27d71e6833ae,2024-04-29,517171,Beverages,Juice,Lipton,24.73,20.83,3,3.59,58.9,Wilson-Padilla,88009,Credit Card,Other,Brisbane
+cd5e09d6-e9f7-465f-8d3b-475a94d38c4b,2024-07-04,677883,Dairy,Milk,Bega,19.38,18.86,4,3.92,71.52,Bauer LLC,42474,Credit Card,Other,Sydney
+13258868-6249-4c0b-9e70-c142dbf4ead7,2024-04-20,896546,Electronics,Laptops,Apple,18.54,16.5,2,3.85,29.15,"Navarro, Green and Potts",38096,Online,Male,Adelaide
+0c95753c-9356-4ee4-ae34-7576dfb5a732,2025-02-19,625381,Beverages,Soda,Nestle,21.22,21.18,5,19.4,86.5,Brown Group,77132,Credit Card,Other,Adelaide
+f50b5ff5-0b48-4677-864b-42ab8f80eabc,2024-11-10,604178,Beverages,Juice,Coca-Cola,15.62,12.68,2,0.5,24.86,Martinez-Davidson,79382,EFTPOS,Other,Adelaide
+a9f459ca-8a64-442d-9611-af82d9605e49,2024-06-03,818356,Snacks,Biscuits,Doritos,25.89,25.2,5,10.66,115.34,"Johnson, Cannon and Armstrong",29126,Cash,Female,Melbourne
+16ac9cb5-8795-4506-93cc-89fbb4217957,2024-09-30,635461,Dairy,Yogurt,Anchor,25.17,24.55,2,0.98,48.12,Gamble Ltd,17105,Online,Female,Sydney
+b71e87ed-22ce-4177-9cef-179327643ec8,2024-05-25,891674,Electronics,Laptops,Apple,25.5,20.63,2,2.09,39.17,Hall PLC,47573,Online,Other,Melbourne
+0251b0d3-cf54-48ce-b5c1-0a32c3606189,2025-02-25,224685,Dairy,Milk,Anchor,28.78,26.32,5,21.14,110.46,"Wilson, Suarez and Miller",64504,EFTPOS,Other,Brisbane
+50edbb1b-ab3a-45b7-953f-7c937cfce39d,2024-12-11,278338,Dairy,Cheese,Yoplait,21.91,19.93,5,16.05,83.6,"Greene, Smith and Smith",39654,EFTPOS,Male,Adelaide
+d658ed45-2af8-4fdb-a0f6-975ae9f2595c,2024-09-11,924121,Snacks,Biscuits,Doritos,20.24,17.61,1,2.32,15.29,Underwood-Smith,90240,Credit Card,Male,Brisbane
+6e1ce64e-1f6d-463d-941f-4e96e06d5924,2024-12-05,695733,Snacks,Biscuits,Cheetos,18.78,15.13,3,3.78,41.61,Moore-Stewart,42675,Cash,Other,Sydney
+c8450101-d8b2-414d-9f0b-18b9ecd5a905,2024-10-15,595626,Beverages,Juice,Nestle,12.04,9.75,2,1.49,18.01,Vasquez PLC,23694,Cash,Male,Brisbane
+d516b66e-82b4-48d9-aa50-3f0026f04e40,2024-05-05,354129,Beverages,Soda,Coca-Cola,9.29,7.91,1,0.28,7.63,"Williams, Tucker and Blackburn",39147,EFTPOS,Other,Perth
+8ad5f18a-1f66-44b8-9e84-c72b865b8d24,2024-12-23,742409,Snacks,Biscuits,Doritos,11.27,9.25,2,1.9,16.6,"Walsh, Gonzalez and Rodriguez",51099,Credit Card,Other,Brisbane
+08cf0024-3db7-44ff-9dfe-4a96ec09b63e,2024-08-29,515552,Dairy,Yogurt,Yoplait,14.22,13.59,1,0.81,12.78,"Fuller, Jennings and Gonzalez",38287,Credit Card,Male,Sydney
+bfd7037e-8838-4a23-a67c-327c3de743a6,2024-07-18,802262,Beverages,Water,Pepsi,15.01,13.86,4,6.1,49.34,"Adkins, Leon and Vasquez",86978,Credit Card,Female,Sydney
+816ba903-f930-429c-900a-5e4dba21db19,2024-08-14,996881,Dairy,Yogurt,Yoplait,15.22,14.52,4,0.55,57.53,Williams and Sons,58724,Cash,Male,Perth
+3edc39bb-9faa-4ccf-90b0-1004f800368e,2024-11-22,434693,Beverages,Juice,Lipton,20.44,18.3,1,2.17,16.13,"Woods, Alvarado and Huffman",25647,EFTPOS,Male,Brisbane
+63fcec87-4e93-41df-b9ee-f4871b8eedf4,2025-03-30,614824,Beverages,Juice,Nestle,22.48,19.9,4,10.5,69.1,"Bryant, Hill and Miranda",36381,Online,Female,Melbourne
+7cf6435d-f248-46ab-b062-b5da7ca2e2e6,2024-06-10,330397,Dairy,Milk,Bega,18.41,18.38,4,2.74,70.78,Gibbs-Garcia,11020,Cash,Other,Perth
+5f291aa5-8f62-4f2a-aa13-56fea09735aa,2024-11-24,126717,Dairy,Milk,Danone,26.99,26.63,1,3.44,23.19,Taylor-Chen,68096,Cash,Female,Brisbane
+8b9a8e93-27f9-4a45-bbd4-7b2f1cd799b7,2024-12-07,213226,Snacks,Popcorn,Doritos,19.31,17.99,1,1.89,16.1,"Montes, Hicks and Young",21822,Credit Card,Male,Brisbane
+ad2aae5c-bb38-4ab3-b1f4-8ba7dfe29e74,2024-08-07,260498,Beverages,Water,Pepsi,21.09,18.97,5,18.2,76.65,"Jacobson, York and Mercado",51486,EFTPOS,Male,Sydney
+db1d3959-dbc3-4ea2-8a34-aa753ecd8c7a,2024-12-31,633585,Beverages,Juice,Pepsi,20.45,18.49,2,6.08,30.9,Oneill LLC,66371,Online,Female,Melbourne
+00a12192-1a8b-4c83-ad21-ab9cdce89460,2024-11-28,401690,Electronics,Laptops,Sony,19.57,17.29,5,15.65,70.8,Campbell Group,82808,Credit Card,Other,Perth
+03ebb40e-1113-40f1-93ed-7c5e1946294f,2024-10-03,329021,Dairy,Milk,Bega,8.87,7.67,2,1.1,14.24,"Lambert, Edwards and Baldwin",76088,Credit Card,Male,Melbourne
+d69f4c1d-5e59-484b-aafb-bc4e9626cb5d,2024-08-15,354707,Beverages,Water,Nestle,17.58,17.01,1,1.7,15.31,"Lee, Vasquez and Maldonado",49958,Credit Card,Male,Brisbane
+2ce780a5-ed9a-4a50-8a74-772b74c5d3a5,2024-08-29,482186,Electronics,Laptops,Sony,18.03,14.46,4,5.78,52.06,Lynch PLC,84293,EFTPOS,Female,Sydney
+25256b7b-634a-4f0f-8e32-4c674b835ee7,2025-01-12,554750,Dairy,Yogurt,Danone,23.69,23.64,4,6.18,88.38,Walker-Weaver,93016,Online,Female,Brisbane
+7a4e762d-9293-4f79-990b-46efa37f08f9,2024-06-20,629275,Beverages,Water,Coca-Cola,23.83,20.82,2,8.23,33.41,Newman Group,96534,EFTPOS,Male,Sydney
+aba2bd12-55d1-41c5-828a-5b9bc9de35a4,2024-06-17,618005,Beverages,Water,Lipton,27.33,23.35,1,2.39,20.96,Jones-White,23286,EFTPOS,Female,Melbourne
+13354e3f-3a56-4f64-8177-d65993e4c917,2025-01-18,927396,Snacks,Popcorn,Lays,19.51,19.47,5,13.42,83.93,Graham Inc,73186,Credit Card,Female,Sydney
+e1ffdefa-0bc3-43e2-9570-6ee583a67eae,2025-03-19,140145,Beverages,Water,Lipton,26.86,22.95,5,16.69,98.06,Harmon-Patrick,37806,EFTPOS,Male,Sydney
+4cff2dbc-770d-413c-885c-c0a40c013882,2024-12-23,762781,Beverages,Water,Nestle,13.67,13.47,5,6.19,61.16,Finley Group,64520,Credit Card,Other,Brisbane
+8c24a3fa-d72c-47db-9989-0519e24314f2,2024-07-16,915921,Dairy,Milk,Danone,24.3,22.64,1,3.99,18.65,Hobbs-Barber,57446,Online,Female,Brisbane
+3348a073-40dc-431b-91e1-9b4751aac1fa,2025-02-21,645168,Snacks,Popcorn,Lays,14.07,13.72,1,1.54,12.18,Jones-Hansen,94763,Credit Card,Other,Brisbane
+3eb0b255-5bd7-4747-abcc-99cc8118dad8,2024-11-22,704021,Electronics,Phones,Samsung,14.54,13.69,1,1.89,11.8,Hensley-Gomez,43269,EFTPOS,Other,Brisbane
+629fecc4-530a-465e-b61b-d8e60146f352,2024-07-13,988448,Beverages,Juice,Pepsi,17.76,15.13,4,8.08,52.44,Wilson Inc,71424,Online,Male,Adelaide
+6d4a615b-eaf1-41a1-9e10-f724a4b197cd,2025-01-24,518920,Dairy,Yogurt,Yoplait,20.89,17.53,1,3.21,14.32,Parks-Schroeder,84118,Online,Other,Melbourne
+93d8912a-413a-4240-8ced-a5e06cd418f8,2025-01-18,381911,Electronics,Phones,Apple,16.42,15.35,3,1.79,44.26,Porter-Patton,97787,EFTPOS,Female,Brisbane
+c9868e19-3818-4bcd-a6e7-2f83cf509e57,2024-04-15,325994,Beverages,Water,Lipton,19.8,16.7,3,1.67,48.43,"Chaney, Lewis and Gomez",22502,Online,Male,Melbourne
+a66f3bac-ce7d-447f-b5e6-1fe577c2ab53,2024-12-24,446797,Electronics,Phones,Samsung,18.62,16.96,1,2.63,14.33,Swanson and Sons,11189,Credit Card,Female,Brisbane
+f17de7d9-7f11-4814-9b38-6fd86ed3287b,2024-07-24,274411,Dairy,Cheese,Yoplait,13.36,12.82,5,6.68,57.42,"Jenkins, Perry and Rogers",85547,Credit Card,Female,Adelaide
+432c36de-5aff-4e7d-a342-49edf5f201a9,2024-08-14,403650,Snacks,Biscuits,Doritos,20.95,17.99,3,6.57,47.4,Barker Group,61849,EFTPOS,Male,Adelaide
+409b675f-e3ab-410e-9fc2-17932dd9eff6,2024-05-02,723325,Snacks,Popcorn,Doritos,21.45,19.63,2,4.01,35.25,Ross-Brooks,38279,Cash,Other,Perth
+7a48e62b-1538-470d-bfeb-06f21d6b8a60,2025-01-06,269695,Beverages,Water,Lipton,14.35,14.31,5,13.67,57.88,Bauer LLC,49900,EFTPOS,Female,Adelaide
+4fbad277-4803-49bc-970e-01fe0b74f264,2024-08-13,342312,Beverages,Soda,Lipton,23.59,21.18,3,0.68,62.86,"Chen, Ingram and Hansen",79788,Online,Male,Adelaide
+b7c685df-ec39-4f69-a52d-63c31ef8fad7,2024-06-28,565193,Snacks,Biscuits,Cheetos,14.51,13.77,5,5.15,63.7,Patel-Roberts,47503,EFTPOS,Male,Perth
+32457476-9b15-461c-8ba5-c46b57685de7,2024-05-04,402800,Snacks,Biscuits,Doritos,27.89,24.87,2,4.06,45.68,"Key, Stokes and Chang",28052,EFTPOS,Female,Brisbane
+d89694c7-a89d-4a9d-ba6a-e46979262b1c,2024-12-20,361223,Electronics,Phones,Samsung,17.42,16.17,4,6.73,57.95,"Petty, Caldwell and Haney",18489,Cash,Female,Brisbane
+39f3d0a6-f048-4d3f-9076-f02bfe702164,2024-06-26,138121,Snacks,Popcorn,Doritos,24.46,24.44,4,5.97,91.79,Davidson Group,27110,Online,Male,Perth
+38234f42-1d63-43a8-847a-5d9cbe592bf5,2025-04-01,876401,Dairy,Yogurt,Yoplait,19.53,18.7,1,3.05,15.65,Cherry Ltd,18193,Credit Card,Other,Perth
+1f1ae4e9-519e-41b8-99e3-7289b053c607,2024-04-18,318667,Beverages,Water,Nestle,18.21,17.94,2,3.19,32.69,"Cooper, Jordan and Ortega",85838,Cash,Female,Sydney
+313b09da-bc99-4cf8-a576-c2a7fc706356,2024-06-16,110095,Beverages,Juice,Pepsi,24.7,22.05,1,3.1,18.95,Smith-Rodriguez,19829,EFTPOS,Male,Perth
+90347570-777c-4ff3-9791-bce42ee5d018,2025-02-27,744639,Beverages,Soda,Pepsi,18.68,18.33,3,8.5,46.49,Sims-Johnson,49952,Online,Female,Melbourne
+499af251-03b2-426e-b6a8-269c09d8fa91,2024-07-24,616449,Electronics,Phones,LG,20.6,20.58,1,2.86,17.72,Miller-Preston,94574,Online,Female,Melbourne
+8bf67467-ea65-4dce-bd5f-87f4829dddea,2024-06-26,240329,Electronics,Phones,Samsung,27.08,26.9,3,2.71,77.99,Freeman Inc,69729,Credit Card,Male,Brisbane
+235bae90-9231-4646-86e2-8717383889e5,2024-05-01,372496,Electronics,Phones,Apple,23.24,22.16,1,0.1,22.06,Erickson-Gilbert,77394,Credit Card,Female,Brisbane
+081709dd-264b-43f0-a331-be0437096428,2025-01-03,649891,Beverages,Soda,Lipton,25.03,20.87,5,3.47,100.88,"Ballard, Olson and Hoover",16968,EFTPOS,Other,Sydney
+8ea57a05-da9d-4956-98d8-01c0b00a9c03,2025-01-23,422984,Beverages,Water,Lipton,21.14,20.9,3,8.71,53.99,Molina-Villarreal,46194,EFTPOS,Female,Brisbane
+848a044d-b038-46c6-9ac5-b8030210d2e7,2024-07-10,783361,Beverages,Water,Lipton,23.5,20.89,3,10.65,52.02,White Group,39539,Online,Female,Melbourne
+1d4a68a7-eb5f-466e-8348-fe48d12f4b01,2025-03-10,378000,Electronics,TVs,Apple,15.41,12.7,5,10.04,53.46,"Rasmussen, Woods and Schmidt",88666,Credit Card,Male,Brisbane
+b4544d43-bed0-44cb-977e-9c41a9f406eb,2024-04-20,639750,Dairy,Milk,Bega,16.21,14.94,3,0.58,44.24,Stone-Schroeder,63496,EFTPOS,Female,Brisbane
+bb1ccac9-8b47-46f3-ab00-52711c71fb9f,2024-11-18,637477,Snacks,Chips,Doritos,26.78,26.19,2,7.08,45.3,"Scott, Howard and Walker",64571,Credit Card,Other,Melbourne
+f357bea2-7e10-42a5-8005-ba08623d2704,2024-08-17,545496,Dairy,Cheese,Danone,20.0,17.75,5,9.5,79.25,Ochoa Group,45884,Online,Other,Adelaide
+01a4bdcd-3c80-4679-bf79-e12bf2f5000f,2024-10-29,709304,Electronics,Laptops,Samsung,19.96,19.47,3,3.36,55.05,"Walker, Owen and Diaz",31819,Credit Card,Female,Adelaide
+09d6ee24-18f3-4be8-8a88-0c9da8afd510,2025-03-27,907182,Beverages,Soda,Lipton,18.07,17.15,1,3.31,13.84,"Anderson, Smith and Hernandez",79715,Credit Card,Other,Perth
+051aa7ab-c85b-415d-a261-7565df43db31,2024-08-26,424240,Electronics,Laptops,Apple,25.67,21.68,3,5.84,59.2,Mcneil-Jimenez,25836,EFTPOS,Other,Perth
+1b9ea354-fa03-4dab-a3a7-b76361ae7467,2025-01-05,211965,Beverages,Juice,Pepsi,4.42,3.76,2,0.98,6.54,Ferguson-Ferguson,83918,EFTPOS,Female,Perth
+79b128b1-9f36-4803-b79d-5451f8859a43,2024-04-28,761011,Dairy,Cheese,Danone,21.33,17.88,5,0.71,88.69,Gonzalez-Baldwin,37649,Cash,Female,Sydney
+b402b6d4-dafb-4ebd-8cf7-592e558c0774,2024-12-15,679069,Beverages,Water,Coca-Cola,17.89,15.93,5,15.25,64.4,Thompson-Murphy,63545,Online,Male,Perth
+a0143042-85cb-48f2-bbfb-16e6d08f1363,2024-09-02,958739,Beverages,Water,Lipton,12.37,10.29,2,3.06,17.52,"Wyatt, Poole and Edwards",64232,Online,Female,Brisbane
+8349e929-dd4a-405d-a22c-a497fbb93468,2024-10-23,822739,Snacks,Popcorn,Doritos,12.1,10.76,1,1.23,9.53,Benton-Yates,57010,Credit Card,Other,Brisbane
+bb575026-5613-44f4-a78a-7b2ee8e79059,2024-09-09,917181,Dairy,Yogurt,Danone,19.73,16.82,1,2.16,14.66,Donaldson Ltd,44303,Online,Female,Perth
+65293d0d-b644-42d8-a69d-07e2f22bd67a,2025-01-27,793576,Beverages,Water,Lipton,17.97,15.39,1,0.44,14.95,"Carrillo, Perry and Petersen",55404,Cash,Other,Perth
+ba7f71a8-ab2c-4556-aefc-9be9f6daf98a,2024-12-08,977164,Beverages,Soda,Coca-Cola,11.34,11.31,4,0.79,44.45,"Richard, Wilkinson and Johnston",81057,Credit Card,Other,Sydney
+33933ec9-56e4-4ac8-944b-4dc4824717a4,2025-02-16,809315,Electronics,Phones,Sony,16.35,15.83,2,3.62,28.04,Lawrence LLC,85747,Cash,Male,Brisbane
+0325de97-31b3-48fb-af5f-34f5a942e08f,2024-10-10,442192,Dairy,Yogurt,Bega,17.75,14.29,3,1.69,41.18,Moran-Deleon,56456,Online,Male,Perth
+2a26d2ed-5469-420e-b4f0-dc994ad61bc6,2025-03-03,910026,Beverages,Water,Nestle,23.98,21.9,2,6.56,37.24,Villegas-Salazar,47427,EFTPOS,Female,Sydney
+ccf67538-40fc-4b8e-bb45-35033ad333cf,2024-10-05,925016,Electronics,Laptops,Sony,25.87,20.87,2,6.47,35.27,Tucker-Johnson,73243,Credit Card,Female,Sydney
+6969bd9c-e71e-45f6-a165-dd098bc17629,2024-12-09,361263,Dairy,Cheese,Anchor,19.29,16.43,3,1.57,47.72,Oconnell-Medina,68141,EFTPOS,Male,Perth
+d5d1fcc2-4461-43ca-8559-c0d8cfb7e2ab,2025-02-12,860182,Electronics,TVs,LG,22.38,21.76,1,4.14,17.62,"Lynn, Stein and Allen",78104,Cash,Male,Melbourne
+b7867a36-36b7-4886-a198-31d88c04389c,2024-12-21,642680,Snacks,Biscuits,Lays,19.62,17.06,2,2.95,31.17,Cox-Meyer,59263,Credit Card,Other,Perth
+5753438e-999f-4efd-a500-e3bccda00fc6,2024-05-21,758311,Beverages,Juice,Lipton,19.19,19.03,4,14.87,61.25,Lozano-Spencer,40388,Cash,Other,Brisbane
+279e6a55-65fa-4a0e-a72d-a0d13fd2b06f,2025-03-22,793298,Snacks,Popcorn,Cheetos,23.86,23.33,1,1.51,21.82,"White, Jones and Moss",33176,Cash,Other,Melbourne
+0add3671-0982-445f-927d-e1727e154090,2024-09-11,753350,Beverages,Soda,Pepsi,24.07,21.47,1,2.43,19.04,Benjamin-Ellis,98501,Credit Card,Male,Adelaide
+f67c783b-8b9e-4c79-9699-be038a84ef6f,2025-01-25,586810,Dairy,Yogurt,Anchor,29.06,23.57,5,19.87,97.98,"Gonzalez, Mclaughlin and Good",32860,EFTPOS,Other,Adelaide
+1e1df25f-13cb-43f5-b6fa-9313a81ea7ae,2024-05-29,991457,Dairy,Yogurt,Anchor,19.65,16.51,4,12.11,53.93,Williams LLC,23961,Credit Card,Male,Brisbane
+bc83fa04-2844-48cd-93e7-63c726faad62,2024-06-17,436572,Dairy,Yogurt,Anchor,20.12,17.08,4,4.16,64.16,"Cooper, Olson and Turner",89320,Credit Card,Female,Adelaide
+e83f5883-68a9-4376-a3a8-823c02a4bda3,2024-08-11,865362,Beverages,Soda,Nestle,24.58,19.8,2,1.9,37.7,"Jones, Jones and Drake",30259,Online,Male,Brisbane
+adc757ad-05a9-4e6b-af90-9fd074a1a802,2024-12-03,800733,Snacks,Chips,Lays,21.29,20.32,5,4.14,97.46,Smith PLC,25540,Cash,Male,Brisbane
+7b4f73ad-459c-488d-9f5d-ca5f1db05235,2024-05-27,638335,Dairy,Milk,Bega,25.72,23.68,2,0.62,46.74,Maddox PLC,86478,Cash,Male,Melbourne
+43c4e662-29f1-45e6-86ab-e89e9bde52bc,2024-06-20,351837,Snacks,Biscuits,Doritos,16.37,15.89,4,12.41,51.15,Smith Group,93490,Cash,Other,Sydney
+18d5b051-aaeb-4b1d-883f-cbc9d54f4c16,2024-11-18,884758,Dairy,Milk,Bega,22.08,21.8,3,8.69,56.71,Peters Ltd,35108,Cash,Male,Adelaide
+cef10a68-4494-459d-a37e-6cb2a4174389,2025-03-04,143479,Beverages,Water,Nestle,18.55,16.98,2,1.2,32.76,"Kaiser, Richardson and Farley",23113,Cash,Other,Melbourne
+551f1f39-f2a4-4a1e-be8e-84ef016c708a,2024-06-23,188004,Electronics,TVs,Sony,14.33,14.22,2,2.52,25.92,Ramirez-Noble,15432,Online,Other,Brisbane
+4e3a4d10-6f11-49e8-a687-92784182c3cc,2024-07-11,544263,Dairy,Cheese,Yoplait,18.31,15.24,3,1.98,43.74,"Williams, Russell and Wiggins",94777,Cash,Female,Perth
+a30e7ace-5d64-4d7a-9acd-c13ec4251caa,2025-02-07,407101,Dairy,Yogurt,Danone,22.49,22.08,3,7.61,58.63,Martinez-Lambert,65960,Online,Female,Brisbane
+c695cf29-d38b-49b9-8a4d-f54d511d2b5c,2024-12-30,498468,Snacks,Biscuits,Pringles,30.25,24.4,5,13.78,108.22,Barron-Williams,13821,Online,Female,Adelaide
+2cb8e9bc-29fd-482d-83c6-2856a4927cf5,2024-07-07,452658,Snacks,Biscuits,Pringles,24.3,19.92,2,2.56,37.28,Kerr Group,84269,Cash,Female,Sydney
+7d91f360-2ff3-4ba4-b586-2a79a054633e,2024-05-29,736830,Dairy,Cheese,Anchor,19.4,18.63,3,5.49,50.4,Lyons Inc,90460,Cash,Other,Sydney
+0844a241-fdc6-4776-b861-62111034a590,2025-03-18,702286,Beverages,Water,Pepsi,13.22,12.57,2,1.59,23.55,Forbes-Barton,55609,Credit Card,Female,Adelaide
+2f9bd047-fcc5-4e64-95aa-a73fc3082fce,2024-08-15,506885,Beverages,Juice,Coca-Cola,20.6,19.34,1,1.83,17.51,Santiago-Nguyen,41393,Credit Card,Other,Sydney
+291191dc-732c-4c26-a962-390866804cdf,2024-08-18,895960,Snacks,Biscuits,Lays,14.2,11.42,3,4.94,29.32,"Clark, Collins and Peters",68419,Online,Female,Brisbane
+e0af55ff-9854-4757-bd95-a4109dd25790,2024-06-11,798774,Snacks,Popcorn,Cheetos,19.47,18.41,1,3.46,14.95,Ramsey-Pena,76435,Credit Card,Female,Sydney
+70e1d399-a622-4216-98be-23254b80168b,2024-10-02,989500,Beverages,Juice,Nestle,12.65,11.7,2,1.69,21.71,Gonzalez-Woods,54223,Credit Card,Male,Perth
+527bdd9e-8b91-4ba8-bdbd-d332e214fa32,2024-08-28,874780,Snacks,Biscuits,Lays,19.79,16.24,1,1.74,14.5,"Alvarado, Richards and Anderson",15789,Cash,Other,Sydney
+df3662b9-53f5-4a0b-aec2-5a045705ac68,2024-10-01,628167,Snacks,Chips,Pringles,19.31,17.4,1,1.7,15.7,Collins-Malone,49962,EFTPOS,Other,Perth
+f31031e8-b7d7-41ff-9d37-de13faf5d6fb,2025-01-28,781678,Electronics,TVs,Apple,24.64,20.81,4,4.48,78.76,"Delgado, Baker and Case",33550,EFTPOS,Female,Brisbane
+88d97c56-da19-4278-9f77-4d65a488475a,2025-01-16,403123,Snacks,Chips,Doritos,15.49,13.48,5,5.57,61.83,Hernandez-Dodson,84171,Credit Card,Other,Melbourne
+335b0c2a-c39b-4f65-b719-09875d15b063,2024-09-09,474241,Dairy,Cheese,Bega,20.17,18.7,3,4.03,52.07,Baker Inc,25066,EFTPOS,Other,Sydney
+0507c70c-6b6f-48f6-9099-ba0667d4b0a8,2024-09-21,770146,Dairy,Yogurt,Anchor,23.17,20.0,1,2.43,17.57,Hoffman Group,13425,EFTPOS,Male,Perth
+83f74ad6-d059-4863-b393-929094561559,2024-06-20,694494,Dairy,Milk,Anchor,15.07,13.71,2,0.55,26.87,Le Inc,76126,EFTPOS,Other,Adelaide
+23a062c7-9e63-4478-b509-72274701ae07,2024-06-30,902939,Electronics,TVs,Samsung,22.59,19.25,5,11.57,84.68,George-Williamson,38667,Online,Female,Melbourne
+659d0439-a346-4081-aa70-7d3fb121fa76,2025-01-17,488749,Beverages,Soda,Pepsi,19.63,16.7,2,5.0,28.4,Sherman-Nunez,42767,EFTPOS,Female,Perth
+823638b5-c6b7-46e9-bf14-1dd7c890fe68,2024-04-07,816473,Electronics,Laptops,Sony,13.36,10.81,5,10.68,43.37,Rodriguez Inc,74439,EFTPOS,Male,Sydney
+4a2abac0-a551-41d8-b515-26b2402de782,2025-02-03,861322,Dairy,Milk,Danone,19.1,16.14,3,9.1,39.32,Harper Ltd,29165,Cash,Male,Adelaide
+199fc588-a33e-4989-a6f6-9918b13a51b8,2024-04-27,828819,Beverages,Soda,Lipton,21.23,19.31,1,2.92,16.39,"Wyatt, Davis and Hooper",95529,Cash,Other,Melbourne
+ceaf8fc5-f05b-47fd-b5b6-9f9e2426d739,2024-09-20,698002,Electronics,Laptops,Samsung,22.03,19.14,4,12.81,63.75,"Rush, Wong and Gay",20889,Cash,Other,Perth
+f97490e0-251b-4847-9934-545d51badc1d,2024-10-17,716771,Snacks,Chips,Cheetos,24.58,23.25,1,4.15,19.1,Hall LLC,31717,Online,Other,Sydney
+8afcc91f-d16c-4d8d-a42c-4c60cf83e47f,2024-06-03,180850,Dairy,Milk,Anchor,14.19,11.52,4,7.55,38.53,Duncan-Swanson,60380,Online,Male,Sydney
+71117c23-b197-4482-bf4c-ba47e46df90e,2024-11-10,336280,Snacks,Biscuits,Lays,19.76,16.45,2,2.3,30.6,Blevins Inc,50483,Cash,Other,Perth
+2c35516d-5beb-44d2-badb-de24868969ff,2024-06-12,851788,Snacks,Popcorn,Pringles,20.05,16.72,2,2.19,31.25,Wade-Ballard,62375,EFTPOS,Male,Sydney
+65757190-7f24-4a89-82e0-bdccd67c05eb,2024-10-23,794073,Electronics,TVs,Sony,12.89,10.52,1,1.82,8.7,"Stein, Watson and Dawson",63643,EFTPOS,Male,Adelaide
+86c7b089-9525-4644-b2ea-869f760e04e2,2024-09-10,697607,Dairy,Yogurt,Danone,6.45,5.75,2,1.52,9.98,"Clark, Riley and Palmer",20856,Online,Male,Adelaide
+4963be99-1483-459b-abea-43af519a5976,2024-07-24,760705,Dairy,Milk,Bega,19.11,15.42,5,9.32,67.78,Oconnell-Rhodes,35485,Cash,Female,Melbourne
+76b4ef5d-0bcc-4100-b67c-e0f1a6562366,2024-04-17,528552,Electronics,Laptops,Samsung,21.84,19.67,1,2.67,17.0,Hale-Brown,23750,EFTPOS,Other,Brisbane
+7733e0f5-30ea-416c-aaf4-48be93bac85d,2024-08-15,342183,Dairy,Cheese,Anchor,23.04,19.91,2,7.27,32.55,"Patterson, Howard and Buchanan",46743,Online,Male,Perth
+025fbf0d-fb7e-4401-86d3-cb2e24b23b3b,2024-12-18,705887,Beverages,Water,Coca-Cola,17.88,16.39,2,4.38,28.4,"Oconnor, Williams and Walter",56297,Credit Card,Female,Brisbane
+d364f5ab-d8ff-42f4-b94d-a7a49af54f8f,2025-02-17,179852,Dairy,Yogurt,Yoplait,14.71,13.51,2,4.34,22.68,"Johnson, Salinas and Hudson",86887,EFTPOS,Other,Perth
+37aa7ed6-1ade-4c19-b239-892667773f3e,2025-01-30,752747,Beverages,Juice,Coca-Cola,24.05,23.96,3,11.68,60.2,"Walters, Lopez and Clark",51168,EFTPOS,Male,Sydney
+fa06db0a-5223-4f19-96cc-2bf72bb3aabb,2024-11-25,921878,Beverages,Juice,Lipton,21.39,20.21,2,5.81,34.61,"West, Austin and Evans",76351,Online,Male,Sydney
+7601a69f-83c5-4429-a417-679de22131e8,2024-12-22,858810,Electronics,Laptops,Samsung,16.26,15.01,3,7.49,37.54,Bailey-Smith,28874,Credit Card,Male,Sydney
+16e2c416-130b-433c-ae68-96a6e9d4f129,2024-04-24,413930,Electronics,TVs,Sony,21.66,19.15,2,4.92,33.38,"Dougherty, Grant and Wong",61664,EFTPOS,Other,Perth
+abef2850-fde5-4f8d-83bc-56cd5e4e9c29,2024-09-12,285895,Snacks,Popcorn,Doritos,27.63,23.56,4,9.98,84.26,"Cabrera, Schmidt and Jones",11061,Online,Other,Sydney
+e466d8df-f8d8-4dd9-b117-7829d906d1bb,2024-12-18,811355,Snacks,Chips,Lays,21.45,21.43,1,3.42,18.01,"Combs, Martin and Smith",80010,Cash,Female,Melbourne
+4ba0da64-a03c-4640-8aac-02594e7ba347,2024-07-22,331271,Electronics,Phones,Samsung,20.8,19.05,3,5.75,51.4,Smith-Barnett,13434,EFTPOS,Female,Perth
+ca95dafa-7f69-41ae-9109-a3be9cb355a8,2025-02-05,179814,Electronics,Laptops,Samsung,31.44,29.31,4,4.53,112.71,Leonard Ltd,22315,Credit Card,Male,Sydney
+81465278-9d21-4155-80ca-2ee542d2af0f,2025-02-02,555744,Dairy,Milk,Anchor,22.76,19.42,1,0.76,18.66,Webb-Schroeder,64278,EFTPOS,Female,Melbourne
+3b73636c-8782-4dde-8856-35576fe2e1cb,2024-09-16,506428,Dairy,Milk,Anchor,24.19,22.56,4,6.04,84.2,"Johnson, Mccoy and Nash",14025,Online,Female,Sydney
+395903ab-e05a-4bed-9177-dd94f0be792e,2025-03-05,962676,Snacks,Popcorn,Pringles,18.38,17.69,3,10.33,42.74,Hartman Inc,84509,Online,Male,Melbourne
+693be2a4-85a8-420d-8cfc-f33f8b352bba,2024-09-24,449117,Dairy,Yogurt,Anchor,22.54,22.17,2,3.34,41.0,"Salazar, Patterson and Davis",17725,Cash,Female,Brisbane
+9a82f6ce-4c8a-438c-bcd0-f592b6d29c60,2024-08-31,334384,Snacks,Biscuits,Pringles,22.05,18.5,5,15.22,77.28,Wood and Sons,62175,EFTPOS,Female,Brisbane
+1e92fec5-4f10-4e35-b542-38a5b417de50,2024-04-18,195516,Dairy,Cheese,Anchor,11.47,10.21,3,3.85,26.78,Collins Inc,17684,EFTPOS,Other,Adelaide
+6c816a22-8f07-40e2-8d01-fefb8ee4e28a,2024-07-27,611828,Electronics,TVs,Sony,23.67,18.97,4,10.25,65.63,"Smith, Webb and Logan",15764,EFTPOS,Male,Melbourne
+54be5a1f-66ee-4e68-a6fa-a8b77d2edee7,2024-07-06,162198,Electronics,TVs,LG,22.33,18.0,2,6.94,29.06,Lopez Ltd,45037,Cash,Female,Sydney
+c6132b9f-0b1b-4849-b840-7806c9aa39e6,2024-06-15,909142,Beverages,Juice,Coca-Cola,20.96,20.64,2,5.15,36.13,"Morton, Walter and Lee",78055,Cash,Female,Adelaide
+2277665e-6802-4a72-b182-37b1228c7165,2024-05-09,201978,Beverages,Water,Pepsi,11.91,10.31,4,3.72,37.52,"Taylor, Cantu and Diaz",42912,Online,Other,Adelaide
+24e30ab1-94dc-44e3-9183-d581cd0ce495,2025-01-11,598786,Snacks,Chips,Cheetos,15.79,15.47,4,2.79,59.09,Wilson Group,39799,Credit Card,Male,Sydney
+b64b24a1-29f7-4c1b-92db-bdf2a2fac9bc,2025-03-22,308230,Beverages,Juice,Coca-Cola,13.19,11.15,4,2.43,42.17,Miller-Fisher,44817,Online,Male,Perth
+2abbeaf6-b837-497f-be0f-f0e7f9a5d69d,2025-01-05,720517,Beverages,Soda,Coca-Cola,17.38,15.1,1,2.37,12.73,"Hardy, Watkins and Moreno",66263,Online,Male,Brisbane
+9540fec1-d9e9-418b-ac5b-0845e6736fef,2024-09-24,474877,Beverages,Soda,Coca-Cola,22.55,18.27,4,1.77,71.31,Duran-Lopez,31586,Credit Card,Female,Brisbane
+f3e5ffa0-9f89-46e9-9ac3-61e5c7a49235,2024-07-16,884096,Snacks,Chips,Lays,20.88,17.2,4,0.53,68.27,Clayton-Davis,86209,Online,Other,Adelaide
+c7bdd89b-5dac-4d8f-beb6-7bca3359a41a,2025-02-20,992748,Electronics,TVs,Samsung,31.13,25.72,5,25.72,102.88,"Knapp, Thompson and White",74127,EFTPOS,Other,Adelaide
+c347c752-e7ab-4fa4-822d-dfeed020ccab,2025-03-29,771787,Dairy,Milk,Danone,18.32,17.76,2,1.28,34.24,"Stewart, Waller and Mejia",89774,EFTPOS,Other,Perth
+25e3bd84-0d4f-4865-b2fa-eb1cf36ca771,2025-02-12,872238,Snacks,Popcorn,Pringles,30.07,24.35,4,1.71,95.69,Hansen Group,82662,Credit Card,Female,Sydney
+cea1c5cb-dcd8-4503-be23-3a0388ae1591,2024-10-14,105379,Electronics,Laptops,Samsung,25.4,24.28,4,9.24,87.88,"Garcia, Wilson and Gordon",47965,EFTPOS,Male,Adelaide
+da815f60-f421-45c5-b8c8-1b9b8715e3da,2024-04-08,199670,Snacks,Chips,Lays,17.49,16.07,1,2.2,13.87,Daniels-Anderson,19064,EFTPOS,Other,Melbourne
+4caed6fc-44b2-4ad1-b089-c08342b68c0e,2024-04-25,252405,Snacks,Chips,Lays,20.95,20.62,3,6.75,55.11,Anderson PLC,96680,Cash,Female,Brisbane
+29d3499a-4e34-4064-a363-737727833ef4,2024-12-12,933473,Electronics,Phones,LG,20.6,18.57,5,10.71,82.14,"Gibbs, Weber and Ford",46678,Online,Other,Adelaide
+f79a4209-4fe9-4481-95f8-1b3153e8884c,2024-06-19,902623,Electronics,Phones,LG,22.75,21.23,2,3.04,39.42,Brown Ltd,43519,Cash,Male,Sydney
+bd7539b7-a27f-41ab-901d-2bd894763845,2025-02-12,642557,Snacks,Biscuits,Doritos,20.58,18.86,5,7.74,86.56,Lewis-Mooney,83331,Credit Card,Male,Perth
+3ac62130-cb6e-4ae2-ba9d-329c0b65f4fd,2024-09-16,492322,Snacks,Biscuits,Doritos,26.24,22.38,1,1.78,20.6,Marks LLC,48346,Credit Card,Other,Perth
+10534fe3-93ea-4776-bb46-4dc06fa85c4b,2025-03-10,398714,Electronics,TVs,LG,29.1,26.43,5,13.62,118.53,Smith-Gross,82477,Online,Female,Melbourne
+c1b6f82d-e9f2-428c-8039-d09323a74cb7,2024-09-26,781572,Electronics,Laptops,Samsung,26.39,22.5,1,3.56,18.94,"Rodriguez, Roberts and Rodriguez",64585,EFTPOS,Female,Adelaide
+1043d718-90dd-46d0-9c97-c4e973c88b97,2024-06-20,264503,Dairy,Cheese,Bega,28.6,27.34,3,14.1,67.92,Williams Inc,84889,EFTPOS,Female,Melbourne
+e7c7bd6a-f6cb-4842-a140-6bcaa0ef810a,2024-08-31,187502,Snacks,Biscuits,Lays,12.98,10.79,3,0.98,31.39,"Hudson, Smith and Robinson",36429,Credit Card,Male,Melbourne
+efd4addf-e26d-436b-91ba-9bbfbba8b5f4,2024-05-23,624544,Beverages,Water,Pepsi,24.43,20.81,1,0.85,19.96,"Daniels, Guerrero and Davis",55894,Cash,Male,Melbourne
+e9f7edd1-b996-4e48-a8c2-ee447b74b346,2024-10-21,165856,Dairy,Milk,Danone,21.36,19.56,4,3.82,74.42,Brady LLC,31373,Cash,Other,Sydney
+f10f3691-0093-4f4a-bbba-eda3ff7429df,2024-07-12,583653,Dairy,Cheese,Anchor,27.0,25.76,4,14.94,88.1,"Wagner, Simpson and Bradshaw",51150,Online,Female,Sydney
+4921223d-30c8-40b7-a7c7-d687950a1803,2025-03-22,208751,Electronics,Laptops,LG,19.13,18.87,3,7.16,49.45,"Butler, Stark and Oliver",23620,EFTPOS,Female,Sydney
+f9b6b9ff-0093-4f36-a5ec-6b8a679bf633,2024-04-13,522933,Dairy,Milk,Anchor,20.54,17.88,4,12.38,59.14,Carter PLC,51924,Credit Card,Female,Adelaide
+4ea58064-6ae6-4425-ba77-5d9eb36c9f67,2024-11-02,915848,Electronics,TVs,Apple,20.33,18.39,1,2.01,16.38,Franklin and Sons,70929,Cash,Male,Melbourne
+6c785604-7333-48f8-b521-be47cc0ab869,2024-07-10,546769,Electronics,TVs,Sony,24.25,21.11,3,1.07,62.26,Powell-Keith,77484,Credit Card,Male,Sydney
+46053785-7239-4816-ad74-3739a2cad304,2024-04-09,234051,Beverages,Juice,Nestle,13.5,12.82,3,5.74,32.72,"Nash, Cruz and Hardy",62473,Online,Female,Adelaide
+b6d14015-3928-40c1-80aa-b94435611e59,2024-10-30,610410,Beverages,Water,Pepsi,25.69,21.52,4,1.34,84.74,"Fischer, Weber and Adams",51423,Online,Female,Brisbane
+6be1f133-9537-44ee-8ede-4055a24390c1,2024-12-14,324999,Dairy,Milk,Anchor,14.35,11.53,5,9.58,48.07,West-Phelps,17507,Cash,Male,Adelaide
+57c93898-9f83-421b-9f6e-50c106937c4d,2025-01-13,688894,Beverages,Soda,Nestle,18.92,17.96,2,7.16,28.76,Chavez-Hernandez,21590,Credit Card,Female,Brisbane
+a47256c5-4e6f-454f-a7df-0320733e995c,2024-11-01,609518,Dairy,Yogurt,Danone,23.65,19.47,1,2.92,16.55,Smith LLC,63008,Cash,Other,Sydney
+5a5f9bbf-7b2b-473b-a55f-0ac146d77652,2024-11-05,244581,Beverages,Juice,Lipton,16.58,13.42,3,3.79,36.47,"Oliver, Cooper and Brown",95365,Online,Other,Melbourne
+48e399da-d201-4a41-ac3c-514d7a7dfe22,2024-05-28,452453,Electronics,TVs,Samsung,14.52,11.82,2,2.38,21.26,Rogers-Rose,24812,Online,Female,Melbourne
+a32d0b39-dc0f-491d-8d43-75635350f776,2025-03-10,244355,Snacks,Popcorn,Pringles,14.87,12.15,4,5.99,42.61,Wright PLC,42767,Credit Card,Male,Melbourne
+d2cc01d2-2fe7-4904-83af-7ed0177414a8,2025-03-16,481214,Snacks,Biscuits,Pringles,22.24,20.77,3,10.8,51.51,Diaz-Orr,70303,Credit Card,Male,Perth
+8b8f8cc3-82c6-4180-99a7-ab08e8eabe12,2024-10-19,930165,Dairy,Yogurt,Bega,24.94,21.55,1,2.59,18.96,Lyons-Martin,77924,Cash,Female,Adelaide
+9e8fa328-6dc1-4ccf-83cd-f89e684a7e64,2024-08-25,664255,Snacks,Biscuits,Lays,12.28,10.29,2,3.7,16.88,"Johnson, Porter and Lambert",53206,Credit Card,Female,Adelaide
+d4701e6f-ea09-4011-b17a-ee60310d2e65,2024-12-11,422018,Beverages,Water,Pepsi,16.05,15.6,2,0.98,30.22,Smith Group,73556,Online,Female,Sydney
+c90272da-3c93-4175-ad81-31598d54972b,2025-02-24,368462,Electronics,Phones,Samsung,18.17,14.56,2,2.89,26.23,Case-Castillo,65806,Online,Female,Brisbane
+dcdc9771-f755-4a43-bca6-d78da7484702,2024-08-11,709479,Beverages,Water,Pepsi,19.21,15.57,4,4.88,57.4,Powers PLC,90916,Cash,Female,Sydney
+a140bc7e-752a-4a7a-93b7-e4b0bacf4f50,2025-01-02,493282,Snacks,Biscuits,Pringles,17.88,17.31,4,2.39,66.85,Wells-Barnes,34043,Credit Card,Male,Melbourne
+1ccb5ca7-8c85-4368-9779-5b01524293e2,2024-05-30,854914,Snacks,Chips,Cheetos,24.62,20.5,2,7.44,33.56,"Hicks, Nash and Garcia",68155,Online,Male,Adelaide
+d5dc26b8-94dc-41d0-90a5-13826bef68a6,2024-04-11,875108,Snacks,Popcorn,Cheetos,17.81,15.25,4,4.14,56.86,Nelson Group,75388,Cash,Female,Perth
+348537b6-0337-4484-996c-e52b7503b42b,2025-03-16,149392,Snacks,Popcorn,Pringles,17.68,14.2,3,8.17,34.43,Hill and Sons,58596,Credit Card,Male,Melbourne
+18430724-db33-41a4-a2bc-93113dd6faf6,2024-06-19,297838,Electronics,Laptops,Sony,16.64,15.74,1,2.49,13.25,Cross-Long,56741,Online,Other,Melbourne
+2fde8be7-a651-4275-920c-89b0b05c75aa,2024-12-23,265370,Electronics,Phones,Apple,21.0,20.52,5,19.82,82.78,"Nash, Jackson and Dawson",69399,EFTPOS,Male,Sydney
+eb749c6e-a5cf-4fa7-a8a3-9171fe9d4327,2024-06-12,623989,Dairy,Cheese,Anchor,16.02,14.54,1,0.66,13.88,Peterson Ltd,82012,Credit Card,Other,Sydney
+1aec429c-e644-473f-957e-a032e7b5694d,2025-03-30,643873,Beverages,Juice,Pepsi,20.52,19.45,3,6.9,51.45,Williams-Rivera,87065,Online,Female,Brisbane
+5b9f990c-bfba-433b-b1fb-29f2f2846e9c,2024-09-10,654827,Beverages,Water,Lipton,13.09,11.63,3,2.3,32.59,Cross-Hardy,14732,Online,Female,Perth
+01e4611c-5467-4593-8e9f-37d7b1d60a73,2024-12-30,605715,Dairy,Cheese,Anchor,22.51,19.62,3,10.29,48.57,Pena-Hubbard,35583,Credit Card,Other,Brisbane
+3318bbfe-5f18-4d9c-b70d-051f0e3c8f73,2024-11-04,343786,Dairy,Yogurt,Danone,16.82,13.5,1,2.1,11.4,"Lane, Holmes and Daugherty",83154,Cash,Other,Melbourne
+8099517e-b2ad-4a9c-b58a-61aafcd27889,2024-11-13,187930,Beverages,Soda,Pepsi,24.08,23.16,3,8.91,60.57,Lopez and Sons,60485,EFTPOS,Female,Perth
+3b45636c-fbac-4de6-8727-946f3ec996e7,2025-03-22,997745,Electronics,Laptops,Samsung,11.9,10.18,1,1.39,8.79,Simpson LLC,90641,Online,Male,Melbourne
+a8455ad2-f2b7-4d0d-8b57-563cdc1de301,2024-05-09,206257,Snacks,Chips,Pringles,14.79,13.73,5,2.74,65.91,Small Ltd,48173,Online,Other,Perth
+b00caa57-e562-4d93-950b-1c927b80f96d,2024-05-13,324995,Electronics,Phones,Sony,23.19,19.91,5,11.37,88.18,Bruce PLC,28990,EFTPOS,Male,Sydney
+b31fdd28-d716-4d7e-a3d2-960c9651d718,2024-12-24,495766,Electronics,Phones,Samsung,12.76,12.15,3,0.74,35.71,Mcdonald Group,18744,EFTPOS,Other,Perth
+064cdb52-1d4c-4e71-884e-81465e35e671,2024-05-20,336866,Beverages,Juice,Pepsi,25.55,22.84,4,8.41,82.95,Jones Group,90615,Cash,Male,Adelaide
+8e92ca62-fa30-4449-9da7-73f7aeb9f771,2024-09-05,540420,Snacks,Chips,Lays,25.9,24.72,1,3.32,21.4,Copeland Group,73387,EFTPOS,Female,Adelaide
+1ddbffcf-d72c-42d4-943d-bc3498e8fc7c,2024-04-13,529039,Snacks,Biscuits,Cheetos,15.8,14.52,5,8.53,64.07,Smith PLC,50656,Cash,Male,Adelaide
+03461330-3a6c-4b57-9b49-5e45cf674c25,2024-12-22,487436,Beverages,Water,Nestle,18.4,17.47,5,2.64,84.71,Brooks-Rich,59051,Online,Other,Adelaide
+faa5da8a-0460-4336-824c-56d3cf37a27c,2024-05-19,854667,Dairy,Yogurt,Bega,17.08,14.4,4,4.53,53.07,Lewis Inc,78429,Cash,Other,Sydney
+8e916b61-e230-4497-8847-fb1afad4cc3d,2024-07-05,280563,Beverages,Juice,Nestle,17.12,15.29,4,11.49,49.67,Tapia and Sons,73218,EFTPOS,Female,Brisbane
+01ea4f13-8b81-43b4-ad85-8d5d901cafbd,2024-10-01,642225,Electronics,Laptops,Apple,14.55,13.73,1,1.83,11.9,"Pratt, Woodard and Simpson",38953,Cash,Female,Sydney
+edb886c7-05ad-419a-948e-790728c4994c,2024-09-07,434327,Dairy,Yogurt,Yoplait,22.12,19.63,2,1.31,37.95,"Archer, Daniels and Powers",16266,Cash,Other,Brisbane
+16020b87-3c8d-4e3a-8275-ddf2712fd0b0,2024-12-09,676567,Beverages,Juice,Lipton,19.98,18.0,5,4.82,85.18,Mcguire and Sons,25758,Cash,Female,Sydney
+84dc8ce4-422c-4ec0-bc46-055a7b1523be,2024-05-10,220849,Snacks,Chips,Doritos,18.47,15.86,1,0.81,15.05,Williams-Murray,36204,Online,Other,Perth
+7dc5d208-f531-45b6-a561-e605273209c8,2024-10-31,505936,Snacks,Biscuits,Lays,16.99,15.34,1,1.86,13.48,Conner-Nunez,16298,Cash,Male,Sydney
+353b08ed-bbc7-497e-b940-a104876331d6,2024-12-13,658246,Beverages,Juice,Pepsi,19.13,17.26,5,16.23,70.07,Williams LLC,39515,Cash,Female,Sydney
+2be2d99d-220e-491d-bb48-4535f3181221,2024-05-06,519471,Dairy,Yogurt,Bega,10.6,9.78,2,0.11,19.45,Ferguson Group,22839,EFTPOS,Male,Brisbane
+907cc22e-b67c-4b54-96ce-054b8c785d2f,2025-02-03,606898,Snacks,Popcorn,Pringles,32.18,29.57,4,15.82,102.46,"Ward, White and Wilson",76319,EFTPOS,Female,Brisbane
+f3ba48c5-de25-44c0-9cc5-463d6cd3aaee,2024-12-02,356230,Electronics,Laptops,Sony,13.04,11.92,4,8.41,39.27,Hodge-Flores,20512,EFTPOS,Female,Sydney
+a8efb6de-cf2a-40cd-aa69-2d23f50c1787,2025-03-23,296612,Snacks,Chips,Cheetos,21.45,18.33,5,7.11,84.54,"Stanley, Rogers and Simpson",40186,EFTPOS,Female,Adelaide
+d748f83d-352b-4e23-84ee-17dcb0f16350,2025-01-02,187696,Beverages,Water,Lipton,15.71,12.73,4,3.41,47.51,Woods Group,19473,Credit Card,Female,Sydney
+3cb7de3b-b8ec-4281-b9e2-b8fc0fce7c7c,2025-03-05,403072,Dairy,Milk,Yoplait,19.12,16.29,4,10.08,55.08,Welch-Rodriguez,59960,Online,Male,Melbourne
+02e31630-4046-4caf-97ba-071031a165ac,2024-07-25,335964,Dairy,Cheese,Yoplait,11.62,9.58,2,1.15,18.01,"Washington, Elliott and Pollard",32419,Cash,Male,Perth
+738de6bc-f23b-444f-b864-8fc92ff7f22f,2025-02-15,228489,Electronics,Phones,Apple,26.06,25.09,3,1.23,74.04,Bentley Ltd,47255,EFTPOS,Other,Perth
+c815030f-0948-4fd6-99b3-de68e0c82149,2024-07-15,393339,Dairy,Cheese,Yoplait,15.64,12.74,2,3.78,21.7,Cox and Sons,74758,Cash,Female,Adelaide
+65b5909f-b6ca-4fa6-8b41-12048c2de0df,2024-05-25,423596,Beverages,Juice,Nestle,18.71,16.74,4,6.49,60.47,Moore-Roberts,31525,Cash,Female,Melbourne
+70d8ac22-45eb-4451-a231-2cc64af30082,2024-09-16,320333,Electronics,Laptops,Sony,22.13,20.24,4,15.65,65.31,Hahn Inc,48622,EFTPOS,Male,Sydney
+612a9f51-e252-48aa-9133-9b976ddb4da3,2024-10-27,790028,Beverages,Water,Lipton,13.98,12.24,5,8.18,53.02,Jones PLC,90233,Credit Card,Female,Sydney
+7eb0eece-4b79-4bdd-a234-964573a42827,2024-11-18,948052,Snacks,Biscuits,Lays,14.29,13.66,3,0.09,40.89,Martinez-Alvarez,85087,Credit Card,Female,Sydney
+a479e9c0-da85-4a9a-81ea-d1658c2ece47,2024-10-15,462598,Beverages,Juice,Coca-Cola,32.18,30.38,5,15.2,136.7,"Garcia, Lee and White",57766,Cash,Other,Sydney
+d8849906-5106-40bc-a628-5df09b7fe70c,2025-02-14,234915,Dairy,Milk,Bega,23.83,22.2,1,0.52,21.68,"Walker, Chen and White",21338,Online,Female,Brisbane
+bc424c7f-df05-47d3-becc-6324f1e59dc6,2024-12-05,469955,Beverages,Soda,Coca-Cola,21.67,17.34,3,9.97,42.05,"Chavez, Paul and Friedman",24064,EFTPOS,Other,Sydney
+d24bed63-accd-44bd-905f-6807054d3446,2024-11-30,675485,Beverages,Juice,Pepsi,23.71,21.6,1,4.21,17.39,"Finley, Reed and Mcdonald",49084,EFTPOS,Female,Sydney
+bf91e46e-dabb-4961-b13c-e2ee1daafb91,2024-07-14,213427,Electronics,TVs,Samsung,19.84,16.24,1,0.25,15.99,Smith Ltd,85396,Online,Female,Melbourne
+8d73ba9b-4909-4056-b718-f6ed89ba40e4,2024-07-26,256660,Snacks,Popcorn,Lays,17.75,16.43,3,3.7,45.59,"Daugherty, Anderson and King",64368,Online,Male,Perth
+4595e599-bf96-4c7d-9c27-741f661a3b9f,2024-04-11,123236,Beverages,Soda,Coca-Cola,17.42,16.5,2,5.21,27.79,"Ward, Larson and Larson",97259,EFTPOS,Female,Sydney
+2d094567-06f4-4347-b8a2-f62bcd7e7167,2025-01-13,604587,Beverages,Water,Nestle,18.9,16.2,5,1.66,79.34,Jones and Sons,63824,EFTPOS,Female,Melbourne
+1845d750-19c4-4430-a71a-61a7b2c48c2b,2025-03-22,494588,Electronics,Laptops,Apple,17.43,16.76,3,3.29,46.99,"Hughes, Holder and Carter",25625,Cash,Female,Perth
+38e6436b-5acd-4331-ad66-054f82c513da,2024-11-17,271042,Beverages,Juice,Pepsi,22.88,18.95,3,10.72,46.13,Robinson Ltd,13365,Online,Male,Adelaide
+1a6c45f6-5267-4ae2-ad0e-293fc9593b81,2025-02-13,628416,Electronics,Phones,Samsung,29.58,26.06,5,17.36,112.94,Abbott and Sons,88482,Cash,Male,Adelaide
+a1c8cac0-5830-40ab-9311-4e7fe2a629af,2024-11-11,328795,Electronics,Phones,Samsung,21.25,20.34,5,0.98,100.72,Warren Group,53994,Cash,Male,Sydney
+4d6c2423-4cc8-41d2-a8cd-1f3bff254d50,2025-03-20,182857,Snacks,Biscuits,Lays,23.47,19.23,5,13.73,82.42,Morton Ltd,70620,Cash,Male,Melbourne
+a121c94f-7674-45b8-befd-1e9bee1ce763,2024-09-27,716227,Beverages,Juice,Pepsi,21.91,18.17,1,2.08,16.09,Chambers LLC,31639,Online,Male,Sydney
+c7892c0b-40e2-4957-bc5c-65ffb3f34878,2024-05-27,740012,Beverages,Soda,Nestle,23.35,19.37,4,14.84,62.64,Carpenter Ltd,92511,Online,Female,Perth
+01e79b23-2cd0-4e67-b40c-04bc6c1fc5bc,2025-03-13,410854,Beverages,Soda,Lipton,14.52,13.17,1,0.87,12.3,Hall Group,84853,EFTPOS,Female,Melbourne
+7bf8bdeb-bde4-4d41-88e7-fba90851228d,2025-03-14,320596,Beverages,Juice,Nestle,21.49,18.47,1,0.06,18.41,"Lopez, Hamilton and Hall",65620,Cash,Male,Brisbane
+a835b1e9-c7f1-4681-92ef-27c0d6145648,2025-04-02,576334,Electronics,TVs,LG,20.43,17.42,4,8.95,60.73,Ruiz and Sons,77512,Online,Female,Adelaide
+82552ece-955b-4de6-b355-12680abb8fe4,2024-06-02,618672,Dairy,Milk,Danone,14.07,13.91,2,1.46,26.36,Stewart Group,36836,Online,Other,Adelaide
+ecdc9fa3-4424-4e7d-a893-cef2147e74fd,2024-09-02,534529,Dairy,Milk,Danone,26.76,21.61,4,14.96,71.48,Jones-Williams,14111,Credit Card,Female,Adelaide
+d7ad870f-4cdd-4952-a171-d6f44794e353,2025-02-25,886189,Beverages,Water,Lipton,25.2,20.45,3,3.89,57.46,Parker Inc,17746,Credit Card,Female,Sydney
+4baa2438-df21-4ddf-a5aa-c77a7aea7ade,2024-12-30,852558,Snacks,Chips,Doritos,19.48,17.89,4,8.2,63.36,Villarreal-Smith,83921,Online,Male,Adelaide
+8bea65cc-528f-4605-bbee-28c2ff737f1c,2025-03-04,797345,Beverages,Water,Coca-Cola,23.9,22.26,5,19.04,92.26,Martinez-Johnson,21842,Credit Card,Other,Perth
+8e28a818-2b47-4d44-b7f2-2249fb7864b7,2024-10-20,807803,Electronics,Laptops,LG,28.91,24.25,2,6.4,42.1,"Donaldson, Hamilton and West",43183,Online,Other,Adelaide
+b6884a95-6500-4684-8069-f9beb3948680,2025-03-02,429523,Snacks,Biscuits,Doritos,19.64,16.7,5,5.66,77.84,Martinez-Vazquez,46062,Online,Other,Melbourne
+31c8462c-ff95-47e8-b411-9cbc594910b8,2025-01-17,756125,Snacks,Popcorn,Pringles,23.5,22.46,5,4.19,108.11,Garcia Ltd,30363,Online,Female,Sydney
+c7ab7a85-5c83-4fc0-9e4c-4c276339cda4,2025-02-06,661049,Dairy,Milk,Bega,19.22,17.86,1,1.59,16.27,Green-Williams,77588,EFTPOS,Other,Adelaide
+69bb09d7-5f60-4e36-b3a0-c012f76d87a5,2024-04-06,947963,Snacks,Chips,Pringles,18.95,18.95,5,12.44,82.31,Sexton-Smith,57851,EFTPOS,Female,Sydney
+ac0ecf34-da9f-4900-bcd3-d6e8f701a3ab,2024-10-04,190070,Beverages,Water,Coca-Cola,26.37,23.18,5,4.14,111.76,"Nelson, Flores and Francis",59179,EFTPOS,Male,Brisbane
+9a4e713c-ac40-4aa7-bd23-a71ae9ea1002,2024-07-27,260704,Dairy,Milk,Yoplait,29.17,24.29,5,10.28,111.17,Reynolds LLC,92468,EFTPOS,Other,Sydney
+b6a84d8a-ee9d-4181-beb6-0e187e1b11be,2024-07-11,664850,Beverages,Water,Lipton,23.77,21.79,2,1.33,42.25,Brooks Group,83458,Online,Other,Adelaide
+12a3f95d-0899-43ba-8477-e18470bb8b5a,2024-07-21,833348,Beverages,Water,Pepsi,18.56,16.02,2,1.36,30.68,"Rios, Roberts and Wilson",28017,Cash,Other,Brisbane
+fbe8f2cc-dbb0-427b-9759-d8cb115aa13b,2024-09-13,367480,Dairy,Yogurt,Bega,14.23,12.19,1,0.14,12.05,"Smith, Harmon and Jackson",91633,Cash,Female,Melbourne
+51f2333d-de09-400e-aa46-c8f3440507ae,2024-07-18,543621,Dairy,Cheese,Bega,17.93,15.25,1,1.41,13.84,Mcneil Ltd,93410,Online,Male,Melbourne
+4e631a79-3002-4edc-9b3b-82ec9b922c49,2024-12-08,658205,Electronics,TVs,Sony,24.56,22.66,2,6.07,39.25,Dennis-Flores,80004,EFTPOS,Female,Sydney
+6c008c6a-f7c8-4348-bd44-24a7fd24846d,2024-07-09,910183,Dairy,Yogurt,Anchor,14.8,12.72,3,7.31,30.85,Lee PLC,58456,Credit Card,Female,Melbourne
+bc45aba6-75ea-4d8c-9dab-0c19deaffc1a,2024-04-24,332724,Dairy,Milk,Danone,22.7,22.0,3,3.45,62.55,"Stewart, Glenn and Morrison",27788,Cash,Male,Sydney
+764932c3-2f53-4e75-8158-546d6b1dd2c0,2024-05-08,453108,Snacks,Popcorn,Doritos,20.51,16.9,3,5.67,45.03,"Wilson, Bauer and Miranda",25524,Cash,Male,Brisbane
+17403bd3-d235-4e1e-83fd-6917b8c29a5c,2025-01-10,293317,Dairy,Yogurt,Danone,22.06,18.57,2,7.13,30.01,"Allen, Anderson and Brown",57718,Cash,Male,Perth
+bcce8c00-16d6-407e-9028-5dfdfd686f36,2025-03-04,222560,Beverages,Water,Pepsi,16.91,13.62,4,8.31,46.17,Jones-Martinez,34764,Cash,Female,Perth
+79b1d6f7-6995-40d9-81d5-2af0b71dc129,2024-08-24,673280,Electronics,Laptops,LG,22.68,20.3,3,7.13,53.77,Stewart PLC,98201,EFTPOS,Female,Brisbane
+2d40205d-ff63-467b-afb0-4fa12b8f0f4e,2024-09-07,370066,Beverages,Soda,Nestle,20.99,17.81,3,6.83,46.6,Arnold Inc,50290,Credit Card,Other,Brisbane
+2813849f-a84c-41e7-8197-7ed0c12e859e,2024-06-20,137729,Beverages,Water,Lipton,6.67,6.65,5,0.32,32.93,Stevens-Brown,88966,EFTPOS,Female,Brisbane
+f29881b6-3fcf-4c99-bfa5-f95a2c8f9449,2024-12-26,537521,Electronics,Phones,Apple,22.13,20.59,2,8.11,33.07,Burke-Patton,96735,Online,Other,Brisbane
+a505ae81-ca8d-4f93-bf6e-6d746ffe57c6,2024-11-14,570846,Dairy,Yogurt,Yoplait,17.33,14.13,4,10.14,46.38,Brown LLC,79893,EFTPOS,Female,Adelaide
+c34caaa9-559a-4cd0-8903-a590e21d230a,2024-11-26,344960,Beverages,Water,Coca-Cola,23.07,18.86,5,18.19,76.11,Martin-Perry,20977,Cash,Female,Brisbane
+29425cd8-359e-481a-875f-6b5a6c007054,2024-04-21,411430,Dairy,Cheese,Bega,21.88,18.65,4,1.83,72.77,Vaughn-Lowery,74041,EFTPOS,Other,Adelaide
+46aa6985-ab2a-4e86-a5a8-65cf80b00150,2025-01-07,979194,Beverages,Juice,Coca-Cola,11.46,11.22,5,8.82,47.28,"Ortiz, Ryan and Shelton",23503,Cash,Female,Melbourne
+6eb6cf07-a416-470c-a107-f55f05fe6cf1,2024-05-31,853687,Beverages,Soda,Coca-Cola,22.14,20.09,5,10.52,89.93,Thomas Ltd,79970,Online,Other,Perth
+1c3b73bc-c8ac-4e28-9d0f-b2b4c25f5ceb,2024-06-09,215840,Beverages,Juice,Lipton,19.72,15.95,1,0.9,15.05,Weaver-Ware,35440,Online,Male,Brisbane
+dadea747-68d2-4a9a-84a5-615596834243,2025-02-21,608947,Electronics,Phones,Sony,14.67,12.82,1,2.55,10.27,Cox LLC,89360,EFTPOS,Female,Perth
+6b85bdde-5bb7-41c9-9b0b-e904b38c73a1,2024-10-09,417971,Dairy,Milk,Bega,20.92,20.9,1,2.29,18.61,Robles Inc,56022,Online,Male,Sydney
+d5129b36-9561-43a9-8e68-5416cb2bb501,2025-03-18,846196,Electronics,Phones,Apple,11.74,11.42,5,10.85,46.25,Rhodes-Scott,87087,EFTPOS,Male,Melbourne
+eb1973b6-47a9-4daa-9923-8ac9fb4dbb62,2025-01-16,748811,Snacks,Popcorn,Doritos,15.56,14.73,5,5.72,67.93,"Garrett, Snyder and Butler",24834,Cash,Female,Adelaide
+62ab531f-a68c-4877-a338-41e743d26d43,2024-12-30,365699,Dairy,Cheese,Bega,16.47,15.57,2,4.78,26.36,Summers Group,98071,Online,Female,Brisbane
+7d0f34ec-8338-4533-bb15-df20e295b8fa,2024-12-13,665822,Dairy,Cheese,Anchor,19.27,17.98,2,1.73,34.23,Lewis LLC,63178,Credit Card,Female,Sydney
+055167aa-434d-446f-881d-e4f89ddeb8f1,2024-05-26,206813,Snacks,Popcorn,Lays,16.86,16.41,1,3.12,13.29,Roberson PLC,75786,EFTPOS,Other,Sydney
+4b8de54c-791b-41f0-a7d6-aaf51b0e8b78,2025-01-29,867559,Dairy,Milk,Yoplait,23.23,18.6,5,18.09,74.91,Suarez Inc,82773,Online,Male,Sydney
+e57853d1-d97b-438b-8351-cc60c0d506aa,2024-10-21,506157,Beverages,Water,Lipton,27.29,26.85,2,1.52,52.18,Cannon Ltd,51258,Cash,Female,Perth
+95e6a16d-2dca-4edf-9739-1fbe7cd6d1d5,2025-02-28,386692,Electronics,Phones,Sony,17.11,16.87,3,8.37,42.24,Rosario Ltd,10372,Credit Card,Female,Perth
+64d68eca-0f52-468b-a444-75757795ce54,2025-03-27,499014,Electronics,Phones,Samsung,15.5,15.28,1,0.98,14.3,Ruiz-Jackson,49033,Cash,Female,Sydney
+c571b73e-e73b-436f-8f95-1c7c9497a684,2025-03-03,411695,Electronics,Phones,Apple,26.26,22.72,3,10.38,57.78,"Garcia, Reid and Saunders",29785,Credit Card,Female,Sydney
+c955b380-1ec9-4bff-a21d-8d7c1e676b65,2024-11-28,897190,Electronics,Phones,Samsung,14.67,14.01,4,3.75,52.29,"Perez, Mack and James",50445,Online,Other,Sydney
+ab55687b-e1d6-415a-bcc1-3792a96aad8a,2024-04-16,258098,Snacks,Chips,Doritos,28.93,24.59,3,10.71,63.06,Cooper-Avery,49193,Credit Card,Male,Brisbane
+aad06f36-fa80-4246-8b3c-d646ec396cc4,2025-03-29,508378,Dairy,Yogurt,Bega,23.32,20.18,4,11.49,69.23,Carlson-Santos,43151,Online,Male,Melbourne
+1c965096-6b15-4ba0-bbe5-45792fd79136,2024-04-18,131038,Beverages,Juice,Nestle,22.44,20.81,3,7.82,54.61,"Edwards, Holmes and Kelley",96105,Online,Female,Sydney
+f237bc0f-9888-47ef-b102-90b22d821a92,2024-08-17,218291,Electronics,Laptops,Apple,17.29,15.12,5,2.69,72.91,Villa LLC,49921,EFTPOS,Other,Sydney
+544d26d1-e36f-43fd-a901-e8e5fbd3ba8b,2024-04-27,448589,Snacks,Chips,Cheetos,12.33,12.2,2,4.1,20.3,"Dominguez, Callahan and Bennett",21342,Online,Other,Sydney
+55413c35-ce4d-4d76-b31e-35289d33a9b9,2024-05-18,138071,Snacks,Chips,Cheetos,18.18,15.92,5,4.85,74.75,Hansen Ltd,84776,Credit Card,Male,Melbourne
+dc415a5f-2e21-4342-bec7-1e335bd1a7a2,2024-05-17,785753,Snacks,Biscuits,Cheetos,16.61,15.92,5,11.18,68.42,Ford PLC,42802,EFTPOS,Male,Brisbane
+31de2639-7c63-4a86-b38d-f8829f2b2edd,2025-02-04,118077,Beverages,Juice,Nestle,27.4,22.4,5,8.29,103.71,Haynes Ltd,59323,EFTPOS,Other,Sydney
+25d1589f-a014-450b-b12b-22f14cb5c666,2025-02-17,192218,Snacks,Popcorn,Cheetos,17.38,15.3,4,0.82,60.38,Butler and Sons,70500,Cash,Other,Brisbane
+5b0088e3-af5a-47c7-9324-cf5d800ebc3c,2024-08-28,905560,Dairy,Cheese,Danone,23.01,19.49,5,13.05,84.4,Martinez PLC,98603,Cash,Other,Melbourne
+dbde3595-13db-447b-a98b-1ba783ff1629,2024-12-29,770308,Snacks,Popcorn,Lays,15.09,14.63,4,0.54,57.98,Mills PLC,81091,Credit Card,Male,Sydney
+e18474ff-a691-480a-99ba-c5b8776c82fe,2024-04-16,453001,Electronics,Phones,Samsung,31.67,28.06,2,8.26,47.86,Richardson-Ward,92199,EFTPOS,Other,Perth
+3b57f415-68db-47da-ad43-c26af91e16e1,2024-12-06,655763,Beverages,Water,Pepsi,23.69,22.57,4,2.13,88.15,Parker-Jones,66610,Online,Male,Adelaide
+52a2501c-dcba-48a9-a397-dfd2df0bf941,2025-01-11,605610,Electronics,Laptops,LG,26.96,26.75,5,13.85,119.9,Kim Ltd,22344,EFTPOS,Female,Sydney
+d33684a1-8947-437e-9477-5947fd89c2e5,2024-04-11,988845,Beverages,Juice,Nestle,5.99,5.34,5,3.61,23.09,Clark and Sons,22082,Credit Card,Other,Melbourne
+f1858d1d-3d51-4b1d-b6e5-05d80d338a3d,2024-12-22,848492,Beverages,Juice,Pepsi,19.56,18.0,2,1.22,34.78,Smith-Dunn,17441,Cash,Other,Perth
+bc1e1dc2-b59f-4e59-bec7-b17c5397afd7,2024-09-20,747076,Beverages,Water,Lipton,20.55,19.79,3,0.7,58.67,"Fernandez, Romero and Porter",88615,Online,Female,Melbourne
+09b1cb41-f5dc-4a3f-9119-e4f5bf50b921,2024-04-13,867491,Snacks,Chips,Cheetos,23.51,19.02,3,3.99,53.07,Snyder Ltd,48534,EFTPOS,Female,Melbourne
+240a5380-d820-4209-ba54-6dbb95d0c8a2,2024-07-27,894593,Beverages,Water,Pepsi,28.04,26.82,5,20.47,113.63,Murray Group,73207,Online,Female,Sydney
+2e150f22-a68e-4f22-aedb-82f90e5fef9d,2024-09-03,411260,Dairy,Cheese,Anchor,24.49,21.2,4,13.96,70.84,"Fleming, Greene and Silva",46698,Cash,Female,Melbourne
+e93cd59d-e4c2-4a07-8586-f3682f842746,2024-07-17,458157,Electronics,TVs,LG,20.13,18.07,5,11.58,78.77,Harris-Fischer,17696,Online,Male,Melbourne
+d32d9fda-e2a8-44e9-95d2-8ffd9a021d5f,2025-04-05,162389,Snacks,Popcorn,Lays,19.73,16.26,5,14.23,67.07,Scott-Paul,56864,EFTPOS,Female,Perth
+172323a1-4020-431b-b57e-92eff41e4ab9,2024-08-07,368750,Beverages,Soda,Lipton,19.92,16.43,5,13.57,68.58,"Turner, Cross and Garcia",45325,Online,Male,Sydney
+af35a6bf-4d36-489a-af67-328688d2ae6a,2025-03-17,504696,Electronics,TVs,LG,10.33,9.6,3,5.38,23.42,Marshall Inc,67251,Online,Other,Perth
+0f2c9a5c-c968-4758-ac8c-30369d653e59,2025-01-11,653546,Dairy,Yogurt,Anchor,23.34,19.17,4,4.22,72.46,Davis and Sons,21819,Cash,Other,Sydney
+d974483e-445d-47c3-9ceb-d911f736347e,2024-04-28,328856,Snacks,Biscuits,Pringles,23.73,21.82,5,21.35,87.75,Wright-Miranda,98678,Cash,Female,Adelaide
+cbb3ea17-b428-4d75-8c82-bf9432d3e9ca,2024-10-10,356490,Dairy,Yogurt,Yoplait,16.13,14.64,4,0.1,58.46,Clark-Robinson,52220,Cash,Male,Brisbane
+4c619dfd-f285-465a-8b68-e328b59c43de,2024-05-17,767279,Beverages,Water,Coca-Cola,26.3,23.71,3,3.52,67.61,"Young, Cook and Medina",26017,Online,Male,Brisbane
+c3c9544a-e00d-4d2b-b168-8cd7a61aa68e,2024-06-05,376253,Dairy,Milk,Yoplait,22.43,22.13,3,2.27,64.12,Oneal-Snyder,23505,Online,Female,Sydney
+006fc898-ce93-4157-9e6b-eb26f7c2078b,2024-04-13,247701,Beverages,Soda,Lipton,14.07,11.69,5,1.43,57.02,Richard Ltd,87650,EFTPOS,Female,Melbourne
+fd830357-020d-4252-9f8e-18942ea0bbd3,2025-03-26,222248,Snacks,Popcorn,Lays,19.83,17.6,5,3.9,84.1,Hunt-Frey,60352,EFTPOS,Female,Perth
+687208ce-85f7-43bf-b179-9b3e994947cf,2024-10-23,792590,Dairy,Milk,Anchor,24.05,21.41,5,5.05,102.0,Long-Case,99169,Cash,Female,Adelaide
+24ed8581-edaf-4ca1-aa9d-0b6118f60bef,2024-10-30,219897,Dairy,Yogurt,Danone,10.19,8.32,2,2.7,13.94,Reyes-Sparks,80449,EFTPOS,Male,Brisbane
+511369b2-9332-48ae-8c12-61d70c5d9b67,2024-08-03,404907,Snacks,Biscuits,Pringles,15.62,15.48,1,1.57,13.91,Woods-Sandoval,65883,Credit Card,Male,Perth
+3da64353-1f7a-455d-951d-4e12718630b2,2024-07-07,156976,Dairy,Milk,Anchor,19.72,16.16,2,5.17,27.15,Taylor-Kim,38800,Online,Male,Brisbane
+e2692d86-0772-4894-b9a8-b26199c71bec,2024-12-05,318273,Dairy,Milk,Danone,26.64,21.68,4,6.81,79.91,Hernandez-Ruiz,92721,EFTPOS,Male,Melbourne
+240424eb-8ecb-4853-a075-0011dd3223c0,2025-01-17,658560,Snacks,Popcorn,Pringles,20.9,18.01,1,3.55,14.46,Gardner-Allison,72557,Credit Card,Female,Sydney
+ddf31311-1725-4919-b38d-fac9e3f2f0b4,2024-07-23,162672,Snacks,Chips,Lays,24.57,21.11,4,13.47,70.97,Frye-Gordon,34894,Cash,Female,Brisbane
+039b12b6-f9f1-45a5-98f0-7b14ac7defe1,2025-01-22,319674,Beverages,Soda,Nestle,15.59,14.45,4,5.78,52.02,Craig-Williams,62000,EFTPOS,Female,Perth
+c854f2a1-37a2-4d6f-8b4a-02dcd387911b,2024-12-13,879123,Electronics,Phones,LG,27.06,24.82,3,6.22,68.24,"Peck, Goodman and Rodriguez",97605,Online,Female,Sydney
+8eab91f9-9fdf-48c7-9a62-d56e78eeed0f,2024-05-31,220560,Beverages,Juice,Coca-Cola,6.81,5.62,4,1.88,20.6,Sullivan-Owens,59765,EFTPOS,Male,Adelaide
+fdb71357-bc39-4c22-ae3c-d0f441a46388,2024-06-22,839113,Beverages,Juice,Lipton,24.31,22.17,4,10.63,78.05,Austin PLC,13215,Online,Male,Sydney
+050a2594-f627-4f23-a736-6f0895841ec5,2024-10-03,473497,Dairy,Milk,Anchor,22.64,19.16,5,18.04,77.76,Rodriguez-Caldwell,62848,EFTPOS,Other,Sydney
+9f476ed1-37cc-406a-92a8-32e954eb7b03,2024-06-21,259705,Electronics,TVs,LG,17.41,16.44,3,1.57,47.75,"Hansen, Johnson and Hill",49565,Credit Card,Male,Brisbane
+c01baff8-2f7b-4667-861b-d0c1ffd10db0,2025-03-29,870010,Electronics,Phones,LG,4.37,4.15,1,0.55,3.6,Clark Inc,95472,EFTPOS,Female,Sydney
+e91a67f0-126c-4695-85cc-a40c42370003,2024-05-18,512091,Snacks,Popcorn,Pringles,15.13,12.73,2,0.17,25.29,White PLC,86118,Online,Other,Perth
+7d363ac8-aa10-4ccd-be26-80c4531c678e,2025-02-20,954611,Electronics,Laptops,Apple,24.29,19.76,4,2.44,76.6,Parks Group,77391,Credit Card,Other,Sydney
+fd9a14cf-3892-4469-a68e-0c3a095687ee,2024-08-03,557098,Dairy,Cheese,Danone,21.71,18.35,3,1.89,53.16,Meyer-Waller,55814,EFTPOS,Male,Sydney
+5be3b102-deb4-4025-be78-35f106096dee,2024-10-28,849962,Electronics,Laptops,Apple,17.99,16.95,5,9.67,75.08,Franklin and Sons,19785,Credit Card,Other,Melbourne
+f6379172-8402-4bdb-8674-1e99ea7f969d,2024-04-28,635758,Electronics,TVs,Apple,23.22,22.32,5,3.21,108.39,Jones-Oconnor,77080,EFTPOS,Other,Sydney
+65c5388e-93fc-4e33-a043-40c8573b056d,2024-12-09,858022,Dairy,Yogurt,Danone,13.73,13.34,2,4.35,22.33,Smith and Sons,67474,Cash,Female,Melbourne
+d81a724f-5982-4280-bd7f-cc568461b6eb,2024-07-10,286276,Electronics,Phones,Apple,14.79,13.76,1,2.21,11.55,"Kelly, Morgan and Moreno",19266,Online,Other,Perth
+aa090e96-754e-4624-a0d1-82fdc63c4b38,2024-07-08,522741,Snacks,Biscuits,Doritos,20.21,16.25,2,2.26,30.24,Scott-Lewis,89330,EFTPOS,Other,Adelaide
+3e469b9c-ba04-4527-8516-97c42104add2,2024-10-20,215133,Snacks,Chips,Cheetos,19.46,15.77,3,0.97,46.34,Campbell Group,99082,Online,Other,Perth
+14c775c6-271d-4fd8-954e-c1c04c09d435,2025-02-28,799205,Beverages,Juice,Coca-Cola,17.38,17.32,1,3.34,13.98,Brown-Frazier,72418,EFTPOS,Other,Perth
+92368250-f585-40c0-9e61-36818ec6ad55,2025-01-22,142620,Electronics,Laptops,Samsung,15.16,13.49,5,0.16,67.29,"Scott, Barnes and Caldwell",67684,Credit Card,Male,Brisbane
+ba2cabe5-f7e0-4fed-a751-3278becf3ae8,2024-04-27,905949,Electronics,TVs,Apple,17.38,16.85,1,0.86,15.99,Adams-Hill,16992,Online,Male,Adelaide
+c853f6e6-7b79-4997-8dcf-36f49025a920,2024-09-29,958798,Dairy,Cheese,Anchor,27.75,22.8,3,9.26,59.14,"Shannon, Alvarado and Francis",75504,Credit Card,Male,Sydney
+da282295-f3ca-4b03-a01a-a264b150f37b,2024-05-11,629569,Dairy,Yogurt,Yoplait,20.63,19.27,5,9.15,87.2,Barnes-Wise,20727,EFTPOS,Female,Adelaide
+b914b6b4-76a6-4aa8-a4fb-ec5f6bbfb2e0,2025-01-14,246941,Dairy,Yogurt,Danone,28.73,26.56,3,3.74,75.94,Watkins Inc,22950,Online,Male,Sydney
+ee01002c-b1f7-432f-b6b7-7ba14d5ea791,2024-10-19,220914,Dairy,Yogurt,Yoplait,26.71,24.64,5,16.41,106.79,Williams-Gates,83739,Credit Card,Female,Sydney
+d9164ec3-aa54-404e-9d43-0ffc1f4aeaf2,2025-01-08,849829,Snacks,Chips,Pringles,19.9,18.41,3,6.93,48.3,Stephenson-Sherman,79545,Credit Card,Male,Brisbane
+e9c13347-6753-4742-8228-5be54d9c4af6,2025-03-16,590374,Electronics,Laptops,LG,29.6,28.09,2,10.94,45.24,Li Group,57118,EFTPOS,Female,Adelaide
+c4e42579-f581-4d3b-8cca-688956e3278c,2025-02-05,280990,Snacks,Biscuits,Pringles,19.47,18.31,4,11.33,61.91,Sullivan-Goodwin,29062,Cash,Other,Brisbane
+618072b6-e2fc-4d3f-bdac-ed65dc13f188,2024-06-28,988111,Snacks,Popcorn,Pringles,24.5,20.99,5,19.56,85.39,Hopkins and Sons,41876,Credit Card,Male,Brisbane
+1a0c0ab8-26b3-48a0-a20d-2c042ef6b33d,2024-07-04,600496,Dairy,Cheese,Danone,13.65,12.51,1,1.11,11.4,Golden-Young,22800,Cash,Female,Sydney
+4321fd80-6673-4f00-bc7f-8de8824a2d0e,2024-12-31,327977,Dairy,Milk,Danone,15.05,12.77,1,1.34,11.43,"Garcia, Lopez and Mcdonald",29513,EFTPOS,Other,Adelaide
+92eeddb3-247d-44aa-a83c-5498335eaa78,2024-07-01,365613,Snacks,Chips,Cheetos,12.41,12.0,3,3.95,32.05,Rodriguez LLC,17610,Online,Male,Sydney
+29cb977a-07e8-4c6a-907e-a149b8835f34,2024-08-24,923305,Dairy,Cheese,Yoplait,25.38,20.43,2,5.81,35.05,Bishop and Sons,52861,Cash,Female,Sydney
+b9e66a28-3a96-42a5-8fe7-01b9feb891e8,2024-04-19,268352,Beverages,Water,Nestle,25.02,24.39,2,3.6,45.18,Myers-Brown,23622,Credit Card,Male,Melbourne
+e2e44996-e834-4f0e-913a-c3c9058e7c43,2024-11-22,385625,Beverages,Juice,Nestle,23.27,20.25,1,1.18,19.07,"Diaz, Cortez and Brown",26581,Credit Card,Female,Melbourne
+4851d028-ec9e-4931-bb8b-5cd5215479b4,2024-08-27,742602,Dairy,Milk,Anchor,22.0,21.37,5,0.4,106.45,"Day, Lopez and Dudley",37254,Cash,Other,Adelaide
+86f5b70d-b75c-4ef7-8649-3508f08cb759,2025-01-14,315837,Electronics,Laptops,LG,14.03,12.67,4,6.24,44.44,Galvan-Macdonald,52395,Cash,Female,Brisbane
+f19404df-803f-4e61-af40-dd2700378726,2024-08-26,514375,Beverages,Juice,Nestle,19.18,17.36,3,7.61,44.47,"Hoffman, Porter and White",59435,Online,Male,Adelaide
+93c7a5b2-89fa-43ee-abb1-327ba20a1246,2025-03-23,647854,Dairy,Cheese,Anchor,19.39,15.91,1,0.87,15.04,Morris-Yang,98049,Cash,Male,Perth
+02282c96-066d-45a9-8aa8-8573e6e2a82a,2024-11-07,280757,Dairy,Cheese,Anchor,24.9,22.08,4,13.54,74.78,Taylor-Walter,14225,Online,Other,Melbourne
+7c525a16-7cd2-49e1-b2ac-8decac260e67,2024-05-18,272054,Electronics,TVs,LG,29.03,25.34,3,7.14,68.88,Gonzales-Welch,50740,Cash,Male,Brisbane
+55cd1735-12cf-45c8-b3a7-227230218711,2024-05-11,548816,Beverages,Water,Pepsi,19.25,18.02,5,11.02,79.08,Perez-Phelps,87537,EFTPOS,Female,Perth
+014034cb-a47b-4cf9-bd46-c8f7b49ac12f,2025-01-14,585625,Snacks,Chips,Cheetos,20.36,17.95,4,14.14,57.66,Sanchez LLC,75086,Online,Other,Sydney
+863672f8-da28-4c8b-8c5c-7c36118daa47,2024-07-13,984651,Beverages,Water,Coca-Cola,19.07,16.2,1,2.63,13.57,Bryant-Williams,47337,Online,Other,Melbourne
+34e685ff-cc29-478a-b054-4d7766bff85d,2024-10-01,289192,Dairy,Cheese,Anchor,22.48,20.78,3,3.0,59.34,Wall and Sons,11248,Credit Card,Female,Brisbane
+d3f7650d-cb86-4516-87a8-e2d8ad5a5fc5,2024-09-04,667616,Snacks,Popcorn,Doritos,21.38,19.89,5,9.3,90.15,Mahoney Group,72534,Cash,Female,Sydney
+102bc2b8-2d1b-49ad-8016-7fd6862f8187,2024-08-27,351536,Electronics,TVs,Apple,27.13,24.23,1,0.43,23.8,"Carlson, Adams and Perez",34279,Online,Other,Adelaide
+c95c2c6a-5602-408f-917c-8ba252b6817a,2024-10-02,558403,Electronics,Phones,LG,11.02,9.28,5,4.75,41.65,Stevens-Hunter,25944,Credit Card,Female,Adelaide
+30a90ed7-03c9-41a0-8894-284ee34b192c,2024-11-22,660277,Beverages,Juice,Lipton,15.8,15.03,4,4.95,55.17,"Levine, Adams and Nelson",52769,Credit Card,Female,Perth
+44b481d0-2959-478a-bd24-ad3a0929af5b,2024-12-14,670554,Dairy,Cheese,Bega,19.86,18.57,3,4.51,51.2,Davis-Riley,35539,Cash,Other,Melbourne
+53a56f24-96ab-40eb-9a29-0d56b1c013d8,2024-07-12,152769,Electronics,TVs,Sony,22.68,19.84,5,14.09,85.11,Sanders-Quinn,10308,EFTPOS,Female,Adelaide
+b04b2671-0660-4f0f-98f2-8a681286d457,2025-04-05,139607,Snacks,Popcorn,Lays,20.71,20.27,3,6.81,54.0,Johnson-Crawford,29416,EFTPOS,Other,Perth
+c1705617-7970-434c-88a2-112638b31246,2024-06-24,933727,Beverages,Soda,Nestle,20.53,19.53,3,5.15,53.44,Jones and Sons,69970,EFTPOS,Male,Adelaide
+c0e83619-ddc1-486e-92f9-3103cae0360a,2024-12-26,104291,Snacks,Biscuits,Cheetos,25.62,22.47,1,2.49,19.98,"Avila, Alexander and Mcdaniel",52260,EFTPOS,Male,Brisbane
+7f5c93e5-b0eb-4177-bb7b-05f346ef4b9d,2024-05-08,294594,Snacks,Biscuits,Cheetos,22.77,21.53,3,1.36,63.23,Williams-Stevens,68678,Online,Other,Melbourne
+37431726-3aa1-482f-a0ad-b8b3422655a1,2024-11-11,774245,Dairy,Yogurt,Bega,20.22,18.47,5,3.4,88.95,Jackson Ltd,98916,Cash,Male,Perth
+8fc3492e-ce2c-4935-a36e-52e5c910696e,2024-12-30,355363,Beverages,Juice,Lipton,17.24,16.33,1,2.35,13.98,Le-Wood,90865,EFTPOS,Other,Melbourne
+73407589-1048-4f2e-a633-ac195894c78d,2024-08-23,939361,Dairy,Yogurt,Anchor,20.21,16.45,3,4.44,44.91,Walls and Sons,54490,Cash,Male,Melbourne
+394db0d2-32e0-4da5-9354-042d5267b3f7,2025-03-07,154678,Dairy,Yogurt,Bega,23.73,23.14,5,13.89,101.81,"Smith, Fleming and Atkinson",41092,EFTPOS,Female,Perth
+07c2213c-a946-4982-9207-d93bcbaf63d3,2024-10-03,549871,Electronics,Phones,Apple,22.64,22.51,3,3.36,64.17,Herring Inc,91551,Cash,Male,Brisbane
+1a0b6da6-8ed7-41cd-8c0c-ae078c4d5fd6,2025-01-08,501402,Beverages,Juice,Lipton,18.29,14.78,1,0.53,14.25,"Carpenter, Larsen and Palmer",68927,Online,Male,Sydney
+32584c14-2294-4448-bcbd-8752dd654057,2024-09-30,573405,Snacks,Biscuits,Lays,19.71,17.13,4,8.73,59.79,Hardy PLC,33239,Cash,Female,Melbourne
+4a923dcb-1f95-40b2-9d24-fd4d53fbdd89,2024-09-23,125589,Electronics,TVs,Samsung,22.09,19.44,4,14.65,63.11,"Williams, Wood and Pollard",46262,Cash,Male,Sydney
+78b98d12-5069-460b-a371-bfd65b67f1b2,2025-02-23,370592,Electronics,Laptops,Apple,19.97,17.23,4,10.16,58.76,"Rivera, Jarvis and Kramer",83256,Online,Other,Adelaide
+78ff3f4e-0e05-456f-b978-1d60ec2ef466,2025-02-09,667538,Dairy,Cheese,Danone,28.65,24.83,4,10.01,89.31,Evans-Schmidt,87333,Cash,Other,Brisbane
+0028ba65-9217-4de9-973a-6a11bfe1eb45,2024-06-28,696006,Electronics,Phones,Sony,31.01,27.17,2,5.0,49.34,Murphy-Andersen,95740,Credit Card,Female,Adelaide
+da9a1d44-0d8e-4072-b770-2b597d28b12a,2024-11-07,479203,Electronics,Phones,Sony,18.45,15.66,2,1.94,29.38,Lang PLC,44957,Credit Card,Male,Sydney
+dd8e058c-dcda-4138-bea5-a067ab1f0998,2024-06-07,712527,Electronics,Laptops,Samsung,23.82,23.25,2,1.1,45.4,"Martinez, Greene and Meyers",84782,Cash,Female,Sydney
+18bce4e4-e009-49a2-87ea-c10e167a48de,2024-04-05,906482,Beverages,Soda,Nestle,19.88,19.5,5,18.84,78.66,Juarez PLC,42176,Credit Card,Female,Perth
+44371fb9-511f-4fb9-9256-1ad4bbb43acd,2025-03-26,135441,Snacks,Chips,Cheetos,14.85,13.94,1,1.26,12.68,Russell-Holmes,43687,EFTPOS,Male,Perth
+7d6ed813-fab0-46d9-b550-fdf7372e77a1,2024-12-15,195149,Electronics,Laptops,Sony,22.03,21.98,1,3.77,18.21,Woods-Salas,61054,Online,Male,Melbourne
+80b305cb-69e4-400b-84af-9a0bec5ff1fe,2024-05-20,733924,Beverages,Juice,Lipton,13.81,12.66,3,1.54,36.44,"Marsh, Martin and Roberts",10865,Credit Card,Male,Adelaide
+fc537e5f-0254-489e-a24b-a956df6020fb,2025-03-20,309264,Electronics,TVs,Samsung,26.1,25.63,1,3.64,21.99,Cooper-Ramos,47782,Credit Card,Female,Melbourne
+334eccbc-b98a-4993-bb05-31df4f4adf4e,2024-06-06,582056,Electronics,TVs,Sony,12.14,10.08,4,6.47,33.85,Cruz-Kennedy,13666,Cash,Other,Brisbane
+9a62aa18-8806-4e3c-82db-f654c238654c,2024-10-12,295321,Dairy,Cheese,Anchor,19.68,17.29,3,3.33,48.54,"Lee, Mckinney and Richardson",96664,Cash,Other,Melbourne
+22fb3070-d862-4462-ab87-6c186a0046e5,2024-07-27,618704,Snacks,Chips,Doritos,23.84,19.33,4,13.38,63.94,"Holmes, Bowen and Woods",76447,Credit Card,Male,Perth
+122e580c-34c1-449b-9b14-37b3f69a965f,2024-10-12,240606,Snacks,Popcorn,Pringles,21.77,18.97,2,3.64,34.3,Adkins-Newman,54878,Cash,Other,Perth
+415e4f01-f682-4cd8-9940-63c642dfca76,2024-11-01,526467,Beverages,Water,Coca-Cola,19.87,19.56,2,0.83,38.29,Rogers Ltd,44471,EFTPOS,Male,Brisbane
+bf886a68-4d44-4d9d-97b2-77ecc983048f,2024-04-12,194479,Beverages,Soda,Lipton,21.55,19.39,3,1.02,57.15,"Solis, Reed and Short",34861,EFTPOS,Other,Perth
+ba197a4f-0892-45c0-a3ab-0815c0b4d8fa,2024-04-22,557480,Electronics,TVs,Samsung,17.9,15.34,3,3.79,42.23,Trujillo Inc,31362,Credit Card,Other,Melbourne
+bd680bda-244b-4c21-ad5f-e996211c9969,2024-12-09,550354,Dairy,Milk,Bega,18.92,16.04,2,2.29,29.79,"Fitzpatrick, Herrera and Ramos",57115,Cash,Male,Brisbane
+3b5ed3c8-29a4-4661-93cb-317dbbc4cac9,2025-03-27,556804,Beverages,Juice,Lipton,32.83,29.24,4,2.38,114.58,Ross-Smith,10783,EFTPOS,Female,Perth
+c6e3ac09-a919-4c74-b4dd-715e50515bb9,2025-04-05,169730,Beverages,Juice,Pepsi,21.21,19.34,1,3.04,16.3,Santiago-Baker,26052,EFTPOS,Female,Perth
+55e57a54-f769-478a-a969-777e82c37640,2024-08-26,498687,Beverages,Juice,Pepsi,10.17,8.86,5,3.56,40.74,"Coleman, Mcclain and Jennings",30977,Cash,Other,Sydney
+e0ed595d-9533-4085-a852-f52fb16bfc48,2025-03-17,874870,Electronics,Phones,Sony,17.55,15.11,5,9.11,66.44,Cole and Sons,71524,Online,Male,Perth
+d1d61c01-b0e6-4a55-8fa3-46cf34a1f3d4,2024-11-08,373814,Beverages,Water,Pepsi,12.62,10.71,1,0.82,9.89,Thomas Ltd,48430,Cash,Other,Brisbane
+df521a75-0390-4c43-911c-b90ba1363d5c,2025-03-02,837676,Dairy,Cheese,Danone,18.35,16.96,2,1.05,32.87,"Lynn, Estrada and Garcia",94240,Credit Card,Male,Sydney
+ac51b087-a108-4aae-9130-effcb9fe4698,2025-03-28,120200,Electronics,TVs,Sony,18.06,15.99,1,2.12,13.87,"Ross, Hogan and Long",59977,EFTPOS,Male,Brisbane
+67116414-7820-463f-be09-e34c8551742f,2025-03-09,618087,Electronics,Phones,Apple,23.29,23.07,3,6.73,62.48,"Hunter, Bishop and Lynch",73644,Cash,Other,Adelaide
+9cdac8b9-1036-46c5-8fbd-48e601ea13e2,2024-11-14,575135,Electronics,Phones,LG,17.81,16.57,2,0.65,32.49,Pratt-Mcknight,72464,EFTPOS,Other,Melbourne
+aca5ed41-4a03-425e-a41e-f4e718786fb4,2024-12-22,429624,Snacks,Popcorn,Pringles,22.14,19.21,5,12.68,83.37,Liu-Morris,83662,Online,Other,Perth
+dcca7962-d2df-4efc-bbe2-6757a43bef57,2025-01-17,767693,Electronics,TVs,Sony,23.38,20.32,1,0.5,19.82,"Moore, Johnson and Anderson",45960,EFTPOS,Other,Adelaide
+bc026852-6ba6-43ed-8df1-905cba62d996,2024-10-28,397216,Dairy,Cheese,Yoplait,27.51,22.04,3,8.8,57.32,Johnson Ltd,21245,Online,Female,Brisbane
+45e7fd4b-bc76-41d3-a9b2-1eca3889e076,2025-04-03,428345,Electronics,TVs,Sony,22.18,21.54,2,4.04,39.04,Dennis Ltd,28819,Online,Male,Brisbane
+93829b75-6989-4343-aa9c-2acdf838759c,2024-04-19,804471,Snacks,Chips,Cheetos,22.79,20.87,5,3.41,100.94,Hughes-Carson,91308,Credit Card,Female,Perth
+ef427916-66a2-41f9-be50-a9e29c774c79,2024-08-26,110627,Electronics,Phones,Samsung,27.95,22.38,2,8.57,36.19,Stevens-Cordova,39292,Online,Other,Brisbane
+f00c1711-9e34-425b-9b52-25b099e7a345,2024-08-07,505412,Beverages,Juice,Lipton,10.69,8.98,5,2.65,42.25,Sullivan-Rivers,29769,Online,Other,Brisbane
+34e8c5ab-bfb7-4e47-b55a-f0e12279b6b0,2025-01-08,819345,Snacks,Biscuits,Pringles,27.44,24.99,5,1.26,123.69,"Myers, Hernandez and Thompson",49861,Credit Card,Other,Melbourne
+f7ecfea8-77e0-43f1-b6b1-13b64fc46e11,2025-03-22,973699,Electronics,TVs,Sony,21.88,20.03,3,9.95,50.14,Shaw-Huynh,41779,EFTPOS,Female,Sydney
+7f28e5b1-c761-49c8-9d11-820a26f23ba9,2024-11-07,817204,Snacks,Chips,Lays,20.26,17.47,1,0.25,17.22,"Williams, Byrd and Jimenez",40904,Credit Card,Female,Brisbane
+b817694b-1d6a-4fb7-ac3a-5eb434f85cb9,2024-08-27,564840,Dairy,Milk,Danone,14.75,14.38,5,0.74,71.16,"Herring, Goodwin and Rodriguez",66651,Credit Card,Other,Sydney
+237bf99c-7a63-42e9-acd4-658125645adb,2024-08-27,564648,Dairy,Cheese,Bega,26.85,26.22,2,4.4,48.04,Terry Inc,58104,Cash,Male,Perth
+5cb6ed73-85a5-4467-8204-f97a0b882685,2024-09-28,905953,Beverages,Water,Nestle,16.58,14.44,1,0.01,14.43,Hill-Kennedy,33320,Credit Card,Female,Perth
+430d642d-fa5c-43ef-b7a3-f81f39bd05af,2025-03-11,606917,Snacks,Popcorn,Lays,16.26,15.43,1,1.85,13.58,Wood-Franco,48544,Credit Card,Female,Adelaide
+a04d229f-3ef7-4d11-b321-7e80f8324bd8,2024-09-01,574917,Dairy,Milk,Yoplait,21.87,20.46,1,0.28,20.18,Morales Group,24829,Online,Male,Brisbane
+ea5460b0-00bd-46fe-911b-b31ea127d66c,2024-12-10,479881,Snacks,Popcorn,Cheetos,23.35,21.1,3,11.35,51.95,Jones Ltd,44480,Cash,Other,Adelaide
+20a456d6-cc39-4993-8eb7-1458bee6bd32,2024-04-14,900280,Snacks,Biscuits,Pringles,27.07,24.61,2,9.36,39.86,Jones LLC,62000,EFTPOS,Male,Sydney
+8619ed76-b2a4-4cb6-8b33-54d80c6ac525,2024-08-05,488390,Dairy,Cheese,Anchor,20.42,19.67,3,2.46,56.55,"Wallace, Johnson and Taylor",66152,EFTPOS,Other,Brisbane
+534fddb3-e37b-41d8-8678-43c8340af723,2025-02-27,484922,Electronics,TVs,Apple,18.74,17.3,4,12.72,56.48,Wilkins Inc,93602,EFTPOS,Other,Adelaide
+9610580b-00ae-4893-96c6-fc97978389c2,2024-05-01,274802,Beverages,Juice,Coca-Cola,27.74,24.11,2,8.88,39.34,Wright and Sons,57586,Online,Female,Adelaide
+06583d0f-fd04-44bb-91f6-3c62535ad46c,2024-05-27,360398,Electronics,TVs,Apple,15.15,14.26,3,6.85,35.93,"Stewart, Lawson and Perry",57425,Online,Other,Sydney
+f5112b50-556e-4772-83b1-6bd9194af115,2024-11-12,964187,Electronics,TVs,LG,14.2,11.56,1,0.04,11.52,Rodriguez PLC,33024,Online,Female,Brisbane
+e7c51f16-45b8-4a0d-b00f-82c5e82de1a4,2025-02-18,733095,Snacks,Chips,Pringles,22.67,22.49,2,4.34,40.64,Bryant-Graham,44225,Cash,Other,Melbourne
+4ca218e5-a171-4e31-9121-1d3ab1e5245e,2024-06-25,654023,Beverages,Juice,Coca-Cola,30.79,27.11,4,6.17,102.27,"Owen, Torres and Lyons",98997,Cash,Male,Adelaide
+0b4175b4-aaef-44db-8fdb-2f0db89a4ecd,2024-11-03,612988,Beverages,Juice,Pepsi,28.73,25.69,1,0.52,25.17,Wilson Group,76461,Credit Card,Female,Sydney
+2b8a8439-49a5-4e6f-b4be-0d181a959653,2024-09-23,342892,Electronics,Laptops,Apple,16.32,14.04,3,5.49,36.63,Nguyen Group,31281,EFTPOS,Other,Perth
+9c6652ae-8375-4ab5-b65c-dd62a44d971c,2024-04-23,489310,Electronics,TVs,Apple,12.22,12.16,2,2.57,21.75,Williamson-Delacruz,21403,Cash,Other,Melbourne
+fb018091-9813-4fed-b388-f1ec4eda5fba,2024-10-31,909088,Dairy,Milk,Anchor,19.27,18.62,4,1.09,73.39,Ellis LLC,86138,Credit Card,Female,Sydney
+cc8084a6-8e07-41ec-beab-242c69abd00d,2024-10-30,205100,Electronics,TVs,LG,10.07,8.98,1,1.43,7.55,Villarreal and Sons,97996,Online,Male,Sydney
+07e47f19-0fe7-4258-9b32-d3c75b91ef8e,2024-09-09,883642,Electronics,TVs,Apple,17.33,14.87,2,3.34,26.4,Gutierrez PLC,99586,EFTPOS,Other,Brisbane
+f96215d0-dba1-46e3-8dc3-6efc9062975b,2024-11-04,615847,Dairy,Yogurt,Anchor,7.65,7.48,2,2.32,12.64,"Williamson, Delgado and Mills",75444,Credit Card,Other,Perth
+d5974560-b57b-4d64-bbc5-8db02dd3f9d8,2024-10-20,330399,Electronics,Phones,Samsung,19.22,16.97,1,1.92,15.05,"Taylor, Townsend and Richards",68755,Credit Card,Female,Sydney
+f7320219-0d18-414f-8606-48a208e5f119,2024-05-02,107964,Beverages,Juice,Lipton,26.79,23.14,2,2.0,44.28,Terry Ltd,89760,Credit Card,Other,Brisbane
+5e721540-6175-4887-9eea-0c8afbd93013,2024-12-15,589929,Dairy,Cheese,Anchor,21.37,19.08,3,3.25,53.99,Hopkins-Craig,96679,Credit Card,Other,Brisbane
+d6d689cc-72a2-4076-a43c-6ee4ed1ff2d7,2024-07-11,517052,Snacks,Biscuits,Pringles,23.96,23.27,3,6.47,63.34,"Lawson, Smith and Atkins",38094,EFTPOS,Female,Melbourne
+20149513-01c9-47bd-9974-96bbbd951b28,2024-11-04,818331,Electronics,Laptops,Apple,24.36,21.79,5,17.3,91.65,Holloway PLC,43786,Credit Card,Female,Brisbane
+aa012483-f370-4dc5-afc4-276f09a12f9f,2025-02-02,498556,Electronics,Laptops,Samsung,14.79,12.83,2,4.33,21.33,Tran PLC,62981,Credit Card,Female,Melbourne
+87b9d7ec-e96c-4bce-bd95-6f6dfcaddf44,2024-12-07,244801,Dairy,Cheese,Anchor,22.71,21.54,2,5.92,37.16,Hart-Morton,17764,EFTPOS,Female,Perth
+6cda77d2-154a-4c13-bc0e-9af5a4529dd3,2024-07-25,947718,Electronics,TVs,Apple,21.76,17.69,2,4.67,30.71,Trujillo-Lopez,90837,Credit Card,Female,Adelaide
+17607724-c9d4-4f51-b203-467130f03e7f,2025-01-26,358006,Electronics,TVs,LG,29.07,26.17,4,5.42,99.26,Brown-Williams,52621,Credit Card,Male,Adelaide
+941d3d31-d9e9-4e59-b4e7-b0595aa3268d,2024-06-22,861654,Electronics,TVs,Sony,18.17,17.99,3,9.01,44.96,Reed and Sons,35485,Online,Female,Adelaide
+c75e9406-6395-4346-8885-5818ee50a129,2024-08-21,372569,Dairy,Cheese,Yoplait,36.85,35.91,5,20.11,159.44,Greene Inc,83930,Online,Female,Melbourne
+394debdd-63b3-4ccd-bf74-2c923cbcf72d,2024-12-26,290907,Snacks,Popcorn,Cheetos,17.17,17.15,5,0.93,84.82,Perry-Hernandez,60088,EFTPOS,Other,Perth
+7fbef394-c419-469a-84b3-fa531803cd36,2024-07-16,563000,Electronics,TVs,Samsung,28.09,22.85,3,0.97,67.58,"Adams, Nichols and Walsh",85529,Cash,Male,Adelaide
+637b9c65-7248-491f-80c0-7617cf90ea89,2024-10-08,325597,Dairy,Cheese,Yoplait,13.39,12.92,4,1.93,49.75,Wallace-Johnson,36780,Online,Male,Perth
+dc2fe18c-1f44-4aa7-9220-8be73b2d23c4,2024-08-06,453200,Electronics,Laptops,Sony,26.18,22.86,1,4.19,18.67,"Williams, Morales and Harris",10942,EFTPOS,Other,Perth
+ae6a7d56-8c0a-4697-8458-8f1cd47ff8f1,2024-12-09,479393,Snacks,Popcorn,Cheetos,12.2,10.31,3,0.26,30.67,Lowery-Johnson,45108,EFTPOS,Female,Sydney
+9195f7b0-cdf8-4beb-a246-db85ee8dc7b0,2024-12-13,764410,Electronics,Laptops,Sony,16.39,16.26,3,6.47,42.31,Hubbard Ltd,97978,Credit Card,Female,Sydney
+8d0ba429-9123-4015-bd57-13f98aaa4a7e,2024-11-09,520139,Beverages,Soda,Nestle,23.28,23.05,5,13.64,101.61,Booth Inc,12242,Online,Other,Sydney
+4346aa4b-4581-4fcd-b61d-65552a96263a,2024-09-29,491699,Beverages,Soda,Pepsi,16.42,13.41,3,1.93,38.3,Carlson-Yu,11661,Online,Male,Melbourne
+1947b337-7ded-4d0e-90a8-9a2cf7d314d9,2024-06-02,579244,Dairy,Cheese,Danone,25.25,24.49,1,0.18,24.31,Carlson and Sons,20804,Credit Card,Female,Brisbane
+675d3677-7395-4c30-8a1f-1e7ca1b46b1e,2024-08-05,652882,Electronics,TVs,Sony,17.62,17.34,3,9.28,42.74,"Ramirez, Thomas and Santiago",79881,Credit Card,Female,Adelaide
+8a1139d5-a08d-4d47-8f8c-3a906c6439f1,2024-04-17,267514,Electronics,Laptops,Samsung,24.02,23.3,1,3.48,19.82,Cochran PLC,23204,Online,Female,Sydney
+2f358bc3-b19d-46ec-a61d-08ad59bffb88,2024-12-07,512586,Electronics,Phones,Samsung,20.67,19.39,1,3.6,15.79,Sullivan-Blackburn,46411,Credit Card,Male,Adelaide
+3af72d4f-7e0a-4217-b0b3-68e56eaf7ea0,2024-04-06,597996,Dairy,Cheese,Anchor,23.68,19.61,5,6.0,92.05,Malone Inc,55247,EFTPOS,Female,Brisbane
+ef8eabfb-1f20-4c85-94c7-6f4a06a64f97,2024-09-04,383102,Snacks,Biscuits,Cheetos,14.09,12.94,4,2.03,49.73,Macdonald Ltd,57110,EFTPOS,Female,Adelaide
+87d18702-2f63-4e1e-9c09-2eb996921270,2024-06-29,215457,Dairy,Yogurt,Yoplait,11.58,10.83,5,6.05,48.1,Morgan Group,75184,Cash,Female,Brisbane
+f535dac2-afee-4d55-95a2-2f71f9b78bac,2024-06-07,162307,Snacks,Popcorn,Lays,21.56,18.43,5,14.45,77.7,Cochran PLC,65560,Credit Card,Female,Adelaide
+cd169550-1380-4101-a1d6-de720d5cb46f,2024-07-04,149975,Electronics,Laptops,LG,20.56,18.28,4,12.93,60.19,"Duke, Nelson and Bowman",21559,Cash,Male,Melbourne
+19c96e07-b2a6-4681-807c-27a950eaf04e,2025-03-21,847885,Dairy,Milk,Yoplait,14.85,14.78,3,7.52,36.82,Hernandez-Nelson,98609,Credit Card,Other,Perth
+1057b74c-5e72-4f77-ac76-1c13db1d1159,2024-12-18,157048,Electronics,Laptops,Samsung,26.19,21.46,2,1.1,41.82,"Anderson, Farley and Walker",73223,Cash,Male,Adelaide
+3bcf03b6-53a2-4b8f-86d8-3c30e496dee9,2024-10-18,399946,Snacks,Biscuits,Pringles,11.63,9.68,2,1.56,17.8,"Fuentes, Fernandez and Bryant",55636,Cash,Other,Sydney
+9f157a81-dbe5-4aa6-bdce-bc8d3cce23bb,2025-02-27,681873,Electronics,Phones,Samsung,23.58,20.21,3,11.65,48.98,Walsh-Murphy,59891,EFTPOS,Other,Adelaide
+720148ae-5fc8-45f9-8bd9-9ae772fa234e,2024-05-27,664191,Beverages,Soda,Coca-Cola,22.23,21.53,1,1.01,20.52,Rocha-Ramirez,54614,Credit Card,Male,Brisbane
+e055c707-6c88-4778-8937-028412e4c462,2024-10-07,927503,Dairy,Yogurt,Bega,18.83,18.74,1,0.48,18.26,"Johnson, Michael and Perez",15789,Credit Card,Male,Perth
+42f79347-1757-4011-9c20-48b603a1de76,2025-02-28,527055,Snacks,Chips,Lays,22.24,21.63,4,13.83,72.69,Carroll-Bradley,12544,Credit Card,Female,Brisbane
+a381432c-d5c2-4f9c-8baa-fda1b43d6297,2024-06-20,607661,Dairy,Yogurt,Yoplait,24.21,20.9,4,9.32,74.28,Frank-Pacheco,10549,EFTPOS,Other,Melbourne
+5f78dbe0-f095-4847-b57e-261ec7eae350,2025-02-26,747337,Dairy,Cheese,Anchor,24.32,22.76,2,3.88,41.64,Williams-Williams,50256,Credit Card,Other,Adelaide
+36c1eac2-1a4b-4298-a7b8-46ff99d2c169,2024-07-12,254530,Electronics,TVs,Sony,21.79,18.86,4,13.24,62.2,Davis-White,11210,Credit Card,Male,Sydney
+65f1402b-ab85-4c22-b20d-8fa32dc9b851,2024-07-23,964663,Electronics,TVs,Apple,15.46,14.92,3,2.55,42.21,"Beard, Flores and Austin",17911,Online,Other,Sydney
+0803041c-2a03-4ac4-984d-617f3bb98676,2025-02-02,657365,Electronics,TVs,LG,21.81,20.26,3,7.4,53.38,Baker-Smith,38345,Online,Male,Brisbane
+8e40ab25-1e3e-4229-8268-e902f7465173,2024-08-28,415668,Electronics,TVs,LG,14.28,14.03,1,0.88,13.15,Davis PLC,81978,EFTPOS,Male,Brisbane
+598aae2a-b9b4-4d2d-bedc-fd7884dc8f75,2024-05-27,161445,Electronics,Laptops,Apple,22.51,20.32,5,16.13,85.47,Robinson Inc,42863,EFTPOS,Other,Melbourne
+dd10bc43-def0-4bc2-b666-03566e5a44bd,2025-03-21,665931,Electronics,Phones,Sony,16.52,14.59,5,1.18,71.77,"Rodriguez, Glenn and Grant",37785,Credit Card,Other,Sydney
+f80946df-7af6-4481-b9d9-80db694852ff,2025-02-21,447576,Electronics,TVs,Apple,24.15,21.73,3,7.55,57.64,"Barrett, Ford and Wade",68672,Cash,Female,Melbourne
+da77b768-def0-4a19-b782-566d323e822f,2024-09-27,513706,Beverages,Water,Pepsi,26.41,22.63,1,0.03,22.6,Riddle Inc,65046,EFTPOS,Male,Perth
+dcebbee5-3f65-4e9a-8be0-37f955cb0fe9,2025-04-04,900496,Dairy,Milk,Danone,16.23,13.3,2,4.63,21.97,"Walsh, Myers and Huang",98198,EFTPOS,Other,Perth
+800b9062-5ad1-4a65-ba8e-ff6d6e505a7a,2024-12-01,109001,Beverages,Juice,Pepsi,17.6,15.49,5,14.89,62.56,Long-Jones,79059,EFTPOS,Male,Adelaide
+be199871-d8e0-42bb-8051-a9ad8ac42d93,2024-10-22,337509,Dairy,Yogurt,Yoplait,22.99,19.6,3,9.96,48.84,Vargas LLC,85226,Cash,Other,Brisbane
+d071d0dd-5b4d-45d7-95ca-57f99a69ac13,2025-02-02,212806,Beverages,Water,Nestle,18.11,15.35,3,8.8,37.25,Simmons-Bridges,33532,EFTPOS,Other,Perth
+2647fa5f-7a83-4de7-a6cb-c3991b63d3f6,2024-08-21,451793,Snacks,Popcorn,Pringles,21.22,20.18,3,1.51,59.03,"Manning, Jackson and Hayden",65445,Credit Card,Other,Adelaide
+20428c7f-d1ac-4780-b674-709547ed4447,2025-03-11,146475,Dairy,Cheese,Yoplait,18.01,14.94,1,0.54,14.4,Stephens Ltd,32372,Cash,Female,Adelaide
+62f443f8-ac8c-4867-91bc-006fd2349b06,2024-06-06,632000,Dairy,Cheese,Danone,13.57,13.44,3,7.24,33.08,"Brown, Dunn and Abbott",63169,Credit Card,Other,Brisbane
+6380f5df-3fc7-49f4-81c3-3d74b03bb109,2024-06-25,299505,Electronics,Phones,Sony,16.34,14.42,3,3.62,39.64,Rice-Zamora,79228,EFTPOS,Female,Brisbane
+9834aac5-2d42-4bcf-b2a6-6546a0bde33a,2025-03-31,451180,Dairy,Milk,Anchor,18.49,16.85,4,4.75,62.65,Allen-Smith,46631,Credit Card,Female,Brisbane
+2e807974-e496-4d69-a181-521981d5246d,2024-12-24,462558,Beverages,Soda,Nestle,20.04,16.47,4,4.56,61.32,Brennan LLC,56155,EFTPOS,Female,Perth
+50f085c4-1d41-4ae7-abdc-0b7df7f909ca,2024-06-18,417814,Snacks,Biscuits,Doritos,20.93,20.86,1,3.98,16.88,"Jensen, Martin and Pierce",59314,Cash,Other,Sydney
+ef2eae32-ee73-4b39-9590-1be423433544,2024-06-27,891332,Dairy,Yogurt,Yoplait,9.29,8.4,3,0.42,24.78,Powers-Jimenez,73629,Credit Card,Female,Perth
+50d4b782-a4ac-4d89-a146-cd028d04f4f6,2024-04-14,162685,Beverages,Soda,Nestle,22.89,20.71,2,1.77,39.65,"Smith, Hobbs and Wilson",19918,EFTPOS,Male,Perth
+ea6963ad-8e8e-4e8b-ad4c-740f87099f32,2024-08-24,562000,Dairy,Yogurt,Yoplait,27.63,23.2,5,3.71,112.29,"Whitaker, Dillon and Terry",95106,Online,Other,Perth
+ac3544a6-ba66-49eb-b8ad-cb6da15a2b32,2024-06-13,786673,Snacks,Popcorn,Lays,13.57,12.87,5,2.22,62.13,Stone Inc,43547,Cash,Female,Melbourne
+12fd4895-d86f-4ec6-930d-64ecd47e8575,2024-05-19,670057,Dairy,Milk,Anchor,18.85,17.9,2,2.15,33.65,"Roman, Bryant and Stewart",97843,EFTPOS,Male,Sydney
+c04d7fde-af1d-4cd5-9934-3d723cc54762,2025-01-13,210102,Beverages,Soda,Nestle,17.56,16.59,2,5.18,28.0,Clark-Oliver,73807,Cash,Other,Sydney
+15679bbc-f99b-4a27-9400-5b8bf0d24be5,2025-02-24,599825,Beverages,Water,Nestle,24.39,24.08,4,10.66,85.66,Moreno Inc,20894,Online,Other,Adelaide
+9d076db3-078f-44ac-9330-2d022a1b94f4,2024-05-12,620726,Electronics,TVs,Samsung,25.7,21.49,4,3.33,82.63,Mann PLC,86241,EFTPOS,Male,Melbourne
+e390dc81-0339-4d0d-b29b-1ef0fad9548b,2024-10-17,994153,Snacks,Chips,Pringles,20.94,18.74,5,0.84,92.86,Moss-Thompson,31189,Credit Card,Male,Adelaide
+57cc8cf7-eba3-4c6a-aacb-8beb291e02c4,2024-09-25,425455,Electronics,Phones,Sony,19.41,19.23,2,2.2,36.26,"Horton, Nelson and Brady",10542,Credit Card,Female,Melbourne
+b90013cb-b516-4e54-8e06-c3181896dedb,2025-03-28,395456,Snacks,Popcorn,Doritos,23.31,20.64,3,9.69,52.23,"Perkins, Sanford and Jones",35555,Online,Male,Melbourne
+8688a7b0-ceaf-47a8-ae33-a0f9dee27aaf,2024-05-10,818484,Dairy,Milk,Danone,16.02,15.51,5,14.25,63.3,"Hatfield, Richardson and Quinn",25397,Online,Female,Melbourne
+34e6ef35-39c8-4d70-b419-a9d8e35875a5,2024-04-18,459245,Dairy,Milk,Danone,19.28,18.43,2,2.42,34.44,"Wood, Barnett and Neal",60540,Online,Male,Brisbane
+179ef71a-6bb9-4c56-a30f-9e70235c4c53,2024-12-20,624066,Dairy,Yogurt,Anchor,21.78,18.57,1,0.82,17.75,Taylor-Simmons,10175,Credit Card,Female,Melbourne
+7d58cbae-b8f1-4345-aa12-8e0bcf0781fe,2024-07-12,879262,Electronics,Phones,LG,27.61,27.49,2,8.86,46.12,Vargas-Graham,53259,EFTPOS,Male,Perth
+c9a26fb5-f526-451c-89f5-95cb6d439176,2024-07-06,983853,Electronics,TVs,Samsung,11.65,10.62,2,0.42,20.82,"Ross, Walker and Newton",66820,EFTPOS,Female,Sydney
+d6b42ad5-2607-479b-92a8-9b638221127a,2024-09-04,566187,Beverages,Water,Lipton,17.46,14.16,1,1.07,13.09,Molina-Hays,98759,EFTPOS,Male,Adelaide
+39161170-9077-405b-9298-1e7d95f392b5,2024-07-28,395329,Snacks,Biscuits,Cheetos,21.1,17.41,5,16.49,70.56,Oconnor-Smith,29109,EFTPOS,Male,Sydney
+0f4cdd0a-8d2c-4494-a1aa-feffa6858612,2024-06-13,238321,Snacks,Biscuits,Cheetos,25.07,22.19,1,0.31,21.88,Stone PLC,48482,Cash,Female,Melbourne
+8cc8a902-ae3d-47a8-81c9-69f01b1ef33e,2024-07-01,357277,Beverages,Soda,Pepsi,17.36,16.74,1,0.51,16.23,"Price, Forbes and Adams",22970,Credit Card,Other,Perth
+cccb1cf7-9cf8-45e5-85e4-734e463fc2ef,2024-11-07,763467,Beverages,Juice,Coca-Cola,12.84,10.28,1,0.07,10.21,Dudley PLC,54959,Online,Male,Adelaide
+7a7c4e24-0bac-4fd9-9efe-12dbdb970fc4,2024-12-24,873630,Beverages,Juice,Pepsi,21.41,20.02,5,10.24,89.86,Mitchell-Wagner,65252,Credit Card,Other,Sydney
+011c108b-e805-4f86-842b-b4f43d39652a,2025-04-05,569603,Snacks,Chips,Pringles,18.41,15.35,4,4.06,57.34,"Hooper, Smith and Jordan",72518,Credit Card,Female,Brisbane
+c0539552-3ae3-4544-b827-1c53ba30e394,2025-02-24,150103,Electronics,Laptops,LG,28.24,27.92,4,10.68,101.0,Moore Group,40981,Credit Card,Female,Melbourne
+729d761c-2411-4e21-96ea-6dae7efb6e60,2024-08-08,220257,Snacks,Popcorn,Doritos,17.74,17.12,1,0.07,17.05,Phillips Group,41158,Credit Card,Male,Sydney
+64f5c338-0e8e-4062-b762-5be7f2635337,2024-12-18,648471,Dairy,Cheese,Anchor,27.11,25.3,2,3.42,47.18,Smith-James,29787,EFTPOS,Other,Adelaide
+83772f45-77fa-4bb1-94dd-865dbe8aa24c,2024-09-07,529106,Snacks,Biscuits,Lays,16.63,13.69,3,6.6,34.47,"Warren, Davis and Delacruz",38014,Cash,Male,Melbourne
+ba656b82-4ea7-4f58-abcf-58e01a460dfa,2025-03-25,976581,Beverages,Water,Coca-Cola,21.25,18.19,5,15.53,75.42,"Johnson, Moses and Wood",98199,Credit Card,Female,Melbourne
+462e4437-0834-4c45-9dff-f801c3d0a83b,2024-08-14,970699,Beverages,Juice,Pepsi,20.05,18.4,3,3.89,51.31,Noble-Smith,63516,EFTPOS,Male,Melbourne
+1786e0da-12d4-4a44-9e57-12b7c04b09bf,2024-08-10,614698,Electronics,TVs,LG,16.75,14.95,4,5.06,54.74,Rogers-Smith,90475,Online,Other,Adelaide
+afb7b16c-ffaa-45d9-99ef-6ca339964557,2024-05-30,892815,Dairy,Yogurt,Bega,16.91,13.78,5,4.58,64.32,Holland-Boyd,27979,Cash,Female,Brisbane
+043e86b4-dda5-42b0-931e-debdfa87f9fb,2025-03-20,605772,Beverages,Juice,Nestle,21.5,18.54,5,16.98,75.72,Sullivan-Bennett,67330,Credit Card,Male,Melbourne
+cdb70f80-8a30-4d01-91e0-e5bf91abbf0f,2024-12-06,581774,Electronics,Phones,Samsung,18.22,14.9,3,3.56,41.14,Edwards Ltd,39552,Online,Other,Brisbane
+b4bfbc14-c3eb-4863-874b-38d4037e1a60,2025-01-07,635975,Beverages,Soda,Coca-Cola,28.03,27.64,3,9.23,73.69,Porter-Martin,39574,Online,Other,Brisbane
+1d95b63d-716d-43ed-aa9d-957522bbdbcf,2025-02-13,212568,Beverages,Soda,Lipton,19.72,17.78,1,1.0,16.78,Sanchez-Young,94093,EFTPOS,Male,Adelaide
+627f25fc-0ad2-4946-8e58-22a16d3342f7,2025-03-14,121086,Dairy,Milk,Anchor,8.21,7.02,5,5.45,29.65,Hawkins-Rogers,49054,Cash,Other,Melbourne
+1c196762-2711-4300-b5b9-8299362eb57f,2024-09-20,661312,Dairy,Milk,Yoplait,17.31,16.62,4,11.87,54.61,Davis LLC,20257,Online,Female,Melbourne
+69af4dd2-ab8e-4fcf-a160-168b04fe8a4c,2024-04-15,685515,Beverages,Water,Coca-Cola,21.87,20.07,3,6.04,54.17,Weeks-Hudson,80464,Online,Male,Melbourne
+1901d9da-86eb-4c05-988f-047d80b88898,2024-04-17,815278,Beverages,Juice,Nestle,18.24,15.38,3,0.53,45.61,"Garcia, Rodriguez and Harrison",25742,Credit Card,Other,Perth
+7c2947dc-ff62-4ab2-bbae-d8edaf84428a,2024-11-02,968618,Snacks,Biscuits,Doritos,14.73,13.73,1,2.44,11.29,Lewis-Ryan,37416,EFTPOS,Other,Melbourne
+e66bf19a-186e-408b-b5e3-8d4635ddd88c,2025-03-02,353633,Dairy,Yogurt,Anchor,19.51,16.21,4,7.29,57.55,Ayers-Walsh,83929,Credit Card,Other,Perth
+d4c2c16d-1720-47b2-aa87-b9218f165af9,2024-10-02,109846,Electronics,Phones,LG,25.35,24.71,4,18.67,80.17,Petty Group,34331,EFTPOS,Male,Melbourne
+39a9b533-35c4-452e-b99e-27285f25e3c8,2025-03-28,595440,Dairy,Milk,Bega,14.83,13.76,3,5.64,35.64,Paul Group,98881,Online,Other,Adelaide
+ab750f6a-6197-4bb3-90fa-7c5b559efe1e,2025-01-27,586194,Electronics,Phones,Apple,16.7,16.48,5,4.34,78.06,"Williams, Rodriguez and Contreras",91874,EFTPOS,Other,Melbourne
+9f791b7e-45b5-4050-82d4-91a692db4f6e,2024-12-06,881766,Electronics,Phones,Samsung,20.97,20.59,5,8.65,94.3,"Fleming, Carter and Snow",92968,Online,Other,Melbourne
+0c8dc061-8df6-44be-95da-3a64c724b73d,2025-01-25,166828,Dairy,Yogurt,Bega,22.42,20.32,3,1.25,59.71,Joseph and Sons,19759,Online,Female,Perth
+a7e8c669-11ff-4ef7-a378-ba771ebe0a85,2024-11-11,851001,Dairy,Milk,Anchor,14.3,13.95,4,5.88,49.92,"Pacheco, Mcdaniel and Love",16569,Online,Other,Sydney
+ce64b42d-ab62-465a-9764-d35fed8290e0,2025-03-24,987867,Dairy,Milk,Danone,15.76,14.16,1,0.63,13.53,"Hamilton, Lynch and Flores",35089,Cash,Female,Brisbane
+fa771d29-bb28-4841-ab71-77061608f973,2025-03-28,483143,Beverages,Water,Coca-Cola,18.25,17.6,5,14.27,73.73,Peterson-Shields,47986,Online,Other,Melbourne
+9ade6d96-fbf2-40b8-9a8b-c66fcba243bd,2025-01-30,653520,Dairy,Cheese,Anchor,23.85,20.5,2,0.59,40.41,Vazquez-Webb,15891,EFTPOS,Other,Melbourne
+808aeaae-c1ef-4828-beeb-9c9505c49e9e,2024-12-08,157498,Dairy,Milk,Anchor,12.67,11.77,2,1.87,21.67,Washington-Evans,28042,Credit Card,Female,Melbourne
+cce3fa34-365b-4d28-85c8-06839e5ddb3e,2024-06-01,259975,Electronics,Laptops,Samsung,12.08,10.27,3,3.95,26.86,Blair-Lopez,91557,Online,Other,Adelaide
+7a0730ba-8af7-411c-beae-2a0e0907bd9b,2024-08-12,952685,Beverages,Water,Nestle,27.66,25.15,2,3.44,46.86,Young-Bryant,38147,Cash,Male,Adelaide
+90a756fc-2efd-4195-9266-4c667e621e3e,2024-12-13,841140,Dairy,Milk,Anchor,18.25,17.55,1,1.82,15.73,Richardson Ltd,84268,EFTPOS,Other,Perth
+7e8d184d-2d1a-4f65-a90f-226416e11adc,2025-03-07,762976,Snacks,Chips,Lays,11.99,11.12,2,0.36,21.88,Davis-Jackson,52894,Credit Card,Female,Brisbane
+1b94252e-8e70-4e2c-8aac-4a07f171097b,2024-11-19,507396,Electronics,Phones,Apple,28.8,24.17,4,7.51,89.17,Santana-Baker,71911,EFTPOS,Female,Perth
+f2953de9-1719-4ae5-9bcb-a0acdbb6a121,2024-09-02,336194,Beverages,Water,Pepsi,20.62,18.16,5,11.88,78.92,Ruiz-Roach,23567,EFTPOS,Female,Melbourne
+7eadf192-9cfc-412e-b48b-82f29916e2da,2025-04-03,656092,Dairy,Cheese,Bega,24.68,23.37,4,11.25,82.23,"Murphy, Rodriguez and Smith",87582,Online,Male,Brisbane
+8765ca64-2cbf-47aa-8840-cc63ee1da3f2,2024-07-15,531850,Beverages,Juice,Lipton,14.31,11.63,5,6.46,51.69,"Coleman, King and Gomez",32804,Credit Card,Other,Perth
+88c9ec4c-eaed-4085-ac82-5df9f3cb1f4f,2025-02-05,787276,Electronics,TVs,LG,14.73,13.08,2,2.5,23.66,"Welch, James and Green",76164,EFTPOS,Male,Perth
+64ae0be1-441d-405e-8915-fe58d8262b09,2025-02-15,344488,Electronics,Laptops,Samsung,15.48,13.79,3,1.17,40.2,"Mccarthy, Flores and Gilbert",14084,Online,Female,Melbourne
+6d70e362-aaa4-4162-9037-9e0813f32a6b,2024-08-16,370189,Electronics,Laptops,Sony,26.89,24.68,3,13.56,60.48,"Sullivan, Flores and Shields",77532,Credit Card,Other,Melbourne
+226d7712-b3fb-413e-9cdc-9498aa990019,2025-03-01,128465,Dairy,Cheese,Bega,27.92,22.62,3,11.96,55.9,Hernandez Group,56668,EFTPOS,Male,Brisbane
+b629e32c-7ae1-43bb-a1b1-54b222528707,2024-10-24,603404,Dairy,Cheese,Yoplait,20.12,18.78,3,6.53,49.81,"Shaw, Landry and Sampson",58568,Online,Male,Melbourne
+28a98009-8045-4cda-9a90-123bad46a430,2025-03-03,976011,Electronics,Laptops,Apple,18.24,17.05,2,4.0,30.1,Jones Group,66449,Cash,Female,Perth
+409a4da6-39f1-4132-adc7-d476232b376b,2024-04-07,492151,Snacks,Popcorn,Pringles,19.38,17.78,2,2.53,33.03,Bautista Inc,25118,EFTPOS,Other,Perth
+017320b8-95be-4502-9a5e-1ca681784bb8,2024-12-03,173378,Snacks,Chips,Doritos,27.6,26.96,1,2.92,24.04,Smith-Hoffman,72529,Credit Card,Female,Perth
+97e225ee-7158-4f3a-898b-aea5a990fc26,2024-05-05,314346,Dairy,Yogurt,Anchor,14.67,14.34,4,5.43,51.93,Wood and Sons,88334,Credit Card,Male,Melbourne
+05c79aa0-ad52-44c5-9bda-f75beea1d0cd,2025-01-19,768576,Dairy,Yogurt,Anchor,15.93,13.83,3,3.5,37.99,Nelson-Pham,26437,Cash,Male,Sydney
+e3ae9507-aea3-4373-ac25-c4961e91c5e1,2025-01-04,915962,Beverages,Water,Nestle,13.48,10.81,4,3.75,39.49,Andrews-Blair,88224,Cash,Male,Sydney
+bbe0e75b-80ed-4b85-a3fe-269f83395253,2024-07-05,880500,Snacks,Popcorn,Cheetos,9.88,8.53,3,2.81,22.78,Smith-Gray,33903,EFTPOS,Male,Brisbane
+4c17f9b1-1eb6-4252-ad65-3ebbd9962ade,2024-09-27,183696,Electronics,TVs,LG,23.06,19.33,3,4.87,53.12,Duncan-Miller,43854,Online,Male,Melbourne
+18f94f77-ce23-4238-bb96-d08164032b5b,2024-07-19,401067,Beverages,Soda,Coca-Cola,19.16,16.59,1,0.96,15.63,Thomas Ltd,70510,Cash,Male,Perth
+a106850f-1385-4b7d-a40f-bde9e679b473,2024-04-27,377573,Dairy,Cheese,Danone,18.2,14.7,4,0.51,58.29,"Brady, Morales and Williams",76951,Credit Card,Other,Melbourne
+20d91e3b-4e78-4296-9acd-6a42564546cd,2024-07-07,743742,Dairy,Yogurt,Anchor,9.97,9.5,4,6.24,31.76,Mays LLC,37993,EFTPOS,Female,Melbourne
+18b6283e-53cd-4768-aace-e18307250725,2024-08-27,768188,Snacks,Biscuits,Pringles,19.22,19.2,1,1.81,17.39,Williams and Sons,41999,Credit Card,Other,Sydney
+ca940bbe-1eae-4b56-b467-2fc54367bc52,2024-05-18,178202,Beverages,Water,Coca-Cola,19.55,19.01,1,3.24,15.77,"Smith, Barnes and Reed",98069,EFTPOS,Male,Melbourne
+96962c69-0bb6-4e19-bb49-a6866de99dbc,2024-05-20,980754,Dairy,Cheese,Anchor,18.78,16.61,2,2.0,31.22,"Edwards, Roberts and Williams",22634,EFTPOS,Female,Brisbane
+2becfccf-71cb-4e0d-af82-b30700190d11,2025-02-03,983286,Beverages,Water,Coca-Cola,15.43,13.06,3,2.02,37.16,"Wilson, Schultz and White",13425,EFTPOS,Other,Adelaide
+ae8106c0-97e2-4ad7-b7df-68a9de83dcbf,2025-01-05,436977,Dairy,Cheese,Yoplait,24.44,22.14,3,8.47,57.95,Prince-Kim,29019,Online,Other,Adelaide
+be072673-85f4-451a-a679-ffda6a34bb1f,2024-05-29,837739,Snacks,Chips,Doritos,17.45,14.23,1,0.4,13.83,White-Bowers,99542,EFTPOS,Other,Melbourne
+4324c622-af31-450c-94e5-43abbd5da802,2024-07-09,509692,Electronics,TVs,Sony,19.87,16.76,1,0.61,16.15,Vance-Watts,86912,Cash,Female,Adelaide
+0f8c7ddc-07e9-4fcf-9bc4-78d4e44f65ba,2024-08-14,975041,Dairy,Cheese,Danone,20.24,19.22,4,15.02,61.86,Pierce-Tucker,66040,EFTPOS,Other,Sydney
+58a54b6c-adec-4ae0-af2d-8c9d24aea68e,2024-10-03,773077,Snacks,Biscuits,Pringles,18.39,14.98,1,2.27,12.71,Mccall-Elliott,39561,Online,Other,Perth
+0c400d6b-1749-4478-b74d-5434145336e6,2024-07-26,690447,Electronics,Laptops,Samsung,25.18,22.96,5,18.07,96.73,"Meyers, Perez and Savage",12178,Credit Card,Other,Sydney
+66cb65ce-1457-468a-b26f-fd2e3b30b804,2024-10-03,826076,Electronics,Phones,Sony,22.97,21.26,5,11.87,94.43,"Shea, Oconnor and Montoya",13258,Credit Card,Female,Sydney
+b91dabe1-23c5-4f51-bd6c-e4dcbff540c4,2024-06-20,601363,Beverages,Juice,Pepsi,27.68,23.91,4,10.82,84.82,Brown Group,53778,EFTPOS,Female,Brisbane
+f3977082-12b9-4d18-b361-05340b9fea05,2024-05-03,761042,Dairy,Yogurt,Yoplait,24.07,23.77,3,9.35,61.96,Valdez-Lane,99190,Online,Female,Perth
+1f36b6e8-6565-4fee-8596-2e6f702e41cb,2024-05-04,141772,Dairy,Milk,Danone,27.92,27.73,5,11.04,127.61,Castillo-Wong,80380,EFTPOS,Female,Brisbane
+6c67f4da-f94e-46c4-af39-d6b78c5e7f84,2024-10-01,508213,Electronics,Laptops,LG,25.37,23.64,3,2.72,68.2,"Collins, Hill and Whitaker",13430,Credit Card,Male,Brisbane
+4c90788a-cfac-46cf-b97d-af1955db124b,2024-04-26,912054,Snacks,Popcorn,Doritos,18.64,15.8,3,3.23,44.17,"Davis, Brown and Anderson",85981,EFTPOS,Male,Perth
+eb4580bd-2db8-4b0e-972e-823adff226f0,2024-05-01,422931,Electronics,TVs,LG,19.54,16.44,5,3.99,78.21,"Strickland, West and Holt",17149,Cash,Male,Brisbane
+4e392370-5be8-4204-91ed-5a80af89a469,2024-12-07,651126,Snacks,Chips,Cheetos,24.07,20.94,1,2.6,18.34,"Banks, Johnson and Vasquez",65831,EFTPOS,Other,Melbourne
+db6e379e-44a9-4f51-8ea7-98f829b4cc6f,2024-11-14,506889,Dairy,Yogurt,Anchor,29.54,27.69,1,3.09,24.6,"Little, Daugherty and Rodriguez",60978,Cash,Female,Melbourne
+3136806f-2966-42ff-8cef-0ae55043f154,2024-07-25,823896,Electronics,TVs,Apple,28.14,23.3,1,0.56,22.74,Contreras Ltd,40331,Credit Card,Female,Brisbane
+f3cd74bf-bbf4-4e56-bde6-9def757874c9,2024-04-24,676653,Electronics,Phones,Samsung,16.76,15.77,3,2.32,44.99,"Bray, Barnes and Wheeler",26462,EFTPOS,Other,Adelaide
+9619c348-4fca-43a7-aa2f-ed578ab627b5,2024-05-16,463153,Electronics,TVs,LG,16.58,14.29,1,2.14,12.15,Eaton Ltd,95561,Cash,Other,Perth
+9caf2773-8059-4414-bf15-6457fd34252e,2024-07-11,896713,Beverages,Water,Coca-Cola,16.98,15.97,4,3.16,60.72,Wilson-Macdonald,84298,EFTPOS,Female,Perth
+9ca6c70e-6a5f-4925-b052-de64b524b6ee,2024-11-18,386899,Electronics,Phones,Samsung,18.53,18.24,3,2.65,52.07,"Torres, Hanna and Reese",58562,EFTPOS,Female,Perth
+aa023abe-da9a-4586-b006-a00d988bd539,2025-01-22,802771,Electronics,Laptops,Apple,16.81,15.19,1,2.29,12.9,Whitehead-Smith,17668,Credit Card,Other,Sydney
+eaadafd9-ff2c-4d8f-ae53-4be13101178c,2024-05-23,950371,Dairy,Yogurt,Yoplait,7.31,7.12,4,2.68,25.8,"Stephens, Robinson and Wilson",16515,EFTPOS,Other,Melbourne
+d1b8b5e2-6021-4e78-9e9a-d01153377654,2024-08-11,177569,Dairy,Cheese,Yoplait,24.12,21.0,1,2.34,18.66,"Herrera, Reeves and Ponce",89967,EFTPOS,Male,Sydney
+25a1aa6d-38ca-4017-9d90-7dbf79727196,2024-06-04,353394,Dairy,Milk,Yoplait,28.54,23.15,2,7.15,39.15,Smith-Brown,11440,Cash,Female,Melbourne
+bc186ea8-5439-4c42-aed6-f0377d992500,2024-08-08,385104,Snacks,Popcorn,Cheetos,23.61,21.38,1,3.31,18.07,Henderson-Harris,85533,Credit Card,Female,Sydney
+fd4808de-1082-4c9e-8217-54b7bc29a4f4,2024-06-04,279607,Electronics,Laptops,Sony,20.89,20.2,4,6.73,74.07,Holloway and Sons,23490,Credit Card,Other,Sydney
+7d925f44-1a14-48d8-8160-1ee1add4695d,2024-12-09,415732,Dairy,Milk,Yoplait,27.36,26.05,4,5.62,98.58,Stewart Group,88749,EFTPOS,Female,Perth
+b72ab88d-15c3-4332-9bd5-ddce90a58b8e,2024-12-23,375035,Dairy,Milk,Yoplait,16.06,13.5,3,2.5,38.0,"Martinez, Richard and Reid",99985,Credit Card,Female,Sydney
+1cc5249f-1f60-4547-9fc3-82aad9c61bf1,2025-01-11,138687,Dairy,Yogurt,Bega,20.38,18.42,3,8.97,46.29,"Mccann, Wells and Simon",79509,Credit Card,Female,Sydney
+ca2beebf-930a-4e1b-a235-43142997b298,2025-03-09,973655,Electronics,Phones,Sony,29.25,27.73,5,0.36,138.29,White-White,51851,EFTPOS,Other,Perth
+584c143a-9e83-4b03-8f2f-080355c2cf0f,2024-09-14,534763,Beverages,Juice,Coca-Cola,20.89,17.05,5,5.45,79.8,Jensen-Martin,23217,EFTPOS,Female,Melbourne
+d8911f1f-87ce-4cd6-928a-d7dd3c20688c,2025-02-27,578739,Beverages,Soda,Pepsi,14.39,14.3,3,6.22,36.68,Richardson Group,40770,Credit Card,Other,Melbourne
+9668ba45-4b2e-4682-b031-05caf1521ef8,2024-08-16,138722,Beverages,Soda,Lipton,23.39,19.13,2,0.52,37.74,"Hill, Cooper and Norman",72634,Cash,Other,Brisbane
+1aa6258f-8a72-4396-a7e7-8e771ecaceec,2024-09-24,488931,Dairy,Yogurt,Bega,11.94,10.64,2,0.57,20.71,"Lopez, Villarreal and Romero",20496,EFTPOS,Male,Melbourne
+69aacc08-5253-4d95-be50-398f2baab596,2024-05-30,803936,Dairy,Milk,Danone,28.74,24.96,1,4.97,19.99,Calhoun-Phillips,24920,Online,Other,Brisbane
+e51294a0-8a97-4494-a5f6-b212032c3018,2025-03-19,218331,Snacks,Biscuits,Cheetos,16.71,14.58,5,7.43,65.47,Thomas-Rojas,17937,EFTPOS,Female,Adelaide
+b48fbd2d-69c1-494f-8621-28f8c9bf2071,2024-11-08,542785,Dairy,Milk,Yoplait,19.85,18.91,2,0.1,37.72,Kelly-Ryan,91078,EFTPOS,Other,Melbourne
+2af6baef-8b98-4cf9-b333-dcb31647c76b,2024-10-05,411655,Snacks,Chips,Doritos,21.89,19.01,4,2.9,73.14,Ortiz Inc,99968,Online,Female,Sydney
+15dd7c47-ebdc-40c3-b937-87cb6a5c6793,2024-05-06,689602,Dairy,Cheese,Bega,14.27,13.59,4,9.86,44.5,Mendoza Inc,48531,Online,Female,Adelaide
+c6d813fc-253a-4bdc-9a2f-2f5225cf68e1,2024-08-18,663187,Electronics,Phones,LG,17.29,16.64,3,5.37,44.55,Perez-Summers,24792,Cash,Male,Perth
+a6855571-6a33-443c-9498-96d70f4666d0,2024-07-26,533973,Electronics,TVs,Sony,25.45,22.22,4,13.58,75.3,"Rodriguez, Gonzalez and Harris",78456,Online,Female,Sydney
+0a490ddc-57c2-4203-aaf5-7343cf4825aa,2024-08-21,178622,Snacks,Popcorn,Pringles,15.8,13.88,1,0.28,13.6,Ruiz PLC,93154,EFTPOS,Female,Sydney
+689c8599-bffa-4004-a868-0a1b09f4a35b,2024-11-23,442080,Snacks,Biscuits,Cheetos,16.14,13.32,4,10.29,42.99,Christensen and Sons,67592,Credit Card,Male,Perth
+56ec76b6-ac16-40e6-8ee7-fbeaacac84c5,2024-11-17,361574,Beverages,Soda,Lipton,26.49,25.97,4,17.44,86.44,"Gonzalez, Watts and Coleman",75345,EFTPOS,Other,Adelaide
+9564eb66-e499-4de8-b0b5-6633184b94ed,2024-07-29,362240,Snacks,Chips,Cheetos,26.38,22.82,5,12.4,101.7,"Barry, Simpson and Alvarez",16637,Online,Female,Brisbane
+1fa336cd-37ad-4f17-9867-2d2b534207c7,2024-09-28,894351,Electronics,TVs,Samsung,30.64,26.84,1,1.42,25.42,Parsons-Hernandez,41789,EFTPOS,Other,Sydney
+78dff7e8-6847-4f5c-b5ab-3fbc124f69b5,2024-04-08,869095,Electronics,Phones,LG,16.61,13.78,5,7.28,61.62,Benson-Collins,21921,Cash,Male,Brisbane
+5098106b-b5b8-4175-a500-b501c1659e40,2024-12-18,492716,Electronics,Laptops,LG,22.44,21.55,4,15.77,70.43,Shepherd-Williams,12344,Online,Male,Adelaide
+04eece56-8f1f-4abe-915a-a0fd9a779c52,2025-02-19,486766,Dairy,Yogurt,Anchor,26.07,25.8,2,4.62,46.98,Cole-Evans,16967,Cash,Other,Sydney
+cfa7f12a-3335-4b17-bea4-3df0d4353b3e,2024-05-30,370497,Dairy,Yogurt,Bega,18.63,18.16,2,1.16,35.16,Williams-Medina,13447,Credit Card,Other,Adelaide
+6e0c8ba2-6c45-40d8-b057-ed95792fa124,2025-02-09,847666,Dairy,Milk,Danone,23.17,19.96,5,7.14,92.66,Grant Ltd,83148,Credit Card,Male,Adelaide
+c5d9762f-2ebe-4181-9bfc-1a283d0e7f41,2024-08-23,110955,Dairy,Yogurt,Yoplait,18.93,16.44,1,3.22,13.22,Hudson-Sharp,20769,Online,Female,Brisbane
+17847281-6eb5-4179-bebf-98797d33f6bb,2025-02-24,401671,Snacks,Biscuits,Cheetos,17.19,16.45,2,1.1,31.8,Case LLC,40344,Cash,Male,Sydney
+b1980979-6800-4892-94b6-2b35fe4704fa,2024-11-28,679764,Beverages,Juice,Pepsi,19.33,16.64,4,10.48,56.08,"Ramirez, Montgomery and King",12967,EFTPOS,Male,Brisbane
+dec2b65f-596d-43e7-90f9-0af4854da749,2025-02-19,159742,Snacks,Biscuits,Doritos,21.9,20.96,3,7.47,55.41,Wilcox Ltd,69657,EFTPOS,Other,Melbourne
+3885e7b2-7e18-4bfa-aa66-ea433cd79719,2024-08-08,151223,Beverages,Soda,Pepsi,20.13,16.49,2,4.29,28.69,"Harrison, Carlson and Anderson",34195,Online,Female,Sydney
+2a348131-6e56-4f3d-a609-dc4c1261bc97,2024-10-29,740780,Dairy,Yogurt,Danone,21.05,18.82,4,7.99,67.29,Coffey PLC,17916,Credit Card,Female,Adelaide
+c3182d99-808c-47d9-ad64-084a600cd3ac,2024-11-14,585409,Beverages,Soda,Pepsi,9.51,8.23,2,2.02,14.44,"Rivera, Davis and Richards",76465,Online,Other,Adelaide
+179c784a-b110-48a6-98bc-8b269f6c4102,2024-08-17,351951,Beverages,Juice,Lipton,17.93,16.02,2,6.26,25.78,"Robinson, Garcia and Moody",62269,Cash,Male,Brisbane
+9625b822-732b-42fc-b5f7-346713f5ac4e,2024-06-16,877576,Snacks,Popcorn,Pringles,16.8,15.2,2,0.93,29.47,"Garcia, Williams and Morrison",24862,EFTPOS,Male,Perth
+2c7115a6-a37c-4ad0-93ca-dbca46066f95,2024-04-26,156904,Electronics,TVs,Apple,10.34,9.15,4,5.62,30.98,Hanson Ltd,30757,Online,Male,Adelaide
+18e553c5-de83-4786-a8f1-2409b7ac2aca,2024-10-04,951266,Dairy,Milk,Yoplait,28.09,22.81,5,22.24,91.81,Fischer Group,40355,Cash,Female,Perth
+dd3179f3-6731-4207-a601-dfeee9311f6d,2024-09-26,600400,Snacks,Biscuits,Cheetos,22.01,19.77,5,12.92,85.93,Vaughan Ltd,29348,Credit Card,Male,Adelaide
+a55a9de0-049f-4827-b439-54d7984e7da6,2025-03-06,438630,Beverages,Water,Coca-Cola,20.79,19.44,2,0.2,38.68,Livingston and Sons,37841,EFTPOS,Other,Brisbane
+a5ff0974-3eab-4a14-bcf9-495cbb7c8244,2024-12-20,270749,Snacks,Chips,Doritos,24.14,23.62,4,16.55,77.93,"Stone, Jackson and Fernandez",95655,Credit Card,Male,Adelaide
+41da98b7-5c16-4847-bb7d-89137a1821e0,2025-03-11,752435,Electronics,TVs,LG,17.74,16.39,4,8.61,56.95,Mathews Ltd,99316,Cash,Other,Sydney
+6ff2b881-6f20-44a0-8aaa-9683abf669bb,2025-02-05,655433,Electronics,Laptops,Apple,19.22,18.88,5,15.14,79.26,Phillips-Aguilar,10772,Credit Card,Other,Perth
+6f8ff048-cac2-47fd-9769-b46e5c352693,2025-01-18,177224,Dairy,Cheese,Yoplait,20.82,17.63,3,1.88,51.01,Chen-Smith,96166,Cash,Female,Adelaide
+302b7a62-4422-43ea-a73d-31ee1bbaa2a4,2024-05-03,987704,Snacks,Biscuits,Cheetos,23.06,21.12,3,2.08,61.28,Sellers-Peterson,17870,EFTPOS,Male,Adelaide
+fd585ed2-3f82-41f6-a0f3-78a1b1c63a95,2024-12-07,714995,Snacks,Chips,Doritos,22.82,20.6,3,6.26,55.54,Cummings Inc,90188,Credit Card,Female,Sydney
+8130fbdf-4c41-4909-a252-fd9107e3fbb1,2024-11-25,637741,Snacks,Popcorn,Cheetos,19.92,18.16,4,0.8,71.84,Kent-Ortiz,74464,EFTPOS,Other,Perth
+3fa7d62e-52f4-4d36-b983-e5e5e571f4c8,2024-12-13,802112,Dairy,Cheese,Danone,14.97,12.75,3,2.47,35.78,"Wong, Mack and Cook",16662,Cash,Male,Perth
+96e802b7-19dc-4f32-8304-d9b1516abcff,2024-09-12,527179,Dairy,Cheese,Anchor,16.92,13.73,5,1.6,67.05,Greene-Pruitt,74704,EFTPOS,Female,Perth
+ff583ff2-3f2b-46bf-a684-cb571c18fa2a,2024-08-07,165151,Beverages,Juice,Pepsi,22.73,21.94,1,2.3,19.64,Bowers-Blackburn,87791,Cash,Female,Perth
+52f660f2-264c-49dc-9531-e2be23caed6f,2024-11-18,716526,Beverages,Water,Coca-Cola,20.94,17.52,4,4.02,66.06,Esparza-Henson,95154,Cash,Other,Brisbane
+9f793b45-961a-4b5b-b7f3-7745c819ea2b,2024-07-22,967956,Snacks,Chips,Cheetos,13.95,13.25,2,2.98,23.52,"White, Sullivan and Johnson",81219,Credit Card,Male,Perth
+e6847d9d-3d39-4444-a9cb-d1b551794975,2025-02-21,630987,Snacks,Biscuits,Pringles,24.59,21.61,3,0.38,64.45,"Myers, Gonzales and Aguilar",50853,Cash,Female,Brisbane
+596b87f1-eab0-4ab1-a2b0-9ace18f03b8c,2024-06-22,379097,Electronics,Laptops,LG,23.56,23.27,4,13.4,79.68,Watson PLC,49451,Online,Female,Sydney
+18c2e291-c6c1-4513-9114-f6a34ad2ecef,2025-02-17,242540,Electronics,TVs,Sony,18.03,15.93,5,9.62,70.03,"Wolfe, Smith and Horn",21955,Credit Card,Other,Adelaide
+6748ceb9-f203-4eed-a373-f3ac3d42eb40,2024-11-02,773724,Snacks,Chips,Pringles,20.18,18.45,1,1.4,17.05,Pena-Nguyen,67892,EFTPOS,Other,Melbourne
+6ebed383-de43-40d5-82f5-9604f2c9a8d1,2024-10-20,412111,Electronics,TVs,Apple,23.78,23.05,5,7.53,107.72,Gray-Sellers,79596,Online,Male,Adelaide
+f72e5cea-9ebb-43ab-8da1-97952cdb1ea4,2024-10-04,121173,Dairy,Yogurt,Bega,11.88,9.67,1,0.73,8.94,West-Lane,89634,Online,Female,Perth
+78912dd2-12e4-4ce4-becf-da762051ad60,2024-04-24,110814,Electronics,Phones,LG,21.81,19.91,4,13.45,66.19,Underwood LLC,25875,Credit Card,Other,Adelaide
+5da83c09-be91-4705-97fe-2046f38a2ed2,2025-01-18,916513,Dairy,Milk,Anchor,30.46,29.02,5,5.17,139.93,Ford-Ayala,83037,EFTPOS,Male,Brisbane
+ac71c505-9fd9-44ff-8630-094168872eb0,2025-01-02,270615,Snacks,Popcorn,Lays,16.28,15.17,4,2.26,58.42,Johnson LLC,50874,Online,Female,Sydney
+50e1e4a5-1c83-4ce6-a077-7cf4179b4f8c,2024-10-03,641916,Dairy,Cheese,Danone,30.08,29.72,3,17.67,71.49,"Montgomery, Buchanan and Murphy",66492,Cash,Male,Perth
+f2ee0269-103e-44c6-96f8-fe721a2eb143,2025-01-28,100349,Dairy,Milk,Yoplait,25.65,23.03,5,20.85,94.3,Mason-Jones,24554,Online,Female,Sydney
+9f8d7ccd-e6e5-4d04-bd2f-7b86d921d7df,2024-08-16,512998,Beverages,Juice,Coca-Cola,21.49,18.87,2,2.81,34.93,Hopkins-Newton,96194,EFTPOS,Female,Perth
+4a74eb2b-b16a-4646-bfd8-4ec4aa86591c,2024-04-22,216306,Beverages,Soda,Coca-Cola,20.08,17.61,4,12.97,57.47,"Finley, Levine and Gomez",92924,Credit Card,Male,Sydney
+55554e85-537d-4369-ba53-0582067bd55d,2024-06-16,381589,Beverages,Juice,Coca-Cola,25.85,21.16,4,11.69,72.95,Hayes-Montoya,33253,Credit Card,Female,Perth
+e78fba9d-47ae-4e1a-bd9d-7ad38fc81de8,2024-11-05,959499,Dairy,Cheese,Danone,16.79,15.14,2,4.98,25.3,"Shaw, Johnston and Walls",64282,Cash,Other,Brisbane
+27f33f3f-7e75-4fcb-9df5-4b9841eedc41,2025-02-15,961830,Snacks,Biscuits,Pringles,20.15,16.3,4,2.76,62.44,Lopez-Owens,39491,Cash,Male,Perth
+4608f9f9-4ea7-4014-a398-0eb4f921295b,2025-03-26,908721,Snacks,Biscuits,Doritos,11.94,10.97,1,1.74,9.23,"Vargas, Phillips and Kerr",81781,Cash,Male,Adelaide
+f27e4523-513f-4038-adfc-e0e87bc69ea3,2024-04-06,944219,Snacks,Popcorn,Cheetos,22.85,20.28,5,13.11,88.29,Willis PLC,86807,Online,Female,Perth
+5c3d58da-071e-40e5-a85b-224bc59dbe95,2024-11-23,740460,Electronics,Phones,Apple,18.14,17.44,3,6.65,45.67,"Hernandez, Foster and Allen",19582,Cash,Other,Perth
+616da7c6-5c8b-4591-a9be-860bdbd5cfbd,2024-04-08,590793,Snacks,Biscuits,Cheetos,24.22,22.39,3,6.35,60.82,Mccormick and Sons,18175,Cash,Male,Adelaide
+56476399-2254-447d-af42-50bdc41d845f,2024-07-12,772367,Electronics,TVs,LG,20.98,17.89,5,2.45,87.0,Johnson LLC,91928,EFTPOS,Other,Brisbane
+4dc39be6-5f2d-4914-81fc-c48c11a69e66,2024-08-29,150140,Beverages,Soda,Lipton,25.73,23.33,5,6.24,110.41,Allen LLC,81714,Cash,Female,Melbourne
+ee5d30b6-da64-4706-bf4c-4e0ef2a2843d,2024-09-03,174106,Beverages,Water,Nestle,19.49,18.58,4,7.3,67.02,"Baird, Johnson and Sanchez",73978,Cash,Female,Perth
+a698bfef-ccf2-43a2-af2f-7e890a772ca4,2025-01-02,344995,Electronics,Laptops,LG,21.15,19.95,2,0.6,39.3,Wilson-Cook,40719,EFTPOS,Other,Sydney
+7f5b68a5-800e-4e40-8412-857845fa3f8a,2024-12-11,630145,Beverages,Water,Coca-Cola,26.18,24.27,2,7.02,41.52,"Long, Wright and Clark",76824,Credit Card,Other,Melbourne
+3981e745-f747-4d01-ab93-4c99e7e73893,2025-03-07,321441,Dairy,Yogurt,Danone,7.75,7.73,1,1.52,6.21,Singh-Spencer,62433,Online,Female,Brisbane
+6bf75cc1-d37c-47b9-bf6d-d5b3b927f237,2024-05-09,391791,Snacks,Biscuits,Cheetos,14.52,14.49,5,7.19,65.26,Nelson-Stewart,82600,Credit Card,Female,Sydney
+6d6788bf-ccb7-4816-af13-d408636c79f1,2025-03-05,634983,Beverages,Juice,Lipton,20.0,16.4,1,1.82,14.58,Elliott-Contreras,91674,EFTPOS,Female,Sydney
+fcf31819-0bc7-4446-9f79-f4abb287d8bb,2024-05-01,386546,Dairy,Milk,Yoplait,14.54,12.35,5,0.99,60.76,"Sosa, Olson and Evans",92686,Cash,Other,Perth
+492cb6ad-3365-456e-8780-37ba0e65a16b,2024-09-27,841228,Beverages,Water,Lipton,31.55,28.67,5,1.35,142.0,Lucas Inc,10025,EFTPOS,Male,Perth
+f3a1991d-f20d-4d66-a8ce-9d322695a757,2024-05-19,977087,Snacks,Chips,Doritos,14.64,13.59,5,3.8,64.15,Jones-Gutierrez,33196,Online,Female,Adelaide
+7d98d84e-e482-4309-940e-e5893b3db67b,2025-03-27,836829,Electronics,Laptops,Samsung,21.5,18.41,3,6.51,48.72,Castillo-Rhodes,72004,Online,Male,Melbourne
+cd7dc308-6af4-4da8-a773-0b86b2530ffe,2024-07-30,923327,Snacks,Popcorn,Cheetos,18.19,16.13,5,12.31,68.34,Barajas PLC,44578,Credit Card,Other,Perth
+1e0dea97-41f4-46b1-afd4-7160ec08faec,2024-06-01,120231,Dairy,Milk,Bega,17.29,16.28,2,1.7,30.86,Frye-Tucker,42553,Online,Other,Sydney
+0edf1602-c380-4a6e-9f56-a9410704180f,2024-05-17,250517,Beverages,Juice,Lipton,30.89,27.37,5,22.69,114.16,Duncan Ltd,59994,Cash,Male,Brisbane
+22d34cc9-35d9-4844-8b49-7eb72bba0994,2024-04-20,417100,Beverages,Soda,Nestle,16.91,15.77,2,5.07,26.47,Wood-Rivera,87073,Cash,Other,Sydney
+0da05a19-7190-4431-9585-9918a055921d,2025-01-21,563249,Snacks,Popcorn,Lays,12.86,12.74,5,7.93,55.77,Tyler Ltd,65775,Credit Card,Female,Perth
+000b70fa-5488-40c5-a415-f32c742737a9,2024-06-19,354582,Electronics,Phones,Apple,19.78,18.69,5,6.92,86.53,"Zuniga, Strickland and Hensley",44323,Cash,Other,Melbourne
+b6e24abe-7e21-41da-8b2e-997ad2dece9f,2024-10-23,796680,Beverages,Soda,Lipton,19.96,19.04,3,10.99,46.13,Murray-Davis,71238,Cash,Female,Adelaide
+c6dabf60-7666-47c3-aba3-654d20217bb4,2025-03-02,986758,Snacks,Popcorn,Cheetos,15.39,15.19,4,4.0,56.76,Johnson PLC,60336,Credit Card,Male,Adelaide
+40d3e9a8-0d29-4ca2-97ab-a96e9c7410d5,2025-02-11,865217,Beverages,Soda,Coca-Cola,17.72,16.26,1,2.16,14.1,Yates PLC,20077,EFTPOS,Male,Perth
+11d24d4c-f5f0-4f87-b387-9358d2fabaab,2024-05-11,716618,Beverages,Soda,Lipton,18.3,15.26,2,6.01,24.51,"Herring, Gardner and Ward",35158,Online,Female,Perth
+2580459e-15e7-43e6-bbe3-3deeef6c33fc,2025-01-18,375897,Beverages,Water,Lipton,13.09,12.23,1,0.3,11.93,Shaw Group,67749,Credit Card,Other,Adelaide
+e75cdc46-f443-4bd4-b14b-2bedc3f94c2b,2024-12-29,682088,Electronics,Laptops,Sony,23.1,22.23,3,5.91,60.78,Robinson LLC,99744,Online,Female,Perth
+96d1cefb-ede6-4af7-bd39-9c9ba03c8cba,2025-02-07,194124,Dairy,Cheese,Yoplait,21.92,20.49,2,5.19,35.79,Stewart-Stevens,82257,Credit Card,Other,Adelaide
+4e48d84f-bf5a-4343-9d15-d6a31367c6e8,2025-01-23,101307,Dairy,Milk,Bega,13.9,11.7,3,5.59,29.51,"Winters, Jones and Jackson",29332,EFTPOS,Female,Adelaide
+7a0fd3c7-566c-46eb-a504-13cd6f2347c6,2025-02-17,910949,Dairy,Cheese,Danone,24.26,22.06,2,3.45,40.67,"Sullivan, Morris and Archer",63327,Credit Card,Male,Melbourne
+1f9f3df2-4930-4712-97c2-32a305ca1448,2024-07-03,284834,Snacks,Biscuits,Cheetos,17.04,15.06,3,1.84,43.34,Turner Group,19787,Credit Card,Female,Sydney
+26e5e06d-2881-437e-945d-2d6b4e3417ac,2024-10-18,562667,Dairy,Yogurt,Anchor,21.52,18.08,4,11.76,60.56,Armstrong and Sons,79298,Cash,Other,Adelaide
+1e93f23e-055f-4ea6-b105-d81ab97dcc6b,2024-11-12,889774,Beverages,Soda,Lipton,24.26,21.2,3,8.81,54.79,"Stokes, Bentley and Johnson",45809,EFTPOS,Female,Brisbane
+7c83209f-cbb0-4d17-addd-8777f81e6ab0,2024-09-28,766320,Beverages,Soda,Pepsi,20.0,19.06,2,5.82,32.3,Bennett LLC,59719,Cash,Female,Brisbane
+4bcc718e-f3ac-4634-a241-3bab2f9cdba4,2024-06-24,446095,Electronics,TVs,Apple,23.61,23.31,4,17.57,75.67,Collins-Cruz,91195,Online,Male,Brisbane
+cccf0c0b-ad06-4a53-bc84-1ae6c69a0697,2024-08-04,203961,Dairy,Yogurt,Bega,23.52,19.69,5,6.57,91.88,"Larsen, Lopez and Clayton",45816,EFTPOS,Female,Adelaide
+965997c9-0a94-4d91-a363-c84af2e4762c,2024-07-07,821730,Beverages,Soda,Lipton,18.41,16.52,5,12.34,70.26,Levy LLC,59835,Credit Card,Other,Sydney
+2adff4a4-7344-4e23-a022-27676a343846,2024-07-28,554745,Electronics,Laptops,Sony,20.34,18.46,1,0.52,17.94,Myers-Williams,19718,Online,Female,Brisbane
+15d579ed-09d6-405d-933d-05ef630941e1,2024-07-25,530194,Dairy,Cheese,Danone,15.12,14.75,2,2.85,26.65,Mccarthy and Sons,81969,EFTPOS,Female,Brisbane
+2255ee1a-ed8e-41e8-9e93-e91391d9c5b5,2024-06-09,731039,Snacks,Chips,Cheetos,15.79,13.54,5,12.59,55.11,Baker PLC,80456,EFTPOS,Female,Melbourne
+99005274-7470-4ed0-a19a-40c1ba236b05,2025-04-02,352323,Beverages,Juice,Coca-Cola,24.59,23.23,4,16.66,76.26,"Pugh, Leon and Rodriguez",39175,Credit Card,Other,Perth
+120f6c0e-2acb-46bc-a3c3-cd2967bd53b9,2024-12-29,446971,Snacks,Biscuits,Doritos,19.23,19.11,4,4.89,71.55,Lambert PLC,58552,Cash,Male,Adelaide
+b9d43728-8dee-4e57-8f62-7bbb43978549,2025-02-15,448284,Dairy,Milk,Danone,21.27,18.02,4,14.38,57.7,Brown PLC,72567,Cash,Other,Adelaide
+1419c7d0-66e0-43ef-a1b6-f0533ff54217,2024-12-07,844178,Beverages,Soda,Coca-Cola,12.1,10.87,4,3.98,39.5,Johnson-Patterson,82335,EFTPOS,Other,Perth
+b8eb19a8-17e3-44b4-88a0-c1e4486a6d26,2024-10-21,221412,Electronics,TVs,Apple,29.97,26.5,2,8.25,44.75,Hutchinson-Fuller,14890,Credit Card,Female,Perth
+9922fc82-e53f-417a-9bc2-44061a7deca0,2024-05-20,974864,Dairy,Milk,Danone,18.36,17.87,2,2.98,32.76,Castillo-Bishop,84064,EFTPOS,Male,Brisbane
+d34bbff5-d390-4e39-83cb-33523ed50072,2025-02-14,171816,Beverages,Water,Coca-Cola,14.04,11.5,1,1.09,10.41,Zuniga-Martinez,83548,Online,Female,Brisbane
+c83375ff-8db5-4ef3-814f-1c718b99fd9b,2024-06-19,547795,Snacks,Biscuits,Lays,24.34,23.49,2,8.82,38.16,"Singh, Reid and Flores",80869,EFTPOS,Male,Melbourne
+6c5fa64c-a442-4513-9ca5-fac5f2080d56,2024-12-12,966227,Dairy,Yogurt,Danone,13.89,13.62,4,2.22,52.26,Meadows-Thomas,73171,EFTPOS,Female,Melbourne
+29e837e5-831a-40ee-a724-6350cc334a75,2024-12-01,195107,Snacks,Popcorn,Pringles,15.71,13.5,4,4.68,49.32,Farmer-Mendoza,64595,Online,Male,Brisbane
+6247e4a9-f9c2-475f-98ec-72adb56dccea,2024-06-25,823197,Beverages,Juice,Nestle,25.86,21.22,1,1.36,19.86,Francis-Montgomery,10976,EFTPOS,Other,Brisbane
+9d367226-45ee-4968-a259-9b46b9391bdb,2025-01-12,318990,Snacks,Popcorn,Lays,12.87,11.32,1,0.27,11.05,Mitchell LLC,32410,EFTPOS,Male,Sydney
+da3c6004-2dc5-465e-9260-29d9a2c0a9f7,2025-02-11,642667,Beverages,Water,Nestle,13.84,13.38,1,0.83,12.55,"Norton, Ferguson and Brooks",62346,Cash,Other,Brisbane
+78f7bf0d-0bdb-47b4-b1d0-4b99ccd69fb1,2024-09-03,234958,Beverages,Water,Pepsi,35.24,31.64,3,7.31,87.61,"Pruitt, Bennett and Parrish",49744,Credit Card,Male,Perth
+e807833c-cc5d-4356-afd7-e446f179c19a,2024-10-13,532324,Electronics,Laptops,Apple,19.7,17.3,5,4.14,82.36,"Diaz, Lewis and Wright",52337,EFTPOS,Female,Melbourne
+db0fbad8-07a5-48ac-b797-de6ec1aac0bc,2025-01-01,794224,Snacks,Chips,Cheetos,15.83,14.5,1,0.95,13.55,Carter-Garrison,31207,Cash,Female,Brisbane
+4b4bd346-771c-4c10-bc85-90c2bee65ebe,2024-06-12,232728,Snacks,Biscuits,Doritos,11.59,10.06,3,0.51,29.67,"Kim, Davis and Mitchell",99092,Online,Male,Perth
+73f5f961-c2ba-4d29-ad96-7066d6027124,2024-07-24,765316,Electronics,Laptops,Apple,13.2,12.72,4,9.92,40.96,Smith Inc,38958,Online,Male,Brisbane
+c0adab3b-4964-4c7e-aba7-4ff844135d6a,2024-09-11,722720,Snacks,Chips,Lays,12.71,11.6,4,0.76,45.64,Smith-Meadows,66434,EFTPOS,Female,Adelaide
+1c4483c1-727e-47a7-a440-2a0d8099cc85,2024-06-10,566387,Snacks,Biscuits,Cheetos,27.99,24.82,3,6.41,68.05,Lewis LLC,62026,EFTPOS,Male,Brisbane
+238431dc-e094-44bd-b70f-d3c364679ad1,2024-07-01,200437,Electronics,Phones,LG,20.0,18.38,4,3.56,69.96,Cervantes-Washington,14524,Cash,Male,Adelaide
+06a9be87-d5d5-4eae-a529-bff24bb05e47,2024-04-11,176374,Electronics,TVs,Samsung,17.65,16.26,5,15.5,65.8,Mcdonald LLC,58851,Cash,Female,Brisbane
+27a26966-afea-4722-b583-66c5f46599a6,2024-09-21,489478,Snacks,Chips,Cheetos,23.83,23.04,4,8.92,83.24,Martinez-Medina,34514,Cash,Other,Adelaide
+700272d4-a20c-4c2e-a7b3-58410aa4fc46,2024-09-19,751958,Snacks,Popcorn,Doritos,20.58,19.0,1,1.49,17.51,Johnson-Collins,70319,EFTPOS,Other,Perth
+90ff9b65-fc52-4ddc-8d4d-450039ffc277,2025-01-15,615896,Snacks,Chips,Pringles,22.06,19.2,2,2.04,36.36,Martinez-Cooper,81689,EFTPOS,Male,Adelaide
+ac31419d-1062-4ac2-b4f4-071cde188796,2024-06-11,610478,Electronics,Laptops,Samsung,21.37,17.37,3,6.7,45.41,Livingston-Wu,68871,Cash,Female,Melbourne
+1d66b255-627f-43ce-b8d7-8dd2ff29a00a,2025-02-24,967989,Electronics,Laptops,LG,27.82,26.06,5,20.74,109.56,Cook Group,98050,Cash,Other,Melbourne
+7b2b411b-32ae-4a73-bffd-819a46e6b531,2024-10-16,975168,Electronics,Laptops,LG,15.17,13.84,4,6.75,48.61,Lam PLC,54289,Cash,Other,Sydney
+588d2b2b-14ce-49a8-8762-5d09f54a1eea,2025-02-01,275072,Electronics,Laptops,Samsung,28.1,26.98,4,14.16,93.76,King Group,41762,Credit Card,Female,Adelaide
+c3a62a8e-7429-4768-b5ff-7a3ca83fefcc,2024-08-07,834146,Snacks,Biscuits,Cheetos,17.36,16.26,4,2.73,62.31,Smith Ltd,91901,Cash,Female,Perth
+56229730-021b-40d9-861b-116576be971a,2024-12-19,885217,Electronics,TVs,Samsung,21.8,19.5,4,13.53,64.47,"Hoover, Downs and Gallagher",32705,Credit Card,Other,Melbourne
+e9e0b5e3-38b3-4ece-bc0a-c3d492a04e89,2024-08-21,761600,Dairy,Yogurt,Yoplait,17.31,14.59,4,7.34,51.02,Martinez Ltd,14490,EFTPOS,Female,Adelaide
+0cc966a8-066f-4eaa-9d72-3928d0d11625,2024-12-07,753889,Beverages,Soda,Coca-Cola,16.86,16.55,3,4.12,45.53,Richardson-Navarro,86211,Credit Card,Other,Adelaide
+58f40ba5-7a46-432d-ab2a-d733366fb34e,2025-03-08,656205,Dairy,Yogurt,Bega,18.63,16.71,4,10.03,56.81,Jackson-Michael,67859,Online,Female,Brisbane
+bd3dc51d-87d1-4850-aee4-2384e2ba0ff3,2025-02-14,331192,Dairy,Milk,Danone,16.19,14.26,3,8.55,34.23,"Martinez, Jimenez and Fischer",14533,Credit Card,Other,Perth
+211604a3-07f0-4dad-882d-a861d048de4f,2025-01-12,857653,Electronics,TVs,LG,13.57,12.61,2,3.73,21.49,Taylor-Ortiz,63190,Cash,Female,Brisbane
+7c749dce-12e9-4439-b6b6-432de6bd78e6,2024-04-24,946426,Snacks,Popcorn,Lays,23.01,22.71,1,0.65,22.06,Burns LLC,89021,Online,Male,Adelaide
+09147410-2d90-4ff6-b758-24e8960b0d16,2024-11-25,352977,Dairy,Cheese,Bega,21.3,18.8,5,5.9,88.1,Thornton-Reynolds,66728,Online,Male,Melbourne
+6ed94118-0ed7-47d6-9f08-466eeafd0ec3,2025-01-09,938622,Beverages,Water,Pepsi,17.19,14.43,5,4.77,67.38,Fowler and Sons,23885,Credit Card,Other,Brisbane
+2f19a8eb-db3d-4c63-8ad4-0aa668e8a4e0,2024-12-14,349575,Beverages,Water,Coca-Cola,19.1,17.97,3,8.64,45.27,"Howard, Bass and Jones",73476,Credit Card,Male,Sydney
+a7498686-6858-4657-ad2d-82ce48a37a56,2024-08-11,794091,Beverages,Juice,Lipton,20.07,17.81,5,14.67,74.38,Jones-Hunt,35178,Cash,Male,Perth
+e5cf07a3-c810-4ef4-ac88-42ac43558c83,2024-11-18,399641,Electronics,TVs,Sony,17.81,15.85,2,0.81,30.89,"Wells, Moore and Perez",61792,Cash,Other,Adelaide
+7a3fb0d2-1a7b-416e-a125-1239c500c593,2024-04-27,287596,Electronics,Phones,Sony,14.82,12.84,2,0.11,25.57,"Kennedy, Whitney and Saunders",51441,Credit Card,Other,Adelaide
+941e0452-9302-466f-a812-2e3dd8fb8971,2025-03-26,378467,Beverages,Soda,Coca-Cola,28.44,28.3,4,8.9,104.3,Stevens PLC,77272,Online,Other,Sydney
+e98d6151-f299-4aa3-b9fd-bfe8e89335fc,2024-07-01,328031,Beverages,Water,Pepsi,10.37,8.3,5,6.13,35.37,Andrade-Perry,23115,Online,Other,Sydney
+218d8f00-4927-4633-9de5-23787a88d3d1,2024-12-12,244423,Beverages,Soda,Pepsi,20.61,17.69,5,13.47,74.98,Moody LLC,19670,EFTPOS,Other,Brisbane
+a523b685-0d98-4a32-baca-d96c1869a876,2024-11-07,230787,Beverages,Water,Lipton,17.18,16.86,1,0.97,15.89,Wolfe-Morales,60543,Online,Other,Adelaide
+31fa900c-52f6-46e8-91e0-e8cad8d3f7b1,2024-11-29,574091,Snacks,Popcorn,Pringles,14.24,12.59,2,4.57,20.61,Bradshaw-Miranda,11341,Cash,Female,Perth
+25a6c840-b817-4933-8ac8-6ebb021cc041,2024-10-15,286504,Dairy,Milk,Yoplait,14.49,14.31,3,7.7,35.23,Wagner-Sanchez,39084,EFTPOS,Other,Brisbane
+4dd6af8c-3ca4-45d3-a789-6f201e6b94cb,2024-10-01,333318,Dairy,Cheese,Yoplait,18.35,17.73,1,2.54,15.19,Haas LLC,56282,EFTPOS,Male,Brisbane
+ec59b777-dc5a-4b95-8e04-2235f045c661,2024-12-09,467463,Electronics,Phones,LG,28.4,24.92,3,8.1,66.66,"Barnes, Alvarez and Wood",60814,Cash,Female,Adelaide
+0ea1d094-3905-4812-bad1-17a28fe6dc22,2024-09-30,406891,Beverages,Juice,Lipton,19.55,15.88,1,0.49,15.39,Copeland-Schmidt,71826,Credit Card,Male,Melbourne
+b0cb019f-34c6-4c1e-9cd6-59e9774430b7,2024-07-05,561456,Beverages,Water,Nestle,16.85,14.38,2,5.54,23.22,Mullins and Sons,64984,EFTPOS,Male,Melbourne
+fdae7685-f56f-4661-bdab-80581db88deb,2024-12-05,176721,Electronics,Phones,Apple,14.18,12.35,3,1.85,35.2,"Hughes, Sutton and Lane",88107,Credit Card,Female,Sydney
+4c5b8c87-bcab-41fd-99ae-bdbb0027a97a,2024-05-11,256482,Dairy,Cheese,Danone,9.38,8.7,1,0.89,7.81,Burns-Holmes,88401,Online,Female,Sydney
+6a536b47-6e0e-4d4e-9efa-76d3365c8c30,2024-11-30,672051,Dairy,Milk,Bega,21.37,17.62,5,8.41,79.69,"Taylor, Erickson and Thompson",88610,Cash,Female,Brisbane
+5932a6ea-0257-4c17-94a8-72aa32756ee9,2024-06-16,230779,Snacks,Biscuits,Cheetos,14.02,12.9,2,4.19,21.61,Kennedy Ltd,83395,Cash,Other,Brisbane
+b3c272cb-9237-459f-87f9-a2cab1680cb9,2024-04-16,902050,Electronics,Phones,Samsung,22.59,18.34,1,2.47,15.87,Foster Group,29109,Credit Card,Other,Sydney
+92f902f1-42ba-4df0-8c29-737965228710,2024-12-02,737725,Snacks,Popcorn,Doritos,19.15,15.34,4,3.5,57.86,Hardy-Brown,61156,EFTPOS,Other,Perth
+21007726-c5a3-4b03-b71c-f22e8e8b1d81,2024-12-18,358716,Snacks,Biscuits,Lays,19.22,18.4,5,4.62,87.38,"Porter, Anderson and Parker",39551,EFTPOS,Other,Brisbane
+a7d2a73a-61eb-491f-8533-b0bb649c7837,2024-11-26,953303,Electronics,Phones,Samsung,14.03,13.55,5,8.95,58.8,Reed-Mitchell,30639,EFTPOS,Male,Perth
+7784b572-96e4-4092-be76-58a0684d9cef,2024-10-10,945244,Dairy,Milk,Danone,14.89,13.8,5,3.39,65.61,Tran-Solomon,28103,EFTPOS,Male,Brisbane
+29873373-ad00-4a4f-977a-b34a4968ab8b,2025-02-06,724178,Beverages,Soda,Lipton,20.61,20.0,1,0.57,19.43,Bennett-Cook,86115,Credit Card,Female,Melbourne
+74e3e6dd-9ef2-4492-aaee-a15a301590b2,2025-02-05,111498,Dairy,Cheese,Danone,21.86,20.66,2,7.03,34.29,Lee-King,47450,Online,Female,Perth
+f896e692-b6b5-4193-a417-b8562676dd3d,2025-03-02,269392,Beverages,Juice,Pepsi,18.3,15.65,1,2.69,12.96,Walsh Group,67807,Cash,Other,Sydney
+aa739f45-1eb3-4096-bb16-1e4209e6b9da,2024-12-05,797848,Beverages,Water,Nestle,19.4,16.2,3,7.45,41.15,Evans and Sons,18426,Credit Card,Other,Brisbane
+b45760c3-ea02-40a0-a268-aca492602dd8,2024-10-10,496856,Snacks,Biscuits,Cheetos,21.57,20.38,1,3.99,16.39,Henderson LLC,96715,Credit Card,Female,Brisbane
+108ad477-4663-4d87-b3a5-031941dc675d,2024-04-09,199802,Snacks,Chips,Cheetos,14.75,13.25,5,3.78,62.47,"Jackson, Cook and Stevens",11965,Credit Card,Male,Sydney
+fefca657-dea8-4d03-b2b9-db6337e952c7,2024-09-07,353443,Snacks,Biscuits,Pringles,19.7,18.27,3,3.45,51.36,Becker-Conway,97968,Cash,Other,Sydney
+7333d943-c1e3-4f83-ae5a-f21004533ba9,2025-01-26,628250,Electronics,Laptops,Apple,22.18,18.0,1,1.78,16.22,"Levy, Hall and Alexander",75577,EFTPOS,Male,Sydney
+1b152f3d-e658-4e29-99da-46fd2f414738,2025-03-07,555988,Beverages,Soda,Lipton,20.62,17.87,2,0.57,35.17,"Wang, Nelson and Brown",65622,EFTPOS,Other,Perth
+0ae66ed1-567d-48fa-b4d3-d1760e03cd7b,2024-05-05,655324,Dairy,Yogurt,Anchor,16.4,14.96,4,0.74,59.1,Garrison and Sons,88151,EFTPOS,Male,Adelaide
+0c80a08d-f37b-4266-a476-68ca59f9a1dc,2025-01-19,830329,Dairy,Milk,Bega,9.47,8.4,2,0.6,16.2,"Cooper, Clark and Mccann",37466,Cash,Other,Melbourne
+5af376a7-87f3-458f-9e5a-83c81ba8d0ec,2024-06-15,962265,Dairy,Cheese,Yoplait,13.0,11.22,5,1.0,55.1,Herrera Group,98836,Cash,Other,Brisbane
+d191d25b-3821-4b3a-8715-55962ff069ee,2024-05-26,489738,Electronics,Laptops,Sony,21.32,18.94,5,9.43,85.27,Wells-Galvan,84952,Online,Female,Perth
+c7711b74-5ad3-4a4c-9782-d30ffe3887ec,2024-09-04,867584,Beverages,Juice,Lipton,23.88,22.19,5,8.72,102.23,"Brown, Ford and Martinez",36917,EFTPOS,Female,Adelaide
+80526cc0-c6d3-4f57-a0da-08389a15b657,2024-09-06,852416,Dairy,Cheese,Bega,18.43,17.4,1,1.24,16.16,Taylor and Sons,65946,Online,Female,Perth
+6bb9e4e7-08cd-430b-a16d-1aaa15e6c7bb,2024-06-18,396294,Dairy,Cheese,Bega,23.09,20.82,1,2.64,18.18,Lee-Mueller,36381,EFTPOS,Female,Sydney
+89aa45b9-77e3-4411-b103-ad4a7677662d,2025-03-10,962237,Snacks,Chips,Cheetos,30.63,25.47,1,4.18,21.29,Scott LLC,90700,Credit Card,Female,Melbourne
+a14ca3fb-e5a3-436c-8d2f-a0b0b6206c36,2025-02-18,420498,Electronics,Phones,Samsung,26.04,21.46,1,1.61,19.85,Hodges-Galloway,37136,Online,Male,Adelaide
+33404fe2-0086-4b06-9d06-1e1513a8546d,2025-01-22,101376,Dairy,Yogurt,Yoplait,22.69,20.83,2,6.86,34.8,"Reid, Escobar and Matthews",85238,EFTPOS,Male,Melbourne
+93221a67-0779-4089-86b4-3f982dee8b24,2025-04-05,951468,Electronics,Phones,LG,27.79,22.93,5,17.38,97.27,"Davis, Bradley and Johnson",76179,Cash,Male,Sydney
+beb2b48b-186a-4d38-9bee-dda5d2b50c8e,2024-08-29,389006,Beverages,Juice,Pepsi,25.04,24.31,2,2.18,46.44,Johnson-Ruiz,25119,Cash,Female,Brisbane
+c1052cad-c13a-44d3-9753-6fb8d3151729,2024-06-04,168544,Beverages,Water,Nestle,20.94,17.98,3,1.06,52.88,"Gross, Sherman and Thompson",94238,Online,Female,Brisbane
+1bedbb84-b34c-4abe-b19b-d9c9749d112c,2024-04-18,294844,Beverages,Water,Coca-Cola,14.75,12.9,1,1.56,11.34,Valentine-Lopez,65959,EFTPOS,Other,Melbourne
+aa25ecf3-b7e0-47c0-a524-8d4a8a6fc2c8,2024-08-30,642880,Dairy,Cheese,Bega,21.87,20.45,1,0.25,20.2,Allen Ltd,48443,Cash,Male,Brisbane
+18a5dba2-7398-485c-89be-d7f28422f05a,2024-08-30,272743,Beverages,Juice,Nestle,30.88,25.92,3,7.38,70.38,"Ramsey, Chavez and Mendoza",47810,Credit Card,Other,Sydney
+82b157af-9345-4603-ae08-81b29f7585b7,2025-04-04,720071,Electronics,Laptops,Apple,26.04,21.21,5,16.82,89.23,"Gray, Gentry and White",11114,EFTPOS,Other,Brisbane
+49ec3f22-8992-46a0-a916-e97502348834,2024-04-12,165395,Snacks,Chips,Doritos,9.32,7.87,5,4.99,34.36,Harris PLC,25003,Online,Female,Melbourne
+2e7ca7c3-abce-4bd9-a9db-2b5329ed4e5f,2025-02-17,960346,Electronics,TVs,LG,23.86,22.81,5,8.33,105.72,Knight-Owens,11935,Credit Card,Male,Perth
+89895b37-4731-495f-b48b-69627a4116ae,2024-12-07,381532,Electronics,Laptops,LG,18.33,17.56,3,9.03,43.65,Sparks LLC,93327,Credit Card,Male,Perth
+bc92f4c6-635c-4d94-bba9-41ec6091544e,2025-01-24,563363,Electronics,TVs,Apple,18.33,16.7,2,4.44,28.96,"Ford, Gallegos and Lane",41055,Online,Male,Sydney
+c54a52fa-bb29-4524-8519-c237ce4e7ca7,2024-04-10,644617,Dairy,Cheese,Danone,17.43,14.93,3,5.1,39.69,Villa-Campbell,75183,Online,Male,Perth
+247e0f0b-3752-4bfa-9f63-56e73d1fa04a,2024-06-30,470741,Dairy,Yogurt,Danone,28.04,24.03,3,9.09,63.0,Long Group,24496,Cash,Female,Melbourne
+659a36ad-9e9c-46f7-9974-8ee2e39e024e,2025-03-25,235524,Snacks,Popcorn,Lays,20.3,19.18,1,3.68,15.5,Anderson LLC,73909,Cash,Female,Melbourne
+3d009a09-78c1-4594-84b0-c41e89075573,2025-03-06,631078,Dairy,Milk,Yoplait,21.3,18.37,2,0.11,36.63,Neal and Sons,84560,EFTPOS,Female,Sydney
+9e6407c2-8802-414c-93d4-5832cdb2038e,2024-09-29,349874,Beverages,Soda,Nestle,17.57,15.0,5,13.58,61.42,"Weber, Hudson and Davies",87835,Credit Card,Other,Brisbane
+b77dfc84-7438-43d5-af08-3e235365d0b1,2024-07-29,781967,Electronics,Phones,LG,16.41,14.98,3,1.56,43.38,Dennis Inc,21380,Cash,Other,Melbourne
+84098330-bfe1-4dd4-b6fe-393ed20c1868,2024-06-11,793667,Electronics,Laptops,Sony,16.66,14.27,2,4.72,23.82,"Wheeler, King and Gomez",82568,EFTPOS,Other,Sydney
+9cef4a5c-0ed7-4335-83dd-fe7d0d65251e,2024-05-10,219618,Dairy,Cheese,Anchor,25.87,21.46,2,0.01,42.91,Hammond-Jones,35183,Online,Other,Sydney
+f701ba99-6324-45f0-b957-6454a06eb9f0,2024-06-17,522878,Dairy,Milk,Danone,29.06,23.74,2,3.85,43.63,Jones Inc,55375,EFTPOS,Male,Perth
+0de1aa0b-7896-420f-a2b8-fb5108b3b5ac,2024-09-05,383147,Snacks,Biscuits,Cheetos,28.15,27.46,3,13.22,69.16,Briggs Inc,10380,Online,Other,Perth
+244365e0-213f-462c-9c45-706141d30d2b,2024-06-29,515763,Dairy,Cheese,Yoplait,18.13,17.76,4,11.75,59.29,Patterson-Nguyen,33319,Credit Card,Male,Sydney
+afa75fde-1a84-426f-8b63-7ac3fb21f07e,2024-10-27,996992,Snacks,Popcorn,Lays,28.35,25.1,2,7.88,42.32,Browning LLC,71920,Online,Female,Sydney
+699de5d9-a4db-45fd-9c01-33eb2fee4e55,2025-03-18,648538,Electronics,Laptops,Apple,22.15,18.76,2,4.49,33.03,Ramos-Cox,15903,EFTPOS,Female,Sydney
+dc3e334f-1319-4c21-82e7-b4ba44fd003a,2025-02-21,527732,Dairy,Yogurt,Anchor,16.87,14.22,1,1.45,12.77,Brown-Rose,70583,Cash,Male,Sydney
+526285b5-b357-4ea4-ac41-0ce3de496c0b,2024-08-08,770342,Electronics,Phones,Sony,21.18,17.12,4,1.81,66.67,Romero-Martin,86439,Online,Female,Melbourne
+88a98a40-ccbc-4aa2-b925-b25d4bcb5eb0,2024-11-20,538152,Beverages,Soda,Coca-Cola,21.59,20.28,3,8.71,52.13,Simmons-Lee,79340,Cash,Female,Brisbane
+74d589e2-e9a7-4346-9e71-8d8756555fc4,2024-10-31,406945,Dairy,Milk,Danone,16.39,15.47,5,2.7,74.65,"Caldwell, Howe and Santiago",78705,Online,Male,Perth
+b54d7513-6589-4a71-a2ca-9fb306dd039f,2024-12-11,135379,Electronics,TVs,Samsung,18.81,17.99,3,7.96,46.01,Alvarez PLC,26170,Cash,Male,Perth
+33307458-fa5e-453f-bf78-446b0991b4b2,2024-09-07,615794,Electronics,TVs,Apple,21.4,19.61,5,19.12,78.93,Roberson Group,57299,Online,Male,Melbourne
+ddc303f6-3a3b-4ec5-95e2-f28fead9d547,2024-06-21,141964,Dairy,Yogurt,Bega,22.36,19.51,5,2.62,94.93,Riddle-Hayes,98264,Online,Female,Sydney
+f7570471-1c2e-4bdd-87c5-f6485a1c65f7,2024-04-09,937269,Beverages,Water,Lipton,13.68,13.56,3,5.0,35.68,Martinez LLC,77811,Credit Card,Male,Adelaide
+0468657e-a5fc-4b7e-855d-cbd1585f8873,2025-01-30,860493,Snacks,Biscuits,Cheetos,26.16,24.3,1,3.62,20.68,Gonzalez Group,23527,Online,Other,Brisbane
+59203a01-0a8f-4a2f-801b-6936622919a5,2024-07-19,133355,Dairy,Milk,Yoplait,22.65,19.53,4,10.61,67.51,Bell LLC,41516,Cash,Female,Adelaide
+73f0dd6e-accf-44b2-82dd-3e846449be2a,2024-05-25,153454,Electronics,Laptops,Samsung,21.74,19.43,2,3.87,34.99,Garcia Group,90182,Cash,Other,Sydney
+ecf38242-8a21-4d35-87ce-cfeeed7f6803,2025-02-26,314744,Electronics,TVs,Samsung,19.74,15.87,5,14.49,64.86,Smith Inc,55517,EFTPOS,Female,Melbourne
+f8136f1d-6e6e-40ce-ad6f-6445881abaf1,2024-11-14,340243,Beverages,Water,Lipton,23.09,22.43,1,0.83,21.6,Lloyd PLC,97919,Cash,Male,Sydney
+18340a6c-2ec0-4d69-9210-df971baf3af7,2024-10-29,988002,Dairy,Cheese,Anchor,18.35,14.84,5,7.67,66.53,Turner-Diaz,95045,Cash,Other,Brisbane
+f6742b23-abcb-44b5-95bf-216d663c34d0,2024-09-23,429088,Electronics,Laptops,LG,30.49,26.37,1,2.79,23.58,Lopez Inc,56859,EFTPOS,Female,Brisbane
+c42e68c4-9d39-4110-9d0b-b4cc9966fecc,2024-10-31,628287,Snacks,Popcorn,Cheetos,13.59,12.95,3,0.41,38.44,Smith-Odom,56923,Cash,Female,Brisbane
+7a3e20c9-77c1-437b-aef3-fce5c5b729d9,2024-06-20,920857,Dairy,Milk,Danone,18.89,16.15,3,7.67,40.78,"Wilkerson, Bell and Carr",10613,Cash,Female,Melbourne
+c7e7a821-2f0c-4fe0-bbe8-a82685a17f3a,2024-12-02,122005,Snacks,Popcorn,Pringles,18.07,14.69,5,0.71,72.74,Parker Ltd,25418,EFTPOS,Other,Adelaide
+42122ab9-f14d-431b-b03d-3775385a238f,2025-01-13,128416,Electronics,Laptops,Samsung,23.24,21.74,4,3.94,83.02,"Owens, Scott and Mccoy",92606,Online,Male,Adelaide
+81964db1-d95c-4fcd-bd6f-2a8b2e112160,2024-06-30,365598,Beverages,Water,Lipton,24.8,22.28,5,21.51,89.89,Hahn PLC,85640,EFTPOS,Female,Adelaide
+13985568-644f-457c-bdc2-c3b34ea407b6,2024-12-21,983157,Beverages,Water,Nestle,21.08,17.59,5,14.0,73.95,Figueroa-Padilla,56345,Credit Card,Female,Sydney
+90f648a3-5877-4b0c-9a61-eb37131f6c96,2024-04-09,370339,Beverages,Juice,Nestle,26.72,23.23,4,15.65,77.27,Moses-Hebert,45956,EFTPOS,Female,Sydney
+6e9fdb07-c532-4abd-a013-6c2968c41e28,2024-08-18,290475,Snacks,Biscuits,Pringles,23.74,22.69,1,2.04,20.65,Leon-Sanchez,42621,Cash,Female,Adelaide
+80871591-c178-48df-98bd-80b000f3233e,2025-01-09,261654,Dairy,Cheese,Danone,26.21,23.16,4,6.38,86.26,Dyer Inc,76672,EFTPOS,Male,Melbourne
+702ee350-ed07-4456-80a2-62f9cb067b70,2024-08-03,131372,Snacks,Popcorn,Lays,18.28,14.82,3,4.5,39.96,Cain LLC,26738,Credit Card,Female,Adelaide
+c48ab0a4-23cd-4e65-956f-8e72b9696d47,2024-05-21,194407,Dairy,Milk,Anchor,12.83,12.73,1,0.1,12.63,"Davis, Parsons and Martinez",44886,Cash,Male,Sydney
+ecc3889a-02d6-4324-9211-7fee4c2f1eb0,2024-12-05,774599,Electronics,Laptops,Apple,18.48,15.04,4,10.82,49.34,"Ryan, Lewis and Little",19941,Cash,Male,Adelaide
+dc48282c-a558-44d0-80ab-1e80b309934d,2024-10-30,614034,Snacks,Chips,Pringles,28.35,26.23,4,16.38,88.54,Moore LLC,57631,Cash,Female,Adelaide
+d66b89f6-c6ae-4648-aa7a-796caf3a26a8,2024-06-14,667780,Snacks,Popcorn,Lays,23.09,19.28,5,10.38,86.02,Landry LLC,56847,Cash,Other,Perth
+83cd0556-a610-4dcd-83ed-2698e4454bb8,2024-04-18,772277,Dairy,Cheese,Danone,20.12,16.46,1,1.06,15.4,"Mercado, Holloway and Burnett",58523,Credit Card,Male,Perth
+0f1e6991-2f07-4e49-b180-98dcf1b9e62c,2024-09-22,870443,Beverages,Juice,Nestle,26.35,23.59,5,15.58,102.37,Miller LLC,96708,EFTPOS,Other,Brisbane
+f7f6908c-f04d-418c-b513-4f640789e786,2024-09-09,869942,Dairy,Yogurt,Danone,12.31,11.29,4,3.21,41.95,Jones-Allen,89263,EFTPOS,Female,Melbourne
+0a03c112-72ac-4d6b-abbd-e42802dcdc59,2024-12-19,587599,Snacks,Chips,Cheetos,18.16,15.84,1,2.22,13.62,"Obrien, Sutton and Cabrera",51127,Online,Female,Melbourne
+d924391b-dc0c-4e8e-86a9-268cb0904bf4,2024-09-04,279589,Dairy,Yogurt,Yoplait,20.55,17.23,2,3.74,30.72,Summers PLC,32154,Credit Card,Male,Adelaide
+0d734970-0511-4876-b95f-eabb7a3e55d3,2024-08-24,964795,Beverages,Juice,Coca-Cola,22.17,19.94,1,1.79,18.15,Brown-Zuniga,34916,Cash,Female,Perth
+a8616217-f466-4a91-baa0-660927e70e9d,2024-07-19,304040,Dairy,Cheese,Bega,15.98,14.28,5,3.38,68.02,Holmes-Brown,26317,Cash,Other,Perth
+ab3bf9fc-e0b6-49fd-bf5f-971fd85a526e,2024-12-31,358530,Dairy,Milk,Bega,17.29,15.28,4,8.64,52.48,"Huerta, Brown and Kline",74535,EFTPOS,Female,Perth
+00264e84-2cdd-486b-a158-374920dafc52,2024-11-15,901663,Snacks,Biscuits,Lays,23.98,23.9,3,13.67,58.03,Blackburn PLC,66343,EFTPOS,Other,Brisbane
+57e6eeb5-8356-4280-8ded-86db936a574e,2024-12-06,612363,Beverages,Juice,Lipton,9.27,7.46,1,1.06,6.4,"Berry, Goodman and Collins",37897,Cash,Male,Perth
+a9396630-3a98-4680-b7f7-021e1283eaf9,2024-08-23,602794,Dairy,Milk,Anchor,19.24,15.49,4,12.09,49.87,Doyle Inc,84496,EFTPOS,Female,Sydney
+9d7e7ec9-c8a0-4c7c-a607-eaee533b43d7,2024-12-16,474980,Electronics,Phones,Apple,21.08,17.02,3,4.73,46.33,Jackson-Miller,50450,Credit Card,Male,Brisbane
+e01a0c90-9b1f-4cc9-a18d-ee517dac1541,2025-02-17,429479,Electronics,Phones,LG,19.89,17.51,3,1.11,51.42,Benson-Williams,41310,Credit Card,Other,Adelaide
+9578035b-7cd7-4729-b4eb-cee1415b17db,2025-02-20,529679,Dairy,Yogurt,Yoplait,22.71,21.36,2,0.8,41.92,Morales-Jones,24263,Cash,Other,Perth
+a8b406bc-8493-469d-9c64-807e88019ca4,2024-11-11,832725,Electronics,Laptops,Apple,21.86,21.63,5,5.09,103.06,"Holt, Nelson and Raymond",99444,Online,Male,Adelaide
+5ecbfa2b-3486-43ab-a341-b20ebe13fe49,2025-01-05,551856,Electronics,TVs,Sony,26.63,24.19,1,1.23,22.96,Brooks-Steele,15643,Credit Card,Other,Brisbane
+88656acb-8036-4645-bc28-1f6592bf5ce7,2025-01-04,178582,Beverages,Water,Lipton,13.55,11.8,3,4.0,31.4,Guzman-Pratt,18365,Online,Male,Sydney
+dc640d28-ac53-42e7-b17d-04fbae27847a,2024-11-09,984282,Snacks,Biscuits,Lays,15.71,15.57,3,5.22,41.49,"Melton, Stanton and Myers",64297,Online,Male,Melbourne
+9b008cbb-a1ea-43a6-8dd6-88ce2981a24d,2024-06-12,829776,Beverages,Soda,Coca-Cola,24.72,24.04,5,20.13,100.07,"Williams, Harrison and Sullivan",60590,EFTPOS,Male,Adelaide
+5bbe30e8-2774-41c4-af4e-cc716afe77b3,2025-01-05,586796,Electronics,TVs,LG,14.85,11.97,4,9.21,38.67,Anderson Inc,75483,Credit Card,Other,Adelaide
+9b55b3fd-89a2-4832-a838-00ac9fe6cf78,2024-12-14,646412,Beverages,Soda,Coca-Cola,17.29,16.9,4,12.08,55.52,Watkins-Cordova,72691,Online,Male,Brisbane
+105b19f2-4e06-4628-8953-129aae621e9a,2024-04-05,100285,Snacks,Popcorn,Cheetos,13.99,13.06,4,5.01,47.23,Smith LLC,71922,Cash,Female,Melbourne
+d5688885-0233-4d51-8239-fa87b6da7ff5,2024-06-14,817373,Electronics,Phones,Samsung,23.91,22.87,5,14.16,100.19,Ellis Inc,23251,Credit Card,Male,Perth
+f458a39e-92d4-4c8e-a6dd-2d739b1360ac,2024-05-17,723712,Dairy,Yogurt,Bega,20.36,20.04,2,7.51,32.57,"Wilson, Brown and Martinez",92527,Cash,Female,Sydney
+c5445fb6-0710-4598-b683-db227f584805,2025-02-25,166887,Electronics,Phones,LG,11.18,11.12,1,1.4,9.72,Hayes Ltd,56703,EFTPOS,Other,Melbourne
+50facad4-8662-4faa-b9cc-122864abbcd5,2024-07-20,562437,Snacks,Chips,Pringles,13.04,11.58,1,2.17,9.41,Smith Group,55276,EFTPOS,Male,Brisbane
+a0abb920-f371-43e8-b7b2-13878702b94d,2024-10-31,844778,Snacks,Popcorn,Cheetos,15.84,15.43,2,2.17,28.69,Welch-Martin,79941,Online,Other,Melbourne
+19f54279-a1b0-4932-a589-1a10483a52f4,2024-07-17,376900,Snacks,Popcorn,Pringles,11.88,11.18,2,2.56,19.8,Jones LLC,68284,Online,Male,Sydney
+eec7d88f-8083-4871-b6f8-c66da6d3a374,2024-05-17,732563,Electronics,Laptops,Sony,22.37,21.44,2,7.89,34.99,Green PLC,95702,Online,Male,Sydney
+5aea80d7-6b47-4ae8-a272-764d7cdb247d,2024-09-14,324086,Beverages,Soda,Coca-Cola,25.4,20.83,5,5.39,98.76,"Clark, Navarro and Caldwell",66828,Cash,Male,Sydney
+b79d434f-2455-44d0-bf31-2f53b883d681,2024-09-03,368761,Beverages,Juice,Coca-Cola,20.0,18.48,4,5.67,68.25,Gardner Ltd,89153,Cash,Female,Brisbane
+988aad09-35c1-4723-ba18-0d3be82f784e,2024-11-02,462830,Electronics,Phones,LG,23.59,21.45,5,11.84,95.41,Montgomery Inc,95589,Credit Card,Other,Adelaide
+c96cdaae-34f4-4fa9-b83b-08815444370c,2024-04-28,485882,Electronics,Phones,Apple,24.24,21.16,4,12.03,72.61,Reese Inc,99937,EFTPOS,Male,Adelaide
+0ef94827-3e58-4a9a-9a3d-646768c1d441,2024-09-25,815578,Snacks,Biscuits,Pringles,18.6,16.44,1,1.33,15.11,Haynes PLC,22773,Online,Female,Perth
+4973f756-4d72-4a14-839a-ac895b09443b,2024-07-02,269443,Dairy,Yogurt,Bega,18.3,15.83,5,9.42,69.73,"Gibson, Wilson and Douglas",48108,EFTPOS,Female,Brisbane
+e9a04a47-f49c-41d5-bb9b-b67cc0ba709c,2024-07-05,536679,Snacks,Biscuits,Doritos,23.8,22.38,4,7.71,81.81,Miller-Gutierrez,55579,Credit Card,Female,Melbourne
+7564d306-165a-4107-b8be-e8a7db68ad1f,2024-12-05,863312,Snacks,Biscuits,Doritos,21.07,17.12,2,6.71,27.53,Martin and Sons,66252,Credit Card,Other,Perth
+d1801ad7-4e38-4956-895a-aa4c3cc69d57,2024-10-09,389547,Electronics,Phones,LG,15.38,14.1,5,0.96,69.54,Mack Group,98500,Cash,Male,Brisbane
+80242331-83f1-49f8-81d0-540a2aa301d3,2024-11-06,116335,Snacks,Chips,Pringles,18.14,14.68,2,2.4,26.96,Morse and Sons,10678,Online,Other,Brisbane
+5c276635-d23e-4f78-a3ff-74a8334aac14,2024-12-25,626808,Dairy,Milk,Bega,17.07,14.16,3,6.14,36.34,"Jacobs, Peterson and Collins",66435,EFTPOS,Male,Melbourne
+159c2cdd-3dda-48be-a3fe-eac9695c3b5c,2024-11-04,337064,Dairy,Yogurt,Danone,19.89,18.4,4,14.07,59.53,"Tyler, Murray and Nguyen",45152,Credit Card,Female,Perth
+7ef27752-4723-4ef5-9ff0-2dfbbd562f33,2025-03-29,428039,Snacks,Biscuits,Lays,12.5,12.31,2,4.91,19.71,"Daniel, Garcia and Stewart",29722,EFTPOS,Other,Perth
+64d10d75-4031-4f75-9875-6df5b0e74f71,2025-01-10,268853,Snacks,Popcorn,Lays,18.47,14.97,3,0.96,43.95,Riddle-Wilson,69165,Online,Female,Sydney
+7de811e7-fbad-4edb-99c6-d6a384d5864f,2024-08-04,766556,Beverages,Juice,Lipton,11.77,11.23,1,1.72,9.51,Bender-Wilson,70325,Online,Male,Melbourne
+62281b66-d902-4580-93f8-740c4b25f3c1,2024-11-28,344072,Snacks,Chips,Cheetos,23.69,21.05,1,3.63,17.42,Cohen and Sons,62481,EFTPOS,Female,Brisbane
+5c88870f-a79a-4cb5-8d20-760459544c06,2025-01-14,737098,Dairy,Cheese,Bega,15.51,13.34,5,8.16,58.54,Bright-Silva,79734,EFTPOS,Male,Adelaide
+f839d7e0-78a0-4166-8b2d-28f3c13381f7,2024-11-30,701841,Snacks,Popcorn,Cheetos,15.06,13.15,3,5.15,34.3,Meyer-Crosby,81331,Credit Card,Male,Brisbane
+654ac662-bc31-4bd8-9def-a42601583307,2024-05-15,443514,Snacks,Chips,Cheetos,16.96,13.62,1,1.88,11.74,Morales-Roman,91868,Online,Female,Melbourne
+d96022f6-b4c7-44e7-ba34-44c3a9fa0ff2,2024-05-27,615755,Snacks,Popcorn,Lays,18.48,15.07,2,3.62,26.52,"Lewis, Williams and Page",32713,EFTPOS,Female,Adelaide
+7925d630-dca3-47e3-b475-54a2cc92029c,2025-01-08,936678,Dairy,Yogurt,Bega,23.26,22.21,2,3.99,40.43,Bailey-Whitaker,23480,Online,Female,Melbourne
+ce4a69d9-b6f7-4a85-8734-4b1e1f336863,2024-05-10,904445,Snacks,Biscuits,Lays,18.31,16.87,2,0.74,33.0,"Rodriguez, Cunningham and Mathews",55223,Online,Other,Perth
+5c62acee-25a5-4bd8-ba97-816671f044f3,2024-06-25,641892,Snacks,Chips,Lays,28.42,24.61,5,12.51,110.54,Mcdaniel-Smith,93059,EFTPOS,Female,Perth
+2be14d2c-85ab-442a-98a7-a9c5cf95b51b,2024-06-15,275115,Electronics,Phones,LG,21.3,18.71,4,2.63,72.21,"Cruz, Ellis and Frazier",44323,Online,Female,Sydney
+6e1bb8a1-4479-4566-9c33-e798209e5bde,2024-05-10,452247,Dairy,Milk,Yoplait,19.34,18.69,4,0.09,74.67,Berry-Harrington,14825,Cash,Male,Melbourne
+ec1ff25d-0503-459f-8325-4ceaacef59fa,2024-05-05,486531,Dairy,Cheese,Danone,17.33,16.34,3,1.13,47.89,Todd Ltd,65494,EFTPOS,Female,Melbourne
+3b6be563-d6c4-4831-8537-f52f87937365,2024-08-24,362189,Electronics,TVs,Samsung,19.48,17.61,1,1.72,15.89,"Miller, Oconnell and Richardson",40250,Credit Card,Female,Adelaide
+089757f3-9b91-469d-bc16-b55e962e9f2a,2025-03-16,469047,Snacks,Popcorn,Lays,12.66,11.79,4,2.17,44.99,Reynolds-Robinson,15505,Online,Male,Sydney
+8103c94c-f654-4a52-94d4-958d7618062a,2025-02-04,973162,Beverages,Soda,Coca-Cola,20.39,19.43,4,6.16,71.56,"Davidson, Adams and Mccarthy",25897,EFTPOS,Other,Brisbane
+9269ab1d-37d2-47e1-bbe1-15b2bae637dc,2024-04-30,728054,Snacks,Chips,Lays,13.99,12.55,3,1.76,35.89,Lynch-Kemp,83623,Cash,Male,Sydney
+56c8275d-e545-43f8-adcc-c2abf575077e,2025-01-07,350957,Snacks,Chips,Lays,14.44,13.18,2,1.08,25.28,"Jones, Morgan and Perez",35036,EFTPOS,Other,Brisbane

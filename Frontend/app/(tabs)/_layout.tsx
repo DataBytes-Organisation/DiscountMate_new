@@ -11,6 +11,7 @@ import NotifBell, { sendTestNotification,  BellNotification, loadNotifications }
 import BrowseProductsDropdown from './BrowseProductsDropdown';
 import Chatbot from './Chatbot'; 
 import DashboardEmbed from './DashboardEmbed';
+
 const { width: viewportWidth } = Dimensions.get('window');
 
 // Updated fetch function with optional query parameter for search
@@ -195,6 +196,10 @@ function TabLayoutContent() {
               <TouchableOpacity onPress={() => navigation.navigate('index')} style={styles.iconButton}>
                 <TabBarIcon name="home-outline" color="#000" />
                 <Text style={styles.iconButtonText}>Home</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('productpage')} style={styles.iconButton}>
+                <TabBarIcon name="search" color="#000" />
+                <Text style={styles.iconButtonText}>Product Page</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate('profile')} style={styles.iconButton}>
                 <TabBarIcon name="person-outline" color="#000" />
