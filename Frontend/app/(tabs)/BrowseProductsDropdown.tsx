@@ -1,23 +1,34 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useRouter } from 'expo-router';
 
 const categories = [
-  { name: 'Fruit & Veg', icon: 'lemon-o' },
-  { name: 'Bakery', icon: 'birthday-cake' },
-  { name: 'Poultry, Meat & Seafood', icon: 'cutlery' },
-  { name: 'Deli & Chilled Meals', icon: 'snowflake-o' },
-  { name: 'Dairy, Eggs & Fridge', icon: 'glass' },
-  { name: 'Lunch Box', icon: 'briefcase' },
-  { name: 'Pantry', icon: 'archive' },
-  { name: 'International Foods', icon: 'globe' },
-  { name: 'Snacks & Confectionery', icon: 'cookie' },
-  { name: 'Freezer', icon: 'cube' },
+  { id: 'fruit-veg', name: 'Fruit & Veg', icon: 'lemon-o' },
+  { id: 'bakery', name: 'Bakery', icon: 'birthday-cake' },
+  { id: 'poultry-meat-seafood', name: 'Poultry, Meat & Seafood', icon: 'cutlery' },
+  { id: 'deli-chilled', name: 'Deli & Chilled Meals', icon: 'snowflake-o' },
+  { id: 'dairy-eggs', name: 'Dairy, Eggs & Fridge', icon: 'glass' },
+  { id: 'lunch-box', name: 'Lunch Box', icon: 'briefcase' },
+  { id: 'pantry', name: 'Pantry', icon: 'archive' },
+  { id: 'international', name: 'International Foods', icon: 'globe' },
+  { id: 'snacks', name: 'Snacks & Confectionery', icon: 'leaf' },
+  { id: 'freezer', name: 'Freezer', icon: 'cube' },
 ];
 
-const BrowseProductsDropdown = ({ onSelectCategory }) => {
+const BrowseProductsDropdown = ({ onSelectCategory }:any) => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const router = useRouter();
+  
+  const handleSelectCategory = (categoryId: string) => {
+    console.log("CLICKED",categoryId)
+    setIsOpen(false);
+    if (onSelectCategory) {
+      onSelectCategory(categoryId);
+    } else {
+      router.push(`/category/${categoryId}`);
+    }
+  };
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={() => setIsOpen(!isOpen)}>
@@ -31,10 +42,7 @@ const BrowseProductsDropdown = ({ onSelectCategory }) => {
             <TouchableOpacity
               key={index}
               style={styles.categoryItem}
-              onPress={() => {
-                onSelectCategory(category.name);
-                setIsOpen(false);
-              }}
+              onPress={() => handleSelectCategory(category.id)}
             >
               <Icon name={category.icon} size={20} color="#000" style={styles.categoryIcon} />
               <Text style={styles.categoryText}>{category.name}</Text>
