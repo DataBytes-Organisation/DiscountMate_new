@@ -1,0 +1,53 @@
+
+```{r}
+library(dplyr)
+library(readr)
+library(stringr)
+
+# Load your dataset
+file_path <- "IGA/updated_iga_data.csv"  # Update this with your file path
+df <- read_csv(file_path, show_col_types = FALSE) %>%
+  mutate(
+    best_price = as.numeric(best_price), 
+    unit_price = as.numeric(unit_price),
+    total_price = as.numeric(total_price),
+    discount = as.numeric(discount),
+    quantity = as.numeric(quantity)
+  ) %>%
+  filter(!is.na(best_price) & best_price > 0)  # Remove rows with NA or invalid best_price values
+
+# Function to generate synthetic data
+generate_synthetic_data <- function(df, num_samples = 200000) {
+  synthetic_data <- df %>%
+    sample_n(num_samples, replace = TRUE) %>%  # Randomly sample rows with replacement
+    mutate(
+      # Generate random best prices within a range (30% to 80% of the best price) and ensure they are at least 0.5
+      best_price = pmax(0.5, runif(n(), best_price * 0.3, best_price * 1.8)),
+      
+      # Generate random unit prices within a range (70% to 130% of the best price) and ensure they are at least 0.5
+      unit_price = pmax(0.5, runif(n(), best_price * 0.7, best_price * 1.3)),
+      
+      # Ensure the discount does not exceed 70% of the best price, by limiting the discount value
+      discount = pmin(discount, 0.7 * best_price),
+
+      total_price = round(unit_price * sample(1:10, n(), replace = TRUE), 2),  # Random total price
+      quantity = round(runif(n(), 0.5, 5), 2),  # Random quantity
+      gender = sample(c("Male", "Female"), n(), replace = TRUE),  # Random gender
+      date = format(as.Date(sample(1:365, n(), replace = TRUE), origin="2025-01-01"), "%m/%d/%Y"),  # Random date in 2025
+      transaction_id = str_c("IGA-", sample(1000000:9999999, n(), replace = TRUE)), 
+      customer_id = str_c("IGA-", toupper(str_pad(sample(1e8:1e10, n(), replace = TRUE), 10, pad = "0"))) 
+    )
+  
+  return(synthetic_data)
+}
+
+# Generate synthetic dataset
+synthetic_df <- generate_synthetic_data(df, num_samples = 200000)
+
+# Save to file (CSV format)
+write_csv(synthetic_df, "synthetic_data_IGA.csv")
+
+print("Synthetic data generated and saved as synthetic_data.csv")
+
+```
+
