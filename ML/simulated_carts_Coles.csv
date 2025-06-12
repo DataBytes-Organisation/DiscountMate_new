@@ -1,0 +1,501 @@
+Cart_ID,Item_ID,Price,Weight (grams),Quality Score,Sub-category,Cluster
+CART-95cfd4,Lindt Excellence Sea Salt Caramel Dark Chocolate Blo ... 100g,6.501,100.0,1.04,Snacks (Sweet),6
+CART-95cfd4,L'OR Espresso Supremo Intensity 10 Coffee Cap ... 10 Pack,0.551,10.0,1.15,Coffee,9
+CART-95cfd4,Cenovis Vitamin C 250mg Tablets For Immune ... 150 pack,4.331,150.0,1.01,Vitamins & Supplements,0
+CART-95cfd4,Clairol Nice 'N Easy Frost & Tip Hair Colour High ... 1 pack,20.001,1.0,1.07,Hair Care,9
+CART-95cfd4,Coles Garland Figs 12 Pack | 375g,11.731,375.0,1.39,Snacks (Sweet),0
+CART-333ac5,Coles Deli Fresh Tasmanian Salmon Portio ... approx 250g,42.001,250.0,5.0,Seafood (Processed/Cooked),1
+CART-333ac5,L'Oreal Revitalift Vitamin C Serum | 30mL,100.001,30000.0,1.2,Skincare,6
+CART-333ac5,Curry & Co Green Curry Paste | 240g,1.171,240.0,1.02,Meal Kits/Bases/Instant Meals,0
+CART-333ac5,Berocca Energy Effervescent Original Berry | 15 pack,73.341,15.0,1.06,Vitamins & Supplements,0
+CART-333ac5,Urban Colour Concealer Ivory | 7mL,6.431,7000.0,1.03,"Beauty, Wellness & First Aid",4
+CART-558555,Schwarzkopf Extra Care Ultimate Repair Mask Treat ... 300mL,2.601,300000.0,1.18,Hair Care,5
+CART-558555,McCain Lil Pizzas Ham & Cheese 4 Pack | 400g,1.951,400.0,1.04,Frozen Meals,4
+CART-558555,Atkins Low Carb Endulge Bar Caramel Nut Chew5x3 ... 170g,8.821,170.0,1.04,Snacks (Sweet),0
+CART-558555,Wonka Nerds Rainbow Concession 5oz | 141.7g,2.471,141.7,1.0,Snacks (Sweet),6
+CART-558555,Bulla Creamy Classics Ice Cream Honeycomb ... 360mL,2.081,360000.0,1.28,Ice Cream,5
+CART-86212a,Coles Kitchen Garlic Naan 2 | 360g,1.081,360.0,1.93,Outsider,0
+CART-86212a,Bref Power Active Rim block Toilet Cleaner Fresh ... 100g,5.501,100.0,1.16,Cleaning Solutions & Wipes,9
+CART-86212a,Coles Spring Onions | 1 bunch,2.501,1.0,4.73,Vegetables (Root/Onion/Garlic),1
+CART-86212a,Glow Lab Pro Collagen Lifting Eye Cream | 15g,120.011,15.0,1.04,Skincare,7
+CART-86212a,Nature's Own High Strength Cranberry 50000mg C ... 90 pack,26.111,90.0,1.22,Vitamins & Supplements,6
+CART-b93089,Coles Water 12x600mL | 12 pack,0.691,12.0,1.68,Water,0
+CART-b93089,MasterFoods Soy Honey & Garlic Marinade | 375g,1.071,375.0,1.0,Spreads/Oils/Condiments,6
+CART-b93089,Dove Men+Care Clean Comfort Body And Face Wash | 1L,1.701,1000.0,1.01,Wash Products,0
+CART-b93089,Nature's Way Brain & Memeory Gingko 2000Mg | 120 pack,7.081,120.0,1.42,Vitamins & Supplements,6
+CART-b93089,Amy's Kitchen Organic Lentil & Vegetable So ... 411g,1.071,411.0,1.02,Meal Kits/Bases/Instant Meals,0
+CART-52598f,Razza Footlet Size 8+ | 3 pack,3.001,3.0,1.0,Home Maintenance & General,4
+CART-52598f,Coles Simply 2 Ply Toilet Tissue | 18 pack,0.191,18.0,1.84,Paper Products,0
+CART-52598f,Sweet William Dairy Free No Added Sugar Vegan Mylk ... 50g,5.401,50.0,1.01,Snacks (Sweet),6
+CART-52598f,Primo Trios Mild Salami Pretzels & Tasty Cheese C ... 50g,7.001,50.0,1.02,Cheese Specialty,4
+CART-52598f,Fab  Gold Absolute Laundry Liquid | 3.6L,4.581,3600.0,1.03,Laundry Care,0
+CART-ad9375,Colgate Great Regular Flavour Toothpaste | 90g,2.221,90.0,1.02,Oral Care,0
+CART-ad9375,Roundup Fast Action Weed Killer | 1L,23.001,1000.0,1.0,Home Maintenance & General,4
+CART-ad9375,Bc High Protein Bar Raspberry Truffle 4 Pack | 160g,6.251,160.0,1.0,Snacks (Sweet),0
+CART-ad9375,Schwarzkopf Brilliance 59 Violet Wild Silk | 1 pack,14.501,1.0,1.07,Hair Care,4
+CART-ad9375,Essano Hydration + Gel Cleanser | 140mL,12.141,140000.0,1.03,Skincare,0
+CART-a1bdf5,Hydralyte  Electrolyte Powder Orange Flavour | 10 pack,1.251,10.0,1.03,Medicines & Health Treatments,0
+CART-a1bdf5,Jade Phoenix Shitake Mushrooms Sliced | 40g,76.251,40.0,1.03,Canned Goods,9
+CART-a1bdf5,Hoyts Sesame Seeds | 100g,0.271,100.0,1.01,Baking Ingredients,9
+CART-a1bdf5,Coles Kitchen Ultra Green Soup | 300g,1.331,300.0,1.98,Cheese Specialty,9
+CART-a1bdf5,Palmolive Luminous Oils Liquid Hand Wash Cocon ... 500mL,1.401,500000.0,1.09,Wash Products,5
+CART-4d81b7,Menz Bumbles Milk Chocolate | 525g,1.331,525.0,1.0,Snacks (Sweet),6
+CART-4d81b7,Burgen Soy & Linseed Bread | 700g,0.841,700.0,1.04,Cakes & Slices,9
+CART-4d81b7,Kettle Avocado Oil Crushed Sea Salt | 135g,3.851,135.0,1.01,Snacks (Savoury),0
+CART-4d81b7,Coles 30% Sugar Reduced Tomato Sauce | 500mL,0.391,500000.0,1.73,Spreads/Oils/Condiments,5
+CART-4d81b7,Red Bull Sugar Free Energy Drink Single Can | 250mL,12.401,250000.0,1.32,Functional/Health Drink,5
+CART-b933f6,Coles Organic Fairtrade Gold Freeze Dried Coffee | 100g,4.001,100.0,1.28,Coffee,9
+CART-b933f6,Royal EBI Cooked Prawn Meat | 500g,33.001,500.0,1.03,Frozen Seafood,4
+CART-b933f6,Tefal City Cook Frypan 32cm | 1 each,45.601,1.0,1.02,Kitchenware & Food Storage,4
+CART-b933f6,Expo Whiteboard Markers Fine Tip | 8 pack,2.251,8.0,1.05,Stationery,0
+CART-b933f6,Espressotoria Vittoria Coffee Mountain Grown Coff ... 12 pack,0.421,12.0,1.0,Beverages (Shelf-Stable),9
+CART-bd28af,Colgate Total Mint Stripe Multi Benefit Toothpaste | 200g,2.731,200.0,1.19,Oral Care,0
+CART-bd28af,Food For Health Cacao & Coconut Clusters | 425g,1.881,425.0,1.1,Breakfast Cereals,9
+CART-bd28af,Poise 2-in-1 Period & Incontinence Underwear ... 1 pack,30.001,1.0,1.05,Feminine & Incontinence Care,4
+CART-bd28af,Coles Frozen Fish Fillet Crumbed | 1kg,10.001,1000.0,1.63,Frozen Seafood,9
+CART-bd28af,Coles Bakery High Fibre Low Gi White Sandwich Loaf | 680g,0.571,680.0,4.0,Sweet Pastries & Donuts,1
+CART-f4c7f2,Kettle Potato Chips Sea Salt | 300g,2.001,300.0,1.0,Snacks (Savoury),0
+CART-f4c7f2,Magnum Ice Cream Classic 4Pack | 428mL,1.871,428000.0,1.2,Ice Cream,5
+CART-f4c7f2,L'Oreal True Match Concealer Cream Beige | 6.8mL,38.241,6800.0,1.19,"Beauty, Wellness & First Aid",9
+CART-f4c7f2,Primo Chicken Breast Thinly Sliced | 80g,49.381,80.0,1.18,Chicken (Processed/Cooked),4
+CART-f4c7f2,Old El Paso Stand 'N Stuff Taco Kit Mexican Style | 295g,2.251,295.0,1.21,Meal Kits/Bases/Instant Meals,4
+CART-116091,Primo Duos Cabanossi And Cheese | 50g,8.501,50.0,1.01,Cheese Specialty,4
+CART-116091,Coles Kitchen Loaded Supreme Pizza | 470g,1.381,470.0,1.98,Cheese Specialty,9
+CART-116091,Mcvities Healthier Choice Go Ahead Biscuits Fores ... 174g,2.531,174.0,1.01,Snacks (Sweet),6
+CART-116091,Natures Way COQ10 150Mg | 30 pack,40.001,30.0,1.27,Vitamins & Supplements,6
+CART-116091,Glad Large Wavetop Kitchen Tidy Bags | 72 pack,10.421,72.0,1.09,"Bags, Wraps & Foils",9
+CART-284da7,Darrell Lea Twists Dark Chocolate Liquorice | 200g,2.751,200.0,1.1,Snacks (Sweet),0
+CART-284da7,MasterFoods Roast Vegetable Seasoning | 38g,1.111,38.0,1.0,Spreads/Oils/Condiments,6
+CART-284da7,Bic Kids Plastidecor Crayons | 12 pack,0.351,12.0,1.14,Stationery,0
+CART-284da7,OB Finest Gluten Free Wafer Crackers | 100g,3.501,100.0,1.05,Snacks (Savoury),6
+CART-284da7,Ben & Jerry's Half Baked Ice Cream Tub | 458mL,3.171,458000.0,1.16,Ice Cream,5
+CART-96b7a7,Nature's Way Glucosamine + Chondroiti ... 90 pack,16.671,90.0,1.42,Vitamins & Supplements,6
+CART-96b7a7,Red Rock Deli Dip Singles Caramelised French Onion ... 150g,3.001,150.0,1.05,Cheese Specialty,4
+CART-96b7a7,Pine O Cleen Floor Cleaner Pomegranate | 1.5L,0.671,1500.0,1.21,Cleaning Solutions & Wipes,4
+CART-96b7a7,Gravox Pepper Steak Sauce Family Pack Liquid Pouch | 250g,1.441,250.0,1.0,Spreads/Oils/Condiments,0
+CART-96b7a7,Coles Irresistible Ice Cream Vanilla Bean | 1L,0.651,1000.0,1.31,Ice Cream,0
+CART-454549,Vittoria Mountain Grown Ground Coffee | 1kg,2.201,1000.0,1.03,Beverages (Shelf-Stable),4
+CART-454549,Foster Clark Snak Pack Custard Pouch Strawberry | 120g,1.581,120.0,1.01,Snacks (Sweet),0
+CART-454549,Olympian Almond Crescents Kourambies G ... 250g,2.601,250.0,1.0,Snacks (Sweet),6
+CART-454549,Coles Chicken Gravy Mix | 120g,0.181,120.0,1.73,Spreads/Oils/Condiments,0
+CART-454549,Massel Salt Reduced Chicken Style Stock Powder | 140g,0.291,140.0,1.01,Spreads/Oils/Condiments,6
+CART-95fb09,Obela Classic To Go Smooth Hommus | 125g,3.201,125.0,1.02,Cheese Specialty,4
+CART-95fb09,Pyrex Bake N Store Glass Container 1.52L | 1 each,19.001,1.0,1.02,Kitchenware & Food Storage,4
+CART-95fb09,Hi-Chew Confectionary Original Mix | 100g,4.001,100.0,1.0,Snacks (Sweet),0
+CART-95fb09,Don Double Smoked Leg Ham | 200g,25.001,200.0,1.12,Ham,9
+CART-95fb09,Sabrini Date And Tamarind Chutney | 360g,1.251,360.0,1.0,Spreads/Oils/Condiments,6
+CART-cf5eac,L'Oreal Elvive Glycolic Gloss Leave-In Serum | 150mL,10.001,150000.0,1.07,Hair Care,4
+CART-cf5eac,Coles Gluten Free Self Raising Flour | 500g,4.801,500.0,2.06,Baking Ingredients,9
+CART-cf5eac,Vegeta Stock Powder Organic Gourmet | 160g,0.281,160.0,1.0,Spreads/Oils/Condiments,6
+CART-cf5eac,Coles Baked Beans Canned Regular | 425g,3.531,425.0,1.82,Canned Goods,9
+CART-cf5eac,Australia's Own Almond Barista Milk | 1L,4.501,1000.0,1.32,Milk,0
+CART-bc1462,L'Oreal Revitalift Classic Fragrance Free Day Moi ... 50mL,40.001,50000.0,1.2,Skincare,6
+CART-bc1462,Kellogg's Just Right Original Breakfast Cereal | 1.15kg,1.091,1150.0,1.05,Breakfast Cereals,9
+CART-bc1462,Nobles Pureau Water Pure Table | 2L,1.481,2000.0,1.04,Water,6
+CART-bc1462,TOM Organic The Period Brief Medium Flow Bikini ... 1 each,18.001,1.0,1.18,Feminine & Incontinence Care,4
+CART-bc1462,Nudie Byron Breeze Juice | 2L,3.501,2000.0,1.01,Juice/Smoothie,4
+CART-fdb362,Gym Bod Ice Cream Choc Top Vanilla | 475mL,2.211,475000.0,1.1,Ice Cream,5
+CART-fdb362,Capilano Light & Smooth Honey Upside Down | 340g,2.031,340.0,1.0,Spreads/Oils/Condiments,0
+CART-fdb362,Allen's Lollies Killer Pythons | 192g,1.821,192.0,1.06,Snacks (Sweet),0
+CART-fdb362,Coles Durum Wheat Pasta Shells Large | 500g,0.201,500.0,1.7,Pasta/Rice/Noodles/Grains,0
+CART-fdb362,Yates Thrive All Purpose Soluble Fertiliser | 500g,1.681,500.0,1.01,Home Maintenance & General,4
+CART-3db2f1,Bondi Sands Self Tan Eraser | 100mL,11.001,100000.0,1.28,"Beauty, Wellness & First Aid",9
+CART-3db2f1,Geelong Brush Laundry Scrub Brush | 1 each,5.251,1.0,1.06,Cleaning Tools & Accessories,9
+CART-3db2f1,Fibre One Salted Caramel Squares 5 pack | 120g,5.751,120.0,1.02,Snacks (Sweet),0
+CART-3db2f1,Bickford's Pink Grapefruit Cordial | 750mL,6.671,750000.0,1.03,Other Drinks,2
+CART-3db2f1,Sabco Dustpan Set | 1 each,21.001,1.0,1.02,Cleaning Tools & Accessories,4
+CART-07aa0c,Schwarzkopf Brilliance 59 Violet Wild Silk | 1 pack,14.501,1.0,1.07,Hair Care,4
+CART-07aa0c,Golden Circle  Golden Pash Tetra | 1L,2.001,1000.0,1.08,Juice/Smoothie,0
+CART-07aa0c,Coles Entertainer Mix | approx 100g,20.001,100.0,4.94,Nuts/Seeds/Dried Fruit,1
+CART-07aa0c,Coles Made Easy Bacon Wrapped Chicken Parce ... 600g,21.671,600.0,3.86,Chicken,8
+CART-07aa0c,Nescafe Blend 43 Coffee Espresso | 500g,5.201,500.0,1.13,Coffee,4
+CART-3a6c94,Melrose Essential Greens | 120g,20.831,120.0,1.01,Beverages (Shelf-Stable),4
+CART-3a6c94,Illy Espresso Classico Capsules | 10 pack,0.601,10.0,1.01,Coffee,9
+CART-3a6c94,Mission Yellow Tortilla | 312g,1.351,312.0,1.01,Pasta/Rice/Noodles/Grains,6
+CART-3a6c94,Earth Choice All in One Original Dishwashe ... 42 pack,0.341,42.0,1.21,Dishwashing,9
+CART-3a6c94,Bic 4 Colour Pens | 3 pack,2.101,3.0,1.11,Stationery,0
+CART-cb0008,Kushi Mango Juice | 1L,4.001,1000.0,1.0,Beverages (Shelf-Stable),9
+CART-cb0008,Brownes Dairy Wiggles Yoghurt Pouch Strawbe ... 90g,1.561,90.0,1.06,Yoghurt Specialty,0
+CART-cb0008,Hot Kid Ball Cakes Honey Flavour | 210g,1.901,210.0,1.0,Snacks (Sweet),0
+CART-cb0008,Air Wick Pure Ultimate Getaways Amalfi Coast ... 159g,5.031,159.0,1.77,Air Care & Pest Control,9
+CART-cb0008,Coles Diced Pears In Syrup 4 Pack | 480g,4.581,480.0,1.82,Canned Goods,9
+CART-6298ac,L'Oreal Revitalift Laser Renew Serum | 30mL,100.001,30000.0,1.2,Skincare,6
+CART-6298ac,Bundaberg Brewed Passionfruit 6x200mL | 6 pack,4.791,6.0,1.27,Soft Drink/Mixer,0
+CART-6298ac,Cenovis Mega B Tablets | 200 Pack,5.001,200.0,1.03,Vitamins & Supplements,0
+CART-6298ac,Clearblue Digital Weeks Indicator Pregnancy T ... 1 pack,20.001,1.0,1.06,Medicines & Health Treatments,0
+CART-6298ac,Mentholatum Ice Gel | 100g,4.801,100.0,1.03,Medicines & Health Treatments,4
+CART-f20bae,Bulla Frozen Multi Flavoured Yoghurt Sticks 8 pack | 472g,1.801,472.0,1.09,Frozen Desserts,9
+CART-f20bae,Nescafe Gold Original Premium Instant Coffee | 100g,11.501,100.0,1.11,Coffee,4
+CART-f20bae,Whole Earth Monk Fruit Sweetner Liquid | 48mL,14.581,48000.0,1.07,Baking Ingredients,4
+CART-f20bae,Kikkoman Soy Sauce | 150mL,3.271,150000.0,1.01,Spreads/Oils/Condiments,0
+CART-f20bae,Cocobella Coconut Passionfruit Yoghurt | 150g,0.831,150.0,1.05,Yoghurt Specialty,0
+CART-0419d2,Muscle Nation Legacy Sport Mango Passion Passionfruit | 225g,20.001,225.0,1.07,Beverages (Shelf-Stable),4
+CART-0419d2,Coles Whole Fennel Seeds | 36g,0.811,36.0,1.73,Spreads/Oils/Condiments,0
+CART-0419d2,Cook & Dine Oval Platter | 1 each,4.001,1.0,2.4,Kitchenware & Food Storage,0
+CART-0419d2,Cadbury Dream Oreo White Chocolate Block | 170g,3.531,170.0,1.01,Snacks (Sweet),0
+CART-0419d2,Red Tractor Psyllium & Flax Meal Digestive Powder | 450g,3.111,450.0,1.09,Baking Ingredients,4
+CART-f5342a,Goulburn Valley Two Fruits In Juice 2x170g | 2 pack,13.821,2.0,1.06,Canned Goods,9
+CART-f5342a,Green's Red Velvet Cupcakes | 410g,1.221,410.0,1.02,Baking Mixes,9
+CART-f5342a,Schwarzkopf Simply Colour 1.0 Natural Black | 1 pack,14.001,1.0,1.02,Hair Care,4
+CART-f5342a,Gatorade Sports Drinks Lemon Lime Electrolyte ... 600mL,6.671,600000.0,1.19,Functional/Health Drink,2
+CART-f5342a,Sprite Zero Sugar Lemonade Soft Drink Multipack M ... 6 pack,4.501,6.0,1.09,Soft Drink/Mixer,6
+CART-c42ff1,Super Nature Frozen Sri Lankan Root Vegetable An ... 350g,1.291,350.0,1.18,Frozen Meals,4
+CART-c42ff1,Coles Smokey BBQ Seasoning | 25g,0.801,25.0,1.73,Spreads/Oils/Condiments,0
+CART-c42ff1,Wiltshire Smartstack Square Cake Pan | 1 each,14.001,1.0,1.02,Kitchenware & Food Storage,4
+CART-c42ff1,Kleenex Complete Clean Toilet Paper | 9 pack,0.561,9.0,1.18,Paper Products,0
+CART-c42ff1,Coles Sun-Dried Tomato Strips | 280g,9.821,280.0,1.73,Spreads/Oils/Condiments,0
+CART-23fa74,Obento Sushi & Sashimi Soy Sauce | 250mL,1.441,250000.0,1.0,Spreads/Oils/Condiments,5
+CART-23fa74,Sukin Natural Active Brightening Serum | 25mL,84.001,25000.0,1.02,Skincare,6
+CART-23fa74,Coles Thickened Cream | 600mL,0.751,600000.0,1.78,Cream Standard,2
+CART-23fa74,Coles Organic Fairtrade Gold Freeze Dried Coffee | 100g,4.001,100.0,1.35,Beverages (Shelf-Stable),9
+CART-23fa74,Birds Eye Snap Frozen Baby Beans | 500g,8.001,500.0,3.57,Frozen Vegetables,8
+CART-5835e2,HP Sauce | 390mL,1.691,390000.0,1.0,Spreads/Oils/Condiments,5
+CART-5835e2,Praise Vegan Mayo | 360g,1.391,360.0,1.0,Spreads/Oils/Condiments,6
+CART-5835e2,Bref Power Active Gel Toilet Cleaner Eucalyptus | 700mL,1.001,700000.0,1.16,Cleaning Solutions & Wipes,2
+CART-5835e2,Nestle Kit Kat Cookie Dough Block Chocolate | 170g,2.471,170.0,1.0,Snacks (Sweet),6
+CART-5835e2,Coles English Breakfast Tea Bags 50 Pack | 92.5g,0.041,92.5,1.16,Tea,0
+CART-eb5def,Cook & Dine Soda Spoons | 4 pack,1.631,4.0,2.4,Kitchenware & Food Storage,0
+CART-eb5def,Pascall Pink and White Marshmallows | 280g,1.791,280.0,1.0,Snacks (Sweet),6
+CART-eb5def,L'Oreal Preference Vienna Permanent Hair Colour | 1 pack,12.001,1.0,1.08,Hair Care,4
+CART-eb5def,Sunsilk Longer & Stronger Shampoo | 350mL,1.861,350000.0,1.01,Hair Care,5
+CART-eb5def,Gillette Venus Pubic Hair & Skin Blades | 3 pack,7.671,3.0,1.63,Shaving & Men's Grooming,0
+CART-67b084,Coles Automatic Insect Control Refill Odourless | 152g,2.631,152.0,1.23,Air Care & Pest Control,9
+CART-67b084,Schwarzkopf Got2B Beachmatt Matt Paste | 100mL,15.001,100000.0,1.02,Hair Care,4
+CART-67b084,Praise Dressing Roasted Garlic | 250mL,1.521,250000.0,1.0,Spreads/Oils/Condiments,6
+CART-67b084,Coles Multicolour Balloons | 50 pack,0.121,50.0,1.68,Home Maintenance & General,0
+CART-67b084,Coles Medistrips Plastic Strips | 100 pack,0.021,100.0,1.59,First Aid & Wellness,9
+CART-c9cf02,Tropeaka Organic Authentic Chai Powder | 100g,14.001,100.0,1.02,Beverages (Shelf-Stable),4
+CART-c9cf02,Olina's Artisan Crackers Biscuits Date & Apricot | 100g,4.501,100.0,1.01,Snacks (Savoury),6
+CART-c9cf02,Fry's Frozen Gluten Free Nuggets With Rice Protein & ... 240g,2.961,240.0,1.13,Frozen Meat,9
+CART-c9cf02,Twinings Earl Grey Tea Bags 50 pack | 100g,0.171,100.0,1.07,Tea,6
+CART-c9cf02,Coles Kitchen Loaded Supreme Pizza | 470g,1.381,470.0,1.98,Cheese Specialty,9
+CART-53738e,Sabco Big Scrub Brush | 1 each,7.501,1.0,1.01,Laundry Care,4
+CART-53738e,Bic Flex 3 Men's Disposable Razor | 4 pack,1.091,4.0,1.03,Shaving & Men's Grooming,0
+CART-53738e,Life Space Probiotics + Micro Flora | 40 pack,55.001,40.0,1.07,Vitamins & Supplements,6
+CART-53738e,Olinas Seeded Snackers Crackers Caramelised ... 140g,4.291,140.0,1.0,Snacks (Savoury),6
+CART-53738e,Rimmel Kind & Free Nail Polish Fresh Undone | 8mL,125.001,8000.0,1.02,"Beauty, Wellness & First Aid",7
+CART-753241,Napolina Chopped Tomatoes | 400g,4.501,400.0,1.01,Canned Goods,4
+CART-753241,Ratsak Pre-Baited Rat Trap | 1 pack,10.501,1.0,1.01,Air Care & Pest Control,4
+CART-753241,La Casa Del Formaggio Original Bocconcini Ch ... 220g,27.271,220.0,1.02,Cheese Specialty,9
+CART-753241,Milo Chocolate Malt Powder Softpack Refill Hot Or C ... 650g,1.461,650.0,1.12,Other Drinks,6
+CART-753241,Bulla Dairy Low Fat Onion & Chives Cottage Chee ... 200g,19.001,200.0,1.16,Cream Standard,9
+CART-733e70,Spam Classic Ham | 340g,11.761,340.0,1.0,Canned Goods,4
+CART-733e70,Sprite Lemonade Soft Drink Bottle | 1.25L,3.081,1250.0,1.12,Soft Drink/Mixer,6
+CART-733e70,Red Rock Deli Sweet Chilli & Sour Cream Potato Chips | 290g,2.931,290.0,1.16,Snacks (Savoury),6
+CART-733e70,Goodbasics Sneaker Care Kit | 1 pack,17.501,1.0,1.01,Home Maintenance & General,0
+CART-733e70,British Cumberland Sausages | 500g,17.001,500.0,1.07,Pork,0
+CART-833cff,Swisse Ultiboost High Strength Odourless Wild Fish ... 400 pack,9.941,400.0,1.32,Vitamins & Supplements,6
+CART-833cff,Sanofi Shave Cream - Moisturising Shaving Cream | 75g,3.531,75.0,1.03,Shaving & Hair Removal,6
+CART-833cff,Ikina Bamboo Fibre Lunch Box | 1 each,6.001,1.0,1.01,Kitchenware & Food Storage,0
+CART-833cff,QV Gentle Wash | 350g,3.711,350.0,1.01,Skincare,6
+CART-833cff,Old El Paso Tortilla Pockets Kit Original Mexican Style | 375g,1.771,375.0,1.21,Meal Kits/Bases/Instant Meals,4
+CART-c341c2,Kirks Lemonade Soft Drink 10x375mL | 10 Pack,2.321,10.0,1.04,Soft Drink/Mixer,0
+CART-c341c2,Barilla Rigatoni Pasta | 500g,0.561,500.0,1.01,Pasta/Rice/Noodles/Grains,0
+CART-c341c2,Sukin Natural Balance Shampoo | 1L,1.751,1000.0,1.01,Hair Care,4
+CART-c341c2,Australian Organic Roast Pumpkin & Sweet Potato ... 330g,0.951,330.0,1.01,Meal Kits/Bases/Instant Meals,0
+CART-c341c2,Britannia Milk Rusk Biscotte | 560g,0.891,560.0,1.0,Snacks (Sweet),0
+CART-249814,Hairification Pure Grow Spray Treatment | 150mL,13.331,150000.0,1.02,Hair Care,9
+CART-249814,Maharajah's Choice Gulab Jamun | 1kg,0.781,1000.0,1.0,Snacks (Sweet),6
+CART-249814,Sabco Heavy Duty Gloves Medium | 1 pack,3.801,1.0,1.04,Cleaning Tools & Accessories,4
+CART-249814,Kezs Kitchen Gluten Free Vanilla Bean Cookies & Cre ... 180g,3.751,180.0,1.0,Snacks (Sweet),0
+CART-249814,Vaseline Petroleum Jelly Original | 100g,5.501,100.0,1.08,First Aid & Wellness,4
+CART-702940,Nurofen Zavance Fast Pain Relief 200mg Ibuprofen ... 20 pack,0.401,20.0,1.19,Health & Medicines,4
+CART-702940,Coles Bakery Crusty Round Rolls | 6 pack,0.481,6.0,4.84,Muffins & Cupcakes,1
+CART-702940,Mortein PowerGard Crawling & Flying Insect Killer ... 2 pack,3.691,2.0,1.11,Air Care & Pest Control,4
+CART-702940,Olay Regenerist Luminous Face Cream Moisturi ... 50g,120.001,50.0,1.26,Skincare,7
+CART-702940,Beechworth Pure Australian Honey Squeeze | 400g,1.881,400.0,1.0,Spreads/Oils/Condiments,0
+CART-1a1b10,Mutti Pasta Sauce Rossoro Tomatoes & Grilled Vegeta ... 400g,1.431,400.0,1.01,Spreads/Oils/Condiments,6
+CART-1a1b10,Red Tractor Creamy Style Protein Porridge Oats | 750g,0.991,750.0,1.11,Pasta/Rice/Noodles/Grains,6
+CART-1a1b10,Wild Tides Tuna Lemon And Pepper | 95g,26.321,95.0,1.08,Canned Goods,4
+CART-1a1b10,Pana Organic Frozen Dessert Salted Choc & Caramel | 950mL,1.471,950000.0,1.06,Ice Cream,2
+CART-1a1b10,Atkins Low Carb Endulge Bars Caramelised ... 150g,10.001,150.0,1.04,Snacks (Sweet),0
+CART-bc6e7e,Roll'D Rice Paper | 375g,1.331,375.0,1.02,Pasta/Rice/Noodles/Grains,6
+CART-bc6e7e,Remedy Kombucha Pink Lady Apple | 750mL,10.001,750000.0,1.46,Functional/Health Drink,2
+CART-bc6e7e,L'OR Espresso Ristretto Intensity 11 Coffee Cap ... 10 pack,0.551,10.0,1.06,Beverages (Shelf-Stable),9
+CART-bc6e7e,Ito En Matcha Green Tea Organic Matcha Powder | 12 pack,1.251,12.0,1.03,Tea,0
+CART-bc6e7e,Libra Extra Regular Pads | 14 pack,0.251,14.0,1.03,Feminine & Incontinence Care,4
+CART-754b23,Veef Plant Based Beef Peices | 280g,3.041,280.0,1.01,Cheese Specialty,4
+CART-754b23,White Glo Plus Professional Results Kit | 1 each,40.001,1.0,1.05,Oral Care,6
+CART-754b23,Seacrown Crab Meat In Brine | 170g,20.591,170.0,1.0,Canned Goods,4
+CART-754b23,Charlotte's Bakery Chunky Chicken & Leek Pie 2 Pack | 400g,2.951,400.0,1.06,Frozen Poultry,9
+CART-754b23,Poulings Sliced Pork | 290g,2.591,290.0,1.13,Frozen Meat,4
+CART-169c56,Coles Spicy Capsicum Dip | 200g,1.201,200.0,1.98,Cheese Specialty,9
+CART-169c56,Muscle Nation Sparkling Protein Water Citru ... 330mL,15.151,330000.0,1.07,Beverages (Shelf-Stable),5
+CART-169c56,Coles Australian Made Thin Sliced Streaky Bacon | 200g,33.501,200.0,1.63,Bacon,9
+CART-169c56,Cadbury Drinking Chocolate | 450g,1.331,450.0,1.03,Outsider,0
+CART-169c56,Atkins Low Carb Endulge Bar Chocolate Co ... 200g,7.501,200.0,1.04,Snacks (Sweet),0
+CART-d49eb9,Organic Organic Brown Mushrooms | 180g,34.451,180.0,1.19,Mushrooms,6
+CART-d49eb9,Olay Regenerist Collagen Peptide 24 Cleanser | 150mL,13.331,150000.0,1.26,Skincare,6
+CART-d49eb9,Birds Eye Deli Hoki Crisp Light Batter | 250g,40.001,250.0,1.87,Frozen Seafood,9
+CART-d49eb9,Lee Kum Kee Ready Sauce Black Pepper Beef | 120g,1.581,120.0,1.05,Meal Kits/Bases/Instant Meals,0
+CART-d49eb9,Coles Bakery Multigrain Toast Loaf | 680g,0.431,680.0,2.69,Bread Loaves,8
+CART-8c95e1,Coles Vanilla Yoghurt | 1kg,0.401,1000.0,1.42,Yoghurt Standard,0
+CART-8c95e1,Redwin Tea Tree Shampoo | 250mL,2.201,250000.0,1.0,Hair Care,5
+CART-8c95e1,On The Menu Butter Chicken With Rice | 400g,1.051,400.0,1.38,Frozen Meals,4
+CART-8c95e1,Oral B Precision Clean Electric Toothbrus ... 16 pack,4.641,16.0,1.65,Oral Care,6
+CART-8c95e1,Garnier Nutrisse 5.25 Frosted Chestnut Permanent ... 1 pack,10.001,1.0,1.05,Hair Care,9
+CART-d3e9b2,Green Life Saucepan 20cm | 1 Each,48.001,1.0,1.01,Kitchenware & Food Storage,0
+CART-d3e9b2,Coles Frozen Diced Mango | 500g,12.401,500.0,2.78,Frozen Fruits,8
+CART-d3e9b2,Oates Tilt-A-Matic Squeeze Mop Refill | 2 Pack,4.801,2.0,1.04,Cleaning Tools & Accessories,4
+CART-d3e9b2,Duracell Ultra C Battery | 2 pack,11.001,2.0,1.02,Home Maintenance & General,0
+CART-d3e9b2,Dove Men+Care Shampoo Anti Dandruff | 300mL,1.831,300000.0,1.0,Hair Care,5
+CART-410f1b,Coles Juice Orange | 2L,1.681,2000.0,1.57,Juice/Smoothie,0
+CART-410f1b,Original Source Shower Gel Raspberry ... 250mL,2.001,250000.0,1.08,Wash Products,6
+CART-410f1b,Brunnings Glyphosate Concentrate We ... 1L,10.001,1000.0,1.0,Home Maintenance & General,0
+CART-410f1b,Le Tan Express Self Tanning Foam | 110mL,9.271,110000.0,1.18,"Beauty, Wellness & First Aid",9
+CART-410f1b,Coles Herb Tarragon Punnet | 10g,3.201,10.0,3.25,Herbs/Sprouts,8
+CART-168b79,Coles Air Freshener Vanilla Orchid & Ylang Ylang | 150g,1.801,150.0,1.23,Air Care & Pest Control,9
+CART-168b79,Pureau Pure Water 600mL | 6 pack,1.391,6.0,1.04,Water,6
+CART-168b79,Poppin Explosion Triple Butter Popcorn | 100g,2.001,100.0,1.0,Snacks (Savoury),6
+CART-168b79,Klorane Dry Shampoo Volume Flax | 150mL,11.331,150000.0,1.0,Hair Care,4
+CART-168b79,Coles Light Globes Led Gls Bc 13W 1520Lum 27 ... 2 pack,6.001,2.0,1.68,Home Maintenance & General,0
+CART-ec5f38,Nudie Tropical Breakfast Juice Chilled | 2L,4.001,2000.0,1.03,Juice/Smoothie,4
+CART-ec5f38,MasterFoods Garlic Powder | 155g,0.421,155.0,1.02,Spreads/Oils/Condiments,6
+CART-ec5f38,Cancer Council SPF 50+ Moisturising Sunscreen ... 500mL,6.101,500000.0,1.16,"Beauty, Wellness & First Aid",5
+CART-ec5f38,BSc Bodyscience Clean Greens Superfoods Tr ... 150g,16.671,150.0,1.03,Beverages (Shelf-Stable),9
+CART-ec5f38,Tibaldi Ham Off The Bone | 120g,41.671,120.0,1.0,Cheese Specialty,4
+CART-538e84,Femfresh Sensitive Intimate Wash | 600mL,2.401,600000.0,1.05,Feminine & Incontinence Care,2
+CART-538e84,Chans Yum Cha Dim Sum Selection | 230g,3.261,230.0,1.01,Frozen Meals,9
+CART-538e84,Bega Dairylea Cheddar Cheese Block | 250g,20.001,250.0,1.0,Spreads/Oils/Condiments,0
+CART-538e84,Mersey Valley Little Entertainer Classic | 80g,60.001,80.0,1.06,Cheese Specialty,4
+CART-538e84,Beach Road Naturals Sandalwood Geranium & ... 1L,0.901,1000.0,1.21,Wash Products,0
+CART-62bf57,Coles Kitchen Pumpkin Gnocchi | 500g,1.001,500.0,1.98,Cheese Specialty,9
+CART-62bf57,Cocobella Coconut Yoghurt Vanilla | 900g,1.001,900.0,1.21,Yoghurt Standard,0
+CART-62bf57,Coles Green Tea Bags 50 pack | 75g,0.041,75.0,1.35,Beverages (Shelf-Stable),9
+CART-62bf57,Fun Faves 18 Pack | 324g,2.311,324.0,1.0,Snacks (Sweet),0
+CART-62bf57,L'Oreal Paris Infallible 2Step Lipstick Pro ... 5.7mL,56.141,5700.0,1.02,Oral Care,0
+CART-a7066c,Sally Hansen Insta-Dri Expresso Nail Polish | 9.17mL,7.091,9170.0,1.07,"Beauty, Wellness & First Aid",4
+CART-a7066c,Tetley Decaffeinated Black Tea Bags 100 pack | 185g,0.071,185.0,1.03,Tea,6
+CART-a7066c,Coles Masher | 1 each,3.501,1.0,1.45,Kitchenware & Food Storage,0
+CART-a7066c,Coles Perform Elite Electrolytes Powder Berry Flavour | 300g,6.001,300.0,1.35,Beverages (Shelf-Stable),9
+CART-a7066c,Coles Herbs Watercress Sleeved | 1 each,3.201,1.0,3.25,Herbs/Sprouts,8
+CART-8bbc73,Queen Victoria Tea Sleepy Blend Tea Bags | 18 pack,0.191,18.0,1.16,Beverages (Shelf-Stable),4
+CART-8bbc73,Diet Rite Apple Raspberry Cordial | 1L,3.501,1000.0,1.22,Other Drinks,0
+CART-8bbc73,KOi Finger Lime & Patchouli Exfoliating Bar Soap | 100g,3.201,100.0,1.02,Wash Products,6
+CART-8bbc73,Ambi Pur Air Effects Linen & Sky Air Freshener | 275g,1.361,275.0,1.11,Air Care & Pest Control,9
+CART-8bbc73,Queen Organic Vanilla Bean Paste | 65g,13.851,65.0,1.03,Baking Ingredients,4
+CART-4ee8ed,Starbucks Pike Place Capsules | 10 pack,0.791,10.0,1.01,Coffee,4
+CART-4ee8ed,Primo Original Twiggy Sticks | 200g,39.001,200.0,1.0,Cheese Specialty,4
+CART-4ee8ed,DermaVeen Extra Gentle Colloidal Oatmeal Int ... 500mL,4.001,500000.0,1.01,Skincare,5
+CART-4ee8ed,Sard Wonder Eucalyptus Power Stain Remover | 1kg,11.001,1000.0,1.12,Laundry Care,4
+CART-4ee8ed,NRG Recharge Battery AAA | 4 pack,4.041,4.0,1.0,Home Maintenance & General,4
+CART-0220eb,Dr Beckmann Glowhite Ultra 2x40g | 80g,4.001,80.0,1.04,Laundry Care,0
+CART-0220eb,Sandhurst Sandwich Stackers | 500g,7.201,500.0,1.0,Canned Goods,4
+CART-0220eb,Remedy Sodaly Guava | 330mL,12.121,330000.0,1.2,Water,5
+CART-0220eb,Lavazza Passionale A Modo Mio Coffee Pods | 120g,0.781,120.0,1.0,Beverages (Shelf-Stable),9
+CART-0220eb,Hunt & Brew Australia Iced Coffee | 400mL,12.381,400000.0,1.06,Milk Specialty,5
+CART-e9698f,Peters Originalvanilla Ice Cream | 2L,0.251,2000.0,1.01,Ice Cream,4
+CART-e9698f,Centrum Benefit Blends Immune Defence & ... 50 pack,30.001,50.0,1.02,Vitamins & Supplements,0
+CART-e9698f,Earth Choice Concentrate Laundry Liquid | 4L,4.631,4000.0,1.18,Laundry Care,0
+CART-e9698f,Sunbites Snack Crackers Sour Cream Chives | 110g,3.001,110.0,1.01,Snacks (Savoury),6
+CART-e9698f,D3 Kinesiology Tape 6.0m X 50mm | 1 pack,10.001,1.0,1.02,First Aid & Wellness Accessories,9
+CART-425dda,U by Kotex Sport Tampons Regular | 16 pack,0.371,16.0,1.5,Feminine & Incontinence Care,4
+CART-425dda,Fancy Plants Vanilla Chia Pod | 150g,1.531,150.0,1.18,Outsider,0
+CART-425dda,Coles Tuna Tomato & Basil | 95g,11.581,95.0,1.82,Canned Goods,9
+CART-425dda,Moccona Caramel Flavor Infused Instant Coffee | 95g,9.471,95.0,1.01,Coffee,4
+CART-425dda,La Zuppa Soup Pouch Creamy Chicken & Vegetable | 400g,0.751,400.0,1.07,Meal Kits/Bases/Instant Meals,0
+CART-05f5df,Massel Gourmet Liquid Chicken Stock | 1L,0.421,1000.0,1.01,Spreads/Oils/Condiments,6
+CART-05f5df,Australia's Own Organic Oat Milk | 1L,2.8,1000.0,1.32,Milk,0
+CART-05f5df,Powerade ION4 Lemon Lime Sports Drink Sippe ... 600mL,4.171,600000.0,1.08,Functional/Health Drink,2
+CART-05f5df,Grinders Coffee Caffitaly Coffee Capsules E ... 10 pack,0.801,10.0,1.01,Beverages (Shelf-Stable),9
+CART-05f5df,Coles Sweet Potato Waffle Fries | 500g,12.001,500.0,2.6,Frozen Chips,8
+CART-722a73,Coles Soft Drink Raspberry | 1.25L,0.961,1250.0,1.25,Soft Drink/Mixer,0
+CART-722a73,The Natural Confectionery Co. Sour Squirms ... 220g,2.271,220.0,1.06,Snacks (Sweet),6
+CART-722a73,1000 Hour Envious Black Lashes | 1 pack,9.501,1.0,1.03,"Beauty, Wellness & First Aid",9
+CART-722a73,Perfect Italiano Shredded Mozzarella | 250g,22.001,250.0,1.25,Cheese Standard,4
+CART-722a73,Coles Pork Strip With Souvlaki Seasoning | approx 650g,18.001,650.0,4.25,Pork,1
+CART-f51679,Tresemme Lamellar Shine Shampoo | 500mL,1.501,500000.0,1.01,Hair Care,5
+CART-f51679,Cook & Dine Pizza Tray | 1 each,6.001,1.0,2.4,Kitchenware & Food Storage,0
+CART-f51679,Coles Bom Chocolate Flavoured Liquid Breakfast 6x2 ... 1.5L,6.001,1500.0,1.35,Beverages (Shelf-Stable),9
+CART-f51679,Sirena Tuna Tomato & Onion | 95g,31.051,95.0,1.05,Canned Goods,4
+CART-f51679,Saxa Cooking Salt | 1kg,0.031,1000.0,1.0,Spreads/Oils/Condiments,6
+CART-a1eec8,Polident 3 Minute Daily Cleanser for dentures a ... 36 pack,0.181,36.0,1.02,Oral Care,6
+CART-a1eec8,Planet Remedy Headache Inhaler | 1mL,65.001,1000.0,1.03,Medicines & Health Treatments,4
+CART-a1eec8,Surf Laundry Capsules Aqua Fresh 30 Washes | 30 pack,0.431,30.0,1.09,Laundry Care,4
+CART-a1eec8,Chans Yum Cha Prawn Hargow | 300g,2.501,300.0,1.06,Frozen Seafood,9
+CART-a1eec8,Delverde Pasta Penne Zita Rigate | 500g,0.631,500.0,1.05,Pasta/Rice/Noodles/Grains,0
+CART-d4d2c0,John West Protein+ Bowl Caps Three Bean | 170g,23.531,170.0,1.05,Meal Kits/Bases/Instant Meals,0
+CART-d4d2c0,Air Wick Aerosol-Free Automatic Spray Refill Apple ... 228mL,6.581,228000.0,1.77,Air Care & Pest Control,9
+CART-d4d2c0,Kleenex Everyday On The Go Facial Tissues | 60 pack,3.001,60.0,1.22,Paper Products,0
+CART-d4d2c0,John Frieda Frizz Ease Air Dry Waves Foam | 147mL,8.161,147000.0,1.11,Hair Care,9
+CART-d4d2c0,Allen's Lollies Red Frogs Alive Bag | 190g,1.841,190.0,1.06,Snacks (Sweet),0
+CART-5f364f,Western Star Spreadable Blend Reduced Salt | 500g,1.401,500.0,1.47,Butter Specialty,4
+CART-5f364f,Coles Twisted Candles | 12 pack,0.501,12.0,1.68,Home Maintenance & General,0
+CART-5f364f,Twining's Camomile Honey & Vanilla Infusions T ... 40 pack,0.211,40.0,1.02,Tea,6
+CART-5f364f,Vege Vegan Prawn Crackers Tangy Soy | 75g,3.001,75.0,1.01,Snacks (Savoury),6
+CART-5f364f,Maybelline Fit Me #220 Natural Beige Foundation | 30mL,8.671,30000.0,1.2,"Beauty, Wellness & First Aid",4
+CART-94b9c4,Nudie Antioxidant Carrot Tumeric Orange Apple Li ... 1L,5.001,1000.0,1.01,Juice/Smoothie,4
+CART-94b9c4,Mifroma Le Gruyere Aop | 150g,66.671,150.0,1.0,Cheese Specialty,4
+CART-94b9c4,Impressed Cold Pressed Jack Rose Juice | 1L,5.001,1000.0,1.03,Juice/Smoothie,0
+CART-94b9c4,Kellogg's Special K Original Breakfast Cereal with G ... 920g,1.301,920.0,1.1,Breakfast Cereals,9
+CART-94b9c4,Quest Protein Bar Chocolate Chip Cookie Dough | 60g,8.001,60.0,1.01,Snacks (Sweet),6
+CART-acdf64,Campbells Chunky Soup Hearty Veg | 505g,0.891,505.0,1.01,Meal Kits/Bases/Instant Meals,0
+CART-acdf64,Campbells Chunky Soup Pumpkin Chickpea | 505g,0.891,505.0,1.01,Meal Kits/Bases/Instant Meals,0
+CART-acdf64,Garnier Vitamin C Brightening Foam Wash | 100mL,10.001,100000.0,1.08,Skincare,0
+CART-acdf64,McCain Pub Size Chicken Kiev | 480g,1.981,480.0,1.06,Frozen Poultry,4
+CART-acdf64,Kettle Avocado Oil Crushed Sea Salt | 135g,3.851,135.0,1.01,Snacks (Savoury),0
+CART-4e1c7c,Golden Days Fruit Salad Bites 5 Pack | 175g,2.861,175.0,1.02,Snacks (Sweet),0
+CART-4e1c7c,Solo Zero Sugar Original Lemon Soft Drink Cans ... 10 pack,2.881,10.0,1.06,Soft Drink/Mixer,6
+CART-4e1c7c,Hart & Soul Rice Supergrain Panang Vegetable | 250g,2.201,250.0,1.12,Meal Kits/Bases/Instant Meals,0
+CART-4e1c7c,Sunbeam Sultana And Cranberry | 6 pack,0.671,6.0,1.0,Snacks (Sweet),6
+CART-4e1c7c,Cadbury Special Treats Chocolate Sharepack | 180g,1.671,180.0,1.0,Snacks (Sweet),0
+CART-54c7a4,Armor All Multi Purpose Cleaner | 500mL,11.501,500000.0,1.18,Cleaning Solutions & Wipes,5
+CART-54c7a4,Natures Way Adult Gummies ACV + PRO + Prebiotics | 50 pack,25.001,50.0,1.27,Vitamins & Supplements,6
+CART-54c7a4,Coles Sugar Snap Peas Medium | 150g,34.671,150.0,5.0,Vegetables (Stem/Flower/Pod),1
+CART-54c7a4,Straten Snack Plates | 20 pack,0.241,20.0,1.01,Home Maintenance & General,4
+CART-54c7a4,Garnier Fructis Hair Drink Banana | 200mL,9.001,200000.0,1.15,Hair Care,5
+CART-ec1fd0,Devondale Full Cream Long Life Milk 6 pack | 1.2L,5.001,1200.0,1.0,Beverages (Shelf-Stable),9
+CART-ec1fd0,Monster Ultra Rosa Can | 500mL,8.101,500000.0,1.08,Functional/Health Drink,5
+CART-ec1fd0,Rimmel Natural Bronzer Sunlight | 14g,11.361,14.0,1.02,"Beauty, Wellness & First Aid",4
+CART-ec1fd0,Coles Ultra Stain Remover Plus Pre Wash Trigger | 500mL,4.301,500000.0,1.31,Laundry Care,5
+CART-ec1fd0,Bulla Crunch Multi Flavoured Ice Cream Sticks 8 pack | 631mL,1.351,631000.0,1.04,Ice Cream,2
+CART-c98e20,MasterFoods Curried Sausages Recipe Base | 175g,1.711,175.0,1.0,Meal Kits/Bases/Instant Meals,4
+CART-c98e20,Heinz Soup Of The Day Buttercup Pumpkin Soup | 430g,0.741,430.0,1.05,Meal Kits/Bases/Instant Meals,0
+CART-c98e20,Korbond Silver Safety Pins Assorted Sizes | 1 pack,3.501,1.0,1.0,Home Maintenance & General,4
+CART-c98e20,Capilano Clear Honey Squeeze | 1kg,1.451,1000.0,1.0,Spreads/Oils/Condiments,0
+CART-c98e20,Arnott's Shapes Original Chicken Crimpy & Tasty ... 32g,10.631,32.0,1.0,Cheese Specialty,9
+CART-a88b95,Four'N Twenty Frozen Chicken & Vegetable Pie ... 700g,1.291,700.0,1.26,Frozen Meat,9
+CART-a88b95,Carman's Cookies & Cream Protein Bars 5 Pack | 200g,3.751,200.0,1.0,Snacks (Sweet),0
+CART-a88b95,Armor All Wheel Cleaner | 500mL,12.951,500000.0,1.18,Cleaning Solutions & Wipes,5
+CART-a88b95,Coles Summer Fruits Muesli | 750g,0.471,750.0,1.41,Breakfast Cereals,9
+CART-a88b95,Coles Lite Reduced Fat Milk | 2L,1.551,2000.0,2.22,Milk Standard,0
+CART-6b3a93,Coles Bakery Stone Baked Mini Rye Pane Di Casa | 1 each,3.251,1.0,3.72,Sourdough & Artisan Breads,1
+CART-6b3a93,Palmolive Hand Wash Foam Skin Food River Mint | 400mL,2.001,400000.0,1.08,Wash Products,5
+CART-6b3a93,Crosse & Blackwell Branston Pickles | 310g,2.001,310.0,1.0,Spreads/Oils/Condiments,0
+CART-6b3a93,Bondi Sands Skincare Sunny Daze SPF50 Moisturiser | 50g,46.001,50.0,1.18,Skincare,0
+CART-6b3a93,Coles Special Burger Pickles | 500g,6.001,500.0,1.73,Spreads/Oils/Condiments,0
+CART-3a609d,Oral B 3D Whitening Stengthen Enamel Tooth Paste 1 ... 190g,2.111,190.0,1.65,Oral Care,6
+CART-3a609d,Brownes Dairy Wiggles Yoghurt Pouch Strawbe ... 90g,1.561,90.0,1.06,Yoghurt Specialty,0
+CART-3a609d,Coles Rapid 5 Razor Cartridges | 4 each,1.751,4.0,1.33,Shaving & Hair Removal,0
+CART-3a609d,Luv A Duck Frozen Whole Duck | 2.1kg,12.481,2100.0,1.12,Frozen Poultry,4
+CART-3a609d,Dove Antiperspirant Aerosol Cucumbr And Grn Tea Zer ... 200mL,4.251,200000.0,1.23,Deodorants & Body Sprays,9
+CART-809060,Coco Earth Gummies Super Greens | 60 pack,15.831,60.0,1.22,Vitamins & Supplements,0
+CART-809060,Garnier BB Cream Anti Age Light | 50mL,34.001,50000.0,1.03,Skincare,0
+CART-809060,Yumi's Choice Guacamole With Jalapeno And ... 150g,3.331,150.0,1.01,Cheese Specialty,4
+CART-809060,Sabco Handle Holder | 1 each,11.501,1.0,1.02,Cleaning Tools & Accessories,4
+CART-809060,Coles Heavy Duty Storage Bag | 1 pack,4.701,1.0,2.63,"Bags, Wraps & Foils",8
+CART-4fbb8b,Hercules Sustain Plant Based Sandwich ... 30 pack,0.111,30.0,1.03,"Bags, Wraps & Foils",9
+CART-4fbb8b,Mountain Dew Citrus Soft Drink Bottle | 1.25L,1.601,1250.0,1.06,Soft Drink/Mixer,6
+CART-4fbb8b,NRG Battery Charger | 1 each,26.501,1.0,1.0,Home Maintenance & General,4
+CART-4fbb8b,Elastoplast Adhesive Roll Plaster 2.5cm x 3m | 1 each,7.021,1.0,1.02,First Aid & Wellness Accessories,9
+CART-4fbb8b,Bosistos Anti Bacterial Solution | 500mL,2.101,500000.0,1.01,Medicines & Health Treatments,5
+CART-ce7f47,Continental Cup A Soup Tomato Soup Serves 4 | 80g,3.751,80.0,1.11,Meal Kits/Bases/Instant Meals,0
+CART-ce7f47,Coles Swiss Style Cheese Slices | 200g,24.501,200.0,2.15,Cheese Standard,9
+CART-ce7f47,Mainland On The Go Cheese & Balsamic Beetroot Lun ... 110g,4.451,110.0,1.03,Cheese Specialty,4
+CART-ce7f47,Coles Finest Hot & Spicy Beef Burgers 2 Pack | 300g,23.331,300.0,4.21,Beef,8
+CART-ce7f47,Coles Summer Fruits Muesli | 750g,0.471,750.0,1.41,Breakfast Cereals,9
+CART-3df5c8,Five:AM Organic Coffee Bean Yoghurt | 170g,1.761,170.0,1.03,Yoghurt Specialty,0
+CART-3df5c8,Redheads Turbo Gas Match | 1 each,14.001,1.0,1.0,Home Maintenance & General,4
+CART-3df5c8,Quit Nits Kills Head+Body Lice Foam | 125mL,8.401,125000.0,1.08,Medicines & Health Treatments,4
+CART-3df5c8,Coles Simmer Sauce Satay | 500g,0.401,500.0,1.73,Spreads/Oils/Condiments,0
+CART-3df5c8,Fanta Orange Zero Sugar Cans 10x375mL | 10 Pack,5.071,10.0,1.15,Soft Drink/Mixer,0
+CART-3515c8,Yoosh Aloe Yoghurt Drink Mango | 500mL,0.601,500000.0,1.02,Beverages (Shelf-Stable),5
+CART-3515c8,Original Juice Co Fruit & Veg Goodness Green | 1L,6.001,1000.0,1.1,Juice/Smoothie,4
+CART-3515c8,Bulla Creamy Classics Choc Chip Ice Cream Tub | 2L,0.401,2000.0,1.28,Ice Cream,0
+CART-3515c8,Cobram Estate Lemon Infused Oil | 250mL,3.001,250000.0,1.04,Spreads/Oils/Condiments,0
+CART-3515c8,Grillman BBQ Reusable Hot Plate Liners 500m ... 1 each,10.001,1.0,1.04,Kitchenware & Food Storage,0
+CART-aea285,Danone Yopro Mango Yoghurt | 160g,1.881,160.0,1.15,Yoghurt Specialty,0
+CART-aea285,Madam Wong Dried Red Chilli Small | 100g,4.101,100.0,1.0,Spreads/Oils/Condiments,6
+CART-aea285,Coles Crunchy Peanut Butter | 980g,0.791,980.0,1.73,Spreads/Oils/Condiments,0
+CART-aea285,Bars Bugs Windscreen Wash Additive | 375mL,5.001,375000.0,1.0,Home Maintenance & General,5
+CART-aea285,Aofc Organic Bolognese Pasta Sauce Pouch | 400g,1.191,400.0,1.0,Spreads/Oils/Condiments,0
+CART-69189c,Starbucks By Nespresso Dark Espresso R ... 10 pack,0.791,10.0,1.1,Coffee,4
+CART-69189c,BSc Bodyscience Protein Water Pina Colada | 355mL,14.081,355000.0,1.03,Beverages (Shelf-Stable),5
+CART-69189c,Nescafe Iced Salted Caramel Coffee Sachets | 8 pack,0.951,8.0,1.04,Coffee,4
+CART-69189c,Coles Basmati Rice | 1kg,0.401,1000.0,1.7,Pasta/Rice/Noodles/Grains,0
+CART-69189c,Cadbury Milk Chocolate Melting Buttons | 225g,1.111,225.0,1.03,Baking Ingredients,9
+CART-44664a,Coles No Added Hormone Beef Quick Cook Porterh ... 180g,44.451,180.0,4.21,Beef,8
+CART-44664a,Outdoor Life Picnic Melamine Tumbler | 1 each,4.001,1.0,1.01,Kitchenware & Food Storage,4
+CART-44664a,Darrell Lea Liquorice Twists | 280g,1.961,280.0,1.1,Snacks (Sweet),0
+CART-44664a,Coles Muesli Bars Choc Chips 8 Pack | 248g,1.011,248.0,1.39,Snacks (Sweet),0
+CART-44664a,Coles Joyful Crunchy Nut Bar Peanut & Scorched Alm ... 170g,3.241,170.0,1.39,Snacks (Sweet),0
+CART-545dcd,Maybelline Eye Shadow Palette The Burgundy Bar | 12g,24.171,12.0,1.01,"Beauty, Wellness & First Aid",4
+CART-545dcd,Bonds Bloody Comfy Period Full Brief Heavy Size 12 | 1 pack,25.001,1.0,1.19,Feminine & Incontinence Care,9
+CART-545dcd,Go Natural Macadamia Dream Bar | 45g,6.671,45.0,1.02,Snacks (Sweet),0
+CART-545dcd,Nyal Dry Cough Mixture | 200mL,4.451,200000.0,1.01,Medicines & Health Treatments,5
+CART-545dcd,Melrose Peak Hydration Blackberry Lemondae | 6g,33.341,6.0,1.03,Vitamins & Supplements,6
+CART-955030,Sheer Relief Pantyhose Beige X-Tall | 1 each,10.001,1.0,1.04,Home Maintenance & General,4
+CART-955030,Vitadrop Hydrate Sleep Support Sachet | 10 pack,90.001,10.0,1.05,Vitamins & Supplements,6
+CART-955030,Ben's Taste Of Takeaway Peri Peri Rice Pouch | 240g,1.001,240.0,1.0,Meal Kits/Bases/Instant Meals,0
+CART-955030,The Big Cheese Mac & Cheese Bowl | 105g,3.331,105.0,1.0,Meal Kits/Bases/Instant Meals,4
+CART-955030,Capi All Australian Still Water 750ml | 750mL,4.531,750000.0,1.12,Water,2
+CART-d807b2,No Pong Deodorant All Natural Cream Bi-Carb Free | 35g,28.571,35.0,1.08,Deodorants & Antiperspirants,4
+CART-d807b2,Sunny Queen Free Range Large Eggs 12 pack | 600g,1.151,600.0,1.9,Eggs Standard,4
+CART-d807b2,Aerogard Tropical Insect Repellent Aerosol | 150g,8.001,150.0,1.04,Air Care & Pest Control,9
+CART-d807b2,Edwards Sourdough Rye Dark Bread | 680g,1.251,680.0,1.34,Sourdough & Artisan Breads,0
+CART-d807b2,Coles Perform Chocolate Whey Protein Powder | 35g,8.571,35.0,1.35,Beverages (Shelf-Stable),9
+CART-b947ad,L'Oreal Paris Elvive Conditioner Total Repair 5 | 700mL,1.711,700000.0,1.17,Hair Care,2
+CART-b947ad,Mr Muscle Disinfectant Spray Air Freshener Co ... 325g,1.911,325.0,1.02,Air Care & Pest Control,4
+CART-b947ad,David Gray Antex Ant Killer Granules | 500g,1.601,500.0,1.01,Air Care & Pest Control,9
+CART-b947ad,Kettle Natural Potato Chips Fig & Brie | 150g,4.331,150.0,1.0,Snacks (Savoury),0
+CART-b947ad,Pattu  Black Lentils  | 1kg,0.341,1000.0,1.04,Canned Goods,4
+CART-250dfa,Coles Coconut Milk | 400mL,0.241,400000.0,2.06,Baking Ingredients,5
+CART-250dfa,San Remo Large Pasta Spirals No 53 | 500g,0.591,500.0,1.45,Pasta/Rice/Noodles/Grains,6
+CART-250dfa,Red Rock Deli Honey Soy Chicken Potato Chips | 50g,4.001,50.0,1.16,Snacks (Savoury),6
+CART-250dfa,Maggi Fusian Mi Goreng Instant Noodles Hot ... 365g,1.511,365.0,1.02,Meal Kits/Bases/Instant Meals,4
+CART-250dfa,MasterFoods Roast Lamb Seasoning | 42g,1.001,42.0,1.0,Spreads/Oils/Condiments,6
+CART-6a2b24,Schweppes Lemonade Soft Drink Cans Multi ... 10 pack,2.881,10.0,1.09,Soft Drink/Mixer,6
+CART-6a2b24,Greens Strawberry Shortbread Ice Dream Cake | 360g,1.671,360.0,1.02,Baking Mixes,9
+CART-6a2b24,L'Oreal Paris Elvive Bond Repair Shampoo | 200mL,4.751,200000.0,1.17,Hair Care,5
+CART-6a2b24,M&M's Milk Chocolate Brownie Snack & Share Bag | 130g,4.621,130.0,1.0,Snacks (Sweet),6
+CART-6a2b24,Dash Sparkling Water Lime 4x330mL | 4 pack,4.771,4.0,1.12,Water,0
+CART-16623a,Palirra Greek Gigantes Beans | 280g,1.791,280.0,1.0,Canned Goods,4
+CART-16623a,Fanta Raspberry Flavoured Soft Drink Bottle12x3 ... 12 pack,3.171,12.0,1.04,Soft Drink/Mixer,0
+CART-16623a,Colgate Zig Zag Value Pack Soft Toothbrush | 6 pack,1.501,6.0,1.06,Oral Care,0
+CART-16623a,Nivea Deo Aero Female Black And White Max P ... 250mL,2.661,250000.0,1.46,Deodorants & Body Sprays,5
+CART-16623a,Botanica Jasmine & Sri Lankan Cinnamon Leaf Autom ... 224mL,1.161,224000.0,1.07,Air Care & Pest Control,9
+CART-e52b8b,Coles Lamb Loin Chops | approx 500g,28.001,500.0,4.91,Lamb,1
+CART-e52b8b,Schwarzkopf Simply Colour 4.68 Chestnut Brown | 1 pack,14.001,1.0,1.02,Hair Care,4
+CART-e52b8b,Blackmores Vitamin E 1000IU Capsules | 30 pack,36.671,30.0,1.04,Vitamins & Supplements,0
+CART-e52b8b,Hoyts Poppy Seeds | 100g,0.201,100.0,1.01,Baking Ingredients,9
+CART-e52b8b,Carman's Coconut Yoghurt & Roasted Nut Gourmet ... 200g,3.751,200.0,1.0,Snacks (Sweet),0
+CART-6c0bcd,Cetaphil Moisturising Cream | 550g,5.091,550.0,1.04,Skincare,0
+CART-6c0bcd,Manicare Clipper Cuticle | 1 pack,31.701,1.0,1.01,"Beauty, Wellness & First Aid",9
+CART-6c0bcd,Haircarebear Gummies Sleep | 150 pack,26.671,150.0,1.06,Vitamins & Supplements,0
+CART-6c0bcd,Bonds Bloody Comfy Period Full Brief Heavy Size 18 | 1 pack,25.001,1.0,1.19,Feminine & Incontinence Care,9
+CART-6c0bcd,Coles Ultra Furniture Polish | 250g,1.581,250.0,1.5,Cleaning Solutions & Wipes,9
+CART-c7e8c2,Bic Kids Evolution Colouring Pencils | 36 pack,0.421,36.0,1.14,Stationery,0
+CART-c7e8c2,Nivea Men Sensitive Post Shave Balm | 100mL,13.001,100000.0,1.3,Shaving & Hair Removal,6
+CART-c7e8c2,Tena Lady Pads Insta Dry Incontinence Extra Long | 6 pack,0.731,6.0,1.02,Feminine & Incontinence Care,4
+CART-c7e8c2,Tampax Tampons Super With Applicator | 20 pack,0.431,20.0,1.02,Feminine & Incontinence Care,4
+CART-c7e8c2,Toobs Snacks 5 Pack | 65g,6.921,65.0,1.0,Snacks (Savoury),6
+CART-e264f4,Coles Organic Green Kale | 1 each,5.501,1.0,5.0,Vegetables (Leafy/Salad),1
+CART-e264f4,Green's Cupcake Mixes Cookie & Cream | 380g,1.321,380.0,1.02,Baking Mixes,9
+CART-e264f4,Telstra Nokia C30 | 1 each,149.001,1.0,1.01,Home Maintenance & General,7
+CART-e264f4,Sistema Plus Square Containers 520ml | 3 pack,4.501,3.0,1.03,Kitchenware & Food Storage,4
+CART-e264f4,Coles Breadcrumbs | 500g,0.041,500.0,2.06,Baking Ingredients,9
+CART-98d45b,Nature's Own Cold Sore Relief Double Strength T ... 50 pack,14.501,50.0,1.05,Medicines & Health Treatments,4
+CART-98d45b,Nivea Deo Aero Men Invisible Black And White Fresh | 250mL,2.661,250000.0,1.77,Deodorants & Antiperspirants,5
+CART-98d45b,Coles Pacific Yellowfin Tuna In Olive Oil | 185g,13.511,185.0,1.82,Canned Goods,9
+CART-98d45b,Mix Pattern Knee High | 1 size,6.001,1.0,1.0,Home Maintenance & General,4
+CART-98d45b,Cook & Dine Colander | 1 each,10.001,1.0,2.4,Kitchenware & Food Storage,0
+CART-45ac8f,Naturopathica Fat Blaster Weight Loss Shake Double ... 465g,3.011,465.0,1.02,Beverages (Shelf-Stable),4
+CART-45ac8f,Violet Crumble Honeycomb Cream Balls | 200g,3.751,200.0,1.01,Snacks (Sweet),6
+CART-45ac8f,Coles Quick Oats Sachets Brown Sugar & Cinnamon | 420g,0.791,420.0,1.7,Pasta/Rice/Noodles/Grains,0
+CART-45ac8f,Queen Victoria  English Breakfast Tea Bags | 50 pack,0.121,50.0,1.16,Beverages (Shelf-Stable),4
+CART-45ac8f,L'Oreal Paris Men Expert Hydra Energetic F ... 100mL,6.601,100000.0,1.08,Skincare,0
+CART-efe7c6,Coles Country Loaf Mixed Grain | 850g,0.461,850.0,2.69,Bread Loaves,8
+CART-efe7c6,Coles Gluten Free Penne Pasta | 500g,0.501,500.0,2.06,Baking Ingredients,9
+CART-efe7c6,Oasis Greek Style Coffee | 200g,2.851,200.0,1.0,Beverages (Shelf-Stable),4
+CART-efe7c6,Freedom Classic Honey-O Crunch Cereal | 360g,1.891,360.0,1.08,Breakfast Cereals,9
+CART-efe7c6,Capriccio Anchovy Fillets In Olive Oil | 90g,6.391,90.0,1.0,Canned Goods,9
+CART-396ba7,Coles Gluten Free White Rolls 2 Pack | 140g,2.571,140.0,3.64,Rolls & Buns,1
+CART-396ba7,Straten Small Cups 250Ml | 20 pack,0.141,20.0,1.01,Home Maintenance & General,4
+CART-396ba7,Campbell's V8 Tropical Juice Multipack 2 ... 3 pack,5.331,3.0,1.25,Juice/Smoothie,0
+CART-396ba7,Glen 20 Citrus Breeze Disinfectant Spray | 375g,3.071,375.0,1.17,Air Care & Pest Control,9
+CART-396ba7,Vittoria Mountain Grown Ground Coffee | 1kg,2.201,1000.0,1.07,Coffee,4
+CART-d5bf20,Old El Paso Fiery Spice Mix | 35g,8.571,35.0,1.21,Meal Kits/Bases/Instant Meals,4
+CART-d5bf20,Health Lab Low Sugar Naturally Milk Choc Hazelnu ... 150g,8.001,150.0,1.05,Snacks (Sweet),0
+CART-d5bf20,Vanish Preen Oxi Action Gold Ultra Power Fabri ... 375mL,16.001,375000.0,1.1,Laundry Care,5
+CART-d5bf20,Coles Boneless Pork Leg Roast | approx 2.1kg,7.001,2100.0,4.25,Pork,1
+CART-d5bf20,Poise 2-in-1 Period & Incontinence Underwear ... 1 pack,30.001,1.0,1.05,Feminine & Incontinence Care,4
+CART-693534,Oreo Original Dunked Cadbury Cookies  | 197g,2.541,197.0,1.01,Snacks (Sweet),6
+CART-693534,Mutti Gastronomia Baby Roma Tomato Passata | 400g,0.951,400.0,1.0,Canned Goods,4
+CART-693534,Coles Bakery Apple Crumble Log | 1 each,4.251,1.0,3.79,Cakes & Slices,8
+CART-693534,Bounce Gluten Free Peanut Energy Protein Ball | 49g,7.141,49.0,1.01,Snacks (Sweet),0
+CART-693534,Masterfoods Born In The Flames Hickory BBQ Sauce | 500mL,1.101,500000.0,1.01,Spreads/Oils/Condiments,5
+CART-6bf4de,Celestial Seasonings Tea Bags Herb Sleepytime | 20 pack,0.331,20.0,1.01,Beverages (Shelf-Stable),9
+CART-6bf4de,Queen Victoria Earl Grey Tea Bags | 100 pack,0.111,100.0,1.56,Tea,6
+CART-6bf4de,Epzen Calm Cleanse Hydrating Body Wash | 750mL,1.361,750000.0,1.02,Wash Products,2
+CART-6bf4de,Carefree Flexia Regular Tampons | 16 pack,0.241,16.0,1.03,Feminine & Incontinence Care,9
+CART-6bf4de,Heinz Classic Pea & Ham Soup Can | 535g,0.821,535.0,1.02,Meal Kits/Bases/Instant Meals,0
