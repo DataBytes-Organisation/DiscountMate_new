@@ -117,6 +117,8 @@ export default function HomeScreen() {
   const doesItemExistInBasket = (item) =>
     {
       let itemPresent = false;
+      console.log("basketItem",basketData)
+      if(basketData?.length > 0){
       const basketItem = basketData?.find(currentItem => item.product_id == currentItem.productId);
       console.log("Inside check and item=", basketItem);
       if (basketItem == null)
@@ -125,6 +127,7 @@ export default function HomeScreen() {
       console.log("not null");
   
       return basketItem != null;
+}
     };
   
 

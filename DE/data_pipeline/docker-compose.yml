@@ -238,5 +238,14 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+  metabase:
+    image: metabase/metabase
+    container_name: metabase
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres-db-volume:
