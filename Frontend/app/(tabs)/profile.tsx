@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from './AuthContext';  // Ensure you have AuthContext for authentication state
 import Entypo from 'react-native-vector-icons/Entypo';
+import { useToast } from 'react-native-toast-notifications';
 
 const defaultImageUri = require('@/assets/images/defaultprofileimage.png');
 
@@ -27,6 +28,7 @@ export default function Profile() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const toast = useToast();
 
   const getImage = (profileImage: { mime: string; content: string } | null): string => {
     if (!profileImage) {
@@ -43,7 +45,7 @@ export default function Profile() {
         if (!token) return;
 
         // Make API call to get profile data
-        const response = await axios.get<Profile>('http://localhost:5002/profile', {
+        const response = await axios.get<Profile>('http://localhost:3000/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -75,6 +77,7 @@ export default function Profile() {
   const handleSignOut = async () => {
     logout();
     setProfile(null);
+    toast.show("Signed out successfully!", { type: 'success', placement: 'top' });
   };
 
   const pickImage = async () => {
