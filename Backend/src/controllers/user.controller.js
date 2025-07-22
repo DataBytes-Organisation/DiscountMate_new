@@ -64,7 +64,7 @@ const signin = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.encrypted_password);
 
         if (isMatch) {
-            const token = jwt.sign({ email, admin: user.admin }, 'your_jwt_secret', { expiresIn: '1h' });
+            const token = jwt.sign({ email, admin: user.admin }, `${JWT_SECRET}`, { expiresIn: '1h' });
             return res.status(200).json({ message: 'Signin successful', token, admin: user.admin });
         } else {
             return res.status(400).json({ message: 'Invalid credentials' });
@@ -83,7 +83,7 @@ const getProfile = async (req, res) => {
         return res.status(401).json({ message: 'No token provided, please log in' });
     }
 
-    jwt.verify(token, 'your_jwt_secret', async (err, decoded) => {
+    jwt.verify(token, `${JWT_SECRET}`, async (err, decoded) => {
         if (err) {
             return res.status(401).json({ message: 'Invalid token, please log in again' });
         }
@@ -125,7 +125,7 @@ const updateProfileImage = async (req, res) => {
             return res.status(401).json({ message: 'No token provided' });
         }
 
-        const decoded = jwt.verify(token, 'your_jwt_secret');
+        const decoded = jwt.verify(token, `${JWT_SECRET}`);
         const email = decoded.email;
 
         const db = await connectToMongoDB();
@@ -179,7 +179,7 @@ const getProfileImage = async (req, res) => {
         return res.status(401).json({ message: 'No token provided' });
       }
   
-      const decoded = jwt.verify(token, 'your_jwt_secret');
+      const decoded = jwt.verify(token, `${JWT_SECRET}`);
       const email = decoded.email;
   
       const db = await connectToMongoDB();

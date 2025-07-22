@@ -1,6 +1,9 @@
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const path = require("path");
+require('dotenv').config()
+const BASE_URL = process.env.BASE_URL;
+
 
 const options = {
     definition: {
@@ -12,7 +15,7 @@ const options = {
         },
         servers: [
             {
-                url: "http://localhost:3000/api",
+                url: `${BASE_URL}/api`,
             },
         ],
         tags: [
@@ -42,7 +45,7 @@ const swaggerSpec = swaggerJsdoc(options);
 
 const setupSwagger = (app) => {
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-    console.log("Swagger docs available at http://localhost:3000/api-docs");
+    console.log(`Swagger docs available at ${BASE_URL}/api-docs`);
 };
 
 module.exports = setupSwagger;
