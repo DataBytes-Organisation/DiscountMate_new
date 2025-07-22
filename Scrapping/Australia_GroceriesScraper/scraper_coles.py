@@ -89,7 +89,7 @@ def get_rotated_driver():
         }
     }
 
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.7204.157 Safari/537.36"
     
     options = uc.ChromeOptions()
     options.add_argument("--disable-blink-features=AutomationControlled")
@@ -101,7 +101,6 @@ def get_rotated_driver():
     driver = uc.Chrome(
         seleniumwire_options=seleniumwire_options,
         options=options,
-        version_main=135,
         use_subprocess=True
     )
 
@@ -440,9 +439,21 @@ filepath = os.path.join(folderpath, f'{timestamp}_Coles_All_Categories.json')
 with open(filepath, 'w', encoding='utf-8') as f:
     json.dump(all_data, f, ensure_ascii=False, indent=4)
 
+# --- MongoDB Config ---
+username = config.get('MongoDB', 'Username')
+password = config.get('MongoDB', 'Password')
+cluster = config.get('MongoDB', 'Cluster')
+appname = config.get('MongoDB', 'AppName')
+db_name = config.get('MongoDB', 'Database')
+
 # Save the scraped data to the MongoDB database
-client = MongoClient('mongodb+srv://discountmate_read_and_write:discountmate@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster')
-db = client['ScrappedData']
+# --- Build Mongo URI ---
+mongo_uri = f"mongodb+srv://{username}:{password}@{cluster}/?retryWrites=true&w=majority&appName={appname}"
+
+# --- Connect and Insert ---
+client = MongoClient(mongo_uri)
+db = client[db_name]
+
 collection = db[f'{timestamp}_Coles_All']
 collection.insert_many(all_data)
 client.close()
