@@ -1,0 +1,2001 @@
+Store_ID,Product,Category,Date,Units_Sold,Revenue,Discount(%)
+store_02 ,Thingamajig,home,2023/01/21,1,500,5
+store_02 ,Gadget,electronics,2023/01/25,,100,
+Store_04,Thingamajig,Home,2023/03/31,20,Three Hundred,
+store_02 ,Thingamajig,Gadgets,2023/01/10,100,,15
+store_05,Doodad,Home,2023/02/17,,400,
+ STORE_03,Doodad,home,2023/02/13,30,200,15
+Store_04,Gadget,electronics,2023/03/25,2,100,10
+Store_04,Doodad,home,2023/02/28,100,400,5
+Store_01,Widget,Gadgets,2023/03/25,2,300,10
+Store_04,Widget,Home,2023/01/04,30,300,15
+ STORE_03,Doodad,home,2023/03/16,,500,10
+ STORE_03,Gadget,Home,2023/01/25,2,200,15
+ STORE_03,Gadget,Electronics,2023/02/27,3,100,20
+ STORE_03,Doodad,Gadgets,2023/01/03,200,200,15
+store_02 ,Widget,home,2023/02/17,1,500,5
+Store_01,Widget,Electronics,2023/01/22,3,300,5
+Store_01,Widget,Gadgets,2023/03/25,3,400,
+ STORE_03,Doodad,Gadgets,2023/03/02,200,,ten
+Store_04,Gadget,Gadgets,2023/02/27,twenty,500,20
+store_05,Thingamajig,electronics,2023/01/17,10,Three Hundred,15
+store_02 ,Gadget,home,2023/02/05,1,400,15
+ STORE_03,Widget,electronics,2023/03/31,100,,5
+ STORE_03,Doodad,electronics,2023/01/13,100,100,10
+store_02 ,Gadget,Home,2023/01/31,3,Three Hundred,10
+store_02 ,Thingamajig,Electronics,2023/02/10,twenty,300,ten
+Store_04,Thingamajig,Gadgets,2023/01/20,10,400,
+Store_04,Gadget,electronics,2023/01/12,20,400,5
+store_02 ,Doodad,Electronics,2023/02/05,,500,5
+ STORE_03,Gadget,Electronics,2023/01/27,3,Three Hundred,ten
+store_02 ,Widget,Gadgets,2023/02/27,2,500,5
+store_02 ,Doodad,home,2023/01/26,2,Three Hundred,5
+Store_01,Doodad,Electronics,2023/01/20,10,100,15
+store_02 ,Gadget,electronics,2023/02/04,twenty,500,ten
+ STORE_03,Doodad,home,2023/03/09,2,Three Hundred,
+store_02 ,Thingamajig,Home,2023/01/18,3,,10
+store_05,Widget,Electronics,2023/03/05,1,300,ten
+Store_01,Widget,home,2023/01/04,20,400,
+store_05,Widget,electronics,2023/01/17,twenty,500,20
+Store_04,Gadget,Electronics,2023/03/29,20,Three Hundred,ten
+ STORE_03,Doodad,Gadgets,2023/01/17,20,200,20
+store_05,Doodad,Gadgets,2023/02/01,30,500,15
+store_02 ,Doodad,electronics,2023/01/26,30,,
+ STORE_03,Widget,home,2023/03/01,2,500,20
+Store_04,Doodad,Electronics,2023/03/08,20,300,ten
+store_05,Gadget,electronics,2023/03/16,3,400,20
+store_02 ,Thingamajig,home,2023/02/17,,,5
+ STORE_03,Widget,Electronics,2023/02/22,,500,20
+ STORE_03,Gadget,Home,2023/02/24,,200,10
+store_05,Gadget,Home,2023/03/14,200,500,15
+store_05,Thingamajig,Electronics,2023/01/23,1,500,10
+store_02 ,Doodad,home,2023/02/20,3,,15
+Store_04,Doodad,Electronics,2023/01/23,3,,15
+store_02 ,Widget,Gadgets,2023/01/20,twenty,Three Hundred,
+store_02 ,Widget,Electronics,2023/02/01,twenty,Three Hundred,
+store_05,Doodad,Home,2023/02/14,,,ten
+store_02 ,Widget,Electronics,2023/01/20,20,Three Hundred,10
+Store_01,Thingamajig,Home,2023/01/10,30,300,
+Store_01,Thingamajig,Electronics,2023/03/30,2,400,15
+ STORE_03,Widget,Electronics,2023/03/31,2,200,5
+store_05,Doodad,Electronics,2023/03/13,1,Three Hundred,5
+store_02 ,Doodad,Home,2023/01/11,2,500,15
+Store_04,Gadget,electronics,2023/02/13,3,Three Hundred,15
+ STORE_03,Gadget,Electronics,2023/02/21,200,300,
+Store_01,Thingamajig,electronics,2023/02/23,200,300,20
+Store_04,Gadget,Gadgets,2023/02/20,1,,20
+Store_01,Widget,Gadgets,2023/02/15,1,200,
+Store_01,Widget,Home,2023/02/09,twenty,500,15
+store_02 ,Gadget,electronics,2023/03/01,200,200,15
+store_05,Widget,Home,2023/03/29,twenty,100,ten
+store_05,Widget,Gadgets,2023/01/05,twenty,,ten
+ STORE_03,Thingamajig,Gadgets,2023/01/06,,,ten
+store_02 ,Thingamajig,electronics,2023/01/31,2,100,10
+store_02 ,Doodad,Home,2023/01/31,2,200,15
+store_02 ,Gadget,Electronics,2023/01/18,100,500,ten
+ STORE_03,Thingamajig,Gadgets,2023/03/25,1,500,10
+store_05,Doodad,Home,2023/01/19,100,,
+store_02 ,Widget,electronics,2023/01/28,2,Three Hundred,20
+Store_04,Gadget,electronics,2023/03/23,3,Three Hundred,5
+ STORE_03,Thingamajig,home,2023/02/27,30,Three Hundred,10
+store_05,Gadget,home,2023/03/15,twenty,200,15
+ STORE_03,Gadget,home,2023/02/05,30,300,15
+store_05,Widget,Electronics,2023/01/08,3,200,20
+ STORE_03,Thingamajig,Gadgets,2023/01/15,3,400,15
+store_02 ,Widget,Home,2023/01/08,30,Three Hundred,ten
+store_05,Thingamajig,Gadgets,2023/01/18,200,100,10
+ STORE_03,Thingamajig,Electronics,2023/03/10,3,400,
+store_05,Doodad,Gadgets,2023/03/15,200,400,20
+ STORE_03,Gadget,Home,2023/03/07,twenty,100,
+ STORE_03,Gadget,Electronics,2023/01/14,,400,15
+Store_01,Thingamajig,Home,2023/03/01,2,200,
+Store_04,Thingamajig,Gadgets,2023/02/18,10,300,15
+ STORE_03,Widget,Home,2023/01/10,10,400,ten
+Store_04,Gadget,electronics,2023/01/10,1,Three Hundred,15
+store_05,Thingamajig,Home,2023/01/26,100,Three Hundred,15
+Store_04,Gadget,Electronics,2023/03/29,2,Three Hundred,20
+store_02 ,Doodad,electronics,2023/03/17,20,,ten
+ STORE_03,Widget,Electronics,2023/02/26,10,500,ten
+store_05,Gadget,Gadgets,2023/01/25,100,300,10
+store_02 ,Gadget,home,2023/02/11,3,500,
+Store_01,Gadget,Electronics,2023/01/16,20,100,15
+ STORE_03,Gadget,Electronics,2023/01/31,2,500,
+Store_04,Gadget,Home,2023/01/24,twenty,400,
+store_05,Gadget,Electronics,2023/01/02,1,400,ten
+store_02 ,Gadget,home,2023/01/18,100,400,15
+Store_04,Doodad,electronics,2023/02/11,2,100,10
+store_05,Thingamajig,Electronics,2023/01/24,20,300,10
+store_02 ,Gadget,electronics,2023/01/10,3,200,15
+Store_04,Thingamajig,home,2023/02/01,,300,20
+store_05,Thingamajig,Gadgets,2023/03/07,,,ten
+Store_01,Doodad,home,2023/01/04,,100,15
+store_05,Thingamajig,home,2023/01/13,10,,15
+Store_01,Gadget,Electronics,2023/02/23,20,300,5
+store_05,Doodad,Gadgets,2023/03/18,twenty,100,10
+store_05,Doodad,electronics,2023/03/10,100,300,5
+store_02 ,Thingamajig,Home,2023/02/08,10,100,15
+Store_04,Gadget,home,2023/03/03,10,100,ten
+ STORE_03,Thingamajig,Electronics,2023/03/14,100,500,
+Store_04,Thingamajig,electronics,2023/03/07,,Three Hundred,ten
+Store_01,Doodad,Gadgets,2023/01/12,200,500,10
+ STORE_03,Thingamajig,electronics,2023/02/07,1,200,5
+Store_04,Doodad,home,2023/01/01,20,300,ten
+Store_01,Thingamajig,Home,2023/01/15,100,300,10
+store_05,Doodad,Electronics,2023/03/06,100,,15
+store_02 ,Thingamajig,electronics,2023/01/13,200,500,ten
+store_05,Gadget,Home,2023/03/17,1,500,20
+Store_04,Thingamajig,electronics,2023/02/08,10,200,20
+Store_04,Widget,Electronics,2023/03/30,3,500,ten
+store_05,Gadget,electronics,2023/03/03,1,Three Hundred,
+store_02 ,Widget,electronics,2023/03/31,10,300,
+Store_04,Widget,Home,2023/01/02,3,100,10
+Store_04,Thingamajig,Gadgets,2023/01/10,10,300,15
+store_05,Widget,electronics,2023/01/12,10,Three Hundred,10
+store_05,Thingamajig,Home,2023/01/09,10,400,5
+ STORE_03,Widget,Gadgets,2023/03/04,20,100,5
+ STORE_03,Widget,electronics,2023/03/03,200,300,15
+ STORE_03,Doodad,Electronics,2023/01/06,,Three Hundred,20
+Store_01,Gadget,electronics,2023/03/05,30,200,10
+store_02 ,Thingamajig,home,2023/02/22,,500,5
+store_05,Widget,Home,2023/02/07,3,,
+store_02 ,Doodad,Home,2023/03/23,30,Three Hundred,10
+Store_01,Thingamajig,electronics,2023/03/31,30,200,15
+ STORE_03,Thingamajig,Home,2023/03/13,30,,5
+ STORE_03,Thingamajig,Electronics,2023/01/15,20,,5
+store_02 ,Widget,Electronics,2023/03/27,100,100,10
+Store_04,Widget,Home,2023/03/06,100,,5
+Store_01,Gadget,Gadgets,2023/03/11,20,300,
+Store_01,Doodad,Gadgets,2023/03/18,,200,20
+ STORE_03,Widget,home,2023/02/05,2,500,5
+Store_01,Doodad,Electronics,2023/01/08,20,500,
+store_05,Doodad,home,2023/03/09,100,500,ten
+Store_01,Widget,Electronics,2023/03/27,3,500,ten
+Store_04,Doodad,Gadgets,2023/02/04,twenty,300,5
+ STORE_03,Thingamajig,Gadgets,2023/01/03,10,200,20
+store_05,Doodad,Home,2023/03/09,20,Three Hundred,
+Store_01,Thingamajig,Electronics,2023/03/16,30,Three Hundred,10
+ STORE_03,Doodad,Home,2023/03/31,30,200,10
+store_05,Gadget,electronics,2023/03/22,twenty,,20
+store_02 ,Gadget,Electronics,2023/01/21,,300,10
+store_02 ,Gadget,home,2023/01/27,30,100,
+Store_01,Gadget,Electronics,2023/02/21,10,300,ten
+store_05,Thingamajig,electronics,2023/03/31,1,300,ten
+Store_01,Gadget,home,2023/01/12,3,Three Hundred,20
+ STORE_03,Doodad,electronics,2023/01/06,2,400,5
+Store_01,Widget,Gadgets,2023/01/18,,,5
+Store_01,Gadget,Gadgets,2023/02/01,2,,15
+store_02 ,Thingamajig,home,2023/01/19,10,100,15
+store_05,Gadget,home,2023/01/02,1,300,ten
+Store_04,Gadget,Gadgets,2023/01/21,100,200,15
+ STORE_03,Doodad,Gadgets,2023/01/21,30,400,20
+Store_01,Widget,Home,2023/01/12,,400,10
+Store_04,Thingamajig,Gadgets,2023/03/06,3,100,5
+Store_04,Gadget,Electronics,2023/03/29,3,Three Hundred,
+store_05,Thingamajig,electronics,2023/01/24,200,500,15
+store_05,Gadget,Electronics,2023/01/07,1,100,15
+Store_01,Gadget,home,2023/03/12,2,400,10
+Store_01,Gadget,home,2023/01/15,3,200,
+ STORE_03,Thingamajig,Electronics,2023/02/03,30,200,20
+store_05,Doodad,Electronics,2023/01/23,3,,
+Store_01,Doodad,Electronics,2023/03/21,10,300,ten
+Store_04,Doodad,Home,2023/01/30,100,,5
+Store_01,Doodad,home,2023/03/10,100,400,10
+Store_04,Doodad,Home,2023/02/24,20,200,10
+store_05,Doodad,electronics,2023/03/31,,200,5
+Store_04,Gadget,home,2023/03/08,30,300,5
+Store_01,Widget,home,2023/03/21,2,400,ten
+store_02 ,Gadget,home,2023/02/17,200,500,15
+ STORE_03,Widget,Gadgets,2023/03/30,30,100,ten
+Store_04,Gadget,Electronics,2023/02/26,3,400,
+ STORE_03,Thingamajig,electronics,2023/01/01,1,300,20
+Store_04,Doodad,Gadgets,2023/01/21,3,200,15
+store_02 ,Thingamajig,home,2023/03/18,twenty,Three Hundred,5
+ STORE_03,Thingamajig,electronics,2023/01/20,100,300,ten
+Store_04,Doodad,electronics,2023/01/20,10,200,10
+Store_01,Thingamajig,Home,2023/02/02,20,Three Hundred,ten
+ STORE_03,Thingamajig,Electronics,2023/01/23,10,400,
+store_05,Widget,home,2023/01/30,,200,ten
+Store_04,Thingamajig,Electronics,2023/01/22,2,500,20
+store_05,Gadget,Gadgets,2023/03/25,200,200,ten
+Store_04,Widget,home,2023/02/08,3,Three Hundred,10
+Store_04,Widget,Home,2023/02/24,,300,ten
+ STORE_03,Doodad,electronics,2023/01/20,2,500,
+store_02 ,Doodad,home,2023/02/10,twenty,100,5
+store_02 ,Gadget,home,2023/03/12,100,300,
+ STORE_03,Thingamajig,Electronics,2023/03/07,200,300,20
+Store_01,Doodad,home,2023/02/19,100,300,
+Store_04,Gadget,home,2023/03/11,,500,10
+Store_04,Thingamajig,Home,2023/02/23,,500,ten
+store_05,Thingamajig,electronics,2023/02/27,30,200,20
+Store_04,Doodad,Home,2023/02/25,10,500,5
+Store_04,Doodad,electronics,2023/03/01,100,500,5
+Store_01,Widget,Electronics,2023/01/20,100,200,5
+Store_01,Widget,Electronics,2023/02/26,20,400,ten
+Store_04,Gadget,Electronics,2023/02/16,200,200,
+Store_04,Widget,Electronics,2023/03/26,3,200,5
+Store_01,Gadget,home,2023/03/21,twenty,400,10
+ STORE_03,Thingamajig,Electronics,2023/01/02,2,300,15
+store_05,Gadget,Electronics,2023/02/11,2,100,20
+store_05,Doodad,electronics,2023/02/18,1,500,20
+store_02 ,Gadget,electronics,2023/02/15,10,200,5
+store_05,Gadget,home,2023/01/04,twenty,300,20
+store_02 ,Widget,Gadgets,2023/02/18,30,100,20
+Store_01,Thingamajig,home,2023/03/12,30,Three Hundred,5
+store_02 ,Doodad,electronics,2023/02/24,20,100,
+Store_01,Gadget,electronics,2023/02/13,30,200,20
+ STORE_03,Widget,Electronics,2023/01/11,2,500,5
+Store_01,Widget,home,2023/01/08,30,400,20
+Store_04,Doodad,Home,2023/02/12,,100,5
+ STORE_03,Thingamajig,home,2023/01/13,200,400,
+store_05,Gadget,electronics,2023/03/12,200,200,5
+Store_04,Thingamajig,Home,2023/02/07,200,Three Hundred,
+store_05,Widget,Gadgets,2023/03/16,2,200,ten
+store_02 ,Doodad,Gadgets,2023/02/24,200,100,10
+Store_01,Thingamajig,Electronics,2023/03/14,,100,ten
+ STORE_03,Widget,electronics,2023/01/06,3,100,5
+ STORE_03,Thingamajig,Electronics,2023/01/01,1,Three Hundred,15
+Store_01,Gadget,home,2023/01/18,,300,10
+store_02 ,Doodad,Home,2023/02/28,200,400,10
+Store_01,Doodad,Gadgets,2023/01/15,30,500,20
+store_05,Gadget,Gadgets,2023/02/17,200,400,
+Store_04,Gadget,Gadgets,2023/02/16,3,,ten
+Store_04,Gadget,Gadgets,2023/02/25,20,500,
+Store_01,Thingamajig,Electronics,2023/01/08,twenty,300,20
+Store_04,Widget,Electronics,2023/01/21,2,300,10
+Store_04,Thingamajig,home,2023/03/15,2,500,20
+Store_04,Gadget,electronics,2023/01/06,3,Three Hundred,
+Store_01,Gadget,Gadgets,2023/02/28,200,500,5
+store_05,Widget,electronics,2023/02/21,100,100,20
+Store_01,Thingamajig,Home,2023/01/14,twenty,Three Hundred,ten
+Store_01,Thingamajig,electronics,2023/01/23,200,400,5
+ STORE_03,Widget,electronics,2023/03/02,10,Three Hundred,
+store_02 ,Gadget,home,2023/03/20,100,400,5
+store_05,Doodad,Electronics,2023/02/02,30,300,15
+ STORE_03,Thingamajig,Home,2023/03/03,100,500,10
+store_05,Doodad,electronics,2023/02/23,3,500,
+Store_01,Widget,Gadgets,2023/02/18,100,Three Hundred,10
+Store_04,Doodad,Gadgets,2023/02/04,100,100,5
+Store_01,Widget,Home,2023/01/04,10,200,
+ STORE_03,Thingamajig,Electronics,2023/02/08,200,200,
+store_05,Doodad,Home,2023/02/18,10,400,5
+store_02 ,Gadget,Home,2023/02/02,30,500,
+ STORE_03,Gadget,Electronics,2023/01/09,30,400,ten
+store_05,Widget,Gadgets,2023/02/23,30,Three Hundred,15
+Store_04,Doodad,Electronics,2023/02/26,20,200,ten
+Store_04,Doodad,electronics,2023/03/12,200,400,10
+Store_01,Gadget,home,2023/02/01,1,200,15
+store_05,Thingamajig,Gadgets,2023/03/19,10,,
+Store_04,Thingamajig,electronics,2023/02/13,100,300,10
+ STORE_03,Thingamajig,Home,2023/03/18,30,400,5
+store_02 ,Thingamajig,electronics,2023/03/01,3,500,
+Store_01,Thingamajig,electronics,2023/03/24,20,Three Hundred,20
+Store_01,Doodad,Home,2023/02/04,100,100,15
+ STORE_03,Thingamajig,Home,2023/03/23,20,,
+ STORE_03,Thingamajig,electronics,2023/02/23,1,500,20
+store_05,Gadget,home,2023/02/18,,400,
+store_05,Widget,Gadgets,2023/03/28,20,500,ten
+store_05,Thingamajig,electronics,2023/01/08,30,200,20
+Store_01,Widget,home,2023/01/05,2,200,
+Store_04,Widget,Gadgets,2023/02/10,30,500,5
+Store_04,Widget,electronics,2023/02/13,,400,
+ STORE_03,Thingamajig,Home,2023/03/14,30,300,5
+store_02 ,Widget,Electronics,2023/02/05,3,200,20
+Store_01,Doodad,electronics,2023/01/12,100,500,10
+store_02 ,Thingamajig,home,2023/03/28,3,200,15
+Store_04,Widget,Home,2023/01/15,10,500,10
+Store_01,Doodad,electronics,2023/01/13,200,Three Hundred,15
+store_02 ,Doodad,home,2023/01/05,twenty,400,ten
+Store_04,Gadget,Electronics,2023/01/24,3,400,15
+ STORE_03,Widget,Gadgets,2023/02/02,20,100,5
+store_05,Widget,Gadgets,2023/02/08,1,100,20
+Store_01,Thingamajig,Gadgets,2023/03/14,20,,20
+store_05,Widget,Home,2023/01/12,30,200,20
+store_02 ,Gadget,Gadgets,2023/01/20,2,200,10
+ STORE_03,Gadget,home,2023/02/15,200,200,20
+Store_04,Doodad,home,2023/03/15,10,200,
+store_02 ,Gadget,Home,2023/03/03,10,300,ten
+Store_01,Widget,home,2023/03/01,100,400,5
+store_05,Thingamajig,Gadgets,2023/01/25,20,,20
+store_05,Gadget,home,2023/02/23,1,500,ten
+store_05,Gadget,home,2023/03/14,3,Three Hundred,15
+ STORE_03,Widget,Electronics,2023/01/12,20,,
+store_02 ,Widget,Gadgets,2023/01/29,1,300,
+Store_04,Doodad,Electronics,2023/01/13,1,200,5
+Store_04,Doodad,Gadgets,2023/01/25,10,300,ten
+Store_04,Widget,Home,2023/02/13,3,400,20
+store_02 ,Widget,Electronics,2023/02/26,100,400,5
+store_05,Doodad,Home,2023/03/11,2,Three Hundred,5
+store_02 ,Thingamajig,Home,2023/01/29,100,400,5
+store_05,Gadget,Home,2023/01/30,30,500,10
+store_05,Gadget,Electronics,2023/03/20,,500,15
+ STORE_03,Widget,Electronics,2023/03/19,,200,
+Store_04,Gadget,home,2023/02/24,3,Three Hundred,15
+ STORE_03,Widget,home,2023/02/09,10,,ten
+ STORE_03,Gadget,home,2023/01/04,2,100,
+store_02 ,Gadget,Home,2023/03/27,30,Three Hundred,20
+Store_01,Widget,Home,2023/02/10,3,500,ten
+ STORE_03,Doodad,electronics,2023/01/26,10,,5
+ STORE_03,Doodad,Gadgets,2023/02/10,100,Three Hundred,10
+Store_01,Thingamajig,Gadgets,2023/02/26,200,200,20
+ STORE_03,Gadget,Electronics,2023/03/09,10,100,ten
+Store_04,Gadget,Home,2023/03/21,3,400,10
+store_02 ,Doodad,Gadgets,2023/03/18,200,Three Hundred,5
+Store_04,Thingamajig,electronics,2023/03/17,200,200,ten
+store_02 ,Widget,home,2023/02/03,,300,5
+store_05,Gadget,electronics,2023/01/01,100,300,ten
+Store_04,Thingamajig,electronics,2023/03/04,10,200,15
+Store_01,Widget,Home,2023/02/09,,500,15
+Store_04,Widget,Gadgets,2023/02/22,2,500,
+ STORE_03,Thingamajig,Home,2023/01/24,1,300,5
+store_05,Widget,home,2023/01/20,,100,20
+ STORE_03,Widget,Gadgets,2023/03/11,20,500,ten
+store_02 ,Thingamajig,electronics,2023/03/04,30,100,
+Store_04,Thingamajig,Gadgets,2023/01/28,twenty,500,10
+ STORE_03,Doodad,electronics,2023/01/13,,100,10
+ STORE_03,Thingamajig,home,2023/02/13,30,300,15
+store_02 ,Widget,home,2023/02/26,100,400,5
+ STORE_03,Doodad,Electronics,2023/01/18,30,500,
+store_02 ,Widget,home,2023/03/29,3,,
+ STORE_03,Doodad,Gadgets,2023/01/19,,200,20
+store_05,Thingamajig,home,2023/01/06,2,100,
+store_05,Gadget,Electronics,2023/01/30,200,300,10
+store_05,Thingamajig,Home,2023/03/09,1,100,
+Store_01,Doodad,home,2023/02/20,3,Three Hundred,ten
+Store_04,Gadget,electronics,2023/02/24,,300,5
+store_02 ,Thingamajig,Home,2023/02/24,1,200,20
+ STORE_03,Thingamajig,home,2023/02/09,10,200,15
+Store_04,Widget,Electronics,2023/03/22,,400,
+Store_01,Thingamajig,Gadgets,2023/02/07,30,500,5
+store_02 ,Doodad,Home,2023/02/28,30,500,10
+store_02 ,Widget,Home,2023/02/14,20,500,10
+Store_01,Gadget,Electronics,2023/02/21,,500,5
+store_05,Doodad,home,2023/02/19,100,100,20
+Store_01,Thingamajig,Gadgets,2023/02/19,200,Three Hundred,10
+store_02 ,Gadget,Gadgets,2023/02/07,1,Three Hundred,
+Store_04,Doodad,home,2023/01/02,200,300,ten
+store_05,Thingamajig,Electronics,2023/01/21,,200,ten
+Store_01,Widget,Home,2023/03/19,20,,10
+Store_01,Thingamajig,electronics,2023/02/23,1,200,10
+store_02 ,Thingamajig,Gadgets,2023/03/26,20,200,15
+Store_01,Doodad,Electronics,2023/01/16,,300,ten
+store_05,Doodad,home,2023/03/05,200,300,5
+store_02 ,Gadget,home,2023/03/29,200,,
+store_02 ,Widget,Gadgets,2023/01/28,30,,
+Store_04,Gadget,Gadgets,2023/03/18,100,300,15
+store_05,Widget,Home,2023/03/03,100,400,5
+store_02 ,Widget,Home,2023/03/18,30,500,ten
+ STORE_03,Thingamajig,Gadgets,2023/01/04,2,200,5
+Store_04,Gadget,electronics,2023/02/13,3,100,15
+Store_01,Gadget,home,2023/01/08,200,300,20
+store_02 ,Thingamajig,electronics,2023/01/11,200,400,
+ STORE_03,Doodad,Home,2023/02/12,200,400,5
+Store_01,Doodad,Gadgets,2023/03/13,3,300,ten
+Store_01,Gadget,electronics,2023/01/07,20,300,ten
+store_05,Doodad,Home,2023/02/03,2,Three Hundred,
+Store_01,Widget,Home,2023/03/22,3,400,15
+store_02 ,Doodad,home,2023/02/24,30,500,20
+Store_04,Doodad,Home,2023/02/06,2,,5
+ STORE_03,Thingamajig,Electronics,2023/03/21,100,300,10
+store_05,Gadget,home,2023/01/14,100,500,
+store_05,Widget,home,2023/03/15,30,,ten
+store_02 ,Doodad,Electronics,2023/01/28,,Three Hundred,5
+store_05,Doodad,home,2023/03/04,10,500,20
+ STORE_03,Doodad,electronics,2023/01/27,1,Three Hundred,ten
+Store_01,Doodad,Electronics,2023/03/05,1,500,15
+ STORE_03,Doodad,electronics,2023/01/17,twenty,200,5
+Store_04,Gadget,Home,2023/01/02,30,Three Hundred,ten
+ STORE_03,Doodad,Home,2023/02/19,2,200,
+Store_04,Gadget,Gadgets,2023/03/13,2,300,ten
+Store_04,Doodad,electronics,2023/03/09,100,200,15
+store_05,Gadget,electronics,2023/02/06,100,200,
+store_02 ,Gadget,electronics,2023/01/31,100,100,5
+Store_01,Gadget,Home,2023/03/25,3,,20
+Store_01,Gadget,home,2023/01/20,twenty,300,15
+store_02 ,Thingamajig,Home,2023/01/05,twenty,300,10
+ STORE_03,Gadget,Gadgets,2023/01/21,,,15
+Store_04,Widget,Electronics,2023/03/18,20,Three Hundred,5
+Store_04,Gadget,home,2023/03/17,10,100,10
+Store_01,Thingamajig,Gadgets,2023/02/15,20,400,5
+Store_04,Widget,home,2023/01/21,10,300,10
+Store_01,Doodad,electronics,2023/02/26,10,,10
+store_02 ,Thingamajig,Gadgets,2023/02/17,200,100,ten
+Store_04,Gadget,electronics,2023/01/26,,300,20
+ STORE_03,Thingamajig,Electronics,2023/02/25,2,400,10
+store_02 ,Thingamajig,Gadgets,2023/02/25,twenty,300,20
+Store_01,Widget,Electronics,2023/03/06,2,200,5
+ STORE_03,Thingamajig,Electronics,2023/01/28,200,200,
+store_02 ,Doodad,electronics,2023/02/28,twenty,300,ten
+ STORE_03,Gadget,home,2023/01/24,,,ten
+ STORE_03,Thingamajig,Home,2023/02/09,200,400,5
+Store_01,Doodad,Home,2023/02/17,200,200,
+store_05,Doodad,Electronics,2023/02/02,10,300,10
+store_05,Thingamajig,electronics,2023/02/21,10,300,
+ STORE_03,Widget,home,2023/03/30,2,200,10
+store_02 ,Thingamajig,Gadgets,2023/02/03,,500,ten
+ STORE_03,Doodad,Gadgets,2023/03/08,1,300,
+store_05,Doodad,home,2023/01/27,1,200,
+store_05,Gadget,Gadgets,2023/03/07,100,400,20
+Store_01,Thingamajig,electronics,2023/03/17,100,,15
+Store_01,Gadget,electronics,2023/02/08,10,400,15
+store_02 ,Thingamajig,Home,2023/01/24,100,400,5
+ STORE_03,Doodad,electronics,2023/03/05,,100,15
+store_02 ,Widget,Home,2023/03/24,20,Three Hundred,15
+ STORE_03,Thingamajig,Electronics,2023/03/19,twenty,Three Hundred,10
+store_02 ,Thingamajig,Gadgets,2023/01/27,twenty,,20
+Store_01,Doodad,Electronics,2023/03/24,twenty,400,20
+store_02 ,Gadget,home,2023/03/06,,Three Hundred,ten
+store_05,Thingamajig,Gadgets,2023/02/10,20,200,5
+store_02 ,Thingamajig,home,2023/02/05,20,400,5
+ STORE_03,Gadget,electronics,2023/03/27,2,500,
+store_05,Thingamajig,Electronics,2023/02/09,3,300,ten
+Store_01,Doodad,Home,2023/02/06,100,Three Hundred,
+Store_04,Thingamajig,Electronics,2023/02/26,20,200,5
+store_02 ,Widget,Gadgets,2023/02/27,100,Three Hundred,15
+Store_01,Doodad,home,2023/01/13,30,,20
+ STORE_03,Thingamajig,Gadgets,2023/02/28,1,500,ten
+store_05,Doodad,electronics,2023/03/13,,400,15
+store_02 ,Widget,home,2023/01/30,100,100,15
+ STORE_03,Doodad,Electronics,2023/03/17,3,Three Hundred,20
+Store_01,Doodad,Home,2023/02/11,30,400,20
+ STORE_03,Doodad,Electronics,2023/01/15,30,300,
+Store_04,Thingamajig,Gadgets,2023/02/11,twenty,Three Hundred,20
+store_02 ,Doodad,Gadgets,2023/01/14,30,100,10
+store_02 ,Thingamajig,electronics,2023/03/28,twenty,100,10
+ STORE_03,Thingamajig,Home,2023/02/18,20,300,20
+Store_04,Gadget,Gadgets,2023/03/16,2,200,15
+Store_01,Thingamajig,Home,2023/03/02,30,,5
+ STORE_03,Gadget,Home,2023/01/01,20,,15
+ STORE_03,Gadget,home,2023/02/14,twenty,100,20
+Store_01,Gadget,Gadgets,2023/01/03,10,300,10
+store_05,Thingamajig,home,2023/02/08,10,300,10
+Store_04,Gadget,electronics,2023/03/02,100,,
+store_05,Thingamajig,Electronics,2023/03/28,200,400,15
+Store_04,Widget,Electronics,2023/01/05,10,500,15
+store_05,Thingamajig,electronics,2023/02/25,twenty,200,
+Store_04,Thingamajig,Home,2023/01/29,3,100,5
+store_05,Gadget,electronics,2023/03/20,twenty,200,10
+store_02 ,Thingamajig,home,2023/03/12,10,200,ten
+store_02 ,Thingamajig,Electronics,2023/03/05,,200,10
+store_02 ,Gadget,home,2023/01/21,10,500,ten
+store_05,Thingamajig,Home,2023/01/24,30,100,ten
+Store_01,Gadget,electronics,2023/03/05,2,400,15
+Store_01,Widget,home,2023/03/12,2,Three Hundred,15
+store_05,Doodad,Gadgets,2023/01/25,20,300,
+store_02 ,Thingamajig,Home,2023/03/07,,400,5
+Store_04,Doodad,home,2023/01/23,10,200,5
+Store_04,Doodad,Gadgets,2023/02/01,200,100,ten
+store_05,Doodad,home,2023/01/22,2,200,
+store_02 ,Gadget,Home,2023/01/23,10,Three Hundred,10
+ STORE_03,Doodad,home,2023/03/09,200,,5
+store_02 ,Doodad,Gadgets,2023/03/08,200,300,
+store_05,Gadget,electronics,2023/03/21,200,500,ten
+ STORE_03,Thingamajig,Gadgets,2023/02/03,2,200,ten
+Store_04,Gadget,Electronics,2023/01/09,30,,ten
+Store_04,Widget,Gadgets,2023/02/25,10,100,5
+Store_04,Thingamajig,Electronics,2023/03/08,20,Three Hundred,15
+Store_04,Widget,electronics,2023/01/04,10,500,ten
+store_05,Thingamajig,Electronics,2023/02/08,3,400,5
+Store_04,Thingamajig,electronics,2023/03/19,3,,
+Store_01,Doodad,electronics,2023/02/18,1,500,15
+Store_04,Thingamajig,electronics,2023/01/04,,,15
+store_05,Thingamajig,home,2023/03/17,30,100,
+ STORE_03,Thingamajig,Electronics,2023/03/12,20,400,15
+Store_04,Thingamajig,Electronics,2023/02/08,200,400,10
+store_05,Doodad,Home,2023/03/11,200,100,ten
+store_05,Doodad,Gadgets,2023/01/21,,Three Hundred,10
+ STORE_03,Widget,Home,2023/03/23,2,,20
+Store_04,Widget,Gadgets,2023/01/28,3,,10
+ STORE_03,Gadget,Home,2023/01/26,10,100,ten
+Store_04,Widget,Home,2023/03/13,2,300,ten
+Store_01,Gadget,electronics,2023/02/13,200,300,15
+store_02 ,Doodad,Home,2023/02/25,,Three Hundred,15
+store_02 ,Gadget,Electronics,2023/03/09,twenty,500,20
+store_02 ,Gadget,Electronics,2023/01/10,200,,15
+Store_04,Doodad,Electronics,2023/01/07,3,Three Hundred,
+store_02 ,Gadget,Gadgets,2023/03/03,,400,ten
+ STORE_03,Widget,Home,2023/01/01,,100,5
+Store_01,Widget,Gadgets,2023/03/21,30,500,20
+store_02 ,Gadget,Home,2023/02/11,200,100,10
+Store_01,Doodad,Gadgets,2023/03/09,10,500,20
+store_05,Thingamajig,Home,2023/02/26,30,300,15
+Store_01,Thingamajig,Gadgets,2023/01/12,100,300,10
+ STORE_03,Widget,Electronics,2023/01/09,3,400,10
+store_05,Doodad,electronics,2023/02/16,100,100,20
+store_02 ,Widget,electronics,2023/01/18,1,200,15
+Store_04,Widget,electronics,2023/03/11,twenty,,15
+Store_04,Thingamajig,Home,2023/03/09,100,,
+Store_01,Gadget,Electronics,2023/02/08,,,ten
+store_02 ,Widget,home,2023/02/14,twenty,400,15
+Store_04,Doodad,home,2023/03/26,3,500,ten
+store_02 ,Thingamajig,home,2023/03/27,,,5
+Store_04,Thingamajig,home,2023/03/29,20,500,20
+Store_04,Widget,home,2023/03/01,,200,10
+store_05,Widget,electronics,2023/03/23,twenty,400,5
+Store_01,Widget,Electronics,2023/01/04,100,300,
+ STORE_03,Gadget,Gadgets,2023/02/23,twenty,200,ten
+store_02 ,Thingamajig,Home,2023/03/25,10,100,20
+Store_01,Gadget,Home,2023/02/16,1,100,10
+store_05,Thingamajig,Gadgets,2023/02/11,30,300,10
+ STORE_03,Widget,Home,2023/03/11,1,Three Hundred,ten
+store_02 ,Widget,Electronics,2023/01/04,10,100,5
+ STORE_03,Doodad,Gadgets,2023/01/10,100,,20
+Store_04,Gadget,home,2023/03/14,10,500,15
+ STORE_03,Doodad,home,2023/01/04,3,300,10
+ STORE_03,Thingamajig,home,2023/01/15,20,200,10
+store_02 ,Doodad,Electronics,2023/02/06,1,100,5
+store_05,Thingamajig,home,2023/02/22,200,500,15
+store_05,Doodad,Home,2023/02/05,10,200,10
+Store_04,Widget,electronics,2023/01/15,twenty,100,10
+Store_01,Widget,Gadgets,2023/03/04,3,300,10
+Store_04,Doodad,electronics,2023/01/28,10,100,20
+ STORE_03,Widget,Electronics,2023/02/08,10,500,ten
+ STORE_03,Thingamajig,Gadgets,2023/03/14,30,400,20
+Store_01,Widget,Home,2023/03/05,20,200,5
+Store_01,Doodad,home,2023/01/25,30,Three Hundred,10
+Store_01,Thingamajig,electronics,2023/03/06,10,Three Hundred,15
+ STORE_03,Thingamajig,home,2023/03/22,,Three Hundred,15
+store_05,Doodad,Home,2023/01/27,,400,5
+store_02 ,Thingamajig,electronics,2023/03/10,twenty,400,15
+store_02 ,Doodad,Electronics,2023/01/15,20,400,ten
+store_05,Doodad,Home,2023/03/27,1,200,
+store_02 ,Widget,Home,2023/02/03,twenty,,
+Store_01,Widget,Gadgets,2023/03/19,200,Three Hundred,
+store_02 ,Widget,home,2023/01/26,3,200,
+store_02 ,Thingamajig,home,2023/03/03,twenty,300,20
+store_02 ,Doodad,electronics,2023/01/29,200,Three Hundred,ten
+Store_01,Gadget,Electronics,2023/03/09,10,Three Hundred,
+Store_04,Doodad,Gadgets,2023/01/17,30,,
+store_02 ,Widget,Home,2023/03/12,30,,20
+Store_04,Doodad,Gadgets,2023/03/01,10,,ten
+store_02 ,Gadget,Gadgets,2023/01/12,30,400,
+Store_01,Doodad,Gadgets,2023/02/25,3,100,
+ STORE_03,Gadget,Gadgets,2023/03/18,1,500,20
+ STORE_03,Thingamajig,Gadgets,2023/01/21,20,200,15
+ STORE_03,Doodad,home,2023/03/09,30,300,
+store_02 ,Widget,electronics,2023/03/15,twenty,200,20
+Store_01,Doodad,Home,2023/02/26,1,400,
+store_05,Doodad,Gadgets,2023/01/23,10,,5
+Store_04,Gadget,Gadgets,2023/03/02,,200,ten
+ STORE_03,Widget,Electronics,2023/02/01,100,300,
+store_05,Thingamajig,Gadgets,2023/01/21,20,,20
+store_02 ,Doodad,Electronics,2023/03/16,20,400,10
+Store_04,Widget,home,2023/01/19,1,200,5
+Store_04,Widget,Electronics,2023/03/17,3,200,10
+Store_04,Gadget,home,2023/03/13,twenty,Three Hundred,10
+Store_01,Thingamajig,Electronics,2023/03/25,100,500,20
+Store_01,Thingamajig,electronics,2023/02/17,1,,10
+store_02 ,Widget,Electronics,2023/03/21,10,Three Hundred,10
+Store_04,Gadget,Home,2023/02/28,20,200,
+store_05,Gadget,Home,2023/03/12,100,,10
+Store_01,Gadget,home,2023/01/06,20,200,20
+store_05,Gadget,electronics,2023/01/25,3,400,
+Store_01,Thingamajig,electronics,2023/02/24,twenty,100,15
+Store_04,Thingamajig,Gadgets,2023/03/14,30,400,5
+Store_04,Thingamajig,home,2023/03/14,,100,5
+Store_04,Thingamajig,electronics,2023/03/01,,100,10
+store_02 ,Doodad,electronics,2023/01/15,200,,ten
+store_05,Gadget,Gadgets,2023/01/14,twenty,,15
+Store_04,Gadget,home,2023/02/24,200,100,5
+ STORE_03,Doodad,home,2023/03/24,20,Three Hundred,
+Store_01,Doodad,Home,2023/02/05,100,200,5
+Store_04,Doodad,electronics,2023/01/22,100,300,ten
+store_05,Gadget,electronics,2023/03/23,2,400,20
+Store_04,Widget,Electronics,2023/01/19,200,500,20
+ STORE_03,Thingamajig,Gadgets,2023/03/18,100,Three Hundred,20
+store_05,Thingamajig,Home,2023/03/15,100,Three Hundred,10
+Store_01,Doodad,Home,2023/02/07,100,Three Hundred,5
+store_02 ,Doodad,Home,2023/02/02,200,Three Hundred,5
+Store_01,Widget,Gadgets,2023/02/02,twenty,Three Hundred,ten
+store_05,Widget,home,2023/02/19,30,400,15
+ STORE_03,Thingamajig,Home,2023/03/13,2,200,
+ STORE_03,Thingamajig,Gadgets,2023/02/10,twenty,Three Hundred,5
+store_02 ,Gadget,Gadgets,2023/02/21,20,400,5
+store_05,Gadget,Electronics,2023/01/19,3,100,
+Store_01,Doodad,Home,2023/03/16,,300,15
+store_05,Gadget,home,2023/01/22,1,100,20
+Store_01,Doodad,electronics,2023/02/05,1,100,ten
+Store_04,Gadget,home,2023/03/22,20,500,5
+Store_04,Doodad,Home,2023/03/04,3,200,5
+store_02 ,Gadget,Home,2023/02/02,1,Three Hundred,
+ STORE_03,Doodad,home,2023/02/25,100,500,ten
+Store_04,Gadget,electronics,2023/02/19,1,200,15
+Store_04,Gadget,Electronics,2023/03/30,20,,15
+ STORE_03,Thingamajig,home,2023/03/04,3,300,
+Store_04,Widget,Electronics,2023/02/23,twenty,Three Hundred,15
+ STORE_03,Widget,Home,2023/01/11,200,300,ten
+store_02 ,Widget,home,2023/02/18,100,200,
+store_02 ,Doodad,Home,2023/01/10,30,200,ten
+store_02 ,Widget,Electronics,2023/02/21,,Three Hundred,15
+store_02 ,Widget,Electronics,2023/01/09,2,100,10
+store_05,Doodad,Electronics,2023/03/15,200,Three Hundred,ten
+store_05,Thingamajig,Gadgets,2023/03/26,30,300,20
+Store_04,Gadget,Electronics,2023/01/12,,100,5
+store_05,Doodad,Home,2023/01/03,30,Three Hundred,ten
+Store_01,Doodad,electronics,2023/01/22,100,500,20
+Store_04,Widget,home,2023/02/17,200,500,15
+Store_04,Doodad,electronics,2023/02/25,20,300,15
+Store_04,Thingamajig,Gadgets,2023/01/29,100,100,
+Store_01,Gadget,Electronics,2023/02/15,2,100,ten
+store_05,Gadget,Gadgets,2023/01/24,3,100,
+store_02 ,Doodad,home,2023/03/12,twenty,100,
+Store_04,Thingamajig,Electronics,2023/03/13,2,Three Hundred,ten
+Store_04,Thingamajig,electronics,2023/03/05,,400,15
+Store_04,Thingamajig,Electronics,2023/02/06,1,500,ten
+Store_04,Widget,Electronics,2023/03/15,20,Three Hundred,ten
+store_02 ,Widget,Home,2023/02/27,2,200,20
+store_02 ,Doodad,home,2023/02/18,30,Three Hundred,ten
+store_02 ,Thingamajig,Electronics,2023/03/25,20,400,15
+ STORE_03,Doodad,Electronics,2023/02/18,3,300,20
+store_05,Doodad,Electronics,2023/03/31,twenty,Three Hundred,20
+Store_01,Widget,home,2023/01/17,100,500,5
+ STORE_03,Widget,Electronics,2023/02/18,2,100,10
+store_02 ,Doodad,Gadgets,2023/02/11,1,,5
+store_02 ,Thingamajig,electronics,2023/01/21,1,Three Hundred,20
+store_02 ,Doodad,electronics,2023/02/08,100,400,
+ STORE_03,Doodad,Home,2023/01/23,30,400,20
+store_02 ,Widget,electronics,2023/01/17,200,,20
+store_05,Doodad,Gadgets,2023/01/25,twenty,,5
+Store_01,Widget,Home,2023/02/14,200,100,
+store_02 ,Thingamajig,Electronics,2023/03/04,1,100,
+store_05,Widget,Gadgets,2023/03/30,2,Three Hundred,5
+Store_04,Thingamajig,home,2023/03/21,twenty,,
+Store_04,Widget,Gadgets,2023/02/19,3,500,ten
+store_05,Thingamajig,electronics,2023/03/04,30,500,ten
+Store_04,Thingamajig,home,2023/03/20,,500,5
+Store_04,Widget,Gadgets,2023/02/23,20,400,ten
+store_05,Widget,Electronics,2023/03/15,1,400,5
+store_02 ,Widget,home,2023/03/31,10,300,
+Store_01,Thingamajig,electronics,2023/03/25,20,100,
+ STORE_03,Widget,Home,2023/03/24,3,300,ten
+Store_04,Thingamajig,Electronics,2023/01/13,200,500,20
+store_05,Doodad,home,2023/02/09,100,Three Hundred,10
+store_02 ,Thingamajig,Gadgets,2023/01/03,10,100,10
+ STORE_03,Widget,Gadgets,2023/02/16,20,300,20
+ STORE_03,Thingamajig,Electronics,2023/03/28,20,500,ten
+store_05,Doodad,home,2023/03/06,twenty,,20
+store_05,Widget,Gadgets,2023/01/26,twenty,200,ten
+Store_04,Gadget,electronics,2023/02/20,20,300,10
+ STORE_03,Thingamajig,Home,2023/01/26,1,400,10
+store_05,Doodad,Home,2023/01/16,200,100,10
+Store_01,Thingamajig,electronics,2023/01/23,twenty,500,ten
+Store_01,Doodad,electronics,2023/01/21,10,100,10
+Store_04,Doodad,Home,2023/02/23,100,200,20
+Store_01,Thingamajig,Gadgets,2023/02/04,3,Three Hundred,5
+Store_01,Gadget,Home,2023/01/24,,Three Hundred,
+store_05,Thingamajig,Home,2023/01/05,2,100,20
+store_02 ,Widget,electronics,2023/01/29,1,200,10
+store_02 ,Thingamajig,Gadgets,2023/02/05,,500,10
+ STORE_03,Gadget,Electronics,2023/02/04,,,ten
+store_05,Widget,Electronics,2023/02/28,200,200,ten
+store_02 ,Widget,home,2023/02/26,1,,ten
+store_05,Doodad,Gadgets,2023/03/20,1,200,15
+Store_04,Doodad,electronics,2023/02/17,,200,15
+Store_01,Thingamajig,home,2023/02/23,20,200,5
+Store_01,Widget,home,2023/01/15,2,400,ten
+store_05,Thingamajig,Home,2023/03/07,3,300,ten
+store_02 ,Doodad,home,2023/01/16,30,100,15
+store_05,Doodad,home,2023/01/22,20,300,ten
+Store_04,Widget,home,2023/03/05,200,400,ten
+Store_04,Doodad,Gadgets,2023/02/13,,500,20
+ STORE_03,Doodad,Home,2023/01/18,3,500,ten
+store_02 ,Widget,Gadgets,2023/02/07,,400,20
+store_05,Thingamajig,Gadgets,2023/01/29,30,,5
+Store_01,Doodad,home,2023/03/22,2,300,ten
+store_05,Gadget,Home,2023/01/29,200,200,15
+store_05,Widget,electronics,2023/01/23,1,200,20
+Store_04,Thingamajig,Gadgets,2023/03/19,30,300,20
+Store_04,Thingamajig,Gadgets,2023/02/20,10,,20
+ STORE_03,Gadget,Electronics,2023/02/01,2,500,ten
+Store_04,Thingamajig,home,2023/03/07,twenty,500,5
+ STORE_03,Doodad,Electronics,2023/02/10,twenty,100,10
+store_05,Doodad,Gadgets,2023/02/01,30,400,
+ STORE_03,Widget,Gadgets,2023/03/14,200,400,5
+Store_04,Gadget,home,2023/01/18,20,500,15
+store_05,Widget,Electronics,2023/01/21,10,400,ten
+ STORE_03,Gadget,home,2023/03/04,30,100,ten
+Store_04,Widget,Gadgets,2023/03/01,100,400,15
+Store_01,Doodad,Home,2023/02/10,30,100,10
+Store_04,Gadget,home,2023/01/10,20,,
+store_02 ,Thingamajig,Home,2023/02/15,30,,20
+store_02 ,Gadget,electronics,2023/01/09,3,300,15
+Store_01,Doodad,home,2023/03/12,3,300,5
+ STORE_03,Gadget,Gadgets,2023/02/20,30,500,ten
+Store_01,Thingamajig,Electronics,2023/02/10,100,400,10
+Store_01,Doodad,home,2023/02/02,twenty,,20
+ STORE_03,Thingamajig,Home,2023/01/17,1,Three Hundred,ten
+Store_01,Doodad,Electronics,2023/01/01,10,200,5
+Store_04,Widget,home,2023/03/29,twenty,400,
+Store_04,Doodad,electronics,2023/01/13,twenty,500,10
+store_02 ,Gadget,home,2023/03/30,2,300,5
+Store_01,Widget,Home,2023/03/26,2,400,10
+store_02 ,Thingamajig,home,2023/01/19,twenty,400,ten
+ STORE_03,Thingamajig,Electronics,2023/03/11,2,300,15
+Store_04,Doodad,Gadgets,2023/01/11,,100,5
+store_05,Gadget,Home,2023/03/22,twenty,500,20
+store_02 ,Widget,electronics,2023/03/10,200,200,
+store_02 ,Widget,electronics,2023/03/08,1,500,
+ STORE_03,Widget,Gadgets,2023/03/12,10,Three Hundred,10
+store_02 ,Gadget,Gadgets,2023/02/25,200,500,10
+ STORE_03,Gadget,Home,2023/01/30,3,400,5
+Store_01,Doodad,Gadgets,2023/02/15,200,Three Hundred,ten
+store_05,Thingamajig,Gadgets,2023/01/02,twenty,Three Hundred,5
+store_05,Thingamajig,Home,2023/03/02,30,200,15
+store_05,Gadget,Electronics,2023/01/06,20,Three Hundred,
+ STORE_03,Gadget,Electronics,2023/02/22,30,500,20
+store_05,Doodad,Home,2023/01/12,2,500,10
+store_05,Doodad,Home,2023/02/03,30,200,5
+ STORE_03,Doodad,electronics,2023/01/01,200,,ten
+Store_04,Thingamajig,home,2023/02/27,100,500,10
+Store_04,Widget,home,2023/02/23,30,300,10
+Store_04,Thingamajig,Electronics,2023/03/27,200,500,ten
+store_05,Gadget,Home,2023/03/05,200,,10
+ STORE_03,Widget,electronics,2023/03/27,200,100,5
+ STORE_03,Thingamajig,Gadgets,2023/02/19,1,400,20
+store_05,Doodad,Electronics,2023/02/05,100,Three Hundred,5
+store_02 ,Widget,Home,2023/02/05,2,300,ten
+Store_01,Gadget,Home,2023/03/11,10,Three Hundred,5
+store_05,Thingamajig,Gadgets,2023/03/05,1,100,ten
+store_05,Widget,Electronics,2023/01/30,20,200,10
+Store_01,Doodad,home,2023/01/18,2,400,15
+store_02 ,Widget,Home,2023/03/31,200,200,20
+store_05,Doodad,Home,2023/02/03,3,500,15
+Store_01,Thingamajig,Electronics,2023/01/10,10,100,5
+store_05,Doodad,Electronics,2023/01/29,3,300,20
+ STORE_03,Thingamajig,Home,2023/03/31,1,,5
+ STORE_03,Gadget,Electronics,2023/03/19,100,400,15
+store_05,Gadget,Gadgets,2023/03/22,2,400,10
+store_02 ,Thingamajig,electronics,2023/03/16,,200,ten
+ STORE_03,Doodad,electronics,2023/01/13,,,5
+Store_01,Thingamajig,electronics,2023/03/25,200,200,ten
+Store_01,Widget,Gadgets,2023/03/13,2,300,ten
+Store_04,Thingamajig,Home,2023/03/05,100,400,20
+ STORE_03,Gadget,Gadgets,2023/02/19,twenty,Three Hundred,
+ STORE_03,Widget,electronics,2023/02/18,30,200,
+store_05,Gadget,electronics,2023/01/29,30,300,20
+Store_04,Doodad,Home,2023/03/12,twenty,300,15
+Store_04,Doodad,Home,2023/03/02,,200,20
+store_02 ,Doodad,home,2023/02/01,2,,10
+Store_04,Widget,Home,2023/03/16,10,100,20
+Store_04,Gadget,home,2023/02/09,twenty,400,ten
+store_02 ,Thingamajig,home,2023/02/16,3,100,20
+ STORE_03,Widget,home,2023/02/09,1,500,10
+ STORE_03,Widget,home,2023/01/05,2,100,ten
+Store_01,Thingamajig,electronics,2023/03/14,100,100,ten
+store_05,Gadget,Home,2023/01/03,,300,
+store_05,Doodad,electronics,2023/03/25,100,300,10
+Store_01,Doodad,electronics,2023/03/28,2,500,20
+store_02 ,Thingamajig,Gadgets,2023/02/08,10,,20
+store_05,Gadget,Gadgets,2023/01/13,200,,
+Store_04,Thingamajig,Gadgets,2023/03/25,1,400,20
+store_05,Thingamajig,Home,2023/02/07,2,,5
+ STORE_03,Thingamajig,Gadgets,2023/01/30,twenty,200,
+ STORE_03,Widget,home,2023/03/20,3,400,15
+store_05,Doodad,Gadgets,2023/03/20,30,Three Hundred,15
+ STORE_03,Gadget,Home,2023/02/13,twenty,200,5
+store_05,Gadget,home,2023/03/11,10,,
+ STORE_03,Thingamajig,home,2023/03/01,200,500,
+store_02 ,Doodad,Gadgets,2023/02/09,3,,5
+store_02 ,Gadget,Home,2023/01/22,2,300,20
+store_05,Widget,Gadgets,2023/02/24,100,,20
+Store_04,Thingamajig,Home,2023/02/20,30,Three Hundred,20
+store_02 ,Thingamajig,Home,2023/02/22,twenty,100,
+Store_01,Thingamajig,Home,2023/01/28,100,200,5
+store_05,Gadget,Home,2023/02/12,twenty,200,10
+store_02 ,Doodad,electronics,2023/01/02,200,500,20
+store_02 ,Gadget,home,2023/03/24,1,200,20
+store_02 ,Gadget,home,2023/03/31,1,200,20
+store_05,Doodad,home,2023/02/21,100,300,20
+ STORE_03,Widget,Electronics,2023/03/06,200,,
+store_05,Thingamajig,home,2023/03/27,100,100,15
+store_05,Gadget,home,2023/03/13,10,100,10
+Store_01,Gadget,electronics,2023/02/26,200,300,15
+Store_01,Thingamajig,Home,2023/01/07,200,,10
+ STORE_03,Gadget,Electronics,2023/01/07,3,Three Hundred,15
+Store_01,Thingamajig,electronics,2023/02/17,,,5
+Store_01,Doodad,Gadgets,2023/03/28,20,400,15
+Store_04,Widget,electronics,2023/03/20,100,500,15
+Store_01,Thingamajig,home,2023/03/05,100,500,15
+store_05,Doodad,home,2023/02/24,twenty,100,ten
+store_05,Doodad,Home,2023/03/18,,500,10
+Store_01,Gadget,Gadgets,2023/01/04,20,500,10
+Store_01,Widget,Home,2023/03/15,30,400,5
+Store_01,Gadget,Electronics,2023/01/22,30,300,5
+Store_04,Doodad,Gadgets,2023/02/25,30,200,5
+store_02 ,Doodad,electronics,2023/02/10,20,,
+Store_04,Thingamajig,Home,2023/02/09,3,,ten
+store_02 ,Doodad,electronics,2023/03/29,3,200,10
+Store_01,Widget,Home,2023/03/08,100,300,15
+store_02 ,Doodad,electronics,2023/02/06,200,,ten
+ STORE_03,Gadget,electronics,2023/03/26,1,200,
+ STORE_03,Doodad,Gadgets,2023/02/16,10,500,ten
+ STORE_03,Gadget,Home,2023/01/30,10,100,20
+store_05,Doodad,Gadgets,2023/01/01,30,500,15
+ STORE_03,Doodad,electronics,2023/02/15,twenty,,
+Store_04,Doodad,home,2023/01/23,200,500,15
+store_02 ,Widget,home,2023/02/17,3,200,15
+Store_01,Widget,electronics,2023/03/10,20,300,20
+Store_04,Thingamajig,Electronics,2023/01/31,200,200,5
+store_05,Widget,home,2023/03/01,,300,10
+store_02 ,Doodad,Electronics,2023/03/13,2,400,5
+store_02 ,Doodad,Electronics,2023/01/08,200,300,15
+Store_01,Thingamajig,home,2023/02/21,200,,15
+ STORE_03,Thingamajig,Home,2023/01/14,,400,10
+Store_04,Doodad,Electronics,2023/01/20,3,,
+Store_04,Widget,Electronics,2023/02/28,3,,10
+store_05,Thingamajig,home,2023/01/15,10,100,ten
+store_02 ,Thingamajig,home,2023/01/04,2,,20
+Store_04,Thingamajig,Electronics,2023/02/14,30,500,ten
+store_02 ,Thingamajig,Home,2023/02/15,,Three Hundred,15
+store_02 ,Doodad,Electronics,2023/03/21,,200,5
+ STORE_03,Thingamajig,home,2023/01/12,10,500,ten
+ STORE_03,Gadget,home,2023/01/04,,100,20
+Store_04,Doodad,Home,2023/03/03,30,500,10
+Store_01,Gadget,home,2023/02/14,,200,10
+ STORE_03,Widget,Gadgets,2023/03/01,2,500,20
+Store_01,Thingamajig,home,2023/01/08,200,300,10
+store_02 ,Gadget,Home,2023/01/01,20,Three Hundred,ten
+store_02 ,Widget,Electronics,2023/03/10,1,,15
+Store_04,Doodad,Home,2023/01/05,1,500,5
+Store_01,Thingamajig,Electronics,2023/02/19,,,10
+Store_01,Doodad,Home,2023/02/05,twenty,300,
+store_05,Thingamajig,Electronics,2023/02/09,,,15
+Store_01,Doodad,electronics,2023/02/23,30,100,10
+Store_01,Gadget,Gadgets,2023/02/14,20,100,ten
+ STORE_03,Widget,home,2023/03/23,20,100,15
+ STORE_03,Doodad,home,2023/03/28,10,200,10
+ STORE_03,Doodad,Gadgets,2023/03/26,100,500,
+Store_04,Doodad,electronics,2023/02/25,2,300,20
+ STORE_03,Doodad,Home,2023/01/13,3,300,
+Store_01,Gadget,Gadgets,2023/03/25,3,200,10
+Store_04,Widget,electronics,2023/02/05,,Three Hundred,15
+Store_04,Gadget,home,2023/03/07,3,400,
+store_02 ,Thingamajig,Electronics,2023/02/26,1,400,5
+ STORE_03,Widget,Gadgets,2023/02/16,3,200,15
+store_02 ,Widget,home,2023/03/14,1,400,15
+store_05,Thingamajig,home,2023/01/28,twenty,,ten
+Store_01,Gadget,Gadgets,2023/02/04,100,100,15
+store_02 ,Thingamajig,Gadgets,2023/02/05,2,,15
+store_02 ,Doodad,home,2023/03/31,3,100,20
+Store_04,Thingamajig,home,2023/02/13,30,100,20
+ STORE_03,Gadget,Electronics,2023/03/01,twenty,400,10
+store_05,Gadget,Electronics,2023/02/21,10,500,20
+Store_04,Gadget,Home,2023/02/02,,100,15
+Store_01,Doodad,Gadgets,2023/02/10,,500,20
+ STORE_03,Gadget,home,2023/03/09,1,100,5
+Store_04,Thingamajig,electronics,2023/01/21,200,200,15
+store_05,Gadget,Gadgets,2023/01/03,30,200,ten
+ STORE_03,Thingamajig,Home,2023/03/09,100,500,10
+store_02 ,Gadget,Home,2023/02/06,30,300,
+Store_01,Gadget,Gadgets,2023/01/17,,300,10
+store_05,Widget,Electronics,2023/03/10,twenty,,15
+store_05,Gadget,Electronics,2023/02/01,10,500,15
+ STORE_03,Doodad,Home,2023/02/19,1,Three Hundred,5
+Store_01,Gadget,home,2023/02/22,1,100,20
+Store_04,Doodad,home,2023/02/19,,200,10
+Store_04,Thingamajig,home,2023/03/24,,300,ten
+store_05,Thingamajig,Gadgets,2023/02/10,10,500,10
+Store_04,Doodad,home,2023/03/02,,100,5
+ STORE_03,Doodad,electronics,2023/02/15,twenty,300,5
+store_02 ,Thingamajig,Home,2023/01/15,twenty,Three Hundred,
+Store_04,Doodad,electronics,2023/01/21,10,200,20
+ STORE_03,Doodad,home,2023/01/25,10,Three Hundred,20
+Store_01,Widget,Gadgets,2023/03/15,30,Three Hundred,15
+store_02 ,Thingamajig,Electronics,2023/02/22,,400,ten
+Store_01,Widget,electronics,2023/02/03,1,500,15
+Store_01,Doodad,home,2023/03/19,2,Three Hundred,5
+Store_04,Gadget,electronics,2023/01/12,10,400,5
+Store_01,Widget,Gadgets,2023/03/12,100,200,ten
+Store_01,Doodad,Gadgets,2023/03/23,200,100,
+store_02 ,Doodad,Gadgets,2023/02/28,,Three Hundred,10
+Store_01,Doodad,electronics,2023/03/08,3,500,ten
+store_02 ,Widget,Gadgets,2023/02/25,2,400,
+Store_01,Gadget,Home,2023/03/28,30,200,15
+store_02 ,Thingamajig,home,2023/01/09,3,,
+store_05,Doodad,Home,2023/01/02,twenty,,ten
+Store_04,Widget,Home,2023/02/03,2,Three Hundred,20
+store_02 ,Gadget,home,2023/02/03,20,Three Hundred,15
+ STORE_03,Gadget,Electronics,2023/01/26,twenty,400,10
+store_02 ,Doodad,home,2023/03/02,100,300,15
+Store_01,Doodad,electronics,2023/03/11,10,100,
+store_02 ,Doodad,Gadgets,2023/02/25,30,200,5
+Store_01,Widget,Electronics,2023/01/10,20,200,ten
+ STORE_03,Widget,Gadgets,2023/01/04,20,200,
+Store_04,Gadget,home,2023/01/29,10,500,15
+store_02 ,Doodad,home,2023/02/02,,100,15
+ STORE_03,Thingamajig,Electronics,2023/01/11,3,100,20
+store_05,Widget,Electronics,2023/01/22,100,100,5
+store_02 ,Widget,Home,2023/03/01,1,400,ten
+ STORE_03,Widget,Electronics,2023/02/17,,,10
+ STORE_03,Gadget,Home,2023/03/27,200,300,
+Store_01,Doodad,home,2023/03/22,2,Three Hundred,15
+store_05,Gadget,electronics,2023/02/18,twenty,400,5
+Store_01,Doodad,Home,2023/02/18,20,200,20
+Store_01,Thingamajig,Home,2023/03/12,3,500,10
+store_05,Doodad,Home,2023/03/31,twenty,Three Hundred,10
+Store_04,Doodad,Gadgets,2023/02/03,10,400,20
+Store_04,Widget,home,2023/01/05,10,400,10
+store_05,Gadget,electronics,2023/02/02,twenty,300,20
+Store_04,Thingamajig,Gadgets,2023/02/21,10,500,5
+Store_04,Doodad,home,2023/03/18,10,,
+Store_01,Doodad,Home,2023/01/24,30,300,10
+Store_04,Doodad,Home,2023/03/24,200,,10
+Store_04,Widget,Electronics,2023/02/25,3,500,20
+ STORE_03,Thingamajig,home,2023/03/23,twenty,Three Hundred,10
+store_02 ,Thingamajig,electronics,2023/01/20,100,Three Hundred,15
+store_02 ,Widget,Electronics,2023/01/15,200,200,15
+store_05,Widget,Home,2023/01/02,3,100,ten
+store_05,Thingamajig,Electronics,2023/03/30,1,400,
+Store_04,Widget,Gadgets,2023/01/24,1,300,20
+store_02 ,Doodad,home,2023/02/01,100,100,5
+Store_04,Thingamajig,home,2023/02/28,20,400,10
+Store_04,Widget,Electronics,2023/02/24,10,500,20
+store_02 ,Gadget,electronics,2023/01/21,30,200,
+Store_04,Gadget,Electronics,2023/03/01,10,,10
+store_02 ,Thingamajig,Gadgets,2023/01/05,2,400,ten
+ STORE_03,Widget,Electronics,2023/01/04,2,100,20
+Store_01,Doodad,home,2023/01/26,3,200,
+Store_01,Gadget,Home,2023/02/07,1,300,15
+store_02 ,Gadget,Gadgets,2023/03/29,10,400,
+store_05,Widget,Electronics,2023/03/21,200,100,10
+store_05,Doodad,Home,2023/03/09,100,300,15
+ STORE_03,Gadget,Electronics,2023/02/09,100,300,10
+store_02 ,Gadget,electronics,2023/01/24,200,500,
+store_05,Widget,Electronics,2023/03/25,20,300,20
+store_05,Gadget,home,2023/03/08,30,500,ten
+Store_01,Doodad,electronics,2023/03/20,twenty,,
+store_02 ,Doodad,Gadgets,2023/01/02,1,200,5
+store_02 ,Thingamajig,Gadgets,2023/03/27,1,100,ten
+Store_01,Widget,home,2023/01/25,10,Three Hundred,15
+Store_04,Widget,Gadgets,2023/01/13,2,,15
+store_02 ,Thingamajig,electronics,2023/02/14,200,100,15
+store_02 ,Thingamajig,electronics,2023/02/01,100,500,5
+store_05,Thingamajig,Gadgets,2023/02/23,2,500,
+Store_01,Gadget,Electronics,2023/01/22,100,400,
+Store_04,Widget,electronics,2023/02/05,200,100,20
+Store_01,Doodad,Gadgets,2023/03/10,3,Three Hundred,15
+store_05,Doodad,Home,2023/02/15,30,400,15
+Store_01,Doodad,home,2023/01/09,3,Three Hundred,20
+store_05,Gadget,Gadgets,2023/01/26,20,100,15
+ STORE_03,Gadget,Gadgets,2023/02/27,twenty,200,
+Store_01,Gadget,Home,2023/03/16,20,400,5
+store_02 ,Gadget,Home,2023/03/21,,,10
+store_02 ,Thingamajig,home,2023/03/06,100,400,10
+Store_01,Widget,Gadgets,2023/03/09,3,500,10
+store_02 ,Doodad,Electronics,2023/01/22,30,Three Hundred,ten
+store_05,Widget,electronics,2023/02/09,10,Three Hundred,10
+ STORE_03,Widget,Electronics,2023/03/21,10,Three Hundred,10
+store_02 ,Thingamajig,electronics,2023/02/20,1,200,15
+store_05,Doodad,electronics,2023/01/27,,500,15
+ STORE_03,Doodad,home,2023/01/24,30,400,15
+Store_01,Thingamajig,electronics,2023/02/08,20,,ten
+store_02 ,Gadget,Electronics,2023/03/21,200,,20
+store_02 ,Thingamajig,Home,2023/03/13,20,100,15
+store_05,Thingamajig,Home,2023/01/02,twenty,100,ten
+Store_01,Thingamajig,Electronics,2023/02/19,200,200,ten
+Store_04,Gadget,electronics,2023/01/24,twenty,,15
+store_02 ,Thingamajig,electronics,2023/03/06,20,100,5
+store_05,Thingamajig,Gadgets,2023/02/18,3,Three Hundred,10
+Store_04,Gadget,electronics,2023/03/17,20,400,15
+store_05,Gadget,Gadgets,2023/02/02,1,100,ten
+ STORE_03,Gadget,Electronics,2023/02/08,100,500,ten
+ STORE_03,Thingamajig,Home,2023/01/03,twenty,400,20
+Store_01,Widget,Gadgets,2023/02/21,30,400,ten
+store_02 ,Doodad,Home,2023/01/05,10,Three Hundred,ten
+Store_01,Widget,Home,2023/01/30,3,Three Hundred,20
+Store_04,Widget,electronics,2023/01/05,,100,20
+Store_04,Thingamajig,Gadgets,2023/01/01,1,,5
+store_05,Widget,electronics,2023/01/21,20,300,
+Store_04,Thingamajig,Home,2023/02/26,3,Three Hundred,10
+ STORE_03,Widget,home,2023/02/13,10,100,5
+store_02 ,Thingamajig,electronics,2023/02/12,10,,20
+Store_04,Gadget,Gadgets,2023/03/16,twenty,500,10
+Store_01,Thingamajig,Electronics,2023/03/11,twenty,100,10
+Store_01,Widget,electronics,2023/01/27,3,200,
+store_02 ,Gadget,Home,2023/01/29,,Three Hundred,
+ STORE_03,Gadget,home,2023/01/22,20,500,20
+Store_01,Widget,Electronics,2023/03/11,2,200,15
+store_05,Thingamajig,Home,2023/01/15,,,ten
+Store_04,Gadget,electronics,2023/01/08,20,200,20
+store_02 ,Thingamajig,Gadgets,2023/03/14,10,100,5
+ STORE_03,Thingamajig,Electronics,2023/02/20,200,400,20
+ STORE_03,Thingamajig,Gadgets,2023/01/17,200,300,5
+Store_04,Doodad,home,2023/03/07,3,Three Hundred,15
+Store_04,Gadget,Gadgets,2023/03/18,1,100,ten
+store_02 ,Gadget,Gadgets,2023/01/04,10,300,10
+ STORE_03,Doodad,Gadgets,2023/02/23,3,300,
+Store_01,Doodad,electronics,2023/01/22,twenty,400,20
+store_02 ,Thingamajig,Home,2023/03/13,100,Three Hundred,15
+Store_01,Widget,Gadgets,2023/01/29,2,400,10
+store_02 ,Thingamajig,Electronics,2023/01/31,100,100,
+store_02 ,Widget,electronics,2023/01/21,twenty,200,
+ STORE_03,Thingamajig,electronics,2023/02/21,3,400,ten
+ STORE_03,Doodad,Electronics,2023/02/23,30,200,5
+store_02 ,Doodad,Gadgets,2023/02/24,10,500,10
+store_02 ,Doodad,electronics,2023/02/22,2,200,5
+ STORE_03,Doodad,Home,2023/02/15,3,400,ten
+store_02 ,Doodad,Home,2023/02/08,twenty,500,20
+store_02 ,Widget,electronics,2023/02/08,3,400,
+Store_04,Widget,Gadgets,2023/02/21,20,300,15
+Store_04,Doodad,Electronics,2023/01/28,1,500,10
+store_02 ,Widget,Electronics,2023/01/24,2,100,15
+Store_04,Thingamajig,home,2023/01/03,20,500,5
+Store_04,Doodad,Home,2023/01/08,30,200,20
+Store_04,Widget,Gadgets,2023/01/27,200,,15
+ STORE_03,Widget,electronics,2023/02/14,twenty,200,20
+store_05,Doodad,Home,2023/03/04,2,,5
+Store_01,Widget,Electronics,2023/03/27,twenty,500,5
+Store_01,Doodad,electronics,2023/02/22,1,400,20
+store_05,Thingamajig,home,2023/03/02,2,100,ten
+store_05,Doodad,home,2023/03/30,10,500,15
+Store_04,Gadget,Home,2023/01/11,2,,10
+Store_01,Widget,home,2023/03/06,200,500,5
+store_05,Widget,Home,2023/03/01,20,500,
+Store_04,Widget,Electronics,2023/03/02,200,Three Hundred,15
+Store_01,Gadget,electronics,2023/03/06,10,200,
+Store_04,Thingamajig,Gadgets,2023/03/15,twenty,Three Hundred,10
+store_02 ,Gadget,electronics,2023/03/04,100,200,10
+store_05,Widget,home,2023/01/24,20,,ten
+Store_01,Gadget,Gadgets,2023/03/22,10,300,10
+ STORE_03,Gadget,Electronics,2023/02/21,30,200,5
+Store_04,Gadget,Home,2023/03/19,20,200,15
+ STORE_03,Gadget,Home,2023/02/12,200,400,5
+Store_01,Widget,Gadgets,2023/01/25,1,500,
+ STORE_03,Gadget,Electronics,2023/01/25,,Three Hundred,20
+Store_04,Doodad,Electronics,2023/02/08,2,400,
+store_05,Widget,Gadgets,2023/03/02,10,100,ten
+store_02 ,Doodad,Gadgets,2023/01/31,2,200,ten
+ STORE_03,Thingamajig,Home,2023/02/05,10,500,ten
+Store_04,Thingamajig,Electronics,2023/02/08,200,Three Hundred,5
+store_05,Gadget,Electronics,2023/02/27,3,300,15
+Store_01,Gadget,Electronics,2023/01/21,10,500,
+Store_01,Gadget,electronics,2023/01/03,1,300,10
+Store_01,Doodad,Gadgets,2023/01/11,1,100,10
+Store_04,Gadget,electronics,2023/02/07,100,500,ten
+store_02 ,Widget,Home,2023/02/11,3,300,
+Store_04,Doodad,Electronics,2023/02/18,30,400,5
+Store_01,Gadget,home,2023/03/09,30,200,5
+store_02 ,Doodad,Gadgets,2023/02/18,,400,10
+ STORE_03,Gadget,Gadgets,2023/01/19,1,100,15
+store_02 ,Thingamajig,Gadgets,2023/02/07,10,200,5
+store_02 ,Gadget,Gadgets,2023/03/20,,,15
+Store_04,Widget,electronics,2023/03/26,1,300,ten
+Store_01,Gadget,Gadgets,2023/03/28,2,100,
+ STORE_03,Doodad,Home,2023/03/30,30,Three Hundred,10
+Store_01,Gadget,Gadgets,2023/02/04,3,100,
+Store_01,Gadget,Home,2023/01/22,100,200,ten
+Store_01,Thingamajig,Gadgets,2023/01/28,twenty,300,ten
+Store_04,Widget,electronics,2023/02/01,10,,
+Store_04,Thingamajig,electronics,2023/02/10,twenty,100,20
+store_02 ,Widget,electronics,2023/02/02,30,100,10
+Store_04,Doodad,home,2023/02/10,30,500,
+Store_04,Thingamajig,home,2023/03/26,3,,15
+ STORE_03,Widget,Gadgets,2023/02/10,3,200,15
+store_02 ,Doodad,home,2023/01/30,1,,5
+Store_04,Widget,Electronics,2023/03/21,10,300,ten
+Store_04,Widget,Electronics,2023/01/02,2,,
+store_05,Doodad,Gadgets,2023/02/21,,500,20
+store_05,Thingamajig,Electronics,2023/01/08,,,5
+store_02 ,Thingamajig,home,2023/03/25,,400,20
+ STORE_03,Thingamajig,Electronics,2023/01/20,100,,
+store_02 ,Widget,Electronics,2023/02/05,20,500,5
+store_02 ,Gadget,Electronics,2023/02/08,200,100,10
+Store_04,Gadget,Electronics,2023/02/15,200,300,10
+Store_01,Gadget,home,2023/03/09,10,200,15
+store_02 ,Gadget,electronics,2023/03/11,20,100,15
+store_02 ,Widget,Electronics,2023/01/22,10,Three Hundred,5
+Store_04,Gadget,electronics,2023/01/30,twenty,Three Hundred,15
+ STORE_03,Doodad,Gadgets,2023/01/16,20,100,15
+store_02 ,Thingamajig,home,2023/03/09,twenty,500,ten
+store_02 ,Thingamajig,electronics,2023/01/05,10,500,ten
+Store_04,Gadget,electronics,2023/02/11,1,500,20
+store_02 ,Widget,electronics,2023/01/12,100,100,
+store_02 ,Gadget,Home,2023/02/10,10,100,15
+Store_01,Doodad,electronics,2023/03/30,2,500,ten
+Store_01,Gadget,Gadgets,2023/02/25,1,100,5
+Store_04,Gadget,Home,2023/02/25,1,300,5
+ STORE_03,Widget,electronics,2023/01/24,,Three Hundred,20
+Store_04,Widget,Electronics,2023/03/15,twenty,,15
+Store_01,Gadget,electronics,2023/02/14,2,500,10
+Store_04,Thingamajig,Electronics,2023/03/10,10,Three Hundred,10
+ STORE_03,Widget,electronics,2023/01/11,,,10
+Store_04,Thingamajig,electronics,2023/02/20,1,,10
+store_05,Doodad,Home,2023/01/07,200,500,20
+ STORE_03,Gadget,home,2023/01/13,100,,5
+store_02 ,Gadget,Home,2023/01/27,200,,ten
+store_05,Doodad,Electronics,2023/03/11,30,Three Hundred,15
+Store_04,Widget,Gadgets,2023/03/31,1,400,20
+Store_01,Thingamajig,home,2023/02/16,2,300,
+Store_04,Thingamajig,electronics,2023/03/15,30,500,10
+store_05,Doodad,Electronics,2023/03/23,2,300,20
+store_02 ,Thingamajig,home,2023/03/27,3,100,
+store_05,Doodad,home,2023/03/25,30,Three Hundred,
+store_05,Widget,Gadgets,2023/01/02,100,400,5
+Store_01,Gadget,home,2023/02/13,2,,20
+store_05,Thingamajig,Electronics,2023/03/09,2,500,10
+ STORE_03,Doodad,Gadgets,2023/03/09,twenty,100,10
+store_02 ,Gadget,Home,2023/03/18,3,400,5
+store_02 ,Widget,Gadgets,2023/02/21,,300,5
+store_05,Doodad,Electronics,2023/01/30,10,400,5
+Store_01,Doodad,electronics,2023/03/27,3,Three Hundred,20
+ STORE_03,Doodad,electronics,2023/02/26,,Three Hundred,20
+Store_01,Widget,electronics,2023/02/14,twenty,300,20
+store_05,Gadget,electronics,2023/01/08,100,300,15
+store_02 ,Thingamajig,Home,2023/03/15,3,200,10
+store_02 ,Gadget,electronics,2023/03/14,2,500,10
+ STORE_03,Doodad,Electronics,2023/02/01,2,300,15
+store_05,Doodad,home,2023/01/09,2,500,20
+store_02 ,Doodad,Gadgets,2023/03/22,100,Three Hundred,5
+ STORE_03,Gadget,electronics,2023/03/14,3,,10
+store_02 ,Widget,electronics,2023/01/08,,,15
+store_02 ,Widget,Electronics,2023/03/04,200,Three Hundred,
+Store_01,Gadget,home,2023/02/19,2,Three Hundred,
+store_02 ,Widget,Electronics,2023/03/25,200,,10
+Store_04,Doodad,Electronics,2023/02/24,30,100,15
+Store_04,Thingamajig,home,2023/01/29,twenty,,
+store_05,Thingamajig,home,2023/02/16,2,100,
+store_05,Gadget,Electronics,2023/03/31,30,200,ten
+store_05,Gadget,Home,2023/02/03,,200,
+Store_04,Doodad,Home,2023/03/12,200,100,20
+store_05,Thingamajig,Gadgets,2023/03/26,30,200,ten
+store_05,Widget,home,2023/02/07,10,,
+Store_01,Widget,home,2023/01/10,3,100,5
+store_05,Gadget,Electronics,2023/01/15,100,300,10
+store_02 ,Widget,Electronics,2023/03/07,10,Three Hundred,10
+Store_01,Doodad,Home,2023/02/14,200,200,
+ STORE_03,Gadget,electronics,2023/03/15,twenty,100,ten
+store_02 ,Thingamajig,home,2023/02/21,20,400,20
+store_05,Doodad,Gadgets,2023/03/08,twenty,200,
+ STORE_03,Gadget,Home,2023/01/24,20,Three Hundred,5
+Store_01,Gadget,Electronics,2023/03/23,200,300,10
+Store_01,Doodad,electronics,2023/02/16,200,300,10
+ STORE_03,Gadget,Home,2023/02/04,2,Three Hundred,20
+Store_01,Widget,Electronics,2023/02/12,twenty,100,20
+Store_04,Doodad,home,2023/02/18,1,,5
+Store_04,Widget,home,2023/01/12,1,200,
+ STORE_03,Widget,Gadgets,2023/01/10,30,300,10
+Store_01,Doodad,electronics,2023/03/20,20,500,15
+Store_04,Thingamajig,Electronics,2023/01/06,10,,20
+ STORE_03,Widget,home,2023/02/26,3,,15
+Store_04,Widget,Gadgets,2023/03/10,100,400,10
+store_05,Thingamajig,home,2023/01/17,twenty,500,20
+Store_04,Widget,Electronics,2023/02/02,3,Three Hundred,20
+Store_01,Thingamajig,Home,2023/02/09,200,400,15
+store_02 ,Widget,Gadgets,2023/01/14,3,300,15
+store_02 ,Widget,Home,2023/03/15,20,Three Hundred,5
+store_05,Widget,home,2023/01/16,100,200,
+Store_04,Doodad,Gadgets,2023/02/24,2,500,20
+Store_01,Doodad,Home,2023/03/14,2,500,10
+store_05,Widget,Gadgets,2023/02/08,1,200,15
+Store_04,Thingamajig,Gadgets,2023/03/11,,,5
+Store_04,Widget,Gadgets,2023/01/15,2,,5
+Store_01,Thingamajig,Home,2023/03/14,20,,ten
+ STORE_03,Widget,Electronics,2023/02/02,20,500,10
+Store_01,Thingamajig,Electronics,2023/02/03,10,500,10
+store_05,Widget,home,2023/01/20,3,100,
+Store_04,Gadget,Electronics,2023/03/06,30,400,15
+store_05,Widget,Home,2023/02/16,twenty,300,
+Store_04,Thingamajig,home,2023/03/13,twenty,300,5
+store_05,Thingamajig,Home,2023/01/28,30,Three Hundred,20
+Store_04,Gadget,home,2023/01/07,10,Three Hundred,5
+Store_04,Widget,Electronics,2023/01/24,100,300,ten
+ STORE_03,Gadget,home,2023/02/12,2,400,
+Store_01,Thingamajig,Electronics,2023/02/14,30,300,20
+ STORE_03,Doodad,electronics,2023/03/17,1,500,15
+ STORE_03,Gadget,electronics,2023/02/23,1,Three Hundred,ten
+ STORE_03,Doodad,electronics,2023/01/03,2,Three Hundred,5
+store_02 ,Widget,home,2023/02/06,30,400,
+store_02 ,Doodad,electronics,2023/03/10,twenty,100,5
+store_05,Gadget,electronics,2023/02/23,100,400,10
+store_02 ,Doodad,Electronics,2023/03/18,3,500,20
+Store_04,Thingamajig,Gadgets,2023/03/24,100,500,
+store_02 ,Widget,Electronics,2023/01/15,10,500,ten
+store_05,Thingamajig,home,2023/02/19,2,500,10
+store_05,Doodad,Gadgets,2023/02/15,1,200,5
+Store_04,Gadget,Home,2023/03/10,20,200,10
+ STORE_03,Gadget,electronics,2023/01/01,twenty,500,
+store_02 ,Doodad,electronics,2023/02/15,20,,20
+Store_01,Thingamajig,Home,2023/03/29,20,400,
+Store_04,Gadget,home,2023/01/29,,300,ten
+Store_01,Widget,Home,2023/03/08,2,Three Hundred,5
+store_02 ,Gadget,Gadgets,2023/03/01,3,300,10
+Store_04,Thingamajig,Gadgets,2023/02/22,30,,20
+Store_01,Doodad,Home,2023/02/12,10,200,5
+Store_04,Doodad,Home,2023/01/29,200,100,5
+ STORE_03,Thingamajig,electronics,2023/01/28,10,,ten
+store_05,Doodad,electronics,2023/02/06,30,500,ten
+store_02 ,Gadget,Gadgets,2023/03/01,twenty,400,15
+store_05,Thingamajig,home,2023/01/01,3,100,15
+ STORE_03,Widget,home,2023/03/05,,,
+Store_01,Thingamajig,electronics,2023/01/21,20,300,
+store_05,Widget,Gadgets,2023/02/23,3,200,20
+Store_01,Doodad,electronics,2023/03/26,twenty,500,20
+store_02 ,Gadget,Gadgets,2023/02/11,100,,
+store_05,Gadget,Home,2023/03/11,10,500,5
+Store_01,Widget,Electronics,2023/03/05,20,500,10
+Store_04,Widget,Gadgets,2023/02/11,30,400,10
+Store_04,Widget,home,2023/02/16,1,Three Hundred,5
+store_05,Widget,electronics,2023/02/16,1,300,20
+Store_01,Gadget,Home,2023/02/19,twenty,400,ten
+store_02 ,Widget,home,2023/03/23,30,400,ten
+store_02 ,Gadget,home,2023/02/18,20,200,ten
+store_02 ,Thingamajig,Home,2023/03/30,3,500,20
+Store_01,Doodad,Gadgets,2023/02/20,10,400,10
+ STORE_03,Gadget,home,2023/03/16,,Three Hundred,
+store_02 ,Widget,Electronics,2023/01/30,20,100,15
+ STORE_03,Widget,electronics,2023/01/19,3,,5
+store_02 ,Widget,Home,2023/02/18,20,Three Hundred,
+store_05,Gadget,electronics,2023/02/10,20,,20
+store_05,Doodad,Electronics,2023/01/03,2,300,20
+Store_01,Widget,Electronics,2023/02/02,100,,20
+store_02 ,Thingamajig,Electronics,2023/03/30,30,500,ten
+store_05,Widget,Home,2023/01/16,,300,5
+store_02 ,Gadget,Gadgets,2023/01/05,10,200,ten
+ STORE_03,Widget,electronics,2023/03/29,100,500,5
+Store_04,Doodad,Home,2023/02/10,20,400,5
+Store_04,Doodad,Electronics,2023/02/05,3,200,ten
+store_05,Doodad,Home,2023/03/03,100,,
+store_05,Widget,Home,2023/02/24,3,300,ten
+store_05,Widget,home,2023/01/22,10,300,20
+Store_04,Doodad,Gadgets,2023/03/05,twenty,300,ten
+store_02 ,Widget,electronics,2023/02/25,30,100,5
+Store_01,Widget,Home,2023/01/13,1,Three Hundred,
+ STORE_03,Thingamajig,Electronics,2023/01/30,1,400,
+store_02 ,Widget,Gadgets,2023/03/01,3,500,5
+store_02 ,Widget,home,2023/03/27,100,400,20
+Store_04,Widget,Home,2023/02/11,,Three Hundred,ten
+store_05,Thingamajig,electronics,2023/02/23,3,500,ten
+ STORE_03,Doodad,Electronics,2023/03/11,2,400,15
+store_05,Gadget,Home,2023/03/12,100,500,15
+Store_01,Widget,home,2023/01/17,10,200,
+store_02 ,Gadget,home,2023/01/28,3,100,20
+ STORE_03,Doodad,Home,2023/01/18,100,100,10
+store_02 ,Gadget,electronics,2023/02/23,2,100,ten
+ STORE_03,Doodad,Home,2023/02/15,,500,15
+store_02 ,Doodad,home,2023/03/06,20,500,
+store_05,Widget,electronics,2023/01/27,,300,10
+Store_01,Doodad,Gadgets,2023/02/24,200,,15
+store_02 ,Widget,Electronics,2023/02/14,100,,15
+Store_01,Gadget,home,2023/01/09,,300,10
+store_02 ,Doodad,Electronics,2023/01/23,10,500,15
+store_02 ,Gadget,Gadgets,2023/03/18,200,500,10
+Store_04,Thingamajig,electronics,2023/03/12,100,200,
+Store_01,Doodad,electronics,2023/03/11,10,100,5
+store_02 ,Widget,Home,2023/02/16,100,100,ten
+ STORE_03,Thingamajig,Home,2023/03/28,100,500,15
+store_02 ,Doodad,Electronics,2023/01/18,3,100,20
+store_05,Widget,Electronics,2023/02/02,3,100,10
+store_05,Widget,Gadgets,2023/01/22,2,200,ten
+store_02 ,Thingamajig,electronics,2023/03/09,20,,5
+Store_01,Doodad,Electronics,2023/01/28,20,400,15
+store_02 ,Thingamajig,electronics,2023/02/22,100,300,ten
+Store_04,Thingamajig,home,2023/03/29,200,300,10
+store_02 ,Gadget,Gadgets,2023/02/02,200,200,
+Store_01,Widget,Home,2023/01/15,twenty,,15
+store_02 ,Gadget,Gadgets,2023/01/23,3,200,10
+ STORE_03,Thingamajig,electronics,2023/01/23,1,100,20
+Store_01,Doodad,home,2023/01/05,30,Three Hundred,ten
+ STORE_03,Doodad,Electronics,2023/02/23,20,Three Hundred,5
+Store_01,Doodad,Gadgets,2023/01/31,30,100,10
+store_02 ,Gadget,electronics,2023/03/10,,400,5
+Store_04,Widget,Home,2023/02/11,,500,5
+store_05,Thingamajig,Electronics,2023/03/18,10,300,10
+Store_04,Gadget,Home,2023/01/23,,100,ten
+Store_01,Thingamajig,Electronics,2023/03/04,3,500,10
+store_02 ,Gadget,Electronics,2023/03/14,2,,5
+Store_04,Widget,Gadgets,2023/02/23,200,Three Hundred,20
+store_05,Doodad,Gadgets,2023/03/02,twenty,300,ten
+store_02 ,Thingamajig,electronics,2023/01/28,1,400,
+store_02 ,Doodad,Gadgets,2023/02/05,3,300,15
+Store_01,Doodad,Electronics,2023/02/09,1,200,15
+Store_04,Doodad,Gadgets,2023/03/07,,100,15
+store_05,Gadget,Home,2023/03/08,100,100,15
+Store_01,Doodad,Electronics,2023/01/22,30,300,
+store_02 ,Gadget,Home,2023/02/12,10,,20
+store_05,Widget,Gadgets,2023/01/09,3,100,10
+Store_01,Thingamajig,Home,2023/02/04,30,300,15
+Store_04,Gadget,home,2023/03/29,twenty,,5
+ STORE_03,Doodad,Home,2023/01/08,200,100,5
+Store_01,Gadget,Home,2023/02/23,twenty,200,20
+store_05,Gadget,electronics,2023/01/08,30,100,
+store_02 ,Doodad,home,2023/02/26,20,500,ten
+Store_01,Doodad,electronics,2023/02/24,100,,5
+store_05,Gadget,electronics,2023/03/14,100,,10
+ STORE_03,Doodad,home,2023/01/18,100,500,10
+store_02 ,Thingamajig,Gadgets,2023/02/23,200,Three Hundred,ten
+store_05,Doodad,Electronics,2023/02/19,twenty,300,5
+store_02 ,Widget,home,2023/03/24,10,Three Hundred,
+Store_01,Gadget,home,2023/02/09,2,,15
+ STORE_03,Gadget,Electronics,2023/02/26,3,500,ten
+ STORE_03,Gadget,Electronics,2023/02/20,3,100,ten
+Store_04,Doodad,electronics,2023/03/05,twenty,500,ten
+store_02 ,Gadget,Electronics,2023/01/01,100,,15
+Store_04,Doodad,Home,2023/01/22,twenty,300,15
+Store_04,Gadget,Gadgets,2023/03/22,30,100,15
+Store_04,Thingamajig,Electronics,2023/02/14,3,,10
+ STORE_03,Doodad,Electronics,2023/03/12,30,Three Hundred,15
+ STORE_03,Thingamajig,home,2023/02/18,200,500,5
+Store_04,Thingamajig,electronics,2023/01/08,30,300,ten
+store_05,Thingamajig,Gadgets,2023/01/28,30,300,20
+Store_01,Gadget,Gadgets,2023/03/20,,100,
+Store_04,Doodad,electronics,2023/02/27,20,Three Hundred,15
+store_02 ,Doodad,home,2023/02/24,10,400,15
+store_05,Doodad,Home,2023/03/31,20,300,ten
+Store_04,Thingamajig,Electronics,2023/01/02,2,500,10
+Store_04,Thingamajig,Electronics,2023/02/16,2,200,
+ STORE_03,Widget,electronics,2023/03/26,200,Three Hundred,10
+store_02 ,Thingamajig,home,2023/02/05,3,100,
+store_02 ,Thingamajig,Home,2023/03/18,twenty,300,15
+store_05,Doodad,Home,2023/02/23,30,Three Hundred,15
+Store_01,Thingamajig,electronics,2023/01/15,30,300,5
+Store_04,Doodad,Home,2023/03/27,20,200,
+store_05,Gadget,Home,2023/02/01,30,400,ten
+Store_01,Thingamajig,home,2023/01/02,100,,10
+Store_01,Gadget,home,2023/03/08,20,100,20
+store_02 ,Widget,home,2023/01/03,100,,ten
+store_05,Doodad,home,2023/03/03,30,200,ten
+Store_04,Doodad,Home,2023/02/04,30,100,20
+Store_01,Gadget,home,2023/02/02,30,100,ten
+Store_01,Widget,Electronics,2023/03/08,20,,ten
+store_02 ,Gadget,home,2023/01/21,twenty,,10
+store_02 ,Widget,home,2023/03/17,100,200,15
+store_05,Gadget,electronics,2023/01/22,,500,ten
+Store_01,Thingamajig,Gadgets,2023/03/24,100,200,5
+Store_01,Doodad,Gadgets,2023/01/02,20,400,ten
+Store_01,Thingamajig,Electronics,2023/03/28,30,100,15
+ STORE_03,Thingamajig,Electronics,2023/01/28,3,400,ten
+store_05,Gadget,electronics,2023/01/10,100,Three Hundred,20
+Store_04,Gadget,Electronics,2023/03/08,10,400,5
+ STORE_03,Thingamajig,Home,2023/02/12,twenty,Three Hundred,ten
+Store_01,Doodad,Home,2023/02/13,2,100,5
+store_02 ,Doodad,electronics,2023/02/19,2,200,5
+store_02 ,Gadget,Home,2023/01/21,200,300,20
+store_05,Doodad,Electronics,2023/03/22,10,Three Hundred,20
+Store_01,Doodad,Gadgets,2023/02/22,20,500,
+Store_04,Gadget,Home,2023/02/09,20,,20
+Store_01,Doodad,home,2023/03/15,twenty,300,10
+ STORE_03,Widget,home,2023/02/01,2,200,15
+ STORE_03,Thingamajig,Electronics,2023/02/10,30,100,ten
+Store_01,Doodad,electronics,2023/03/08,30,300,ten
+Store_04,Thingamajig,Electronics,2023/01/03,100,,15
+Store_04,Gadget,home,2023/03/28,2,500,
+Store_04,Widget,Gadgets,2023/01/18,twenty,400,15
+ STORE_03,Doodad,electronics,2023/03/18,30,100,5
+store_05,Widget,Electronics,2023/01/29,200,Three Hundred,20
+Store_01,Widget,home,2023/03/26,1,300,20
+Store_04,Doodad,Electronics,2023/02/07,2,400,10
+store_02 ,Thingamajig,Home,2023/03/12,,Three Hundred,10
+store_02 ,Doodad,Home,2023/02/12,30,500,
+Store_04,Doodad,Home,2023/01/07,3,300,5
+store_05,Gadget,electronics,2023/03/01,twenty,100,20
+Store_04,Doodad,Electronics,2023/03/26,3,,5
+Store_04,Doodad,Electronics,2023/01/30,2,,5
+Store_01,Doodad,home,2023/02/05,200,200,ten
+Store_04,Gadget,Gadgets,2023/03/11,200,Three Hundred,20
+store_02 ,Widget,electronics,2023/01/11,3,200,ten
+Store_01,Gadget,Electronics,2023/03/11,twenty,500,15
+ STORE_03,Widget,Gadgets,2023/02/11,1,Three Hundred,ten
+ STORE_03,Doodad,Gadgets,2023/02/24,2,200,20
+ STORE_03,Widget,Gadgets,2023/02/14,twenty,Three Hundred,15
+store_05,Gadget,home,2023/03/02,100,200,ten
+Store_04,Gadget,home,2023/03/17,30,400,20
+Store_01,Widget,electronics,2023/03/05,100,400,ten
+Store_04,Doodad,Electronics,2023/03/29,20,100,ten
+Store_04,Widget,home,2023/02/28,2,,15
+store_02 ,Widget,Gadgets,2023/01/31,1,100,ten
+store_05,Gadget,home,2023/03/06,,400,10
+store_02 ,Thingamajig,home,2023/03/18,,400,10
+store_05,Doodad,Gadgets,2023/01/20,200,Three Hundred,20
+store_02 ,Doodad,electronics,2023/03/23,30,400,10
+store_05,Widget,home,2023/02/17,3,400,ten
+Store_01,Gadget,Electronics,2023/02/06,10,500,
+Store_01,Thingamajig,electronics,2023/02/08,twenty,400,20
+store_05,Doodad,Electronics,2023/03/28,200,200,ten
+Store_04,Thingamajig,Gadgets,2023/01/25,10,400,
+Store_04,Doodad,home,2023/03/05,10,500,20
+ STORE_03,Thingamajig,Gadgets,2023/01/03,20,300,15
+store_05,Gadget,Electronics,2023/03/31,30,300,15
+ STORE_03,Widget,Home,2023/02/10,twenty,300,5
+Store_01,Widget,home,2023/01/17,100,400,20
+store_05,Thingamajig,electronics,2023/02/28,twenty,200,20
+Store_01,Doodad,Home,2023/03/20,twenty,400,10
+store_05,Gadget,home,2023/02/23,10,400,5
+Store_04,Gadget,Gadgets,2023/02/21,2,200,
+Store_01,Thingamajig,Gadgets,2023/01/19,,Three Hundred,5
+store_02 ,Thingamajig,home,2023/03/01,,,5
+ STORE_03,Widget,Home,2023/02/01,200,400,20
+Store_04,Thingamajig,Gadgets,2023/03/26,3,200,5
+ STORE_03,Thingamajig,Home,2023/01/07,2,100,15
+ STORE_03,Thingamajig,electronics,2023/03/25,,300,20
+Store_01,Gadget,Home,2023/01/30,30,100,ten
+Store_01,Thingamajig,Gadgets,2023/03/22,twenty,,20
+store_05,Doodad,Gadgets,2023/03/21,30,,15
+ STORE_03,Thingamajig,Gadgets,2023/03/30,1,200,20
+Store_01,Doodad,Home,2023/02/04,twenty,300,15
+Store_04,Thingamajig,home,2023/01/01,30,Three Hundred,
+Store_01,Gadget,electronics,2023/02/27,20,,
+store_02 ,Thingamajig,Gadgets,2023/02/28,100,200,20
+ STORE_03,Doodad,Electronics,2023/03/21,30,500,10
+store_02 ,Doodad,Electronics,2023/01/12,100,Three Hundred,20
+Store_04,Widget,Gadgets,2023/01/30,20,200,5
+store_05,Widget,Electronics,2023/02/02,2,300,5
+store_02 ,Widget,Home,2023/01/14,2,400,5
+Store_01,Gadget,Home,2023/01/01,3,100,
+Store_01,Doodad,Home,2023/02/28,30,500,10
+Store_04,Thingamajig,Electronics,2023/01/28,20,,20
+Store_04,Widget,Home,2023/03/15,100,500,15
+ STORE_03,Gadget,Electronics,2023/02/20,twenty,Three Hundred,15
+store_02 ,Doodad,Home,2023/03/22,3,200,ten
+store_02 ,Gadget,Gadgets,2023/01/09,100,Three Hundred,10
+Store_04,Widget,Home,2023/03/17,,100,ten
+ STORE_03,Thingamajig,electronics,2023/03/08,1,400,
+store_02 ,Thingamajig,home,2023/01/17,200,Three Hundred,ten
+store_05,Thingamajig,Gadgets,2023/02/06,2,Three Hundred,15
+store_05,Gadget,home,2023/01/30,30,300,
+Store_01,Widget,Electronics,2023/02/22,3,100,
+ STORE_03,Gadget,electronics,2023/01/29,10,300,5
+Store_04,Gadget,Electronics,2023/03/10,100,300,5
+store_02 ,Widget,Electronics,2023/02/07,,Three Hundred,
+store_02 ,Widget,Home,2023/03/28,30,,20
+store_02 ,Gadget,home,2023/02/27,3,100,10
+Store_04,Doodad,electronics,2023/03/24,100,300,5
+ STORE_03,Doodad,Home,2023/02/27,2,200,5
+store_02 ,Doodad,Electronics,2023/01/05,3,500,
+Store_04,Gadget,Home,2023/02/28,10,,
+store_05,Widget,Electronics,2023/02/22,3,300,10
+store_02 ,Thingamajig,electronics,2023/02/12,30,,ten
+store_02 ,Gadget,Gadgets,2023/01/14,20,200,
+ STORE_03,Doodad,Home,2023/01/28,1,400,5
+Store_04,Gadget,home,2023/03/03,,500,ten
+Store_01,Thingamajig,Gadgets,2023/01/11,200,200,15
+store_05,Doodad,home,2023/03/24,30,100,ten
+Store_04,Widget,electronics,2023/01/29,,500,5
+store_02 ,Thingamajig,Gadgets,2023/01/24,20,,15
+ STORE_03,Gadget,Electronics,2023/02/11,20,,
+store_05,Gadget,home,2023/01/28,twenty,Three Hundred,20
+Store_04,Thingamajig,Electronics,2023/02/26,100,400,ten
+Store_04,Widget,Electronics,2023/02/28,30,Three Hundred,20
+store_05,Thingamajig,Electronics,2023/03/03,100,300,10
+store_05,Thingamajig,Home,2023/03/05,twenty,300,
+Store_01,Thingamajig,Gadgets,2023/02/22,30,200,15
+ STORE_03,Gadget,Home,2023/01/05,,,20
+store_05,Thingamajig,Home,2023/03/29,1,,ten
+store_02 ,Doodad,Home,2023/03/18,200,200,15
+ STORE_03,Widget,electronics,2023/01/08,10,200,
+Store_01,Doodad,Gadgets,2023/01/19,200,300,
+ STORE_03,Gadget,electronics,2023/03/18,2,400,15
+Store_01,Gadget,Electronics,2023/02/22,1,200,10
+ STORE_03,Doodad,Home,2023/01/24,twenty,,5
+store_02 ,Widget,Electronics,2023/01/29,30,300,10
+Store_04,Thingamajig,electronics,2023/02/24,3,,15
+store_05,Doodad,Electronics,2023/01/16,1,500,5
+store_05,Widget,Electronics,2023/02/14,10,400,ten
+store_02 ,Widget,home,2023/02/03,,300,20
+store_02 ,Thingamajig,home,2023/01/15,200,500,20
+store_05,Doodad,home,2023/01/31,1,500,15
+store_02 ,Widget,Gadgets,2023/02/18,20,300,
+ STORE_03,Widget,Gadgets,2023/03/25,2,200,ten
+store_05,Widget,electronics,2023/02/05,20,400,20
+ STORE_03,Doodad,Home,2023/02/26,,500,
+Store_04,Gadget,Home,2023/01/27,,300,5
+Store_01,Widget,Home,2023/02/08,10,200,ten
+store_05,Doodad,Electronics,2023/02/24,twenty,400,5
+Store_04,Doodad,Electronics,2023/03/15,20,500,ten
+store_02 ,Widget,Home,2023/02/23,,500,15
+store_02 ,Thingamajig,Electronics,2023/01/02,200,Three Hundred,15
+Store_01,Doodad,Gadgets,2023/01/06,100,400,5
+Store_01,Doodad,Gadgets,2023/01/20,200,100,10
+store_05,Widget,Home,2023/01/09,3,100,15
+ STORE_03,Gadget,Home,2023/03/23,30,500,15
+store_05,Thingamajig,home,2023/03/17,2,Three Hundred,5
+store_02 ,Gadget,Electronics,2023/02/24,10,Three Hundred,15
+Store_04,Widget,Gadgets,2023/03/27,10,100,ten
+store_05,Widget,home,2023/02/24,,500,5
+ STORE_03,Thingamajig,Home,2023/02/28,20,,
+Store_01,Widget,Home,2023/02/01,1,Three Hundred,20
+ STORE_03,Widget,home,2023/02/10,200,100,ten
+store_05,Thingamajig,Electronics,2023/02/18,200,100,
+Store_01,Gadget,home,2023/01/28,100,500,20
+ STORE_03,Doodad,electronics,2023/03/14,2,200,ten
+store_05,Gadget,Gadgets,2023/01/04,20,100,15
+Store_01,Widget,Electronics,2023/03/21,200,100,15
+Store_01,Widget,Electronics,2023/03/29,20,500,15
+store_02 ,Doodad,home,2023/01/16,100,100,ten
+Store_01,Doodad,electronics,2023/01/03,3,500,20
+ STORE_03,Thingamajig,Electronics,2023/03/30,100,,5
+Store_04,Thingamajig,Gadgets,2023/01/21,1,,15
+store_05,Doodad,Electronics,2023/02/06,twenty,,15
+Store_04,Doodad,Home,2023/03/15,twenty,400,5
+Store_04,Widget,Gadgets,2023/03/12,twenty,400,10
+Store_01,Doodad,electronics,2023/02/25,3,500,20
+store_02 ,Doodad,Home,2023/01/13,10,100,
+store_05,Gadget,Electronics,2023/01/29,3,300,15
+Store_01,Gadget,electronics,2023/01/10,,500,ten
+Store_01,Widget,Home,2023/03/21,200,200,20
+store_02 ,Doodad,Gadgets,2023/01/29,200,,5
+Store_04,Widget,electronics,2023/01/30,twenty,500,15
+store_02 ,Gadget,Home,2023/01/04,twenty,200,
+store_05,Doodad,electronics,2023/01/21,200,Three Hundred,ten
+ STORE_03,Gadget,Home,2023/02/11,,,20
+store_05,Thingamajig,home,2023/03/25,1,,
+Store_01,Thingamajig,electronics,2023/03/30,30,200,ten
+ STORE_03,Widget,Gadgets,2023/03/04,10,500,20
+ STORE_03,Thingamajig,Gadgets,2023/01/05,twenty,200,15
+store_02 ,Widget,Electronics,2023/02/25,3,100,5
+store_02 ,Widget,Home,2023/03/15,,300,ten
+store_05,Thingamajig,Gadgets,2023/03/14,20,500,10
+ STORE_03,Thingamajig,Gadgets,2023/03/07,,,ten
+store_05,Widget,electronics,2023/03/06,200,200,20
+store_05,Doodad,home,2023/03/25,10,400,10
+store_02 ,Doodad,Gadgets,2023/01/17,,300,20
+store_05,Thingamajig,electronics,2023/03/29,,300,10
+store_02 ,Gadget,Gadgets,2023/01/01,1,Three Hundred,15
+store_05,Widget,electronics,2023/02/15,2,,5
+store_05,Widget,Gadgets,2023/03/17,1,400,15
+store_02 ,Thingamajig,home,2023/01/15,20,100,
+Store_01,Gadget,home,2023/03/22,20,300,ten
+Store_01,Widget,Home,2023/01/25,100,Three Hundred,
+store_02 ,Doodad,home,2023/01/18,,Three Hundred,ten
+Store_01,Widget,Electronics,2023/01/31,twenty,,20
+store_02 ,Doodad,Gadgets,2023/03/13,10,200,5
+store_05,Gadget,Home,2023/03/18,1,200,10
+ STORE_03,Widget,electronics,2023/01/04,3,100,ten
+store_05,Thingamajig,electronics,2023/02/27,3,Three Hundred,15
+Store_01,Thingamajig,Home,2023/03/18,,,10
+store_02 ,Thingamajig,Electronics,2023/01/21,2,400,5
+Store_01,Widget,Gadgets,2023/03/13,200,,20
+ STORE_03,Thingamajig,Electronics,2023/01/19,100,200,5
+Store_01,Doodad,Electronics,2023/01/06,100,500,5
+store_05,Thingamajig,home,2023/02/28,,,
+ STORE_03,Doodad,Gadgets,2023/03/27,30,Three Hundred,10
+store_05,Thingamajig,electronics,2023/03/31,twenty,300,5
+Store_04,Widget,electronics,2023/01/01,2,Three Hundred,20
+ STORE_03,Thingamajig,home,2023/03/31,100,400,ten
+Store_04,Widget,Home,2023/03/17,10,400,5
+ STORE_03,Thingamajig,Home,2023/03/10,1,400,ten
+Store_01,Doodad,Electronics,2023/01/26,1,300,20
+store_05,Doodad,home,2023/01/27,2,500,15
+store_05,Doodad,home,2023/01/11,20,100,5
+store_02 ,Widget,home,2023/01/20,10,300,15
+Store_04,Thingamajig,Electronics,2023/02/14,,200,5
+store_05,Thingamajig,Home,2023/01/21,10,100,5
+ STORE_03,Widget,Electronics,2023/03/19,30,500,20
+Store_01,Gadget,home,2023/03/16,,500,10
+store_05,Gadget,Home,2023/03/12,20,500,20
+store_05,Gadget,Home,2023/01/31,3,300,10
+store_05,Widget,Electronics,2023/01/31,20,100,10
+Store_01,Doodad,Home,2023/01/18,30,300,
+Store_01,Doodad,electronics,2023/01/17,30,500,15
+Store_04,Thingamajig,Electronics,2023/01/14,2,,
+Store_01,Widget,home,2023/02/09,200,300,15
+store_02 ,Gadget,Gadgets,2023/02/09,,500,ten
+store_05,Thingamajig,Home,2023/01/11,30,500,20
+ STORE_03,Doodad,electronics,2023/01/30,twenty,,10
+ STORE_03,Gadget,home,2023/01/01,3,200,10
+ STORE_03,Thingamajig,electronics,2023/02/12,3,400,ten
+ STORE_03,Widget,Home,2023/01/08,20,Three Hundred,ten
+store_02 ,Gadget,Home,2023/02/02,2,300,5
+store_05,Thingamajig,electronics,2023/03/08,twenty,300,5
+ STORE_03,Gadget,electronics,2023/02/05,200,400,
+store_05,Gadget,Gadgets,2023/03/02,1,400,
+Store_01,Doodad,Home,2023/02/03,20,500,5
+Store_04,Widget,Electronics,2023/03/02,twenty,500,20
+Store_01,Doodad,Electronics,2023/03/13,30,400,15
+Store_01,Gadget,Gadgets,2023/03/30,1,200,20
+store_02 ,Doodad,Gadgets,2023/02/18,30,100,10
+ STORE_03,Thingamajig,Electronics,2023/01/17,100,500,
+Store_04,Gadget,electronics,2023/01/11,200,200,ten
+ STORE_03,Thingamajig,Home,2023/01/28,2,100,20
+Store_04,Gadget,home,2023/02/24,10,400,10
+store_05,Thingamajig,Home,2023/03/20,,,
+store_05,Thingamajig,Electronics,2023/02/28,3,400,5
+Store_04,Gadget,electronics,2023/03/03,3,400,5
+store_05,Thingamajig,electronics,2023/01/13,10,200,10
+ STORE_03,Thingamajig,Home,2023/01/28,,500,5
+Store_04,Gadget,electronics,2023/02/09,200,200,ten
+store_05,Thingamajig,home,2023/01/15,2,300,ten
+store_05,Widget,Gadgets,2023/03/10,2,200,ten
+Store_01,Doodad,Home,2023/03/06,,200,ten
+Store_01,Widget,home,2023/01/20,10,400,15
+Store_04,Doodad,Home,2023/02/18,twenty,100,10
+store_02 ,Doodad,electronics,2023/01/25,,300,20
+store_05,Doodad,electronics,2023/03/10,twenty,Three Hundred,20
+store_02 ,Gadget,electronics,2023/01/27,3,200,15
+Store_01,Widget,Home,2023/02/20,200,200,15
+store_02 ,Doodad,Gadgets,2023/02/05,1,500,20
+Store_04,Widget,electronics,2023/01/23,200,,
+Store_04,Widget,Home,2023/02/20,10,500,
+ STORE_03,Widget,electronics,2023/02/09,3,Three Hundred,10
+ STORE_03,Thingamajig,Gadgets,2023/03/19,twenty,500,15
+Store_04,Doodad,Home,2023/02/10,20,400,5
+store_02 ,Thingamajig,Electronics,2023/02/07,100,,5
+ STORE_03,Doodad,Electronics,2023/02/15,10,200,5
+store_05,Thingamajig,Gadgets,2023/03/08,200,500,15
+store_05,Gadget,electronics,2023/03/02,3,Three Hundred,5
+store_02 ,Doodad,Electronics,2023/01/16,twenty,,20
+store_05,Doodad,Electronics,2023/01/19,3,,
+Store_04,Widget,Home,2023/02/02,1,400,
+ STORE_03,Gadget,Electronics,2023/01/07,1,Three Hundred,
+ STORE_03,Widget,electronics,2023/02/15,3,300,20
+Store_01,Thingamajig,Electronics,2023/01/16,200,400,5
+ STORE_03,Gadget,Electronics,2023/03/16,,,ten
+Store_04,Doodad,Gadgets,2023/03/07,twenty,Three Hundred,5
+ STORE_03,Thingamajig,Electronics,2023/01/19,1,300,
+store_05,Widget,Home,2023/03/01,30,100,10
+store_02 ,Thingamajig,Gadgets,2023/02/20,200,200,10
+store_02 ,Gadget,home,2023/01/13,1,500,5
+ STORE_03,Widget,Gadgets,2023/02/20,10,500,ten
+ STORE_03,Widget,Home,2023/03/02,100,500,10
+ STORE_03,Gadget,Home,2023/02/02,20,100,5
+Store_04,Widget,Home,2023/02/15,100,,15
+Store_04,Widget,home,2023/01/20,1,100,10
+store_02 ,Doodad,Home,2023/01/28,10,300,15
+Store_01,Doodad,Electronics,2023/01/25,200,,5
+store_05,Widget,Gadgets,2023/03/14,100,100,15
+Store_01,Doodad,Home,2023/03/09,twenty,400,20
+Store_04,Widget,Gadgets,2023/02/02,2,Three Hundred,15
+Store_01,Widget,electronics,2023/03/29,twenty,300,
+store_05,Thingamajig,Electronics,2023/01/07,twenty,300,ten
+store_05,Doodad,Electronics,2023/02/17,30,Three Hundred,15
+ STORE_03,Widget,Gadgets,2023/01/02,100,Three Hundred,
+Store_01,Doodad,electronics,2023/02/28,20,200,15
+Store_01,Thingamajig,home,2023/02/04,,300,10
+ STORE_03,Thingamajig,electronics,2023/03/20,100,100,
+store_02 ,Thingamajig,home,2023/01/12,3,500,10
+store_05,Widget,Electronics,2023/01/14,100,500,10
+store_05,Doodad,electronics,2023/01/29,30,,ten
+Store_01,Gadget,home,2023/03/11,twenty,300,ten
+store_02 ,Thingamajig,Home,2023/03/23,100,100,20
+store_02 ,Gadget,Home,2023/03/06,10,400,20
+Store_01,Widget,Electronics,2023/02/24,100,100,ten
+ STORE_03,Doodad,Gadgets,2023/03/06,100,200,
+Store_04,Doodad,Electronics,2023/02/23,20,500,20
+ STORE_03,Gadget,Electronics,2023/03/19,twenty,100,10
+Store_01,Widget,home,2023/01/24,1,200,15
+Store_04,Widget,electronics,2023/03/05,200,Three Hundred,ten
+ STORE_03,Gadget,Gadgets,2023/02/11,3,,15
+store_02 ,Doodad,Gadgets,2023/01/05,30,,10
+Store_04,Thingamajig,Electronics,2023/01/21,10,200,10
+Store_01,Gadget,Gadgets,2023/01/12,100,100,
+ STORE_03,Doodad,Home,2023/03/23,3,500,20
+ STORE_03,Gadget,Home,2023/01/17,10,,10
+Store_04,Widget,Electronics,2023/01/09,3,400,
+Store_01,Doodad,Electronics,2023/01/07,20,Three Hundred,5
+Store_04,Gadget,Gadgets,2023/02/17,2,100,ten
+store_05,Thingamajig,Electronics,2023/01/30,100,100,5
+ STORE_03,Thingamajig,Home,2023/02/20,1,300,5
+store_05,Thingamajig,Electronics,2023/01/01,30,100,
+store_02 ,Thingamajig,Gadgets,2023/01/20,10,200,10
+Store_04,Gadget,Gadgets,2023/03/21,1,500,
+store_05,Doodad,Gadgets,2023/02/01,,300,15
+store_05,Thingamajig,electronics,2023/02/18,20,,ten
+store_05,Gadget,home,2023/02/01,2,300,5
+store_02 ,Doodad,electronics,2023/03/13,2,,ten
+store_02 ,Doodad,Electronics,2023/01/20,,,10
+store_05,Widget,electronics,2023/02/10,30,200,15
+ STORE_03,Doodad,Gadgets,2023/01/26,2,200,15
+Store_01,Widget,Electronics,2023/01/23,,500,5
+Store_01,Widget,Home,2023/03/24,3,100,ten
+Store_04,Doodad,home,2023/03/14,2,Three Hundred,
+store_02 ,Thingamajig,home,2023/02/03,10,500,
+Store_01,Gadget,Electronics,2023/03/05,30,500,20
+store_05,Thingamajig,electronics,2023/01/14,,300,ten
+ STORE_03,Gadget,Gadgets,2023/02/02,twenty,400,15
+Store_01,Doodad,Electronics,2023/02/15,,,
+store_05,Gadget,Home,2023/02/13,1,,10
+store_05,Gadget,Electronics,2023/02/27,30,,ten
+store_02 ,Doodad,Gadgets,2023/01/19,100,300,5
+Store_01,Thingamajig,Gadgets,2023/02/10,10,500,5
+Store_04,Gadget,Gadgets,2023/01/01,20,300,5
+store_02 ,Widget,Gadgets,2023/03/02,2,200,20
+store_05,Doodad,Electronics,2023/01/27,,Three Hundred,15
+Store_01,Doodad,Electronics,2023/03/12,10,,5
+ STORE_03,Widget,electronics,2023/02/03,1,Three Hundred,ten
+store_02 ,Widget,Gadgets,2023/02/01,200,,15
+Store_04,Widget,Gadgets,2023/01/17,200,300,20
+store_05,Doodad,electronics,2023/03/25,2,,15
+Store_01,Widget,Electronics,2023/01/15,3,400,10
+Store_04,Thingamajig,Gadgets,2023/03/31,10,200,5
+ STORE_03,Thingamajig,Gadgets,2023/02/23,30,Three Hundred,
+Store_01,Doodad,home,2023/02/07,200,100,10
+ STORE_03,Thingamajig,Gadgets,2023/03/07,10,Three Hundred,20
+Store_01,Doodad,home,2023/03/03,200,100,5
+Store_04,Thingamajig,Electronics,2023/02/03,1,200,20
+Store_01,Doodad,Gadgets,2023/01/17,200,300,20
+Store_04,Widget,Home,2023/01/24,100,100,5
+store_05,Gadget,home,2023/03/06,1,200,15
+ STORE_03,Doodad,Gadgets,2023/02/01,200,200,10
+Store_04,Widget,home,2023/02/26,2,200,20
+Store_01,Widget,home,2023/02/09,twenty,100,10
+store_05,Thingamajig,home,2023/02/07,200,500,20
+Store_04,Widget,home,2023/01/21,200,100,10
+store_02 ,Gadget,home,2023/03/16,2,300,15
+ STORE_03,Widget,home,2023/01/25,2,400,
+store_02 ,Doodad,Gadgets,2023/01/21,twenty,Three Hundred,5
+store_05,Doodad,home,2023/01/14,1,Three Hundred,
+Store_01,Thingamajig,electronics,2023/02/26,3,400,5
+store_05,Gadget,home,2023/03/01,200,400,15
+Store_04,Doodad,electronics,2023/01/09,20,300,10
+store_02 ,Widget,Electronics,2023/02/27,2,400,15
+store_02 ,Gadget,Home,2023/03/28,200,300,10
+Store_01,Widget,Electronics,2023/01/26,1,300,10
+ STORE_03,Gadget,electronics,2023/02/13,2,300,20
+store_02 ,Thingamajig,Gadgets,2023/03/20,10,200,5
+store_05,Widget,home,2023/01/12,2,Three Hundred,ten
+ STORE_03,Doodad,Electronics,2023/01/14,3,500,15
+Store_04,Widget,Home,2023/02/14,20,300,5
+store_02 ,Widget,Gadgets,2023/01/24,2,400,
+store_02 ,Thingamajig,electronics,2023/03/21,200,100,
+store_02 ,Doodad,electronics,2023/01/30,10,Three Hundred,
+Store_01,Doodad,home,2023/03/03,3,200,20
+ STORE_03,Thingamajig,electronics,2023/02/16,,,5
+store_05,Gadget,Home,2023/01/15,3,400,10
+ STORE_03,Thingamajig,Gadgets,2023/02/18,2,500,5
+Store_04,Thingamajig,Electronics,2023/01/15,30,100,5
+store_05,Thingamajig,Electronics,2023/03/26,100,100,ten
+ STORE_03,Doodad,Home,2023/01/06,3,100,20
+store_05,Doodad,home,2023/03/16,10,100,5
+Store_04,Gadget,Electronics,2023/01/22,3,500,15
+Store_01,Widget,Gadgets,2023/03/16,100,,10
+ STORE_03,Thingamajig,Electronics,2023/02/22,200,Three Hundred,10
+store_02 ,Doodad,Gadgets,2023/03/09,100,100,5
+ STORE_03,Gadget,Gadgets,2023/01/04,100,100,ten
+store_02 ,Doodad,home,2023/01/01,10,200,10
+ STORE_03,Gadget,home,2023/03/11,2,100,15
+Store_01,Doodad,Gadgets,2023/02/14,2,500,10
+store_02 ,Gadget,home,2023/02/04,,Three Hundred,
+store_05,Gadget,Electronics,2023/03/13,twenty,,ten
+store_02 ,Gadget,Gadgets,2023/01/14,,200,5
+ STORE_03,Gadget,home,2023/02/22,10,300,20
+ STORE_03,Thingamajig,electronics,2023/01/22,20,,ten
+store_05,Doodad,electronics,2023/02/04,30,300,ten
+Store_01,Widget,Home,2023/01/24,30,300,20
+store_02 ,Thingamajig,Gadgets,2023/02/21,100,,15
+Store_01,Thingamajig,Gadgets,2023/03/07,100,200,20
+Store_01,Gadget,Electronics,2023/02/14,100,500,20
+store_05,Widget,Gadgets,2023/01/22,2,400,
+ STORE_03,Widget,Home,2023/01/20,100,300,5
+store_02 ,Gadget,home,2023/03/04,,,
+store_02 ,Thingamajig,home,2023/02/24,200,500,5
+ STORE_03,Thingamajig,Home,2023/01/25,,100,5
+store_02 ,Thingamajig,home,2023/02/04,100,Three Hundred,20
+store_05,Widget,electronics,2023/03/14,10,,15
+store_05,Doodad,home,2023/01/26,2,,5
+store_02 ,Thingamajig,home,2023/02/25,200,Three Hundred,5
+ STORE_03,Gadget,electronics,2023/02/06,100,200,5
+Store_01,Thingamajig,Home,2023/01/13,1,300,15
+Store_04,Gadget,home,2023/03/24,30,200,5
+Store_01,Doodad,home,2023/02/10,1,300,20
+store_02 ,Widget,Home,2023/02/05,3,500,ten
+store_05,Widget,Electronics,2023/01/24,3,500,5
+Store_04,Gadget,Gadgets,2023/01/02,100,300,10
+Store_04,Gadget,Electronics,2023/02/27,twenty,200,15
+Store_04,Doodad,Gadgets,2023/01/19,200,500,15
+store_05,Widget,Gadgets,2023/02/23,1,Three Hundred,ten
+store_05,Widget,Electronics,2023/03/14,100,400,20
+ STORE_03,Widget,Home,2023/01/25,2,,10
+Store_04,Gadget,home,2023/01/11,2,500,15
+store_05,Thingamajig,Gadgets,2023/02/13,twenty,,20
+store_05,Doodad,Gadgets,2023/02/11,twenty,500,20
+store_02 ,Thingamajig,electronics,2023/01/09,100,,15
+ STORE_03,Thingamajig,Home,2023/03/22,twenty,100,5
+Store_01,Doodad,Electronics,2023/01/12,2,,
+Store_04,Doodad,Home,2023/02/11,2,100,10
+ STORE_03,Thingamajig,Gadgets,2023/02/20,100,500,
+Store_01,Thingamajig,home,2023/03/08,30,100,15
+store_05,Thingamajig,Home,2023/03/23,20,Three Hundred,ten
+store_05,Doodad,Home,2023/03/28,200,Three Hundred,5
+store_02 ,Gadget,Gadgets,2023/01/31,10,100,ten
+ STORE_03,Thingamajig,Home,2023/01/06,twenty,,10
+store_02 ,Thingamajig,home,2023/03/21,,500,20
+Store_01,Gadget,electronics,2023/02/04,20,Three Hundred,
+ STORE_03,Widget,home,2023/03/09,twenty,Three Hundred,20
+Store_01,Thingamajig,Home,2023/01/15,30,100,20
+ STORE_03,Thingamajig,Home,2023/01/28,10,,20
+store_05,Widget,home,2023/01/06,20,200,15
+Store_01,Gadget,home,2023/03/06,30,500,15
+store_02 ,Gadget,electronics,2023/03/08,20,500,
+store_05,Thingamajig,Electronics,2023/01/10,10,300,5
+store_05,Doodad,Electronics,2023/02/15,100,400,ten
+ STORE_03,Gadget,Electronics,2023/02/28,1,500,15
+ STORE_03,Thingamajig,electronics,2023/03/04,2,400,ten
+store_05,Doodad,home,2023/01/03,twenty,,20
+store_02 ,Thingamajig,Electronics,2023/03/30,100,100,ten
+store_05,Gadget,Home,2023/02/22,1,100,ten
+store_05,Doodad,home,2023/03/06,twenty,200,15
+store_05,Doodad,Gadgets,2023/01/11,,Three Hundred,20
+store_05,Doodad,Home,2023/01/26,100,Three Hundred,
+Store_01,Gadget,electronics,2023/03/19,100,400,15
+Store_01,Thingamajig,Home,2023/03/21,30,100,15
+store_05,Widget,Home,2023/01/12,2,300,
+ STORE_03,Thingamajig,Home,2023/01/23,100,200,15
+Store_01,Thingamajig,Home,2023/03/10,30,,
+ STORE_03,Widget,Electronics,2023/03/07,30,200,20
+Store_01,Widget,home,2023/03/20,100,100,20
+Store_01,Thingamajig,electronics,2023/03/03,20,100,15
+Store_01,Widget,Home,2023/03/09,3,300,5
+Store_01,Thingamajig,Gadgets,2023/03/22,1,500,5
+Store_01,Thingamajig,Gadgets,2023/01/07,30,,20
+ STORE_03,Doodad,home,2023/03/14,twenty,200,10
+store_05,Thingamajig,home,2023/02/18,twenty,300,20
+Store_01,Doodad,electronics,2023/02/21,30,,
+store_02 ,Widget,Electronics,2023/03/24,1,100,5
+store_02 ,Gadget,Home,2023/01/25,3,400,5
+ STORE_03,Gadget,home,2023/01/14,,,15
+Store_04,Gadget,home,2023/03/01,2,,20
+Store_04,Gadget,Gadgets,2023/02/26,,300,20
+store_05,Thingamajig,Electronics,2023/03/17,,500,
+Store_01,Doodad,Electronics,2023/01/17,20,200,ten
+ STORE_03,Thingamajig,Home,2023/01/22,200,,15
+Store_01,Thingamajig,home,2023/01/13,twenty,500,ten
+Store_01,Doodad,Gadgets,2023/02/27,1,300,5
+ STORE_03,Widget,Home,2023/01/18,200,400,15
+ STORE_03,Doodad,electronics,2023/01/03,200,Three Hundred,20
+store_02 ,Widget,Electronics,2023/01/04,,200,
+Store_04,Thingamajig,Gadgets,2023/02/06,10,,
+Store_04,Thingamajig,Gadgets,2023/03/10,2,500,15
+store_02 ,Thingamajig,Electronics,2023/01/15,,Three Hundred,ten
+Store_01,Widget,Electronics,2023/03/03,10,100,15
+store_05,Gadget,Gadgets,2023/03/07,twenty,400,10
+Store_04,Thingamajig,home,2023/01/12,2,400,15
+Store_04,Thingamajig,Gadgets,2023/02/15,2,200,10
+ STORE_03,Gadget,Home,2023/01/10,,100,5
+ STORE_03,Doodad,Electronics,2023/03/13,2,,ten
+store_02 ,Gadget,electronics,2023/01/02,2,400,10
+Store_04,Gadget,home,2023/02/07,1,400,5
+Store_01,Widget,Gadgets,2023/02/21,200,Three Hundred,20
+Store_04,Doodad,electronics,2023/03/10,3,,
+Store_04,Widget,Gadgets,2023/02/09,2,400,5
+Store_04,Widget,Electronics,2023/03/30,1,,15
+store_05,Thingamajig,Gadgets,2023/02/23,twenty,300,5
+ STORE_03,Widget,home,2023/02/28,10,200,
+store_05,Widget,home,2023/03/16,2,200,15
+Store_01,Doodad,Home,2023/02/06,3,,5
+store_02 ,Doodad,Gadgets,2023/01/09,twenty,200,ten
+Store_01,Doodad,electronics,2023/01/31,200,,15
+ STORE_03,Gadget,Home,2023/01/15,3,500,20
+Store_01,Doodad,Electronics,2023/02/20,twenty,500,10
+store_05,Gadget,Electronics,2023/01/30,30,500,5
+ STORE_03,Widget,electronics,2023/03/14,1,200,20
+ STORE_03,Gadget,Electronics,2023/03/12,200,300,
+store_02 ,Widget,Home,2023/01/20,200,,
+ STORE_03,Doodad,electronics,2023/03/30,20,200,15
+Store_01,Thingamajig,home,2023/01/04,1,400,15
+store_05,Thingamajig,Home,2023/01/21,twenty,300,ten
+store_02 ,Widget,home,2023/01/29,,500,
+store_02 ,Thingamajig,Electronics,2023/02/15,,100,
+ STORE_03,Widget,electronics,2023/01/14,3,200,10
+Store_04,Thingamajig,electronics,2023/02/21,twenty,300,15
+ STORE_03,Widget,home,2023/01/16,3,400,ten
+store_05,Gadget,Electronics,2023/01/12,30,500,ten
+Store_04,Thingamajig,Electronics,2023/01/27,,,10
+store_02 ,Widget,Electronics,2023/03/10,200,200,20
+store_05,Doodad,electronics,2023/03/14,twenty,500,10
+Store_04,Gadget,home,2023/02/02,,500,5
+Store_04,Gadget,Electronics,2023/01/11,30,,
+store_02 ,Gadget,Gadgets,2023/01/09,,300,ten
+store_02 ,Widget,electronics,2023/01/22,,100,5
+ STORE_03,Doodad,Gadgets,2023/03/31,3,100,ten
+store_05,Doodad,electronics,2023/02/23,twenty,Three Hundred,5
+store_02 ,Widget,Gadgets,2023/03/30,2,200,10
+store_05,Widget,electronics,2023/03/14,twenty,400,5
+store_05,Thingamajig,home,2023/02/22,3,500,10
+Store_04,Widget,electronics,2023/01/18,1,300,20
+store_05,Widget,electronics,2023/01/12,200,100,ten
+store_02 ,Thingamajig,Gadgets,2023/01/02,2,200,20
+Store_01,Widget,Gadgets,2023/01/28,3,300,20
+store_05,Gadget,Home,2023/03/06,200,,15
+ STORE_03,Doodad,electronics,2023/01/16,30,300,20
+store_05,Gadget,electronics,2023/03/22,,100,15
+store_05,Widget,Home,2023/03/11,200,100,ten
+store_05,Doodad,Home,2023/01/27,200,200,15
+store_05,Thingamajig,Electronics,2023/02/20,,500,5
+store_02 ,Doodad,Gadgets,2023/03/21,30,,15
+store_02 ,Doodad,Gadgets,2023/03/22,,100,10
+store_02 ,Gadget,electronics,2023/01/01,20,400,
+store_02 ,Widget,Gadgets,2023/03/28,,400,10
+store_05,Thingamajig,home,2023/01/09,200,200,
+Store_01,Gadget,Electronics,2023/01/19,100,Three Hundred,10
+store_02 ,Thingamajig,Home,2023/03/26,3,400,5
+Store_01,Gadget,home,2023/01/09,1,500,15
+ STORE_03,Thingamajig,electronics,2023/03/23,1,500,10
+Store_04,Gadget,Electronics,2023/01/17,2,,15
+store_02 ,Thingamajig,Gadgets,2023/03/21,20,500,20
+ STORE_03,Doodad,Home,2023/02/21,100,100,ten
+ STORE_03,Widget,home,2023/03/20,30,200,10
+store_02 ,Thingamajig,Electronics,2023/02/25,20,100,20
+store_02 ,Gadget,electronics,2023/01/26,200,,20
+store_05,Doodad,home,2023/03/16,100,400,10
+store_02 ,Doodad,Gadgets,2023/03/30,100,Three Hundred,5
+ STORE_03,Doodad,Home,2023/02/23,twenty,500,10
+store_05,Thingamajig,Home,2023/03/15,3,,20
+store_05,Widget,Home,2023/02/26,200,200,10
+ STORE_03,Doodad,Home,2023/03/23,twenty,,ten
+ STORE_03,Widget,Home,2023/02/25,30,300,20
+store_02 ,Thingamajig,electronics,2023/01/05,10,,10
+store_05,Doodad,Electronics,2023/01/09,2,100,ten
+ STORE_03,Gadget,electronics,2023/02/17,20,500,ten
+Store_04,Gadget,electronics,2023/01/07,1,400,5
+ STORE_03,Widget,electronics,2023/01/17,30,500,15
+store_05,Gadget,home,2023/01/18,1,500,15
+store_02 ,Doodad,electronics,2023/02/21,2,400,20
+store_05,Doodad,Home,2023/03/02,3,100,10
+Store_01,Thingamajig,Gadgets,2023/01/20,10,300,ten
+store_05,Gadget,Gadgets,2023/01/30,2,Three Hundred,20
+store_05,Gadget,home,2023/01/24,200,500,20
+Store_01,Doodad,Home,2023/03/10,,100,5
+store_02 ,Gadget,Gadgets,2023/02/07,200,100,5
+ STORE_03,Thingamajig,Home,2023/02/19,3,,20
+Store_01,Thingamajig,Electronics,2023/01/02,10,200,5
+Store_01,Widget,Electronics,2023/01/18,twenty,,ten
+Store_04,Widget,Electronics,2023/03/07,20,200,ten
+Store_04,Gadget,electronics,2023/01/30,twenty,200,ten
+ STORE_03,Doodad,Home,2023/01/28,3,400,10
+Store_04,Gadget,Home,2023/03/18,,400,20
+store_02 ,Widget,home,2023/02/19,twenty,300,
+store_05,Widget,electronics,2023/03/15,20,Three Hundred,5
+Store_04,Doodad,home,2023/03/23,30,500,15
+store_05,Thingamajig,Gadgets,2023/02/11,3,200,20
+ STORE_03,Doodad,Electronics,2023/01/15,200,300,ten
+ STORE_03,Thingamajig,Electronics,2023/03/31,20,400,10
+store_05,Thingamajig,Gadgets,2023/01/14,20,Three Hundred,15
+store_02 ,Gadget,electronics,2023/01/21,200,400,
+store_05,Gadget,Electronics,2023/03/03,30,200,20
+store_02 ,Thingamajig,home,2023/02/28,3,300,
+Store_01,Widget,Electronics,2023/02/13,3,500,20
+store_02 ,Doodad,home,2023/03/09,20,200,15
+Store_04,Gadget,Home,2023/02/05,100,,15
+store_05,Widget,home,2023/01/04,3,200,
+ STORE_03,Gadget,Gadgets,2023/03/25,3,,10
+store_02 ,Doodad,Electronics,2023/03/04,30,200,20
+ STORE_03,Doodad,Gadgets,2023/03/25,30,400,10
+store_05,Doodad,electronics,2023/02/17,,,15
+ STORE_03,Doodad,Home,2023/02/15,200,100,20
+store_02 ,Gadget,Electronics,2023/01/01,20,300,
+store_02 ,Doodad,Home,2023/03/13,10,Three Hundred,20
+store_05,Doodad,home,2023/03/09,2,200,ten
+Store_04,Thingamajig,electronics,2023/01/19,30,200,5
+store_05,Thingamajig,electronics,2023/01/10,10,300,20
+store_05,Gadget,Gadgets,2023/02/17,2,300,15
+ STORE_03,Thingamajig,Home,2023/01/19,twenty,300,20
+ STORE_03,Gadget,Gadgets,2023/01/18,1,100,5
+store_05,Thingamajig,Home,2023/03/04,3,300,5
+Store_04,Thingamajig,Gadgets,2023/01/27,2,400,
+store_02 ,Doodad,Home,2023/02/10,30,500,
+ STORE_03,Thingamajig,Gadgets,2023/02/26,3,Three Hundred,ten
+store_05,Doodad,Home,2023/03/09,30,200,
+store_02 ,Gadget,home,2023/01/29,20,200,15
+store_02 ,Gadget,Home,2023/03/05,,300,
+ STORE_03,Gadget,Electronics,2023/01/14,100,100,
+store_02 ,Doodad,Home,2023/03/21,100,Three Hundred,10
+Store_04,Thingamajig,Home,2023/01/17,10,500,20
+Store_01,Widget,Home,2023/01/19,3,200,20
+ STORE_03,Doodad,Gadgets,2023/03/25,,400,20
+store_02 ,Gadget,Electronics,2023/01/20,10,Three Hundred,20
+ STORE_03,Thingamajig,electronics,2023/02/24,1,100,5
+ STORE_03,Thingamajig,electronics,2023/02/02,1,200,10
+Store_01,Widget,Electronics,2023/03/03,200,,10
+ STORE_03,Widget,electronics,2023/03/29,3,100,
+Store_01,Thingamajig,home,2023/01/20,twenty,Three Hundred,15
+store_05,Thingamajig,Home,2023/02/02,30,100,5
+store_02 ,Widget,Gadgets,2023/03/03,3,Three Hundred,ten
+Store_04,Doodad,Gadgets,2023/02/27,200,400,15
+Store_04,Thingamajig,home,2023/03/07,1,200,15
+Store_04,Gadget,home,2023/03/15,20,Three Hundred,ten
+Store_04,Gadget,home,2023/01/03,10,300,10
+ STORE_03,Doodad,electronics,2023/02/24,2,,ten
+store_02 ,Gadget,Home,2023/03/01,twenty,Three Hundred,10
+ STORE_03,Doodad,Home,2023/02/09,1,100,10
+Store_01,Doodad,electronics,2023/02/15,100,200,ten
+ STORE_03,Doodad,Electronics,2023/02/25,100,400,ten
+ STORE_03,Widget,Gadgets,2023/02/26,2,100,10
+store_05,Thingamajig,Electronics,2023/02/03,10,400,20
+Store_04,Doodad,Gadgets,2023/01/23,2,300,5
+store_02 ,Widget,Home,2023/02/28,30,400,10
+store_05,Doodad,electronics,2023/02/25,20,Three Hundred,15
+store_02 ,Doodad,Home,2023/01/12,,200,ten
+Store_04,Gadget,Gadgets,2023/03/29,,,ten
+store_05,Thingamajig,Electronics,2023/01/07,1,400,10
+store_02 ,Widget,electronics,2023/02/17,twenty,400,5
+Store_04,Doodad,Gadgets,2023/01/24,100,300,15
+ STORE_03,Thingamajig,home,2023/01/28,1,300,10
+ STORE_03,Widget,home,2023/02/05,,100,5
