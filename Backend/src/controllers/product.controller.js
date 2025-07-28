@@ -6,8 +6,15 @@ const getProducts = async (req, res) => {
         await connectToMongoDB();
         const db = getDb();
 
+        const { search } = req.query;
+        let query = {};
+
+        if (search) {
+            query = { product_name: { $regex: `^${search}`, $options: 'i' } };
+        }
+
         // Fetch all products
-        const products = await db.collection('product').find().toArray();
+        const products = await db.collection('product').find(query).toArray();
         if (products.length === 0) {
             return res.status(404).json({ message: 'No products found' });
         }
