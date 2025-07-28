@@ -30,6 +30,7 @@
     "expo-font": "~12.0.9",
     "expo-image-picker": "~15.0.7",
     "expo-linking": "~6.3.1",
+    "expo-notifications": "~0.28.19",
     "expo-router": "~3.5.18",
     "expo-splash-screen": "~0.27.5",
     "expo-status-bar": "~1.12.1",
@@ -52,9 +53,10 @@
     "react-native-safe-area-context": "^4.10.5",
     "react-native-screens": "^3.31.1",
     "react-native-tab-view": "^3.5.2",
+    "react-native-toast-notifications": "^3.4.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "^0.19.12",
-    "react-native-webview": "^13.12.4",
+    "react-native-webview": "13.8.6",
     "uuid": "^10.0.0"
   },
   "devDependencies": {

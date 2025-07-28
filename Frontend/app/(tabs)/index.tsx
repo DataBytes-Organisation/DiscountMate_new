@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image, 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSegments } from 'expo-router';
+import { useToast } from 'react-native-toast-notifications';
+import DashboardEmbed from './DashboardEmbed';
 
 const { width: viewportWidth } = Dimensions.get('window');
 let basketItems;
@@ -43,6 +45,7 @@ export default function HomeScreen() {
   const animatedScroll = useRef(new Animated.Value(0)).current;
   const itemWidth = viewportWidth * 0.3; // Adjust item width
   const segments = useSegments();
+  const toast = useToast();
 
   const addToBasket = async(item) => {
     console.log("Adding basket item ", item);
@@ -52,6 +55,7 @@ export default function HomeScreen() {
       productId: item.product_id
     };
     if (!token) {
+      toast.show("Please log in to add items to basket.", { type: 'warning', placement: 'top' });
       return;
     }
   
@@ -63,12 +67,28 @@ export default function HomeScreen() {
       },
       body: JSON.stringify(data)
     })
-      .then(res => res.json())
+      .then(res => {
+       // Check for non-OK HTTP responses (e.g., 400, 401, 500)
+       if (!res.ok) {
+         // Attempt to parse error message from backend response if possible
+         return res.json().then(errData => {
+             // Throw an error with the message from the backend or default status
+             throw new Error(errData.message || `HTTP error! status: ${res.status}`);
+         });
+       }
+       // If response is OK, return the JSON data
+       return res.json();
+      })
+
       .then(data => {
         console.log("Added items=", data);
         setBasketData(data);
+        toast.show("Item added to basket!", { type: 'success', placement: 'top' });
       })
-      .catch(err => console.error(err.message));
+      .catch(err => {
+        console.error(err.message);
+        toast.show(`Failed to add item: ${err.message}`, { type: 'danger', placement: 'top' });
+      });
   }
   
   const getBasket = async() => {
@@ -194,7 +214,7 @@ export default function HomeScreen() {
   const carouselItems = bigItemsData.slice(2); // Rest of the items for the carousel
 
   return (
-    <ScrollView style={styles.scrollView}>
+    <ScrollView style={styles.scrollView}>  
       <View style={styles.container}>
         <Text style={styles.title}>Welcome to DiscountMate</Text>
 
@@ -234,6 +254,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </View>
+      <DashboardEmbed />
     </ScrollView>
   );
 }
