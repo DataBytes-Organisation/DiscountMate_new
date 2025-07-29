@@ -1,6 +1,6 @@
 .DS_Store
-Backend/node_modules/
+Backend/node_modules
 Backend/.env
 Frontend/node_modules
-Frontend/.expo/
+Frontend/.expo
 Scrapping/Australia_GroceriesScraper/configuration.ini

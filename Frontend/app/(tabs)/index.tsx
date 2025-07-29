@@ -1,18 +1,18 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image, Animated, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSegments } from 'expo-router';
-import { useToast } from 'react-native-toast-notifications';
 import DashboardEmbed from './DashboardEmbed';
+import { API_URL } from '@/constants/Api';
+import { useBasket } from './BasketContext';
+import { useWishlist } from './WishlistContext';
 
 const { width: viewportWidth } = Dimensions.get('window');
-let basketItems;
 
 // Function to fetch product data from the API
 const fetchProducts = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/products'); // current product api endpoint
+    const response = await fetch(`${API_URL}/products`); // current product api endpoint
     const data = await response.json();
     return Array.isArray(data) ? data : []; // Ensure the result is always an array
   } catch (error) {
@@ -41,92 +41,25 @@ export default function HomeScreen() {
   const flatListRef = useRef<FlatList>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
   const [bigItemsData, setBigItemsData] = useState([]); // Initialize state for bigItemsData
-  const [basketData, setBasketData] = useState([]); // Initialize state for bigItemsData
+  const { basketData, addToBasket, getBasket } = useBasket();
+  const { wishlist, addToWishlist, getWishlist } = useWishlist();
   const animatedScroll = useRef(new Animated.Value(0)).current;
   const itemWidth = viewportWidth * 0.3; // Adjust item width
   const segments = useSegments();
-  const toast = useToast();
 
-  const addToBasket = async(item) => {
-    console.log("Adding basket item ", item);
-    const url = 'http://localhost:3000/api/baskets/addtobasket';
-    const token = await AsyncStorage.getItem('authToken');
-    const data = {
-      productId: item.product_id
-    };
-    if (!token) {
-      toast.show("Please log in to add items to basket.", { type: 'warning', placement: 'top' });
-      return;
-    }
-  
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(data)
-    })
-      .then(res => {
-       // Check for non-OK HTTP responses (e.g., 400, 401, 500)
-       if (!res.ok) {
-         // Attempt to parse error message from backend response if possible
-         return res.json().then(errData => {
-             // Throw an error with the message from the backend or default status
-             throw new Error(errData.message || `HTTP error! status: ${res.status}`);
-         });
-       }
-       // If response is OK, return the JSON data
-       return res.json();
-      })
-
-      .then(data => {
-        console.log("Added items=", data);
-        setBasketData(data);
-        toast.show("Item added to basket!", { type: 'success', placement: 'top' });
-      })
-      .catch(err => {
-        console.error(err.message);
-        toast.show(`Failed to add item: ${err.message}`, { type: 'danger', placement: 'top' });
-      });
-  }
-  
-  const getBasket = async() => {
-    console.log("Getting basket items");
-    const url = 'http://localhost:3000/api/baskets/getbasket';
-    const token = await AsyncStorage.getItem('authToken');
-  
-    if (!token) {
-      return;
-    }
-  
-    await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-        setBasketData(data);
-      })
-      .catch(err => console.error(err.message));
-  };
-  
   const doesItemExistInBasket = (item) =>
     {
-      let itemPresent = false;
-      console.log("basketItem",basketData)
       if(basketData?.length > 0){
       const basketItem = basketData?.find(currentItem => item.product_id == currentItem.productId);
-      console.log("Inside check and item=", basketItem);
-      if (basketItem == null)
-        console.log("Null");
-      else
-      console.log("not null");
-  
       return basketItem != null;
+}
+    };
+
+  const doesItemExistInWishlist = (item) =>
+    {
+      if(wishlist?.length > 0){
+      const wishlistItem = wishlist?.find(currentItem => item.product_id == currentItem.productId);
+      return wishlistItem != null;
 }
     };
   
@@ -155,10 +88,8 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    const fetchAndSetBasket = async () => {
-      await getBasket();
-    };
-    fetchAndSetBasket();
+    getBasket();
+    getWishlist();
   }, [segments]);
 
   // Fetch product data from API and map it to the bigItems
@@ -184,6 +115,7 @@ export default function HomeScreen() {
   const renderBigItem = ({ item }) => {
     console.log("Big Item Image URL:", item.link_image);  // Log to check image URL
     const shouldDisableAddToBasket = doesItemExistInBasket(item);
+    const shouldDisableAddToWishlist = doesItemExistInWishlist(item);
     return (
       <View style={styles.bigItem}>
         <Image source={{ uri: item.link_image }} style={styles.bigItemImage} />
@@ -192,7 +124,7 @@ export default function HomeScreen() {
           <Text style={styles.bigItemDescription}>{item.sub_category_1}</Text>
           <Text style={styles.bigItemPrice}>${item.current_price}</Text>
           <View style={styles.bigItemButtons}>
-            <TouchableOpacity style={styles.bigItemButtonSave}>
+            <TouchableOpacity disabled={shouldDisableAddToWishlist} onPress={() => addToWishlist(item)} style={shouldDisableAddToWishlist ? styles.bigItemButtonSaveDisabled : styles.bigItemButtonSave}>
               <Icon name="heart" size={16} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -340,6 +272,12 @@ const styles = StyleSheet.create({
   },
   bigItemButtonSave: {
     backgroundColor: '#6595a3',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  bigItemButtonSaveDisabled: {
+    backgroundColor: '#ddd',
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,
