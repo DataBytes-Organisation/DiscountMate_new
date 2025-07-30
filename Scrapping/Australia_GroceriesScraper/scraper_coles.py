@@ -20,14 +20,16 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium_stealth import stealth
 from datetime import datetime
 from pymongo import MongoClient
+from dotenv import load_dotenv
+import os
 
 
 # -------------------------
 #     Load Configurations
 # -------------------------
-
+load_dotenv()
 config = configparser.ConfigParser()
-config.read('configuration.ini')
+config.read('configurations.ini')
 url = "https://www.coles.com.au"
 delay = int(config.get('Coles', 'DelaySeconds'))
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -72,10 +74,10 @@ def wait_for_captcha(driver, timeout=120):
 
 def get_rotated_driver():
 
-    proxy_user_base = config.get('Smartproxy', 'Username')
-    proxy_pass = config.get('Smartproxy', 'Password')
-    proxy_host = config.get('Smartproxy', 'Host')
-    ports_str = config.get('Smartproxy', 'Port')
+    proxy_user_base = os.getenv("SMARTPROXY_USERNAME")
+    proxy_pass = os.getenv("SMARTPROXY_PASSWORD")
+    proxy_host = os.getenv("SMARTPROXY_HOST")
+    ports_str = os.getenv("SMARTPROXY_PORTS")
     session_id = random.randint(100000, 999999)
     proxy_user = f"{proxy_user_base}-session-{session_id}"
     proxy_port = random.choice([port.strip() for port in ports_str.split(',')])
@@ -220,7 +222,7 @@ def fetch_category_page(session, build_id, category, page):
 
 # This function is used to parse the product data JSON which is returned by the product fetch API
 
-def parse_product_data(json_data):
+def parse_product_data(json_data, category_slug):
 
     results = json_data.get("pageProps", {}).get("searchResults", {}).get("results", [])
     extracted = []
@@ -245,7 +247,9 @@ def parse_product_data(json_data):
             "unit_price": pricing.get("comparable"),
             "special_text": pricing.get("offerDescription", ""),
             "promo_text": pricing.get("specialType", ""),
-            "link": f"https://www.coles.com.au/product/{item.get('id', '')}"
+            "link": f"https://www.coles.com.au/product/{item.get('id', '')}",
+            "timestamp": datetime.now().isoformat(),
+            "category_slug": category_slug
         })
 
     return extracted
@@ -419,7 +423,7 @@ for label, slug in categories_to_scrape.items():
             break
 
         # Proceed to parse the data if it’s valid
-        products = parse_product_data(data)
+        products = parse_product_data(data, slug)
 
         if not products:
             print(" No more products on this page.")
@@ -432,19 +436,27 @@ for label, slug in categories_to_scrape.items():
         time.sleep(random.uniform(2, 3)) # !IMPORTANT: Slow down between requests not to throttle the API gateway
 
 # Get a timestamp that we use to save each scraping runs
-timestamp = datetime.now().strftime("%Y_%m_%d_%H%M%S")
+now = datetime.now()
+date_str = now.strftime("%Y-%m-%d")
+time_str = now.strftime("%H%M")
+
+supermarket_name = config.get('Coles', 'SupermarketName', fallback='coles')
+location = config.get('Coles', 'Location', fallback='unknownloc')
+
+filename = f"{supermarket_name}_{location}_{date_str}_{time_str}.json"
 
 # Save the scraped data to a file in local computer
-filepath = os.path.join(folderpath, f'{timestamp}_Coles_All_Categories.json')
+filepath = os.path.join(folderpath, filename)
+
 with open(filepath, 'w', encoding='utf-8') as f:
     json.dump(all_data, f, ensure_ascii=False, indent=4)
 
 # --- MongoDB Config ---
-username = config.get('MongoDB', 'Username')
-password = config.get('MongoDB', 'Password')
-cluster = config.get('MongoDB', 'Cluster')
-appname = config.get('MongoDB', 'AppName')
-db_name = config.get('MongoDB', 'Database')
+username = os.getenv("MONGO_USERNAME")
+password = os.getenv("MONGO_PASSWORD")
+cluster = os.getenv("MONGO_CLUSTER")
+appname = os.getenv("MONGO_APPNAME")
+db_name = os.getenv("MONGO_DB")
 
 # Save the scraped data to the MongoDB database
 # --- Build Mongo URI ---
@@ -454,7 +466,9 @@ mongo_uri = f"mongodb+srv://{username}:{password}@{cluster}/?retryWrites=true&w=
 client = MongoClient(mongo_uri)
 db = client[db_name]
 
-collection = db[f'{timestamp}_Coles_All']
+collection_name = filename.replace(".json", "").replace("-", "_")
+collection = db[collection_name]
+
 collection.insert_many(all_data)
 client.close()
 
