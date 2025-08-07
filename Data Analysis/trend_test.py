@@ -20,7 +20,7 @@ top_volatile = volatility_df.sort_values(by='price_volatility', ascending=False)
 print("\nTop 10 Most Volatile Products by Price:")
 print(top_volatile)
 
-# === SELECT MOST COMMON PRODUCT ===
+# === SELECT MOST COMMON PRODUCT =
 most_common_product = df['product_id'].value_counts().idxmax()
 product_df = df[df['product_id'] == most_common_product]
 
