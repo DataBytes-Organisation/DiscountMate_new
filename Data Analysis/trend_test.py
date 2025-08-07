@@ -6,7 +6,7 @@ import numpy as np
 # Load the data
 df = pd.read_csv("AugmentedData.product_pricing.csv")
 
-# Convert date column to datetime column
+# Convert date column to datetime 
 df['date'] = pd.to_datetime(df['date'])
 
 # Sort by date
