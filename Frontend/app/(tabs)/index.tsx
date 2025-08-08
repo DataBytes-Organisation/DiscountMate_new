@@ -19,7 +19,7 @@ const fetchProducts = async () => {
   }
 };
 
-const renderCarouselItem = ({ item }) => {
+const renderCarouselItem = ({ item }: { item: any }) => {
   console.log("Carousel Item Image URL:", item.link_image);  // Log to check image URL
   return (
     <View style={styles.carouselItem}>
@@ -38,48 +38,48 @@ const renderCarouselItem = ({ item }) => {
 export default function HomeScreen() {
   const flatListRef = useRef<FlatList>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
-  const [bigItemsData, setBigItemsData] = useState([]); // Initialize state for bigItemsData
-  const [basketData, setBasketData] = useState([]); // Initialize state for bigItemsData
+  const [bigItemsData, setBigItemsData] = useState<any[]>([]); // Initialize state for bigItemsData
+  const [basketData, setBasketData] = useState<any[]>([]);     // Initialize state for basketData
   const animatedScroll = useRef(new Animated.Value(0)).current;
   const itemWidth = viewportWidth * 0.3; // Adjust item width
   const segments = useSegments();
 
-  const addToBasket = async(item) => {
-    console.log("Adding basket item ", item);
+  const addToBasket = async (item: any) => {
+    console.log('Adding basket item', item);
     const url = 'http://localhost:3000/api/baskets/addtobasket';
     const token = await AsyncStorage.getItem('authToken');
-    const data = {
-      productId: item.product_id
-    };
     if (!token) {
+      console.warn('Attempted to add to basket without a token');
       return;
     }
-  
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(data)
-    })
-      .then(res => res.json())
-      .then(data => {
-        console.log("Added items=", data);
-        setBasketData(data);
-      })
-      .catch(err => console.error(err.message));
-  }
-  
-  const getBasket = async() => {
+    const payload = {
+      product_id: item.product_id,
+      quantity: 1,
+    };
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      await response.json().catch(() => {});
+      await getBasket();
+    } catch (err) {
+      console.error('Error adding to basket:', err);
+    }
+  };
+
+  const getBasket = async () => {
     console.log("Getting basket items");
     const url = 'http://localhost:3000/api/baskets/getbasket';
     const token = await AsyncStorage.getItem('authToken');
-  
     if (!token) {
       return;
     }
-  
+
     await fetch(url, {
       method: 'POST',
       headers: {
@@ -89,29 +89,21 @@ export default function HomeScreen() {
     })
       .then(res => res.json())
       .then(data => {
-        setBasketData(data);
+        setBasketData(Array.isArray(data) ? data : []);
       })
       .catch(err => console.error(err.message));
   };
-  
-  const doesItemExistInBasket = (item) =>
-    {
-      let itemPresent = false;
-      const basketItem = basketData?.find(currentItem => item.product_id == currentItem.productId);
-      console.log("Inside check and item=", basketItem);
-      if (basketItem == null)
-        console.log("Null");
-      else
-      console.log("not null");
-  
-      return basketItem != null;
-    };
-  
 
-  const handleScroll = (newOffset) => {
+  const doesItemExistInBasket = (item: any) => {
+    if(!Array.isArray(basketData)) return false;
+    const basketItem = basketData?.find(currentItem => item.product_id === currentItem.productId);
+    return basketItem != null;
+  };
+
+  const handleScroll = (newOffset: number) => {
     Animated.timing(animatedScroll, {
       toValue: newOffset,
-      duration: 300, // Animation duration
+      duration: 300,
       useNativeDriver: false,
     }).start(() => {
       setScrollOffset(newOffset);
@@ -120,7 +112,7 @@ export default function HomeScreen() {
 
   const handleNext = () => {
     const newOffset = scrollOffset + itemWidth;
-    const maxOffset = (bigItemsData.length - 2) * itemWidth; // Adjust maxOffset based on items
+    const maxOffset = (bigItemsData.length - 2) * itemWidth;
     if (newOffset <= maxOffset) {
       handleScroll(newOffset);
     }
@@ -138,12 +130,10 @@ export default function HomeScreen() {
     fetchAndSetBasket();
   }, [segments]);
 
-  // Fetch product data from API and map it to the bigItems
   useEffect(() => {
     const fetchAndSetProducts = async () => {
       const products = await fetchProducts();
-      console.log("Fetched Products:", products); // Debug line to observe fetched data
-      setBigItemsData(products); // Set the API data to bigItems
+      setBigItemsData(products);
     };
     fetchAndSetProducts();
   }, []);
@@ -152,14 +142,12 @@ export default function HomeScreen() {
     animatedScroll.addListener(({ value }) => {
       flatListRef.current?.scrollToOffset({ offset: value, animated: false });
     });
-
     return () => {
       animatedScroll.removeAllListeners();
     };
   }, [animatedScroll]);
 
-  const renderBigItem = ({ item }) => {
-    console.log("Big Item Image URL:", item.link_image);  // Log to check image URL
+  const renderBigItem = ({ item }: { item: any }) => {
     const shouldDisableAddToBasket = doesItemExistInBasket(item);
     return (
       <View style={styles.bigItem}>
@@ -174,7 +162,11 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
           <View style={styles.bigItemButtons}>
-          <TouchableOpacity disabled={shouldDisableAddToBasket} onPress={() => addToBasket(item)} style={shouldDisableAddToBasket ? styles.bigItemButtonBasketDisabled : styles.bigItemButtonBasket}>
+            <TouchableOpacity
+              disabled={shouldDisableAddToBasket}
+              onPress={() => addToBasket(item)}
+              style={shouldDisableAddToBasket ? styles.bigItemButtonBasketDisabled : styles.bigItemButtonBasket}
+            >
               <Text style={styles.bigItemButtonText}>Add To Basket</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.bigItemButton}>
@@ -187,34 +179,29 @@ export default function HomeScreen() {
   };
 
   // Split the bigItems into first two main items and the rest in carousel
-  const bigItems = bigItemsData.slice(0, 2);  // Only the first two items
-  const carouselItems = bigItemsData.slice(2); // Rest of the items for the carousel
+  const bigItems = bigItemsData.slice(0, 2);
+  const carouselItems = bigItemsData.slice(2);
 
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container}>
         <Text style={styles.title}>Welcome to DiscountMate</Text>
-
-        {/* Render first two big items */}
         <FlatList
-          data={bigItems} // Use the first two items
+          data={bigItems}
           renderItem={renderBigItem}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.bigItemsContainer}
           horizontal
           showsHorizontalScrollIndicator={false}
         />
-
         <Text style={styles.subTitle}>Explore our current deals</Text>
-
-        {/* Carousel for remaining items */}
         <View style={styles.carouselContainer}>
           <TouchableOpacity style={[styles.arrowButton, styles.arrowButtonLeft]} onPress={handlePrev}>
             <Icon name="chevron-left" size={24} color="#000" />
           </TouchableOpacity>
           <FlatList
             ref={flatListRef}
-            data={carouselItems} // Use remaining items
+            data={carouselItems}
             renderItem={renderCarouselItem}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -266,6 +253,10 @@ const styles = StyleSheet.create({
   carouselContentContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  // Added base arrowButton style to avoid undefined property errors.
+  arrowButton: {
+    padding: 10,
   },
   arrowButtonLeft: {
     padding: 10,
