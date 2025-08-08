@@ -1,63 +1,90 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Define the product shape returned from the API
 interface Product {
-  name: string;
-  description: string;
-  price: number;
+  _id: string;
+  product_id: number;
+  product_name: string;
+  description?: string;
+  sub_category_1?: string;
+  current_price: number;
+  link_image: string;
 }
 
-const ProductPage = () => {
-  const [products, setProducts] = useState<Product[]>([]); // Changed state to an array of products
+const ProductPage: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [basketData, setBasketData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch products from the backend API
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/products');
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setProducts(data);
+      } else {
+        setProducts([]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+      setError('Failed to load products. Please try again later.');
+    }
+  };
+
+  // Fetch the user's basket to determine which items are already present
+  const getBasket = async () => {
+    const token = await AsyncStorage.getItem('authToken');
+    if (!token) return;
+    try {
+      const response = await fetch('http://localhost:3000/api/baskets/getbasket', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      setBasketData(Array.isArray(data) ? data: []);
+    } catch (err) {
+      console.error('Error fetching basket:', err);
+    }
+  };
+
+  // Add a product to the basket
+  const addToBasket = async (product: Product) => {
+    const token = await AsyncStorage.getItem('authToken');
+    if (!token) return;
+    try {
+      const response = await fetch('http://localhost:3000/api/baskets/addtobasket', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ product_id: product.product_id, quantity: 1 }),
+      });
+      // Ignore response body; refresh basket instead
+      await response.json().catch(() => {});
+      await getBasket();
+    } catch (err) {
+      console.error('Error adding to basket:', err);
+    }
+  };
+
+  // Check if a product already exists in the basket
+  const doesItemExistInBasket = (product: Product) => {
+    if(!Array.isArray(basketData)) return false;
+    return basketData.some((item) => item.productId === product.product_id);
+  };
+
   useEffect(() => {
-    // Mock data (replace API call with mock data for now)
-    const mockProducts: Product[] = [
-      {
-        name: "Sample Product 1",
-        description: "This is a sample product description 1.",
-        price: 29.99,
-      },
-      {
-        name: "Sample Product 2",
-        description: "This is a sample product description 2.",
-        price: 49.99,
-      },
-      {
-        name: "Sample Product 3",
-        description: "This is a sample product description 3.",
-        price: 19.99,
-      },
-    ];
-
-    // Simulate API delay
-    setTimeout(() => {
-      setProducts(mockProducts);
-    }, 1000); // 1 second delay to simulate loading
-
-    // Commented out actual API call for now
-    // const fetchProducts = async () => {
-    //   try {
-    //     const response = await fetch("https://api.example.com/products"); // Will draw in API data from the backend
-    //
-    //     // Handle non-OK responses
-    //     if (!response.ok) {
-    //       throw new Error(`HTTP error! Status: ${response.status}`);
-    //     }
-    //
-    //     const data: Product[] = await response.json();
-    //     setProducts(data);
-    //   } catch (err) {
-    //     console.error("Failed to fetch products:", err);
-    //     setError("Failed to load products. Please try again later.");
-    //   }
-    // };
-    //
-    // fetchProducts();
+    fetchProducts();
+    getBasket();
   }, []);
 
-  // Display error message if API fails
   if (error) {
     return (
       <View style={styles.errorContainer}>
@@ -66,7 +93,7 @@ const ProductPage = () => {
     );
   }
 
-  // Show loading while fetching
+  // Show loading if products list is empty
   if (products.length === 0) {
     return (
       <View style={styles.loadingContainer}>
@@ -77,16 +104,29 @@ const ProductPage = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Title of the Product Page */}
-      <Text style={styles.title}>Product Page</Text>
-
-      {products.map((product, index) => (
-        <View key={index} style={styles.productContainer}>
-          <Text style={styles.productName}>{product.name}</Text>
-          <Text style={styles.productDescription}>{product.description}</Text>
-          <Text style={styles.productPrice}>{`$${product.price.toFixed(2)}`}</Text>
-        </View>
-      ))}
+      <Text style={styles.title}>Products</Text>
+      {products.map((product, index) => {
+        const inBasket = doesItemExistInBasket(product);
+        return (
+          <View key={index} style={styles.productCard}>
+            <Image source={{ uri: product.link_image }} style={styles.productImage} />
+            <View style={styles.productDetails}>
+              <Text style={styles.productName}>{product.product_name}</Text>
+              <Text style={styles.productDescription}>{product.sub_category_1 || ''}</Text>
+              <Text style={styles.productPrice}>${Number(product.current_price).toFixed(2)}</Text>
+            </View>
+            <View style={styles.productActions}>
+              <TouchableOpacity
+                disabled={inBasket}
+                onPress={() => addToBasket(product)}
+                style={inBasket ? styles.addButtonDisabled : styles.addButton}
+              >
+                <Text style={styles.addButtonText}>{inBasket ? 'Added' : 'Add to Basket'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        );
+      })}
     </ScrollView>
   );
 };
@@ -119,44 +159,70 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#333",
-    textAlign: "center", // Center the title
-    marginBottom: 20, // Add space below the title
-  },
-  productContainer: {
-    marginBottom: 20,
-    padding: 10,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  productName: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
+    color: "#333",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  // Card layout for each product
+  productCard: {
+    flexDirection: 'row',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  productImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    marginRight: 10,
+  },
+  productDetails: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  productName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
   productDescription: {
-    fontSize: 16,
-    color: "#555",
-    marginBottom: 10,
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
   },
   productPrice: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#1a9bfc",
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#1a9bfc',
+  },
+  productActions: {
+    justifyContent: 'center',
+  },
+  addButton: {
+    backgroundColor: '#6595a3',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+  },
+  addButtonDisabled: {
+    backgroundColor: '#ccc',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });
 
 export default ProductPage;
-
-
-
-
-
-
