@@ -82,7 +82,7 @@ export default function Login() {
     }
 
     try {
-      const response = await fetch('http://localhost:5002/verify-2fa', {
+      const response = await fetch('http://localhost:3000/verify-2fa', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,12 +109,14 @@ export default function Login() {
     if (!validateForm()) return;
 
     try {
-      const url = isLogin ? 'http://localhost:5002/signin' : 'http://localhost:5002/signup';
+      const url = isLogin 
+      ? 'http://localhost:3000/api/users/signin' 
+      : 'http://localhost:3000/api/users/signup';
       
       const body = isLogin
-        ? { useremail: email, password }
+        ? { email: email, password }
         : {
-            useremail: email,
+            email: email,
             password,
             verifyPassword,
             user_fname: userFname,
