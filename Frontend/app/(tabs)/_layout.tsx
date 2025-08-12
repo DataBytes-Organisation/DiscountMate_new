@@ -17,7 +17,7 @@ const { width: viewportWidth } = Dimensions.get('window');
 // Updated fetch function with optional query parameter for search
 const fetchProducts = async (query = '') => {
   try {
-    const response = await fetch(`http://localhost:5002/products?search=${query}`); 
+    const response = await fetch(`http://localhost:3000/api/products?search=${query}`); 
     const data = await response.json();
     return data;
   } catch (error) {
