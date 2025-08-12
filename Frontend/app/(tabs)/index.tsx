@@ -1,16 +1,18 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image, Animated, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSegments } from 'expo-router';
+import DashboardEmbed from './DashboardEmbed';
+import { API_URL } from '@/constants/Api';
+import { useBasket } from './BasketContext';
+import { useWishlist } from './WishlistContext';
 
 const { width: viewportWidth } = Dimensions.get('window');
-let basketItems;
 
 // Function to fetch product data from the API
 const fetchProducts = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/products'); // current product api endpoint
+    const response = await fetch(`${API_URL}/products`); // current product api endpoint
     const data = await response.json();
     return Array.isArray(data) ? data : []; // Ensure the result is always an array
   } catch (error) {
@@ -124,10 +126,8 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    const fetchAndSetBasket = async () => {
-      await getBasket();
-    };
-    fetchAndSetBasket();
+    getBasket();
+    getWishlist();
   }, [segments]);
 
   useEffect(() => {
@@ -149,6 +149,7 @@ export default function HomeScreen() {
 
   const renderBigItem = ({ item }: { item: any }) => {
     const shouldDisableAddToBasket = doesItemExistInBasket(item);
+    const shouldDisableAddToWishlist = doesItemExistInWishlist(item);
     return (
       <View style={styles.bigItem}>
         <Image source={{ uri: item.link_image }} style={styles.bigItemImage} />
@@ -157,7 +158,7 @@ export default function HomeScreen() {
           <Text style={styles.bigItemDescription}>{item.sub_category_1}</Text>
           <Text style={styles.bigItemPrice}>${item.current_price}</Text>
           <View style={styles.bigItemButtons}>
-            <TouchableOpacity style={styles.bigItemButtonSave}>
+            <TouchableOpacity disabled={shouldDisableAddToWishlist} onPress={() => addToWishlist(item)} style={shouldDisableAddToWishlist ? styles.bigItemButtonSaveDisabled : styles.bigItemButtonSave}>
               <Icon name="heart" size={16} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -183,7 +184,7 @@ export default function HomeScreen() {
   const carouselItems = bigItemsData.slice(2);
 
   return (
-    <ScrollView style={styles.scrollView}>
+    <ScrollView style={styles.scrollView}>  
       <View style={styles.container}>
         <Text style={styles.title}>Welcome to DiscountMate</Text>
         <FlatList
@@ -218,6 +219,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </View>
+      <DashboardEmbed />
     </ScrollView>
   );
 }
@@ -307,6 +309,12 @@ const styles = StyleSheet.create({
   },
   bigItemButtonSave: {
     backgroundColor: '#6595a3',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  bigItemButtonSaveDisabled: {
+    backgroundColor: '#ddd',
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,

@@ -17,6 +17,7 @@ const ProductPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [basketData, setBasketData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [sortOption, setSortOption] = useState<string>('desc'); // state for sorting option
 
   // Fetch products from the backend API
   const fetchProducts = async () => {
@@ -223,6 +224,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
+  
 });
 
 export default ProductPage;
