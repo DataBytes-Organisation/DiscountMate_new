@@ -109,12 +109,14 @@ export default function Login() {
     if (!validateForm()) return;
 
     try {
-      const url = isLogin ? 'http://localhost:3000/api/users/signin' : 'http://localhost:3000/api/users/signup';
+      const url = isLogin 
+      ? 'http://localhost:3000/api/users/signin' 
+      : 'http://localhost:3000/api/users/signup';
       
       const body = isLogin
-        ? { useremail: email, password }
+        ? { email: email, password }
         : {
-            useremail: email,
+            email: email,
             password,
             verifyPassword,
             user_fname: userFname,

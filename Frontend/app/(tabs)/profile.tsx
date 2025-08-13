@@ -45,7 +45,7 @@ export default function Profile() {
         if (!token) return;
 
         // Make API call to get profile data
-        const response = await axios.get<Profile>('http://localhost:3000/profile', {
+        const response = await axios.get<Profile>('http://localhost:3000/api/users/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
 

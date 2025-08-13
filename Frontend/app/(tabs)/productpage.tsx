@@ -1,100 +1,90 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Button, Picker } from "react-native";
-import * as Papa from "papaparse";
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Define the product shape returned from the API
 interface Product {
-  name: string;
-  description: string;
-  price: number;
-  bestPrice: number;
-  bestUnitPrice: number;
-  unitPrice: number;
-  originalPrice: number;
-  discountPrice: number;
+  _id: string;
+  product_id: number;
+  product_name: string;
+  description?: string;
+  sub_category_1?: string;
+  current_price: number;
+  link_image: string;
 }
 
-const ProductPage = () => {
+const ProductPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [basketData, setBasketData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState<string>('desc'); // state for sorting option
 
-  useEffect(() => {
-    const loadCSV = async () => {
-      try {
-        const urls = [
-          "/public/woolworths_cleaned.csv",
-          "/public/coles_synthetic_dataset_8_weeks.csv",
-        ];
-
-        const allProducts: Product[] = [];
-
-        for (const url of urls) {
-          const response = await fetch(url);
-          const text = await response.text();
-
-          Papa.parse(text, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (results) => {
-              const parsedProducts = results.data
-                .filter((item: any) =>
-                  item["Category"] === "Fruit & Veg" ||
-                  item["category"] === "Fruit & Vegetables"
-                )
-                .map((item: any) => ({
-                  name: item["item_name"]?.trim() ||
-                  item["Item Name"]?.trim() ||
-                  "Unnamed Product",
-                  description: item["description"]?.trim()
-                    ? item["description"]
-                    : url.includes("coles")
-                      ? "Coles Pricing:"
-                      : "Woolworths Pricing:",
-                  price: parseFloat(item["item_price"] || item["Item Price"]) || 0,
-                  bestPrice: parseFloat(item["best_price"] || item["Best Price"]) || 0,
-                  bestUnitPrice: parseFloat(item["best_unit_price"] || item["Best Unit Price"]) || 0,
-                  unitPrice: parseFloat(item["unit_price"] || item["Unit Price"]) || 0,
-                  originalPrice: parseFloat(item["item_price"] || item["Item Price"]) || 0,
-                  discountPrice: parseFloat(item["DiscountedPrice"] || item["Discount Price"]) || 0,
-                }));
-
-              allProducts.push(...parsedProducts);
-              setProducts([...allProducts]);
-            },
-            error: (err) => {
-              console.error(`CSV parsing error for ${url}:`, err);
-              setError("Failed to parse one or more CSVs.");
-            },
-          });
-        }
-      } catch (err) {
-        console.error("File read error:", err);
-        setError("Failed to load products.");
+  // Fetch products from the backend API
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/products');
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setProducts(data);
+      } else {
+        setProducts([]);
       }
-    };
-
-    loadCSV();
-  }, []);
-
-  const handleSortChange = (option: string) => {
-    setSortOption(option);
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+      setError('Failed to load products. Please try again later.');
+    }
   };
 
-  // Filters out duplicate items in datasets
-  const uniqueProductsMap = new Map();
-  products.forEach((product) => {
-    uniqueProductsMap.set(product.name, product);
-  });
-  const uniqueProducts = Array.from(uniqueProductsMap.values());
-  
-  const sortedProducts = [...uniqueProducts].sort((a, b) => {
-    if (sortOption === "asc") {
-      return a.price - b.price;
-    } else {
-      return b.price - a.price;
+  // Fetch the user's basket to determine which items are already present
+  const getBasket = async () => {
+    const token = await AsyncStorage.getItem('authToken');
+    if (!token) return;
+    try {
+      const response = await fetch('http://localhost:3000/api/baskets/getbasket', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      setBasketData(Array.isArray(data) ? data: []);
+    } catch (err) {
+      console.error('Error fetching basket:', err);
     }
-  });
-  
+  };
+
+  // Add a product to the basket
+  const addToBasket = async (product: Product) => {
+    const token = await AsyncStorage.getItem('authToken');
+    if (!token) return;
+    try {
+      const response = await fetch('http://localhost:3000/api/baskets/addtobasket', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ product_id: product.product_id, quantity: 1 }),
+      });
+      // Ignore response body; refresh basket instead
+      await response.json().catch(() => {});
+      await getBasket();
+    } catch (err) {
+      console.error('Error adding to basket:', err);
+    }
+  };
+
+  // Check if a product already exists in the basket
+  const doesItemExistInBasket = (product: Product) => {
+    if(!Array.isArray(basketData)) return false;
+    return basketData.some((item) => item.productId === product.product_id);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    getBasket();
+  }, []);
 
   if (error) {
     return (
@@ -104,6 +94,7 @@ const ProductPage = () => {
     );
   }
 
+  // Show loading if products list is empty
   if (products.length === 0) {
     return (
       <View style={styles.loadingContainer}>
@@ -114,33 +105,29 @@ const ProductPage = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Product Page</Text>
-
-      {/* Sort Filter Dropdown */}
-      <View style={styles.sortContainer}>
-        <Text>Sort by Price</Text>
-        <Picker
-          selectedValue={sortOption}
-          onValueChange={handleSortChange}
-          style={styles.picker}
-        >
-          <Picker.Item label="Highest to Lowest" value="desc" />
-          <Picker.Item label="Lowest to Highest" value="asc" />
-        </Picker>
-      </View>
-
-      {sortedProducts.map((product, index) => (
-        <View key={index} style={styles.productContainer}>
-          <Text style={styles.productName}>{product.name}</Text>
-          <Text style={styles.productDescription}>{product.description}</Text>
-          <Text style={styles.productPrice}>Item Price: ${product.price.toFixed(2)}</Text>
-          <Text style={styles.productPrice}>Best Price: ${product.bestPrice.toFixed(2)}</Text>
-          <Text style={styles.productPrice}>Best Unit Price: ${product.bestUnitPrice.toFixed(2)}</Text>
-          <Text style={styles.productPrice}>Unit Price: ${product.unitPrice.toFixed(2)}</Text>
-          <Text style={styles.productPrice}>Original Price: ${product.originalPrice.toFixed(2)}</Text>
-          <Text style={styles.productPrice}>Discount Price: ${product.discountPrice.toFixed(2)}</Text>
-        </View>
-      ))}
+      <Text style={styles.title}>Products</Text>
+      {products.map((product, index) => {
+        const inBasket = doesItemExistInBasket(product);
+        return (
+          <View key={index} style={styles.productCard}>
+            <Image source={{ uri: product.link_image }} style={styles.productImage} />
+            <View style={styles.productDetails}>
+              <Text style={styles.productName}>{product.product_name}</Text>
+              <Text style={styles.productDescription}>{product.sub_category_1 || ''}</Text>
+              <Text style={styles.productPrice}>${Number(product.current_price).toFixed(2)}</Text>
+            </View>
+            <View style={styles.productActions}>
+              <TouchableOpacity
+                disabled={inBasket}
+                onPress={() => addToBasket(product)}
+                style={inBasket ? styles.addButtonDisabled : styles.addButton}
+              >
+                <Text style={styles.addButtonText}>{inBasket ? 'Added' : 'Add to Basket'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        );
+      })}
     </ScrollView>
   );
 };
@@ -173,73 +160,71 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   title: {
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#333",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 16,
   },
-  sortContainer: {
-    marginBottom: 20,
-  },
-  picker: {
-    height: 50,
-    width: 150,
-  },
-  productContainer: {
-    marginBottom: 12, 
-    padding: 8,        
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,   
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 }, 
+  // Card layout for each product
+  productCard: {
+    flexDirection: 'row',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,    
+    shadowRadius: 3,
+    elevation: 3,
   },
-  
+  productImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    marginRight: 10,
+  },
+  productDetails: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   productName: {
-    fontSize: 20,  
-    fontWeight: "bold",
-    marginBottom: 6,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
   productDescription: {
-    fontSize: 14,  
-    color: "#555",
-    marginBottom: 6,
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
   },
   productPrice: {
-    fontSize: 16, 
-    fontWeight: "bold",
-    color: "#1a9bfc",
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#1a9bfc',
+  },
+  productActions: {
+    justifyContent: 'center',
+  },
+  addButton: {
+    backgroundColor: '#6595a3',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+  },
+  addButtonDisabled: {
+    backgroundColor: '#ccc',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
   },
   
 });
 
 export default ProductPage;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
