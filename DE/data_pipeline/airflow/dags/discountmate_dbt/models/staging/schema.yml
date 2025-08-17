@@ -1,0 +1,148 @@
+version: 2
+
+models:
+  - name: stg_users
+    description: "Cleaned and structured user data"
+    columns:
+      - name: _id
+        tests:
+          - not_null
+          - unique
+      - name: login_email
+        tests:
+          - not_null
+          - unique
+      - name: best_price_id
+        tests:
+          - not_null
+          - unique
+      - name: account_user_name
+        tests:
+          - not_null
+          - unique
+      - name: created_by
+        tests:
+          - not_null
+
+  - name: stg_baskets
+    description: "Validated basket transaction records"
+    columns:
+      - name: _id
+        tests:
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+      - name: product_id
+        tests:
+          - not_null
+      - name: total_price
+        tests:
+          - not_null
+
+  - name: stg_product_pricing
+    description: "Validated basket transaction records"
+    columns:
+      - name: _id
+        tests:
+          - not_null
+          - unique
+      - name: product_id
+        tests:
+          - not_null
+      - name: price
+        tests:
+          - not_null
+
+  - name: stg_products
+    description: "Validated basket transaction records"
+    columns:
+      - name: _id
+        tests:
+          - not_null
+          - unique
+      - name: product_code
+        tests:
+          - not_null
+      - name: product_name
+        tests:
+          - not_null
+      - name: brand
+        tests:
+          - not_null
+      - name: sub_category
+        tests:
+          - not_null
+      - name: currency_price
+        tests:
+          - not_null
+      - name: current_price
+        tests:
+          - not_null
+      - name: link_image
+        tests:
+          - not_null
+
+  - name: stg_shopping_list_items
+    description: "Validated basket transaction records"
+    columns:
+      - name: _id
+        tests:
+          - not_null
+          - unique
+      - name: shopping_list_id
+        tests:
+          - not_null
+      - name: item_name
+        tests:
+          - not_null
+      - name: quantity
+        tests:
+          - not_null
+      - name: note
+        tests:
+          - not_null
+
+  - name: stg_shopping_lists
+    description: "Validated basket transaction records"
+    columns:
+      - name: _id
+        tests:
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+
+  - name: stg_stores
+    description: "Validated basket transaction records"
+    columns:
+      - name: _id
+        tests:
+          - not_null
+          - unique
+      - name: store_name
+        tests:
+          - not_null
+          - unique
+      - name: store_chain
+        tests:
+          - not_null
+      - name: store_address
+        tests:
+          - not_null
+      - name: store_suburb
+        tests:
+          - not_null
+      - name: store_city
+        tests:
+          - not_null
+      - name: post_code
+        tests:
+          - not_null
+      - name: phone_number
+        tests:
+          - not_null
+          - unique
+      - name: link_image
+        tests:
+          - not_null

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 interface basketsummaryitemprops {
-    basketItemId: number;
+    basketItemId?: number;
     price: number;
     productId: number;
     image: string;
