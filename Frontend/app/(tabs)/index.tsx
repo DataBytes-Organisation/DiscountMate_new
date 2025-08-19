@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image, Animated, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSegments } from 'expo-router';
 import DashboardEmbed from './DashboardEmbed';
 import { API_URL } from '@/constants/Api';
@@ -127,7 +128,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     getBasket();
-    getWishlist();
+    // getWishlist();
   }, [segments]);
 
   useEffect(() => {
@@ -149,7 +150,7 @@ export default function HomeScreen() {
 
   const renderBigItem = ({ item }: { item: any }) => {
     const shouldDisableAddToBasket = doesItemExistInBasket(item);
-    const shouldDisableAddToWishlist = doesItemExistInWishlist(item);
+    // const shouldDisableAddToWishlist = doesItemExistInWishlist(item);
     return (
       <View style={styles.bigItem}>
         <Image source={{ uri: item.link_image }} style={styles.bigItemImage} />
@@ -158,9 +159,9 @@ export default function HomeScreen() {
           <Text style={styles.bigItemDescription}>{item.sub_category_1}</Text>
           <Text style={styles.bigItemPrice}>${item.current_price}</Text>
           <View style={styles.bigItemButtons}>
-            <TouchableOpacity disabled={shouldDisableAddToWishlist} onPress={() => addToWishlist(item)} style={shouldDisableAddToWishlist ? styles.bigItemButtonSaveDisabled : styles.bigItemButtonSave}>
+            {/* <TouchableOpacity disabled={shouldDisableAddToWishlist} onPress={() => addToWishlist(item)} style={shouldDisableAddToWishlist ? styles.bigItemButtonSaveDisabled : styles.bigItemButtonSave}>
               <Icon name="heart" size={16} color="#fff" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           <View style={styles.bigItemButtons}>
             <TouchableOpacity
