@@ -4,3 +4,6 @@ Backend/.env
 Frontend/node_modules
 Frontend/.expo
 Scrapping/Australia_GroceriesScraper/configuration.ini
+Data Analysis/outputs/
+Data Analysis/.ipynb_checkpoints/
+Data Analysis/Data Analysis/
