@@ -1,11 +1,11 @@
+from datetime import datetime
+from bs4 import BeautifulSoup
+from utils import DiscountMateDB
+import requests
+import json
 import csv
 import time
-from datetime import datetime
-import requests
-from bs4 import BeautifulSoup
-import json
-from utils import DiscountMateDB
-import sys
+import random
 
 # Base URL for Drakes specials page
 BASE_URL = "https://033.drakes.com.au/search"
@@ -13,9 +13,9 @@ BASE_URL = "https://033.drakes.com.au/search"
 # HTTP headers including user-agent and PJAX for dynamic content loading
 HEADERS = {
     "User-Agent": "Mozilla/5.0",
+    "Referer": "https://033.drakes.com.au/",
     "X-PJAX": "true",
 }
-
 # Categories to scrape
 categories = ['fruit-vegetables', 'bread-bakery', 'deli-seafood', 'meat', 'ready-to-eat-meals', 
               'dairy', 'freezer', 'pantry', 'drinks', 'confectionery-snacks', 'baby', 
@@ -29,19 +29,28 @@ def fetch_products(page, category):
         'q[]': f'category:{category}',
         '_pjax': '#search-results-products',
     }
-    while True:
+    max_retries = 5
+    retries = 0
+    while retries < max_retries:
         try:
             response = requests.get(BASE_URL, headers=HEADERS, params=params, timeout=10)
             response.raise_for_status()
             break
         except requests.exceptions.RequestException as e:
             print(f"Error: {e}")
-            time.sleep(2)
+            time.sleep(1 + random.uniform(0.2, 0.8))
+            retries += 1
             continue
+    if retries == max_retries:
+        print(f"Failed to fetch products after {max_retries} retries")
+        return None
     return response.text
 
 # Function to parse product details from HTML response
 def parse_products(html, category):
+    if html is None:
+        return []
+
     soup = BeautifulSoup(html, 'html.parser')
     product_cards = soup.select(".TalkerGrid__Item")
     products = []
@@ -68,6 +77,7 @@ def parse_products(html, category):
             "Price": price,
             "Previous Price": prev_price,
             "Unit Price": unit_price,
+            "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "Image URL": image_url,
         })
 
