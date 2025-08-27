@@ -1,0 +1,104 @@
+import pandas as pd
+import numpy as np
+from pathlib import Path
+import matplotlib.pyplot as plt
+from statsmodels.tsa.seasonal import STL
+from statsmodels.tsa.stattools import acf
+
+INPUT_CSV = "/AugmentedData.product_pricing.csv"  
+OUTPUT_DIR = Path("/seasonal_analysis_plots")    
+PLOT_TOP_ONLY = True     
+TOP_N = 20                
+STL_PERIOD = 7            
+IMPUTE_METHOD = "median"  
+
+
+def stl_weekly_strength(series: pd.Series, period: int = 7):
+    s = series.dropna()
+    if s.shape[0] < period * 2:  
+        return np.nan, None
+    try:
+        stl = STL(s, period=period, robust=True)
+        res = stl.fit()
+        #Hyndman seasonal strength
+        remainder = res.resid
+        seasonal  = res.seasonal
+        var_r  = np.nanvar(remainder, ddof=1)
+        var_sr = np.nanvar(seasonal + remainder, ddof=1)
+        if not np.isfinite(var_sr) or var_sr <= 0:
+            return 0.0, res
+        strength = max(0.0, 1.0 - (var_r / var_sr))
+        return float(strength), res
+    except Exception:
+        return np.nan, None
+
+def acf_at_lag(series: pd.Series, lag: int = 7, nlags: int = 60):
+    x = series.values
+    x = x[np.isfinite(x)]
+    if x.size <= lag + 1:
+        return np.nan
+    a = acf(x, nlags=min(nlags, x.size - 1), fft=True)
+    return float(a[lag]) if lag < len(a) else np.nan
+
+def coverage_metrics(index: pd.DatetimeIndex, n_obs: int):
+    if index.size == 0:
+        return 0, 0, np.nan
+    start, end = index.min(), index.max()
+    expected = (end - start).days + 1
+    missing_ratio = 1 - (n_obs / expected) if expected > 0 else np.nan
+    return n_obs, expected, missing_ratio
+
+#Loading data
+df = pd.read_csv("AugmentedData.product_pricing.csv")
+
+df["date"] = pd.to_datetime(df["date"], errors="coerce")
+df = df.dropna(subset=["date"])
+df["day"] = df["date"].dt.floor("D")
+
+#Aggregate price if there are multiple rows of data
+daily = (
+    df.groupby(["product_id", "day"], as_index=False)["price"]
+      .mean()
+      .sort_values(["product_id", "day"])
+)
+
+#Analysis per product
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+records = []
+
+for pid, g in daily.groupby("product_id"):
+    g = g.set_index("day").sort_index()
+    # Reindex to continuous daily range
+    full_idx = pd.date_range(g.index.min(), g.index.max(), freq="D")
+    s = g["price"].reindex(full_idx)
+    
+    if IMPUTE_METHOD == "median":
+        s_imputed = s.fillna(s.median())
+    elif IMPUTE_METHOD == "ffill":
+        s_imputed = s.ffill().bfill()
+    else:
+        s_imputed = s
+
+    # Metrics
+    observed_days, expected_days, missing_ratio = coverage_metrics(s.index, s.notna().sum())
+    weekly_strength, stl_result = stl_weekly_strength(s_imputed, period=STL_PERIOD)
+    acf7 = acf_at_lag(s_imputed, lag=7, nlags=60)
+
+    records.append({
+        "product_id": pid,
+        "start_date": s.index.min().date() if expected_days > 0 else None,
+        "end_date":   s.index.max().date() if expected_days > 0 else None,
+        "observed_days": int(observed_days),
+        "expected_days": int(expected_days),
+        "missing_ratio": round(missing_ratio, 3) if np.isfinite(missing_ratio) else np.nan,
+        "weekly_seasonal_strength": round(weekly_strength, 3) if np.isfinite(weekly_strength) else np.nan,
+        "acf_lag7": round(acf7, 3) if np.isfinite(acf7) else np.nan,
+    })
+
+# Build summary frame
+summary = pd.DataFrame.from_records(records).sort_values(
+    ["weekly_seasonal_strength", "acf_lag7"], ascending=False
+).reset_index(drop=True)
+
+
+print("Top rows:\n", summary.head(10))
