@@ -33,6 +33,13 @@ if (!fs.existsSync(uploadDir)) {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(uploadDir));
+app.use((req, res, next) => { 
+
+    res.setHeader('X-Content-Type-Options', 'nosniff'); 
+
+    next(); 
+
+}); 
 
 // Initialize Swagger
 setupSwagger(app);
