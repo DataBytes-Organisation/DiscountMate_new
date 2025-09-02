@@ -181,7 +181,7 @@ export default function HomeScreen() {
   };
 
   // Split the bigItems into first two main items and the rest in carousel
-  const bigItems = bigItemsData.slice(0, 2);
+  const bigItems = bigItemsData.slice(0, 5);
   const carouselItems = bigItemsData.slice(2);
 
   return (
