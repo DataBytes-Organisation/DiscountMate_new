@@ -38,11 +38,14 @@ export default function CategoryScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 12;
 
   useEffect(() => {
     const loadCSV = async () => {
       try {
-        const response = await fetch('/woolworths_cleaned.csv');
+        const response = await fetch('/woolworths_cleaned.csv'); // woolworths
+        // const response = await fetch('/coles_synthetic_dataset_8_weeks.csv'); //coles
         const text = await response.text();
 
         Papa.parse(text, {
@@ -52,7 +55,7 @@ export default function CategoryScreen() {
             const filteredCSV = (results.data as CSVProduct[]).filter(
               (item) => item.Category === categoryMap[id || '']
             );
-
+            
             const mappedProducts: Product[] = filteredCSV.map((item) => ({
               id: item["Product Code"],
               name: item["Item Name"],
@@ -66,7 +69,7 @@ export default function CategoryScreen() {
                 ? parseFloat(item["Original Price"])
                 : parseFloat(item["Item Price"]) || 0,
               unit: item["Unit Price"] || '',
-              image: '',
+              image: `https://assets.woolworths.com.au/images/1005/${item["Product Code"]}.jpg?impolicy=wowsmkqiema` || '',
               description: '',
               nutritionalInfo: {
                 calories: 0,
@@ -108,6 +111,24 @@ export default function CategoryScreen() {
     loadCSV();
   }, [id]);
 
+  const totalPages = Math.ceil(products.length / productsPerPage);
+  const paginatedProducts = products.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -127,8 +148,8 @@ export default function CategoryScreen() {
           {error && <Text style={styles.errorText}>{error}</Text>}
 
           <View style={styles.productsGrid}>
-            {products.length > 0 ? (
-              products.map((product, index) => (
+            {paginatedProducts.length > 0 ? (
+              paginatedProducts.map((product, index) => (
                 <View
                   key={`${product.id}-${index}`}
                   style={[
@@ -150,6 +171,28 @@ export default function CategoryScreen() {
               )
             )}
           </View>
+
+          {totalPages > 1 && (
+            <View style={styles.pagination}>
+              <Pressable
+                style={[styles.pageButton, currentPage === 1 && styles.disabledButton]}
+                onPress={handlePrevPage}
+                disabled={currentPage === 1}
+              >
+                <Text style={styles.pageButtonText}>Previous</Text>
+              </Pressable>
+              <Text style={styles.pageInfo}>
+                Page {currentPage} of {totalPages}
+              </Text>
+              <Pressable
+                style={[styles.pageButton, currentPage === totalPages && styles.disabledButton]}
+                onPress={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                <Text style={styles.pageButtonText}>Next</Text>
+              </Pressable>
+            </View>
+          )}
         </ScrollView>
       </View>
     </View>
@@ -174,6 +217,31 @@ const styles = StyleSheet.create({
   emptyStateText: { fontSize: 16, color: '#666', marginBottom: 16, textAlign: 'center' },
   browseButton: { backgroundColor: '#5a9ea6', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 4 },
   browseButtonText: { color: 'white', fontWeight: '600', fontSize: 14 },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  pageButton: {
+    backgroundColor: '#5a9ea6',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+  },
+  disabledButton: {
+    backgroundColor: '#ccc',
+  },
+  pageButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  pageInfo: {
+    fontSize: 14,
+    color: '#666',
+    marginHorizontal: 16,
+  },
 });
 
 
