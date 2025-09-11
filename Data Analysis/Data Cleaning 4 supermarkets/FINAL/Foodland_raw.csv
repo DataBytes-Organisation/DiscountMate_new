@@ -1,0 +1,481 @@
+_id,product_code,category,item_name,item_price,best_price,unit_price,special_text,promo_text,link
+6893395f72848030bb227d99,N/A,N/A,Bananas Per Kg,N/A,$1.54,$7.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/bananas-per-kg
+6893395f72848030bb227d9a,N/A,N/A,Foodland Full Cream Milk,was $5.55,$5.10,$1.70 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-whole-milk-3lt
+6893395f72848030bb227d9b,N/A,N/A,Tomatoes Per Kg,N/A,$1.05,$7.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/tomatoes-1st-coloured-kg
+6893395f72848030bb227d9c,N/A,N/A,Cucumber Continental Each,N/A,$3.25,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/cucumber-continental-each
+6893395f72848030bb227d9d,N/A,N/A,Carrots,was $2.20,$1.50,$1.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/carrots-1-kg
+6893395f72848030bb227d9e,N/A,N/A,Strawberries Punnet,N/A,$6.50,$26.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/strawberries-punnet-250g-21
+6893395f72848030bb227d9f,N/A,N/A,Apples Pink Lady Per Kg,N/A,$1.07,$5.95 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/apples-pink-lady-per-kg
+6893395f72848030bb227da0,N/A,N/A,Lettuce Iceberg,N/A,$5.95,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/lettuce-iceberg
+6893395f72848030bb227da1,N/A,N/A,Capsicum Red Per Kg,N/A,$1.20,$7.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/capsicum-red-per-kg
+6893395f72848030bb227da2,N/A,N/A,Broccoli Pieces Per Kg,N/A,$5.06,$11.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/broccoli-pieces-per-kg
+6893395f72848030bb227da3,N/A,N/A,Seedless Watermelon Per Kg,N/A,$2.55,$2.55 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/seedless-watermelon-per-kg
+6893395f72848030bb227da4,N/A,N/A,Foodland Thickened Cream,was $3.80,$3.60,$1.20 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-cream-thickened-300ml
+6893395f72848030bb227da5,N/A,N/A,"Wonder White Wonder High Fibre, Vitamins & Minerals White Sliced Bread Sandwich",was $5.45,$4.50,$0.64 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/wonder-wht-s-wc-vit-min-700gm
+6893395f72848030bb227da6,N/A,N/A,Chicken Breast Fillets,N/A,$14.50,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-chicken-breasts
+6893395f72848030bb227da7,N/A,N/A,Avocado Pear Each,N/A,$2.65,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/avocado-pear-each
+6893395f72848030bb227da8,N/A,N/A,Onions Brown Loose Per Kg,N/A,$0.64,$3.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/onions-brown-loose-per-kg
+6893395f72848030bb227da9,N/A,N/A,Hot Chicken Ex Large,N/A,$12.99,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/hot-chicken-ex-large-1
+6893395f72848030bb227daa,N/A,N/A,Black & Gold Full Cream Milk Uht,N/A,$1.60,$1.60 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-milk-f-crm-uht-1l
+6893395f72848030bb227dab,N/A,N/A,Grapes white seedless per kg,N/A,$22.90,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/white-seedless-grapes-per-kg
+6893395f72848030bb227dac,N/A,N/A,Zucchini Loose Per Kg,N/A,$1.28,$6.90 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/zucchini-loose-per-kg
+6893395f72848030bb227dad,N/A,N/A,Golden Bakery 6 Crumpet Squares 6 Pack,was $4.90,$3.50,$0.82 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/golden-crumpets-brks-425gm
+6893395f72848030bb227dae,N/A,N/A,Country Fresh Egg Caged 12pk,N/A,$5.20,$0.74 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/c-frsh-egg-caged-12pk-700gm
+6893395f72848030bb227daf,N/A,N/A,Pumpkin Butternut Per Kg,N/A,$2.34,$3.90 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/pumpkin-butternut-per-kg
+6893395f72848030bb227db0,N/A,N/A,Pears Green Per Kg,was $5.50 per kg,$0.49,$2.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/pears-green-per-kg
+6893395f72848030bb227db1,N/A,N/A,Buttercup Bread White,N/A,$3.50,$0.50 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-cup-bread-white-700g
+6893395f72848030bb227db2,N/A,N/A,Golden Crumpet Rounds 6pk,N/A,$4.60,$1.53 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/golden-crumpets-pk6
+6893395f72848030bb227db3,N/A,N/A,Foodland Reduced Fat Milk,was $3.80,$3.40,$1.70 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-reduced-fat-milk-2lt
+6893395f72848030bb227db4,N/A,N/A,Foodland Full Cream Milk,was $3.80,$3.40,$1.70 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-whole-milk-2lt
+6893395f72848030bb227db5,N/A,N/A,Onions Brown Pre Pack,N/A,$2.95,$2.95 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/onions-brown-pre-pack-1kg
+6893395f72848030bb227db6,N/A,N/A,Onions Red Per Kg,N/A,$1.27,$6.90 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/onions-red-per-kg
+6893395f72848030bb227db7,N/A,N/A,Western Star Spreadable Original Soft,was $7.90,$7.00,$1.40 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/w-star-spread-trad-500gm
+6893395f72848030bb227db8,N/A,N/A,Kc Beef Mince 4 Star,N/A,$11.00,$22.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/k-crown-beef-mince-4star-500g
+6893395f72848030bb227db9,N/A,N/A,Foodland Water,was $5.15,$4.20,$0.42 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-spring-water-10l
+6893395f72848030bb227dba,N/A,N/A,Black & Gold Cream Thickened,N/A,$4.70,$0.78 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-cream-thickened-600ml
+6893395f72848030bb227dbb,N/A,N/A,Potatoes Sweet Per Kg,N/A,$1.84,$4.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/potatoes-sweet-per-kg
+6893395f72848030bb227dbc,N/A,N/A,Rockmelon Per Kg,N/A,$2.65,$5.40 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/rockmelon-per-kg
+6893395f72848030bb227dbd,N/A,N/A,Potato Spud Lite,N/A,$5.40,$3.60 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/potato-spud-lite-1-5kg
+6893395f72848030bb227dbe,N/A,N/A,R Fresh Baby Spinach,N/A,$3.45,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/r-fresh-english-spinach-100g
+6893395f72848030bb227dbf,N/A,N/A,Wonder White Wonder High Fibre & Iron Wholemeal Sliced Bread Sandwich,was $5.45,$4.50,$0.64 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/wonder-wht-wholemeal-700gm
+6893395f72848030bb227dc0,N/A,N/A,Raspberries Punnet,N/A,$8.50,$68.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/raspberries-punnet-125g
+6893395f72848030bb227dc1,N/A,N/A,Black & Gold Sour Cream,N/A,$3.30,$1.10 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-cream-sour-300ml
+6893395f72848030bb227dc2,N/A,N/A,Mushrooms Loose Per Kg,N/A,$0.29,$14.45 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/mushrooms-loose-per-kg
+6893395f72848030bb227dc3,N/A,N/A,Bega Tasty Cheese Slices | 30 Cheddar Slices |,was $11.55,$10.50,$21.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/bega-chse-chdr-tasty-slc-500gm
+6893395f72848030bb227dc4,N/A,N/A,Foodland Multigrain Sandwich Bread,was $3.40,$3.30,$0.47 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-brd-s-w-m-grain-700gm
+6893395f72848030bb227dc5,N/A,N/A,Kleenex Everyday 2 Ply Facial Tissues 200 Pack,N/A,$3.00,$1.50 Units100,N/A,N/A,https://foodlandbalaklava.com.au/lines/klnx-tissue-e-day-200s
+6893395f72848030bb227dc6,N/A,N/A,Pura Light Start Milk,N/A,$4.75,$2.38 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/pura-light-start-2l
+6893395f72848030bb227dc7,N/A,N/A,Western Star Spreadable Supersoft,was $7.90,$7.00,$1.40 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/w-star-spread-supersoft-500gm
+6893395f72848030bb227dc8,N/A,N/A,Arnott's Shapes Originals Chicken Crimpy Nrl 25,was $4.00,$3.00,$1.71 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-shapes-chicken-crimpy175gm
+6893395f72848030bb227dc9,N/A,N/A,Don® Leg Ham Shaved,was $6.95,$5.00,$25.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/don-ham-leg-shaved-200gm
+6893395f72848030bb227dca,N/A,N/A,Plains Producer,N/A,$3.50,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/plains-producer-1
+6893395f72848030bb227dcb,N/A,N/A,Birds Eye Golden Crunch Supercrunch Chips,N/A,$5.90,$7.87 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-eye-chips-s-c-crunch-750gm
+6893395f72848030bb227dcc,N/A,N/A,Grapes Red Per Kg,N/A,$10.50,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/grapes-dark-per-kg
+6893395f72848030bb227dcd,N/A,N/A,Tip Top® The One® White Sandwich,was $5.90,$4.50,$0.64 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/t-top-brd-the-one-white-700gm
+6893395f72848030bb227dce,N/A,N/A,Blueberries Punnet,N/A,$6.50,$52.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/blueberries-punnet-125g
+6893395f72848030bb227dcf,N/A,N/A,Golden North Milk,was $5.29,$4.50,$2.25 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/gldn-nth-whole-milk-2l-1
+6893395f72848030bb227dd0,N/A,N/A,Potatoes Premium Loose Kg,N/A,$0.95,$6.60 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/potatoes-premium-loose-kg
+6893395f72848030bb227dd1,N/A,N/A,Birds Eye Corn Cobs Supersweet,was $6.30,$6.00,$6.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-eye-corn-sunny-cobs-1kg
+6893395f72848030bb227dd2,N/A,N/A,Ham Traditional,N/A,$30.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/ham-traditional
+6893395f72848030bb227dd3,N/A,N/A,Arnott's Jatz Original Cracker,N/A,$4.00,$1.78 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-jatz-original-225gm
+6893395f72848030bb227dd4,N/A,N/A,Mission Original Wraps 8pk,N/A,$5.80,$1.02 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/mission-wraps-original-8pk
+6893395f72848030bb227dd5,N/A,N/A,Celery Half,N/A,$2.45,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/celery-half-2
+6893395f72848030bb227dd6,N/A,N/A,Foodland Bread Jumbo White,was $3.40,$3.30,$0.47 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-brd-jumbo-white-700gm
+6893395f72848030bb227dd7,N/A,N/A,Spring Onions Per Bunch,N/A,$2.60,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/spring-onions-per-bunch
+6893395f72848030bb227dd8,N/A,N/A,Black & Gold Salted Butter,N/A,$7.00,$1.40 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-butter-salted-500gm
+6893395f72848030bb227dd9,N/A,N/A,Oranges Per Kg,N/A,$1.45,$6.30 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/oranges-medium-per-kg
+6893395f72848030bb227dda,N/A,N/A,SLAPE BBQ SAUSAGES,N/A,$10.75,$7.17 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/slapes-bbq-sausages-1-5kg
+6893395f72848030bb227ddb,N/A,N/A,Yp Beef Topside Mince,N/A,$11.00,$21.99 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/yp-beef-topside-mince-2
+6893395f72848030bb227ddc,N/A,N/A,Bakers Oven Lamington Fingers,N/A,$3.95,$1.13 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-ovn-lamington-fingers-350gm
+6893395f72848030bb227ddd,N/A,N/A,Cauliflower Half,N/A,$3.75,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/cauliflower-half
+6893395f72848030bb227dde,N/A,N/A,Pumpkin Kent Per Kg,N/A,$3.90,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/pumpkin-jap-per-kg
+6893395f72848030bb227ddf,N/A,N/A,Smith's Crinkle Cut Potato Chips Chicken,was $5.25,$4.55,$2.68 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/smiths-crinkl-chicken-170gm
+6893395f72848030bb227de0,N/A,N/A,Coca-Cola Zero Sugar Soft Drink Multipack Cans,was $52.50,$30.00,$2.67 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/coca-cola-n-sug-can-30x375ml
+6893395f72848030bb227de1,N/A,N/A,Krc Fritz Smiley Rw,N/A,$16.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/krc-fritz-smiley-rw-1
+6893395f72848030bb227de2,N/A,N/A,Mandarins Per Kg,N/A,$6.30,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/mandarins-per-kg
+6893395f72848030bb227de3,N/A,N/A,Pura Lactose Free Light Start,N/A,$5.80,$2.90 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/pura-l-free-light-start-2l
+6893395f72848030bb227de4,N/A,N/A,Apples Gala Royal Per Kg,N/A,$1.13,$6.30 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/apples-royal-gala-per-kg
+6893395f72848030bb227de5,N/A,N/A,Compostable Check Out Bags Each,N/A,$0.20,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/compostable-check-out-bags-each
+6893395f72848030bb227de6,N/A,N/A,Hans Short Cut Bacon Rindless,was $17.85,$12.00,$16.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/hans-bacon-shrt-cut-r-l-750gm
+6893395f72848030bb227de7,N/A,N/A,Kiwifruit Each,N/A,$1.20,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/kiwifruit-each
+6893395f72848030bb227de8,N/A,N/A,Perfect Italiano Perfect Pizza Grated Cheese Blend | Mozzarella Cheddar Parmesan |,N/A,$9.50,$21.11 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/perfect-chse-shrd-pizza-450gm
+6893395f72848030bb227de9,N/A,N/A,Campbell's Real Stock Chicken Stock,was $4.75,$4.15,$0.42 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/camp-real-stock-chicken-1l
+6893395f72848030bb227dea,N/A,N/A,Edgell Corn Kernels,was $2.30,$1.95,$4.64 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/edg-corn-kernel-whole-420gm
+6893395f72848030bb227deb,N/A,N/A,Ingham's Chicken Breast Tenders Original,N/A,$5.50,$13.75 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-chick-brst-tenders400gm
+6893395f72848030bb227dec,N/A,N/A,Potatoes Washed,N/A,$7.80,$3.12 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/potatoes-washed-2-5kg
+6893395f72848030bb227ded,N/A,N/A,Potatoes Washed,N/A,$12.70,$2.54 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/potatoes-washed-5kg
+6893395f72848030bb227dee,N/A,N/A,Mighty Soft Hot Dog Rolls 6pk,N/A,$6.25,$104.17 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/mighty-soft-roll-hotdog-6pk
+6893395f72848030bb227def,N/A,N/A,Tip Top English Muffins Original 6pk,was $6.20,$3.10,$0.78 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/t-top-muffins-english-pkt-6
+6893395f72848030bb227df0,N/A,N/A,Tomatoes Cherry Punnet,was $4.20,$3.20,$12.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/tomatoes-cherry-punnet-250g-15
+6893395f72848030bb227df1,N/A,N/A,Black & Gold Tasty Shredded Cheese,N/A,$8.30,$16.60 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-chse-tasty-shred-500gm
+6893395f72848030bb227df2,N/A,N/A,Slape And Sons Aussie Beef Burgers,was $11.50,$9.90,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/slape-burger-aus-beef-800gm
+6893395f72848030bb227df3,N/A,N/A,Whiskas 1+ Years Adult Wet Cat Food With Chicken Mince Can,N/A,$2.85,$0.71 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/whiskas-tsty-mnce-chicken400gm
+6893395f72848030bb227df4,N/A,N/A,Baby Lebanese Cucumber,N/A,$4.45,$17.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/cucumbers-baby-lebanese-250g-3
+6893395f72848030bb227df5,N/A,N/A,Bacon Pieces,N/A,$19.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/bacon-pieces
+6893395f72848030bb227df6,N/A,N/A,Coca-Cola Classic Soft Drink Multipack Cans,was $52.50,$30.00,$2.67 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/coca-cola-family-pk-30x375ml
+6893395f72848030bb227df7,N/A,N/A,Farmers Union Iced Coffee Ctn,was $4.00,$2.90,$4.83 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/farm-union-milk-iced-cofe600ml
+6893395f72848030bb227df8,N/A,N/A,Rohde Eggs Free Range,N/A,$7.90,$1.13 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/rohde-eggs-free-range-700gm
+6893395f72848030bb227df9,N/A,N/A,Arnott's Cream Favourites,N/A,$6.50,$1.30 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-asst-creams-500gm
+6893395f72848030bb227dfa,N/A,N/A,Arnott's Tim Tam Original Family Pack Chocolate Biscuits,was $7.90,$6.50,$1.78 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-choc-tim-tam-v-pk-365gm
+6893395f72848030bb227dfb,N/A,N/A,Black & Gold Minced Garlic,N/A,$1.25,$5.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-garlic-minced-250gm
+6893395f72848030bb227dfc,N/A,N/A,Dairy Farmers Chocolate Milk,was $8.00,$6.80,$3.40 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/classic-milk-choc-bottle-2l-1
+6893395f72848030bb227dfd,N/A,N/A,Dorsogna Champagne Leg Ham Sliced,was $10.00,$7.70,$19.25 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/dors-chmp-leg-ham-sliced-400gm
+6893395f72848030bb227dfe,N/A,N/A,Foodland Hamburger Roll 6pk,was $4.20,$3.70,$0.62 Each,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-rolls-hamburger-6pk-1
+6893395f72848030bb227dff,N/A,N/A,Heinz® Big Red® Condensed Tomato Soup,was $2.65,$2.45,$0.58 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/hnz-soup-tomato-big-red-420gm
+6893395f72848030bb227e00,N/A,N/A,Peculiar Pick Apples Bag,was $4.20,$3.50,$2.33 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/apples-pink-lady-1-5kg-bag
+6893395f72848030bb227e01,N/A,N/A,R/​Fresh Sweet Mix Lettuce,N/A,$3.45,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/r-fresh-sweet-mix-lettuce-100g
+6893395f72848030bb227e02,N/A,N/A,Black & Gold Puff Pastry Sheets,N/A,$3.80,$0.38 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-pastry-puff-sheets-1kg
+6893395f72848030bb227e03,N/A,N/A,Broccolini,N/A,$4.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/broccolini-3
+6893395f72848030bb227e04,N/A,N/A,Cucumber Lebanese Per Kg,N/A,$10.20,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/cucumber-lebanese-per-kg-1
+6893395f72848030bb227e05,N/A,N/A,Foodland Reduced fat Milk,was $5.65,$5.40,$1.80 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-reduced-fat-milk-3lt
+6893395f72848030bb227e06,N/A,N/A,Golden Circle® Australian Pineapple Pieces In Juice,was $4.60,$3.70,$8.41 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/g-circ-pine-pieces-n-jce-440gm
+6893395f72848030bb227e07,N/A,N/A,Uncle Tobys Plus Iron Breakfast Cereal With Cashews & Nutty Clusters,was $9.25,$4.40,$0.70 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/u-toby-plus-iron-630gm
+6893395f72848030bb227e08,N/A,N/A,Bacon Middle Rashers,was $20.00,$14.90,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/bacon-middle-rashers-1
+6893395f72848030bb227e09,N/A,N/A,Cabbage Quarter,N/A,$1.20,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/cabbage-quarter
+6893395f72848030bb227e0a,N/A,N/A,Cauliflower Per Each,N/A,$7.50,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/cauliflower-per-each
+6893395f72848030bb227e0b,N/A,N/A,Leggo's Tomato Paste,N/A,$4.75,$1.19 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/leggos-sqz-pste-tom-400gm
+6893395f72848030bb227e0c,N/A,N/A,Long Cheese & Bacon Roll,N/A,$2.99,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/long-cheese-bacon-roll
+6893395f72848030bb227e0d,N/A,N/A,Mccain Vegetables Peas And Corn 500,N/A,$4.00,$8.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/mcc-peas-corn-500gm
+6893395f72848030bb227e0e,N/A,N/A,Melosi Ham Leg B/​Less Rw,N/A,$30.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/melosi-ham-leg-b-less-rw
+6893395f72848030bb227e0f,N/A,N/A,Red Rock Deli Style Potato Chips Honey Soy Chicken,was $6.00,$3.15,$1.91 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/rr-deli-chip-hon-soy-chk-165gm
+6893395f72848030bb227e10,N/A,N/A,Sanitarium Weet-Bix Breakfast Cereal Original,was $6.85,$6.00,$0.54 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/sanit-weet-bix-cater-pk-1-12kg
+6893395f72848030bb227e11,N/A,N/A,Slape And Son Barbecue Sausages,N/A,$7.75,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/slapes-bbq-thin-1kg
+6893395f72848030bb227e12,N/A,N/A,Yp Premium Beef Mince Bulk Rw,N/A,$21.99,$21.99 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/yp-premium-beef-mince-bulk-rw-4
+6893395f72848030bb227e13,N/A,N/A,Arnott's YoYo Biscuits,N/A,$3.45,$1.38 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-yo-yo-small-case-250gm
+6893395f72848030bb227e14,N/A,N/A,Coca-Cola,N/A,$41.25,$4.58 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/coca-cola-24x375ml
+6893395f72848030bb227e15,N/A,N/A,Community Co Shaved Parmesan Cheese,N/A,$3.70,$29.60 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-chse-parm-shvd-125gm
+6893395f72848030bb227e16,N/A,N/A,Edgell Creamed Corn,N/A,$2.30,$5.48 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/edg-corn-creamed-420gm
+6893395f72848030bb227e17,N/A,N/A,Fresh Pizza Large Meatlovers,N/A,$13.99,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/fresh-pizza-large-meatlovers
+6893395f72848030bb227e18,N/A,N/A,Ingham Diced Chicken R/​W,N/A,$11.20,$14.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-diced-chicken-r-w-1
+6893395f72848030bb227e19,N/A,N/A,Mighty Soft Hamburger Buns 6pk,N/A,$6.25,$1.04 Each,N/A,N/A,https://foodlandbalaklava.com.au/lines/mighty-soft-bun-hamburger-6pk
+6893395f72848030bb227e1a,N/A,N/A,Viva Paper Towels 3 Pack 21cm,N/A,$5.00,$2.78 per 100 Sheets,N/A,N/A,https://foodlandbalaklava.com.au/lines/viva-towel-triple-60-white-3pk
+6893395f72848030bb227e1b,N/A,N/A,"Wonder White Wonder High Fibre, Vitamins & Minerals White Sliced Bread Toast",was $5.45,$4.50,$0.64 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/wonder-wht-toast-vit-min-700gm
+6893395f72848030bb227e1c,N/A,N/A,Apples Granny Smith Per Kg,N/A,$1.04,$5.75 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/apples-granny-smith-per-kg
+6893395f72848030bb227e1d,N/A,N/A,Bacon Streaky,N/A,$24.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/bacon-streaky
+6893395f72848030bb227e1e,N/A,N/A,Black & Gold Tissues Facial 2ply 224s,N/A,$1.90,$0.85 Units100,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-tissues-facial-2ply224s
+6893395f72848030bb227e1f,N/A,N/A,Black & Gold White Sugar,N/A,$1.80,$0.18 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-white-sugar-1kg
+6893395f72848030bb227e20,N/A,N/A,Chicken Thighs,N/A,$15.50,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/chicken-thighs
+6893395f72848030bb227e21,N/A,N/A,Fantastic Fresh Noodles Hokkien,was $3.60,$3.10,$0.69 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/fantas-frs-ndl-hokien-450gm
+6893395f72848030bb227e22,N/A,N/A,Foodand Bun Apple 4pk,N/A,$6.79,$1.89 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-bun-apple-cinn-4pk
+6893395f72848030bb227e23,N/A,N/A,Smith's Crinkle Cut Salt & Vinegar Potato Chips Share Pack,was $5.25,$4.55,$2.68 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/smiths-crinkl-slt-ving-170gm
+6893395f72848030bb227e24,N/A,N/A,Community Co. Coleslaw,N/A,$2.05,$10.25 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-aussie-coleslaw-200gm
+6893395f72848030bb227e25,N/A,N/A,Arnott's Shapes Originals Pizza Nrl 25,was $4.00,$3.00,$1.58 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-shapes-orig-pizza-190gm
+6893395f72848030bb227e26,N/A,N/A,B/​Eye Chiko Rolls 4s,N/A,$7.90,$1.22 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-eye-chiko-rolls-4s-650gm
+6893395f72848030bb227e27,N/A,N/A,Birds Eye Broccoli Florets,was $4.75,$4.50,$9.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-eye-broccoli-500gm
+6893395f72848030bb227e28,N/A,N/A,Country Fresh Egg Caged m,N/A,$6.75,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/c-frsh-egg-caged-12pk-800gm
+6893395f72848030bb227e29,N/A,N/A,Days Eggs King Size Sa Free Range Eggs,N/A,$6.20,$0.89 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/days-king-sz-fr-range-eggs-700g
+6893395f72848030bb227e2a,N/A,N/A,Don® Short Cut Rindless Bacon,was $8.80,$6.95,$31.59 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/don-bacon-sh-cut-r-less-220gm
+6893395f72848030bb227e2b,N/A,N/A,Helgas Bread Continental Bakehouse Traditional Wholemeal,was $6.55,$5.00,$0.67 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/helga-brd-trad-w-meal-750gm
+6893395f72848030bb227e2c,N/A,N/A,Ingham's Chicken Breast Chipees Original,was $7.60,$5.50,$13.75 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-chic-chipees-400gm
+6893395f72848030bb227e2d,N/A,N/A,Kleenex Complete Clean Double Length Toilet Paper 12 Pack,was $13.50,$12.40,$0.29 per 100 Sheets,N/A,N/A,https://foodlandbalaklava.com.au/lines/klnx-t-roll-wht-d-lngth-12pk
+6893395f72848030bb227e2e,N/A,N/A,Kleenex Large & Thick 3 Ply Facial Tissues 95 Pack,N/A,$3.70,$3.89 Units100,N/A,N/A,https://foodlandbalaklava.com.au/lines/klnx-tissue-large-n-thick-95s
+6893395f72848030bb227e2f,N/A,N/A,Peculiar Pick Mandarins,N/A,$5.00,$6.67 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/peculiar-pick-mandarins-750g
+6893395f72848030bb227e30,N/A,N/A,Pepsi Max No Sugar Cola Soft Drink Bottle,N/A,$3.80,$1.90 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/pepsi-max-2l
+6893395f72848030bb227e31,N/A,N/A,Primo Bacon Style Pieces Cook & Create,was $5.80,$4.50,$15.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/primo-bacon-pieces-twn-300gm
+6893395f72848030bb227e32,N/A,N/A,Roast Beef Slices,N/A,$28.99,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/roast-beef-slices-1
+6893395f72848030bb227e33,N/A,N/A,Smith's Crinkle Cut Potato Chips Cheese & Onion,was $5.25,$4.55,$2.68 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/smiths-crinkl-chs-onion-170gm
+6893395f72848030bb227e34,N/A,N/A,So Good No Added Sugar Oat Milk,N/A,$2.80,$2.80 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/sanit-so-good-oat-nas-uht-1l
+6893395f72848030bb227e35,N/A,N/A,Adelaide Hills Premium Leg Ham Rw,N/A,$30.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/adelaide-hills-premium-leg-ham-rw-1
+6893395f72848030bb227e36,N/A,N/A,Ardmona Crushed Vine Ripened Tomatoes,N/A,$2.10,$5.12 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ard-tomatoes-crushed-410gm
+6893395f72848030bb227e37,N/A,N/A,Arnott's Shapes Originals Barbecue Nrl 25,was $4.00,$3.00,$1.71 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-shapes-orig-bbq-175gm
+6893395f72848030bb227e38,N/A,N/A,Arnott's Tiny Teddy Variety Biscuits,was $6.00,$5.00,$1.33 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-tiny-teddy-var-mp-box375gm
+6893395f72848030bb227e39,N/A,N/A,Balfours Fresh Custard Tart 2 Pack,was $7.00,$5.65,$2.02 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/balf-custard-tart-twin-pack
+6893395f72848030bb227e3a,N/A,N/A,Bega Grated Tasty Cheese |,was $7.90,$5.50,$18.33 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/bega-chse-tasty-shrd-300gm
+6893395f72848030bb227e3b,N/A,N/A,Birds Eye Stir Fry Oriental,was $5.80,$5.50,$6.47 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-eye-s-fry-oriental-850gm
+6893395f72848030bb227e3c,N/A,N/A,Dairy Choice Whole Milk Bottle,N/A,$4.90,$1.63 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/dairy-choice-milk-whole-3l
+6893395f72848030bb227e3d,N/A,N/A,Devondale 3 Cheese Shredded Blend,was $12.60,$10.50,$17.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/d-dale-chse-3-chse-shrd-600gm
+6893395f72848030bb227e3e,N/A,N/A,Nanna's Apple Pie,was $6.85,$4.65,$1.03 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nanna-snk-pie-apple-4s-450gm
+6893395f72848030bb227e3f,N/A,N/A,Nice & Natural Fruit Snacks Strings Strawberry Raspberry Blueberry,was $5.90,$4.50,$3.31 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nice-nat-fr-snk-rsp-blubry136g
+6893395f72848030bb227e40,N/A,N/A,Peculiar Pick Avocados,N/A,$10.00,$13.33 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/peculiar-pick-avocados-750g
+6893395f72848030bb227e41,N/A,N/A,Silverside Corned,N/A,$12.50,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/silverside-corned-2
+6893395f72848030bb227e42,N/A,N/A,Smith's Crinkle Cut Potato Chips Original,was $5.25,$4.55,$2.68 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/smiths-crinkl-original-170gm
+6893395f72848030bb227e43,N/A,N/A,Uncle Tobys Roll-Ups Rainbow Fruit Salad X6,N/A,$5.80,$6.17 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/u-toby-roll-ups-rbow-f-sal94gm
+6893395f72848030bb227e44,N/A,N/A,Arnott's Shortbread Cream Biscuits,was $4.20,$3.60,$1.44 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-shortbread-cream-250gm
+6893395f72848030bb227e45,N/A,N/A,Bacon Short Cut,N/A,$21.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/bacon-short-cut-1
+6893395f72848030bb227e46,N/A,N/A,Black & Gold Garlic Bread Twin Pack,N/A,$2.10,$0.47 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-garlic-brd-2x225gm-3
+6893395f72848030bb227e47,N/A,N/A,Black & Gold Plain Flour,N/A,$2.50,$1.25 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-flour-plain-2kg
+6893395f72848030bb227e48,N/A,N/A,Black & Gold Straight Cut Potato Chips,N/A,$3.80,$3.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-chips-s-cut-1kg
+6893395f72848030bb227e49,N/A,N/A,Coca Cola No Sugar,N/A,$41.25,$4.58 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/coca-cola-n-sug-24x375ml
+6893395f72848030bb227e4a,N/A,N/A,Comm Co Kids Strawberry Yoghurt,N/A,$0.80,$1.14 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-ygt-kids-sbry-pouc70gm
+6893395f72848030bb227e4b,N/A,N/A,Community Co. Passata Sauce,N/A,$2.70,$0.39 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-sce-passa-bttle-690gm
+6893395f72848030bb227e4c,N/A,N/A,Foodland Eggs Free Range 6pk,N/A,$3.80,$1.27 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-eggs-f-range-6pk-300gm
+6893395f72848030bb227e4d,N/A,N/A,Foodland full cream Milk,was $2.00,$1.90,$1.90 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-milk-1lt
+6893395f72848030bb227e4e,N/A,N/A,Fountain® Tomato Sauce,N/A,$6.00,$0.30 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/fount-sce-tomato-v-pack-2l
+6893395f72848030bb227e4f,N/A,N/A,Ham Leg Aussie,N/A,$37.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/ham-leg-aussie-1
+6893395f72848030bb227e50,N/A,N/A,Ingham's Chicken Breast Nuggets Original,was $7.50,$5.50,$13.75 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-chic-nugget-400gm
+6893395f72848030bb227e51,N/A,N/A,Inghams Chicken Thigh Fillet,N/A,$9.60,$16.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-chicken-thigh-fillets
+6893395f72848030bb227e52,N/A,N/A,Ingham’​S BBQ Chicken Kebab,N/A,$9.00,$20.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/inghams-kebab-bbq-tray-450gm-1
+6893395f72848030bb227e53,N/A,N/A,Kangaroo Island Eggs X-Large Free Range Eggs,N/A,$9.80,$14.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ki-free-range-eggs-700g
+6893395f72848030bb227e54,N/A,N/A,Lettuce Baby Cos Twn Pk,N/A,$4.75,$2.38 Each,N/A,N/A,https://foodlandbalaklava.com.au/lines/lettuce-baby-coz-twn-pk
+6893395f72848030bb227e55,N/A,N/A,Peters Original Vanilla Ice Cream,N/A,$5.50,$0.28 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/peters-i-crm-orig-vanilla-2l
+6893395f72848030bb227e56,N/A,N/A,Primo Cocktail Franks,was $6.30,$3.90,$7.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/primo-franks-cocktail-500gm
+6893395f72848030bb227e57,N/A,N/A,Slapes Sausage Mince,N/A,$8.60,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/slapes-sausage-mince-1kg
+6893395f72848030bb227e58,N/A,N/A,Whiskas 1+ Years Adult Wet Cat Food With Lamb Mince Can,N/A,$2.85,$0.71 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/whiskas-mince-lamb-t-veg-400gm
+6893395f72848030bb227e59,N/A,N/A,Yp Lamb 4 1/​4 Chops Rw,N/A,$12.50,$24.99 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/yp-lamb-4-1-4-chops-rw-2
+6893395f72848030bb227e5a,N/A,N/A,Allen's Party Mix,was $6.85,$6.45,$1.54 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/allens-party-mix-420gm
+6893395f72848030bb227e5b,N/A,N/A,Arnott's Biscuits Family Favourites,N/A,$5.00,$1.00 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-family-asst-500gm
+6893395f72848030bb227e5c,N/A,N/A,Arnott's Shapes Originals Cheese & Bacon,was $4.00,$3.00,$1.67 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-shapes-cheese-bacon-180gm
+6893395f72848030bb227e5d,N/A,N/A,Black & Gold French Onion Soup Mix,N/A,$0.55,$1.38 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-soup-french-onion-40g
+6893395f72848030bb227e5e,N/A,N/A,Black & Gold White Sugar,N/A,$2.60,$0.13 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-white-sugar-2kg
+6893395f72848030bb227e5f,N/A,N/A,Bulla Low Fat Cottage Cheese Original,N/A,$6.30,$12.60 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/bulla-cott-chse-500gm
+6893395f72848030bb227e60,N/A,N/A,Carrot Loose Per Kg,N/A,$0.39,$2.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/loose-carrot-per-kg
+6893395f72848030bb227e61,N/A,N/A,Community Co Pane Di Cana Loaf,N/A,$5.00,$1.00 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/plain-pane-di-casa-loaf-500gm
+6893395f72848030bb227e62,N/A,N/A,Devondale Full Cream Milk 1,N/A,$2.20,$2.20 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/d-dale-milk-f-crm-uht-1l
+6893395f72848030bb227e63,N/A,N/A,Doritos Corn Chips Cheese Supreme Share Pack,was $5.00,$3.50,$2.06 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/doritos-c-chip-chse-sprm-170gm
+6893395f72848030bb227e64,N/A,N/A,Edgell Beetroot Sliced,N/A,$3.80,$4.61 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/edg-beetroot-sliced-825gm
+6893395f72848030bb227e65,N/A,N/A,Fresh Pizza Large Pepperoni,N/A,$13.99,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/fresh-pizza-large-pepperoni
+6893395f72848030bb227e66,N/A,N/A,Ingham Sweet Chilli Chicken Tenders,N/A,$5.50,$13.75 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-chic-tend-swt-chil400gm
+6893395f72848030bb227e67,N/A,N/A,Jumpys Chicken Chips 5pk,was $4.75,$3.50,$3.89 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/jumpys-chicken-mp5-90gm
+6893395f72848030bb227e68,N/A,N/A,Lemons Loose Per Kg,N/A,$0.94,$5.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/lemons-loose-per-kg
+6893395f72848030bb227e69,N/A,N/A,Mccain Vegetables Premium Baby Beans 500,was $4.20,$4.00,$8.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/mcc-beans-baby-500gm
+6893395f72848030bb227e6a,N/A,N/A,Pampas Frozen Puff Pastry 10 Sheets,was $8.95,$7.65,$0.48 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/pampas-pastry-shts-bulk-pk1-6k
+6893395f72848030bb227e6b,N/A,N/A,Potatoes Kestral,N/A,$7.45,$3.72 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/potatoes-kestral-2kg
+6893395f72848030bb227e6c,N/A,N/A,Tip Top Bakery Tip Top® The One® Soft White Toast E,was $5.90,$4.50,$0.64 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/t-top-brd-the-one-toast-700gm
+6893395f72848030bb227e6d,N/A,N/A,Vaalia Kids Probiotic Yoghurt Strawberry Pouch,was $2.50,$2.00,$1.43 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/vaalia-ygt-kids-s-berry-140gm
+6893395f72848030bb227e6e,N/A,N/A,Whiskas 1+ Years Adult Wet Cat Food With Beef Mince Can,N/A,$2.85,$0.71 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/whiskas-minced-beef-400gm
+6893395f72848030bb227e6f,N/A,N/A,Arnott's Shapes Nacho Cheese,was $4.00,$3.00,$1.88 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-shapes-nacho-cheese-160gm
+6893395f72848030bb227e70,N/A,N/A,Bega Tasty Cheese Slices | 15 Cheddar Slices |,was $7.90,$6.50,$26.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/bega-chse-chdr-tasty-slc-250gm
+6893395f72848030bb227e71,N/A,N/A,Black & Gold White Vinegar,N/A,$1.85,$0.09 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-vinegar-white-2l
+6893395f72848030bb227e72,N/A,N/A,Chicken Tenderloins,N/A,$9.50,$19.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingh-chk-tenderloins-rw
+6893395f72848030bb227e73,N/A,N/A,Coca-Cola Zero Sugar Soft Drink Bottle,was $5.45,$3.70,$1.85 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/coca-cola-n-sug-2l
+6893395f72848030bb227e74,N/A,N/A,Community & Co Jam Strawberry,N/A,$2.80,$0.56 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-jam-strawberry-500gm
+6893395f72848030bb227e75,N/A,N/A,Community Co Tasty Cheese Block,N/A,$11.45,$15.27 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-chse-blk-tasty-750gm
+6893395f72848030bb227e76,N/A,N/A,Continental Classics Cup A Soup Chinese Chicken & Corn With Lots Of Noodles,was $2.95,$2.00,$3.03 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/cupasoup-lots-ndl-ch-c-crn2srv
+6893395f72848030bb227e77,N/A,N/A,Continental Classics French Onion Simmer Soup,N/A,$1.25,$3.12 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/cont-soup-french-onion-40gm
+6893395f72848030bb227e78,N/A,N/A,Continental Classics Simmer Soup Chicken Noodle,N/A,$1.25,$2.78 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/cont-soup-chicken-noodle-45gm
+6893395f72848030bb227e79,N/A,N/A,Four'n Twenty Party Pies,was $9.45,$7.50,$1.25 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/4-n-20-pie-party-12s-600gm
+6893395f72848030bb227e7a,N/A,N/A,Ingham Chicken Breast Fillet,N/A,$17.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-chicken-breast-fillet-1
+6893395f72848030bb227e7b,N/A,N/A,M/​Hill Spring Water,N/A,$4.45,$0.44 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/m-hill-spring-water-10l
+6893395f72848030bb227e7c,N/A,N/A,Maggi 2-Min Noodles Noodles Chicken Cup,was $2.65,$2.45,$4.08 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/maggi-cup-ndl-chicken-60gm
+6893395f72848030bb227e7d,N/A,N/A,Mccain Cheese & Bacon Pizza Slices 2 Pack,N/A,$9.45,$1.58 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/mcc-pizza-slces-che-bac-600gm
+6893395f72848030bb227e7e,N/A,N/A,Mission Corn Chip Delrnd,was $7.90,$6.70,$1.34 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/mission-corn-chip-delrnd-500gm
+6893395f72848030bb227e7f,N/A,N/A,Pepsi Max No Sugar Cola Soft Drink Cans Multipack,was $32.55,$29.90,$2.66 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/pepsi-max-cube-30x375ml
+6893395f72848030bb227e80,N/A,N/A,Quilton Classic White Toilet Tissue 9pk,was $7.65,$6.50,$0.40 per 100 Sheets,N/A,N/A,https://foodlandbalaklava.com.au/lines/quilton-t-roll-whte-3ply-9pk
+6893395f72848030bb227e81,N/A,N/A,Silverside Beef Slices,was $28.00,$25.90,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/silverside-beef-slices-1
+6893395f72848030bb227e82,N/A,N/A,Yoplait Fruche Strawberry Fields,N/A,$2.75,$0.92 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/fruche-s-berry-fields-2x150gm
+6893395f72848030bb227e83,N/A,N/A,Yoplait Strawberry Yoghurt,N/A,$4.75,$0.48 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/yop-ygt-strawberry-1kg
+6893395f72848030bb227e84,N/A,N/A,Arnott's Shapes Originals Variety 15 Multipack Chips Cracker Biscuits,was $6.00,$5.00,$1.33 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-shapes-var-mp-box-375gm
+6893395f72848030bb227e85,N/A,N/A,Balfours Party Pasties,N/A,$10.50,$2.10 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/balf-pasties-party-12s-500gm
+6893395f72848030bb227e86,N/A,N/A,Bega Stringers Mozzarella Cheese Snack | 8 Pack |,N/A,$7.35,$45.94 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/bega-chse-strngrs-8stk-pk160gm
+6893395f72848030bb227e87,N/A,N/A,Black And Gold Cheese Cheddar Mild,N/A,$9.30,$9.30 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-chse-mild-1kg
+6893395f72848030bb227e88,N/A,N/A,Bulla Sour Cream,was $3.90,$3.70,$1.85 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/bulla-cream-sour-35-fat-200ml
+6893395f72848030bb227e89,N/A,N/A,Comm Co Kids Vanilla Yoghurt,N/A,$0.80,$1.14 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-ygt-kids-van-pouch70gm
+6893395f72848030bb227e8a,N/A,N/A,Daily Juice Co Orange Juice No Added Sugar,N/A,$3.55,$7.10 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/daily-jce-orange-jce-500ml
+6893395f72848030bb227e8b,N/A,N/A,Devondale Tasty Shredded Cheese,was $12.60,$10.50,$17.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/d-dale-chse-tasty-shrd-600gm
+6893395f72848030bb227e8c,N/A,N/A,Don® Sliced Pepperoni,was $6.00,$4.05,$40.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/don-pepperoni-slc-100gm
+6893395f72848030bb227e8d,N/A,N/A,Frantelle Spring Water,was $19.85,$15.25,$1.06 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/frantelle-spr-wtr-24x600ml
+6893395f72848030bb227e8e,N/A,N/A,Fresh Pizza Large Hawaiian,N/A,$13.99,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/fresh-pizza-large-hawaiian-1
+6893395f72848030bb227e8f,N/A,N/A,Ingham's Chicken Kebabs Honey Soy,N/A,$9.00,$20.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/inghams-kebab-hny-sy-tray450gm-1
+6893395f72848030bb227e90,N/A,N/A,Kleenex Complete Clean Toilet Paper 45 Pack,was $33.10,$22.00,$0.27 per 100 Sheets,N/A,N/A,https://foodlandbalaklava.com.au/lines/klnx-t-roll-white-reg-45pk
+6893395f72848030bb227e91,N/A,N/A,"Leggo's Pizza Sauce With Garlic, Onion & Herbs",N/A,$4.75,$1.19 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/leggos-sqz-sce-pizza-400gm
+6893395f72848030bb227e92,N/A,N/A,Mccain Vegetables Cauliflower 500,was $6.30,$5.25,$10.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/mcc-cauliflower-500gm
+6893395f72848030bb227e93,N/A,N/A,Mighty Soft Sliced Multigrain Bread Sandwich,was $4.90,$3.90,$0.56 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/mighty-soft-m-grain-700gm
+6893395f72848030bb227e94,N/A,N/A,Pauls Zymil Low Fat Milk,N/A,$6.80,$3.40 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/pauls-milk-zymil-l-fat-milk-2l
+6893395f72848030bb227e95,N/A,N/A,Pork Mince 3 Star,N/A,$9.50,$19.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/k-crown-pork-mince-500g
+6893395f72848030bb227e96,N/A,N/A,Quilton Toilet Roll White 3ply Double Length 4pk,was $6.30,$5.95,$0.41 per 100 Sheets,N/A,N/A,https://foodlandbalaklava.com.au/lines/quilton-t-roll-wht-3p-dl-4pk
+6893395f72848030bb227e97,N/A,N/A,Salami Hung Mild,N/A,$35.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/salami-hung-mild
+6893395f72848030bb227e98,N/A,N/A,Sunbites Grain Waves Extruded Snacks Sour Cream And Chives,was $5.25,$4.60,$2.71 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/sunbite-grnwave-s-crm-chv170gm
+6893395f72848030bb227e99,N/A,N/A,Vilis Donut Chocolate,N/A,$3.30,$3.30 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/vilis-donut-chocolate-100gm
+6893395f72848030bb227e9a,N/A,N/A,Yoplait Vanilla Yoghurt,N/A,$4.75,$0.48 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/yop-ygt-vanilla-1kg
+6893395f72848030bb227e9b,N/A,N/A,Arnott's Biscuits Monte Carlo Cream,was $4.20,$3.60,$1.44 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-monte-carlo-250gm
+6893395f72848030bb227e9c,N/A,N/A,Arnott's Clix Crackers,was $4.20,$3.80,$1.52 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-jatz-clix-250g
+6893395f72848030bb227e9d,N/A,N/A,Arnott's The Original Scotch Finger Biscuits,N/A,$3.45,$1.38 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-scotch-finger-250gm
+6893395f72848030bb227e9e,N/A,N/A,Bega Farmer's Tasty Cheese Block Family Value Pack,N/A,$16.80,$16.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/bega-chse-tasty-1kg
+6893395f72848030bb227e9f,N/A,N/A,Bega Tasty Cheese Block I,was $7.90,$7.40,$29.60 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/bega-chse-tasty-block-250gm
+6893395f72848030bb227ea0,N/A,N/A,Black & Gold French Fries Potato Chips,N/A,$3.80,$3.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-french-fries-1kg
+6893395f72848030bb227ea1,N/A,N/A,Chicken Burgers,N/A,$1.90,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/chicken-burgers
+6893395f72848030bb227ea2,N/A,N/A,Community Co Tomato Sauce,N/A,$2.00,$0.40 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-sce-sqz-tomato-500ml
+6893395f72848030bb227ea3,N/A,N/A,Dolmio Classic Tomato Pasta Sauce,N/A,$2.70,$0.54 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/dolmio-pst-sce-clas-tom-500gm
+6893395f72848030bb227ea4,N/A,N/A,F/​Land Dip Hommus,was $3.55,$2.95,$1.48 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-dip-hommus-200gm-1
+6893395f72848030bb227ea5,N/A,N/A,Fresh Pizza Large Supreme,N/A,$13.99,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/fresh-pizza-large-supreme-1
+6893395f72848030bb227ea6,N/A,N/A,Golden Bakery 8 Pikelets,N/A,$4.50,$2.25 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/golden-pikelets-pk8
+6893395f72848030bb227ea7,N/A,N/A,Golden North Country Style Vanilla 5,N/A,$15.50,$0.31 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/g-north-i-crm-c-style-van-5l
+6893395f72848030bb227ea8,N/A,N/A,Ham Shredded,N/A,$20.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/ham-shredded-1
+6893395f72848030bb227ea9,N/A,N/A,Helga Brd Crftd S/​Dgh Wht700gm,was $7.55,$6.50,$0.93 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/helga-s-cftd-s-dough-white-700g
+6893395f72848030bb227eaa,N/A,N/A,Hot Dog Roll 6pk Large,N/A,$5.00,$1.25 Each,N/A,N/A,https://foodlandbalaklava.com.au/lines/hotdog-roll-large-6pk
+6893395f72848030bb227eab,N/A,N/A,Jacobs Fritz,N/A,$8.35,$8.35 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/jacobs-fritz-1kg
+6893395f72848030bb227eac,N/A,N/A,Jalna Natural Greek Yoghurt,was $5.20,$4.95,$1.03 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/jalna-nat-grk-ygt-480g
+6893395f72848030bb227ead,N/A,N/A,Nature’​S Delight Natural Nut Mix,was $10.99,$9.50,$2.38 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nocelle-natural-nut-400gm
+6893395f72848030bb227eae,N/A,N/A,Praise Ranch Dressing,N/A,$3.80,$1.15 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/praise-drs-ranch-330ml
+6893395f72848030bb227eaf,N/A,N/A,Rhodes Clare Valley Free Range Large Eggs,N/A,$6.50,$1.08 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/rohde-eggs-free-range-600gm
+6893395f72848030bb227eb0,N/A,N/A,Slaps And Son Old English Pork Thin Sausage,N/A,$6.75,$14.06 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/slapes-british-pork-chip-480g
+6893395f72848030bb227eb1,N/A,N/A,Spc Crushed Tomatoes,was $1.80,$1.40,$3.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/spc-tomatoes-crushed-400gm
+6893395f72848030bb227eb2,N/A,N/A,Spc Diced Tomatoes,was $1.80,$1.40,$3.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/spc-tomatoes-diced-400gm
+6893395f72848030bb227eb3,N/A,N/A,Sunrice White Long Grain Rice Pouch,N/A,$4.75,$1.06 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/sunrice-lg-white-m-w-450gm
+6893395f72848030bb227eb4,N/A,N/A,Ben's Original Savoury Chicken Flavour Microwave Rice Pouch,was $4.20,$2.90,$1.16 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/bens-orig-svry-chkn-flv-250gm
+6893395f72848030bb227eb5,N/A,N/A,Birds Eye Birdseye Deli Chips French Fry,N/A,$6.30,$10.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-eye-deli-f-fries-gar-hr600gm
+6893395f72848030bb227eb6,N/A,N/A,Birds Eye Fish Fingers,N/A,$13.65,$13.65 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-eye-fish-fingers-1kg
+6893395f72848030bb227eb7,N/A,N/A,Birds Eye Potato Gems,N/A,$6.85,$7.61 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-eye-pot-gem-gldn-crnch-900gm
+6893395f72848030bb227eb8,N/A,N/A,Black & Gold Salted Butter,N/A,$4.00,$1.60 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-butter-salted-250gm
+6893395f72848030bb227eb9,N/A,N/A,Black & Gold Self Raising Flour,N/A,$2.50,$1.25 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-flour-sr-2kg
+6893395f72848030bb227eba,N/A,N/A,Black & Gold Spirals,N/A,$0.90,$0.18 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-spirals-500gm
+6893395f72848030bb227ebb,N/A,N/A,Chum Adult Dog Food With 3 Meats Can,N/A,$3.60,$0.30 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/chum-3-meats-1-2kg
+6893395f72848030bb227ebc,N/A,N/A,Community Co Baby Spinach,N/A,$2.70,$27.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-baby-spinach-100g
+6893395f72848030bb227ebd,N/A,N/A,Continental Classics Cup A Soup Creamy Chicken & Corn With Croutons,was $2.95,$2.00,$3.33 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/cupasoup-crt-crmy-chk-crn-2srv
+6893395f72848030bb227ebe,N/A,N/A,Dream Whip Whipped Dairy Cream,was $7.10,$5.75,$2.30 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/dream-whip-regular-250gm
+6893395f72848030bb227ebf,N/A,N/A,F/​Choice Pp Herb Coriander,N/A,$3.60,$12.00 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-choice-pp-herb-coriander-30g-1
+6893395f72848030bb227ec0,N/A,N/A,Farmers Union Iced Coffee Btl,was $8.00,$6.80,$3.40 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/farm-union-milk-iced-coffee-2l
+6893395f72848030bb227ec1,N/A,N/A,Greenseas® Tuna Chunks In Springwater,N/A,$5.80,$13.65 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/greenseas-tuna-spr-water-425gm
+6893395f72848030bb227ec2,N/A,N/A,Ingham's Chicken Breast Tenders Southern Style,N/A,$5.50,$13.75 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-chic-tend-southrn-400gm
+6893395f72848030bb227ec3,N/A,N/A,Kraft® Singles Original (​24 Slices),N/A,$8.00,$18.52 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/kft-chse-singles-org-432gm
+6893395f72848030bb227ec4,N/A,N/A,La Famiglia Traditional Garlic Bread,N/A,$5.00,$1.25 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/la-famiglia-brd-trad-gar-400gm
+6893395f72848030bb227ec5,N/A,N/A,Mother Earth Baked Oaty Slices Chocolate Chip,N/A,$3.30,$1.38 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/m-earth-b-oat-bar-c-chip-240gm
+6893395f72848030bb227ec6,N/A,N/A,Nescafe Blend 43 Original,N/A,$30.00,$6.00 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nescafe-blend-43-500gm
+6893395f72848030bb227ec7,N/A,N/A,Oranges Jumbo Pack,N/A,$6.85,$2.28 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/oranges-jumbo-pack-3kg
+6893395f72848030bb227ec8,N/A,N/A,Peas Snow Pre Pack,N/A,$6.90,$46.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/peas-snow-pre-pack-150g
+6893395f72848030bb227ec9,N/A,N/A,Perfect Italiano Perfect Pizza Grated Cheese Blend | Mozzarella Cheddar Parmesan |,N/A,$4.75,$31.67 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/perfect-chse-pza-shred-150gm
+6893395f72848030bb227eca,N/A,N/A,Powerade Berry Ice,was $4.60,$3.55,$5.92 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/powerade-bry-ice-sip-cap600ml
+6893395f72848030bb227ecb,N/A,N/A,Primo Shredded Ham Cook & Create,was $5.80,$4.50,$15.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/primo-ham-shredded-01222-300gm
+6893395f72848030bb227ecc,N/A,N/A,Smith’​S Crinkle Cut Potato Chips Flavour Mix Multipack Variety,N/A,$8.90,$2.34 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/smiths-crink-var-bx-20pk-380gm
+6893395f72848030bb227ecd,N/A,N/A,Snackables Carrots,N/A,$4.10,$16.40 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/carrots-snackables-250g
+6893395f72848030bb227ece,N/A,N/A,Spring Gully Gherkin Rounds,N/A,$5.80,$10.55 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/s-gully-gherkin-s-sp-rnd-550gm
+6893395f72848030bb227ecf,N/A,N/A,Top 20 Variety Multipack,N/A,$7.50,$2.00 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/top-20-variety-mp-375gm
+6893395f72848030bb227ed0,N/A,N/A,Up&​Go Liquid Breakfast Strawberry,N/A,$17.50,$5.83 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/sanit-up-go-s-berry-12x250ml
+6893395f72848030bb227ed1,N/A,N/A,Yopro High Protein Strawberry Greek Yoghurt,N/A,$3.15,$1.97 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/danone-ygt-pro-strwbry-160gm
+6893395f72848030bb227ed2,N/A,N/A,Zooper Dooper Cosmic,was $7.55,$6.20,$0.37 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/zooper-dooper-wtr-ice-24x70ml
+6893395f72848030bb227ed3,N/A,N/A,Allen's Classic Party Mix Lollies Bag,was $6.85,$6.45,$1.54 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/allens-party-mix-classic-420gm
+6893395f72848030bb227ed4,N/A,N/A,Ardmona Apricot Nectar Fruit Drink,N/A,$2.30,$5.68 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/ard-jce-apricot-nectar-405ml
+6893395f72848030bb227ed5,N/A,N/A,Balducci Spirali No. 55,was $2.00,$1.75,$0.35 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/balducci-spirali-55-500gm
+6893395f72848030bb227ed6,N/A,N/A,Black & Gold Shredded Mozzarella Cheese,N/A,$8.30,$16.60 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-chse-mozzarel-shrd500gm
+6893395f72848030bb227ed7,N/A,N/A,Black & Gold Tomato Paste,N/A,$1.40,$0.28 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-tomato-paste-500gm
+6893395f72848030bb227ed8,N/A,N/A,Cadbury Baking Chips Milk Chocolate,N/A,$7.90,$3.95 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/cad-cook-choc-milk-chip-200gm
+6893395f72848030bb227ed9,N/A,N/A,CHEER CHEESE LIGHT&​TASTY SLICED,was $17.65,$14.00,$18.67 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/cheer-chse-lte-tsty-slce-750gm
+6893395f72848030bb227eda,N/A,N/A,Chicken Loaf Inghams,N/A,$15.99,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/chicken-loaf
+6893395f72848030bb227edb,N/A,N/A,Chum Adult Dog Food With Chicken Can,N/A,$3.60,$0.30 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/chum-chicken-1-2kg
+6893395f72848030bb227edc,N/A,N/A,Doritos Corn Chips Cheese Supreme,N/A,$9.45,$2.49 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/doritos-c-chip-chs-sup-380gm
+6893395f72848030bb227edd,N/A,N/A,Doritos Mild Salsa Dip,N/A,$3.03,$1.01 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/doritos-salsa-mild-300gm-1
+6893395f72848030bb227ede,N/A,N/A,Earth Choice Dishwash Liquid Aloe Fresh,N/A,$2.55,$0.26 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/earths-chce-d-wsh-aloe-liq-1l
+6893395f72848030bb227edf,N/A,N/A,F/​Country Eco Beef Stk Rmp Rw,N/A,$14.00,$27.99 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-country-eco-beef-stk-rmp-rw-1
+6893395f72848030bb227ee0,N/A,N/A,Feel Good Iced Coffee,was $2.65,$2.50,$0.83 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/feel-good-milk-coffee-300ml
+6893395f72848030bb227ee1,N/A,N/A,Glad Wavetop Tie Fresh Scent Garbage Bags Purple Large 24pk 24pk,N/A,$4.60,$0.19 Each,N/A,N/A,https://foodlandbalaklava.com.au/lines/glad-bag-w-top-colour-lrg-24pk
+6893395f72848030bb227ee2,N/A,N/A,Handee Ultra Paper Towel - 4 Pack,was $6.85,$5.80,$2.42 per 100 Sheets,N/A,N/A,https://foodlandbalaklava.com.au/lines/handee-towel-ult-white-2ply-4s
+6893395f72848030bb227ee3,N/A,N/A,Ingham's Chicken Breast Munchies Original,was $7.60,$5.50,$13.75 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-chic-munchies-400gm
+6893395f72848030bb227ee4,N/A,N/A,Ingham's Sweet Chilli Chicken Tenders,was $13.65,$11.85,$11.85 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-chic-tend-s-chil-1kg
+6893395f72848030bb227ee5,N/A,N/A,Kellogg's Nutri-Grain Large Pack,N/A,$10.80,$1.41 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/kell-nutri-grain-765gm
+6893395f72848030bb227ee6,N/A,N/A,Kraft® Easy Mac® Classic Cheese,was $8.30,$7.00,$1.25 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/kft-easy-mac-cheese-560gm-1
+6893395f72848030bb227ee7,N/A,N/A,Limes Per Kg,N/A,$2.15,$21.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/limes-per-kg
+6893395f72848030bb227ee8,N/A,N/A,M&​M’​S Peanut Milk Chocolate Snack & Share Bag,was $7.35,$5.40,$3.00 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/m-ms-peanut-180gm
+6893395f72848030bb227ee9,N/A,N/A,Mission Wraps Lite 8pk,N/A,$5.80,$1.02 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/mission-wraps-lite-8pk
+6893395f72848030bb227eea,N/A,N/A,Nescafe Caramel Latte Coffee Sachets,was $8.00,$4.00,$2.35 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nescafe-sach-caramel-10pk
+6893395f72848030bb227eeb,N/A,N/A,NUTTELEX BUTTERY,was $9.45,$8.00,$0.80 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nuttlx-buttery-1kg
+6893395f72848030bb227eec,N/A,N/A,Nuttelex Margarine Buttery,was $5.45,$4.70,$0.94 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nuttelex-buttery-500gm
+6893395f72848030bb227eed,N/A,N/A,Oak Chocolate Flavoured Milk,N/A,$7.10,$3.55 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/oak-chocolate-btl-2l
+6893395f72848030bb227eee,N/A,N/A,Pascall Marshmallows Pink & White Lollies,was $5.25,$4.70,$1.68 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/pas-m-mallows-van-rspbry-280gm
+6893395f72848030bb227eef,N/A,N/A,Praise Everyday Coleslaw Dressing,N/A,$3.80,$1.15 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/praise-drs-coleslaw-330ml
+6893395f72848030bb227ef0,N/A,N/A,Pringles Original,N/A,$2.85,$5.38 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/pringles-chips-original-53gm
+6893395f72848030bb227ef1,N/A,N/A,Real Foods Corn Thins Original,N/A,$2.20,$1.47 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/real-corn-thins-popped-150gm
+6893395f72848030bb227ef2,N/A,N/A,"Simply Tasty Chicken, Bacon & Avocado Pasta Salad",N/A,$6.75,$2.25 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/s-tasty-psta-chkn-avo-drs300gm
+6893395f72848030bb227ef3,N/A,N/A,Up&​Go Liquid Breakfast Choc Ice,N/A,$17.50,$5.83 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/sanit-up-go-choc-ice-12x250ml
+6893395f72848030bb227ef4,N/A,N/A,Vaalia Kids Probiotic Yoghurt Tropical Pouch,was $2.50,$2.00,$1.43 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/vaalia-ygt-kids-tropical-140gm
+6893395f72848030bb227ef5,N/A,N/A,Vaalia Kids Probiotic Yoghurt Vanilla Pouch,was $2.50,$2.00,$1.43 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/vaalia-ygt-kids-vanilla-140gm
+6893395f72848030bb227ef6,N/A,N/A,Yoplait Petit Miam Yoghurt Blueberry,was $1.70,$1.10,$1.57 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/yop-sqz-ygt-blueberry-70gm
+6893395f72848030bb227ef7,N/A,N/A,Yp Beef Schnitzel Bulk,N/A,$21.99,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/yp-beef-schnitzel-bulk-1
+6893395f72848030bb227ef8,N/A,N/A,Abbott's Bakery Gluten Free Rustic White Bread,N/A,$7.90,$1.58 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/abbotts-brd-wht-rustic-gf500gm
+6893395f72848030bb227ef9,N/A,N/A,Arnott's Shapes Originals Cracker Biscuits Cheddar,was $4.00,$3.00,$1.71 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-shapes-cheddar-175gm
+6893395f72848030bb227efa,N/A,N/A,Bacon Middle Aussie,N/A,$23.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/aussie-middle-bacon
+6893395f72848030bb227efb,N/A,N/A,Balducci Spaghetti No. 4,was $2.00,$1.75,$0.35 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/balducci-spaghetti-4-500gm
+6893395f72848030bb227efc,N/A,N/A,Barossa Gmet Italian Meatballs,N/A,$9.00,$2.00 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/barossa-gmet-italian-meatballs-450g
+6893395f72848030bb227efd,N/A,N/A,Black & Gold Cat Litter,N/A,$7.55,$0.84 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-cat-litter-9kg
+6893395f72848030bb227efe,N/A,N/A,Black & Gold Chicken Nuggets,N/A,$3.25,$0.65 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-chicken-nuggets-500gm
+6893395f72848030bb227eff,N/A,N/A,Black & Gold Mixed Vegetables,N/A,$2.80,$2.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-mixed-vegies-1kg
+6893395f72848030bb227f00,N/A,N/A,Black & Gold Tuna Chunk Brine,N/A,$3.30,$7.76 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-tuna-chunk-brine-425gm
+6893395f72848030bb227f01,N/A,N/A,Bulla Ice Cream Vanilla,N/A,$6.00,$0.30 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/bulla-i-crm-vanilla-2l
+6893395f72848030bb227f02,N/A,N/A,Capilano Pure Honey,N/A,$9.05,$1.81 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/capilano-honey-clear-ud-500gm
+6893395f72848030bb227f03,N/A,N/A,Carman's 100% Natural Fruit Straps Apple & Strawberry 5 Twin Packs,was $6.30,$5.35,$7.64 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/carmans-apple-straw-fr-straps-70g
+6893395f72848030bb227f04,N/A,N/A,Cheese Kransky,N/A,$19.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/kransky-cheese
+6893395f72848030bb227f05,N/A,N/A,Chicken Mince,N/A,$10.00,$20.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/inghams-chicken-mince-500gm
+6893395f72848030bb227f06,N/A,N/A,Cobs Butter Popcorn Multi Pack,N/A,$4.20,$6.46 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/cobs-popcorn-butter-m-pk-65gm
+6893395f72848030bb227f07,N/A,N/A,Coca-Cola Classic Soft Drink Bottle,was $4.00,$2.00,$1.60 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/coca-cola-1-25l
+6893395f72848030bb227f08,N/A,N/A,Community Co Diced Peaches In Juice,N/A,$2.70,$5.40 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-dcd-pch-in-jce-4x125gm
+6893395f72848030bb227f09,N/A,N/A,Community Co Diced Tomatoes With Oregano & Basil,N/A,$1.35,$3.38 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-tom-diced-herb-400gm
+6893395f72848030bb227f0a,N/A,N/A,Dairy Farmers Chocolate Milk,was $2.70,$2.60,$6.93 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/dairy-farmers-classic-choc-375ml
+6893395f72848030bb227f0b,N/A,N/A,Deli Chicken Necks,N/A,$4.50,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/ingham-chicken-necks-1
+6893395f72848030bb227f0c,N/A,N/A,Fancy Feast Adult Savory Centers Patè With Chicken And A Gourmet Gravy Center Wet Cat Food,N/A,$2.75,$3.24 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/purina-f-fst-s-cntr-chkn-85gm-1
+6893395f72848030bb227f0d,N/A,N/A,Feel Good Iced Coffee,was $8.00,$6.80,$3.40 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/farm-union-milk-f-g-coffee-2l
+6893395f72848030bb227f0e,N/A,N/A,Fresh Pizza Large BBQ Chicken,N/A,$13.99,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/fresh-pizza-large-bbq-chicken
+6893395f72848030bb227f0f,N/A,N/A,Ham Virginian,was $30.00,$19.90,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/ham-virginian-1
+6893395f72848030bb227f10,N/A,N/A,Handee Ultra Paper Towel - 2 Pack,was $4.05,$1.90,$1.58 per 100 Sheets,N/A,N/A,https://foodlandbalaklava.com.au/lines/handee-towel-ult-white-2s
+6893395f72848030bb227f11,N/A,N/A,Happy Muffin Co Banana 8pk,N/A,$5.45,$1.70 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/happy-muffin-co-mini-banana-8pk
+6893395f72848030bb227f12,N/A,N/A,Happy Muffin Co Choc Chip 8pk,N/A,$5.45,$1.70 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/happy-muffin-co-mini-choc-chip-8pk
+6893395f72848030bb227f13,N/A,N/A,"Heinz® Mixed Veg With Carrots, Peas, Green Beans & Corn Kernels",was $6.20,$5.00,$5.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/hnz-mixed-vegetables-1kg
+6893395f72848030bb227f14,N/A,N/A,Kleenex Eucalyptus 3 Ply Facial Tissues 95 Pack,N/A,$2.60,$2.74 Units100,N/A,N/A,https://foodlandbalaklava.com.au/lines/klnx-tissue-spe-care-euc-95s
+6893395f72848030bb227f15,N/A,N/A,Kleenex Toilet Roll White 18pk,was $13.65,$11.00,$0.34 per 100 Sheets,N/A,N/A,https://foodlandbalaklava.com.au/lines/klnx-t-roll-whit-reg-18pk
+6893395f72848030bb227f16,N/A,N/A,Knot Roll 6pk,N/A,$6.00,$1.50 Each,N/A,N/A,https://foodlandbalaklava.com.au/lines/knot-roll-6pk
+6893395f72848030bb227f17,N/A,N/A,Krc Ol Smokey Franks 8in,N/A,$35.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/krc-ol-smokey-franks-8-2-5kg
+6893395f72848030bb227f18,N/A,N/A,Maggi 2 Minute Noodles Chicken Flavour,N/A,$9.00,$1.04 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/maggi-2-min-ndl-chicken-12pk
+6893395f72848030bb227f19,N/A,N/A,Maggi 2-Minute Noodles Noodles Oriental Multipack,was $5.00,$4.00,$1.08 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/maggi-2-min-ndl-orient-5x74gm
+6893395f72848030bb227f1a,N/A,N/A,"Masterfoods Soy, Honey & Garlic Marinade",N/A,$3.60,$0.96 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/mf-marinade-hny-soy-gar-375gm
+6893395f72848030bb227f1b,N/A,N/A,Mccain Family BBQ Chicken And Pineapple Pizza,N/A,$8.50,$1.70 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/mcc-pizza-bbq-chkn-pine-500gm
+6893395f72848030bb227f1c,N/A,N/A,Mccain Vegetables Peas And Super Juicy Corn,was $7.35,$6.80,$6.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/mcc-peas-s-sweet-corn-1kg
+6893395f72848030bb227f1d,N/A,N/A,Mission Wraps Wholegrain 8pk,N/A,$5.80,$1.02 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/mission-wraps-wholegrain-8pk
+6893395f72848030bb227f1e,N/A,N/A,Mitani Chicken Salt,N/A,$4.00,$2.00 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/mitani-chicken-salt-200gm
+6893395f72848030bb227f1f,N/A,N/A,Mushroom Sliced Punnet,N/A,$6.00,$30.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/mushrooms-cups-sliced-200g
+6893395f72848030bb227f20,N/A,N/A,Nudie Nothing But Orange Pulp Free Juice,was $9.99,$8.75,$4.38 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/nudie-nothing-orange-p-free-2lt
+6893395f72848030bb227f21,N/A,N/A,Nutella Hazelnut Chocolate Spread | Jar,N/A,$13.00,$1.30 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nutella-h-nut-choc-sprd-1kg
+6893395f72848030bb227f22,N/A,N/A,Olgas Chicken Patties,N/A,$7.00,$1.40 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/olgas-patties-chic-veg-500gm-1
+6893395f72848030bb227f23,N/A,N/A,Pepsi Max No Sugar Cola Soft Drink Cans Multipack,was $39.40,$22.50,$2.50 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/pepsi-max-cube-24x375ml
+6893395f72848030bb227f24,N/A,N/A,Primo Silverside Beef,was $4.15,$3.95,$49.38 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/primo-silverside-sliced-80gm
+6893395f72848030bb227f25,N/A,N/A,Primo Thin Franks,was $6.30,$3.90,$7.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/primo-franks-slim-500gm
+6893395f72848030bb227f26,N/A,N/A,Purina Friskies Adult Surfin' Turfin' Dry Cat Food,N/A,$13.90,$0.56 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/friskies-adult-srfn-trfn-2-5kg
+6893395f72848030bb227f27,N/A,N/A,Red Rock Deli Potato Chips Variety Pack,N/A,$7.50,$2.68 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/rr-deli-chip-var-box-10pk280gm
+6893395f72848030bb227f28,N/A,N/A,Smith's Potato Chips Snack Mix Variety Multipack,N/A,$8.90,$2.25 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/smiths-snack-mix-20pk-395gm
+6893395f72848030bb227f29,N/A,N/A,Steggles Chicken Dino Snacks Tempura,N/A,$15.65,$15.65 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/steg-dinosnacks-1kg
+6893395f72848030bb227f2a,N/A,N/A,Sunbites Crackers Share Pack Cheddar & Chives,was $3.45,$2.75,$2.50 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/sunbites-crk-chd-chv-110gm
+6893395f72848030bb227f2b,N/A,N/A,Tetley Chai Latte Classic 8 Each,was $7.05,$5.70,$2.85 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/tetley-chai-latte-classic-8s
+6893395f72848030bb227f2c,N/A,N/A,Tomatoes Truss Per Kg,N/A,$10.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/tomatoes-truss-per-kg-1
+6893395f72848030bb227f2d,N/A,N/A,Twisties Snacks Party Bag Share Pack Chicken Cheese,N/A,$4.00,$1.48 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/twisties-chicken-270gm
+6893395f72848030bb227f2e,N/A,N/A,Uncle Tobys Muesli Bars Yoghurt Honeycomb X6 6pk,N/A,$5.50,$2.97 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/u-toby-ygt-topps-hnycomb-185gm
+6893395f72848030bb227f2f,N/A,N/A,Vilis Donut Strawberry,N/A,$3.30,$3.30 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/vilis-donut-strawberry-100gm
+6893395f72848030bb227f30,N/A,N/A,Western Star Salted Butter Original,N/A,$8.95,$1.79 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/w-star-butter-pats-500gm
+6893395f72848030bb227f31,N/A,N/A,Wintulichs Cheese Kransky,N/A,$8.60,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/wintulichs-kransky-375gm
+6893395f72848030bb227f32,N/A,N/A,Wonder White Wonder High Fibre White Sliced Bread Sandwich,was $3.50,$3.40,$1.06 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/wonder-mini-loaf-white-320gm
+6893395f72848030bb227f33,N/A,N/A,Yoplait Petit Miam Yoghurt Strawberry,was $1.70,$1.10,$1.57 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/yop-sqz-ygt-str-bry-70gm
+6893395f72848030bb227f34,N/A,N/A,Abbott's Bakery Gluten Free Farmhouse Wholemeal Bread,N/A,$7.90,$1.58 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/abbotts-brd-gf-wh-meal-500gm
+6893395f72848030bb227f35,N/A,N/A,Anzac Biscuits 15pk,N/A,$4.99,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/anzac-biscuits-17pk
+6893395f72848030bb227f36,N/A,N/A,Arnott's Gingernut Sa/​Wa,N/A,$2.65,$1.06 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-gingernut-sa-wa-250gm
+6893395f72848030bb227f37,N/A,N/A,Arnott's Kingston Cream Biscuits,was $4.20,$3.60,$1.80 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-kingston-200gm
+6893395f72848030bb227f38,N/A,N/A,Arnott's Tim Tam Deluxe Dark Chocolate Biscuits With Mint Chocolate,N/A,$6.85,$3.91 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-choc-tim-tam-chc-mint175gm
+6893395f72848030bb227f39,N/A,N/A,Arnott's Vita Weat 9 Grains,N/A,$4.20,$1.68 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-vita-weat-9grns-250gm
+6893395f72848030bb227f3a,N/A,N/A,Bickfords Cordial Peach Iced Tea,was $5.80,$5.40,$7.20 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/bickfords-cord-peach-tea-750ml
+6893395f72848030bb227f3b,N/A,N/A,Black & Gold Thickened Cream,N/A,$3.00,$1.00 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-gold-cream-thickened-300ml
+6893395f72848030bb227f3c,N/A,N/A,Bok Choy,N/A,$2.90,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/bok-choy
+6893395f72848030bb227f3d,N/A,N/A,Broccoli And Cauliflower Pack,N/A,$5.50,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/broccoli-and-cauliflower-pack
+6893395f72848030bb227f3e,N/A,N/A,Buttercup Multigrain Sandwich,N/A,$3.50,$0.50 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/b-cup-bread-multigrain-700g
+6893395f72848030bb227f3f,N/A,N/A,Carman's 100% Natural Fruit Straps Apple & Mango 5 Twin Packs,was $6.30,$5.35,$7.64 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/carmans-apple-mango-fr-straps-70g
+6893395f72848030bb227f40,N/A,N/A,Cheer Tasty Cheddar Block,N/A,$16.65,$16.65 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/cheer-chse-tasty-blk-1kg
+6893395f72848030bb227f41,N/A,N/A,Cheer Tasty Cheese Slices,was $17.65,$14.00,$18.67 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/cheer-chse-tasty-slcd-750gm
+6893395f72848030bb227f42,N/A,N/A,Chicken Shredded Rst Styl,N/A,$31.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/chicken-shredded-rst-styl-1
+6893395f72848030bb227f43,N/A,N/A,"Colgate Cavity Protection Toothpaste, , Great Regular Flavour, For Calcium Boost",was $4.30,$3.40,$1.94 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/colg-f-gard-great-reg-175gm
+6893395f72848030bb227f44,N/A,N/A,Community Co Two Fruits Fruit Cups In Juice,N/A,$2.70,$5.40 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/comm-co-two-frt-in-jce-4x125gm
+6893395f72848030bb227f45,N/A,N/A,Continental Classics Alfredo Pasta & Sauce Family Pack,was $4.00,$2.75,$1.90 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/cont-pasta-s-alfredo-v-pk145gm
+6893395f72848030bb227f46,N/A,N/A,Dairy Choice Light Milk Bottle,N/A,$4.90,$1.63 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/dairy-choice-milk-lite-3l
+6893395f72848030bb227f47,N/A,N/A,Don Skinless Hot Dogs 6pk,was $6.50,$5.55,$14.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/don-franks-footy-s-less-375gm
+6893395f72848030bb227f48,N/A,N/A,F/​Country Stk Sctch Flt Org Rw,N/A,$29.00,$57.99 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-country-organic-scotch-fillet-1
+6893395f72848030bb227f49,N/A,N/A,Fancy Feast Adult Savory Centers Patè With Salmon And A Gourmet Gravy Center Wet Cat Food,N/A,$2.75,$3.24 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/purina-f-fst-s-cntr-salmn-85gm-1
+6893395f72848030bb227f4a,N/A,N/A,Farmers Union Strong Iced Coffee Btl,was $8.00,$6.80,$3.40 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-union-iced-coffee-strng-2l
+6893395f72848030bb227f4b,N/A,N/A,Foodland Chicken Marinated,N/A,$14.00,N/A,N/A,N/A,https://foodlandbalaklava.com.au/lines/f-land-chicken-marinated-rw
+6893395f72848030bb227f4c,N/A,N/A,Gawler South Bakery Chocolate Eclair,N/A,$5.20,$3.06 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/gsb-chocolate-eclair-170g
+6893395f72848030bb227f4d,N/A,N/A,I&​J Beer Battered Hoki,was $7.35,$5.50,$12.94 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/i-j-fish-beer-batter-425gm
+6893395f72848030bb227f4e,N/A,N/A,Kirks-Ko Kirks Pasito Bottle Soft Drink,was $3.00,$2.55,$2.04 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/kirks-pasito-1-25l
+6893395f72848030bb227f4f,N/A,N/A,KR Castlemaine Rindless Style Bacon Pieces,was $6.45,$5.55,$22.20 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/krc-bacon-pcs-r-less-styl250gm
+6893395f72848030bb227f50,N/A,N/A,KR Castlemaine Virginian Ham,N/A,$16.30,$21.73 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/krc-ham-virgn-b-less-ptn-750gm
+6893395f72848030bb227f51,N/A,N/A,Large Swiss Brown Mushroom,N/A,$1.44,$20.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/mushrooms-swiss-brown
+6893395f72848030bb227f52,N/A,N/A,Local Kitchen Pasta Salad,was $4.00,$3.20,$12.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/lk-pasta-salad-250g
+6893395f72848030bb227f53,N/A,N/A,Mccain Pizza Slices Supreme,N/A,$9.45,$1.58 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/mcc-pizza-slces-supreme-600gm
+6893395f72848030bb227f54,N/A,N/A,Mccain Vegetables Broccoli 500,N/A,$4.50,$9.00 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/mcc-broccoli-500gm
+6893395f72848030bb227f55,N/A,N/A,Nescafe Creme Brulee Latte Coffee Sachets 10 Pack,was $8.00,$4.00,$2.50 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nescafe-sach-creme-brulee-10s
+6893395f72848030bb227f56,N/A,N/A,Nescafe Hazelnut Latte Coffee Sachets 26 Pack 26pk,N/A,$12.50,$2.67 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nescafe-menu-coff-hazelnut26pk
+6893395f72848030bb227f57,N/A,N/A,Nescafe Mocha Coffee Sachets 26 Pack,N/A,$12.50,$2.67 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nescafe-menu-coff-mocha-26pk
+6893395f72848030bb227f58,N/A,N/A,Nocelle Celebration Mix,was $8.99,$8.00,$1.60 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nocelle-celebration-mix-500gm
+6893395f72848030bb227f59,N/A,N/A,"Palmolive Antibacterial Foaming Hand Wash, Lime & Mint, Refill",was $6.85,$4.50,$0.90 per 100mL,N/A,N/A,https://foodlandbalaklava.com.au/lines/palm-l-soap-foam-lime-rf-500ml
+6893395f72848030bb227f5a,N/A,N/A,Pascall Marshmallows Pink White Lollies Large Bag,N/A,$6.50,$1.25 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/pas-m-mallows-van-rspbry-520gm
+6893395f72848030bb227f5b,N/A,N/A,Perfect Italiano Grated Parmesan Cheese |,was $7.05,$6.40,$25.60 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/perfect-chse-parm-shred-250gm
+6893395f72848030bb227f5c,N/A,N/A,Powerade Ion4 Gold Rush Sports Drink Sipper Cap,was $4.60,$3.55,$5.92 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/powerade-wal-g-r-sip-cap-600ml
+6893395f72848030bb227f5d,N/A,N/A,Pura Full Cream Milk,N/A,$7.00,$2.33 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/pura-whole-milk-3l
+6893395f72848030bb227f5e,N/A,N/A,PURA LACTOSE FREE FULL CREAM,N/A,$5.40,$2.70 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/pura-l-free-f-crm-2l
+6893395f72848030bb227f5f,N/A,N/A,Ready Chef Homestyle Lasagne,N/A,$18.85,$0.94 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/ready-chef-lasagne-beef-2kg-1
+6893395f72848030bb227f60,N/A,N/A,San Remo La Pasta Pasta And Sauce Alfredo,N/A,$2.50,$1.56 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/la-past-alfredo-fam-6srv-160gm
+6893395f72848030bb227f61,N/A,N/A,San Remo No. 4 Thin Spaghetti,N/A,$2.95,$0.59 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/s-remo-spaghetti-no4-500gm
+6893395f72848030bb227f62,N/A,N/A,Schweppes Lemonade Soft Drink Cans Multipack,N/A,$25.00,$2.22 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/schw-lemonade-30x375ml
+6893395f72848030bb227f63,N/A,N/A,Schweppes Soda Water Bottle Classic Mixers,was $3.15,$1.80,$1.64 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/schw-soda-wtr-1-1l
+6893395f72848030bb227f64,N/A,N/A,Sprite Zero/​Diet/​Light Sprite Zero Sugar Lemonade Soft Drink,was $5.45,$3.60,$1.80 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/sprite-n-sug-2l
+6893395f72848030bb227f65,N/A,N/A,Steggles Chicken Nuggets Crumbed,N/A,$14.20,$14.20 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/steg-chic-nuggets-1kg
+6893395f72848030bb227f66,N/A,N/A,Sunrice Long Grain White Rice,N/A,$3.15,$0.32 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/sunrice-prem-white-l-grain-1kg
+6893395f72848030bb227f67,N/A,N/A,The Natural Confectionery Co. Party Mix,N/A,$5.50,$1.28 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/nat-conf-party-mix-430gm
+6893395f72848030bb227f68,N/A,N/A,Tip Top Bakery The One Gluten Free Smooth Wholegrain,N/A,$7.30,$1.33 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/t-top-brd-the-one-gf-w-grn-550gm
+6893395f72848030bb227f69,N/A,N/A,Tomato Grmt Tray,N/A,$6.75,$13.50 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/tomato-grmt-tray-500g-3
+6893395f72848030bb227f6a,N/A,N/A,Tomatoes Roma Per Kg,N/A,$2.07,$14.80 per kg,N/A,N/A,https://foodlandbalaklava.com.au/lines/tomatoes-roma-per-kg
+6893395f72848030bb227f6b,N/A,N/A,Up&​Go Protein Energize Choc Hit,N/A,$17.50,$5.83 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/sanit-up-go-engz-choc-12x250ml
+6893395f72848030bb227f6c,N/A,N/A,Vegemite,N/A,$10.50,$1.88 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/vegemite-560gm-1
+6893395f72848030bb227f6d,N/A,N/A,Vitasoy Coconut Milk Unsweetened,was $3.45,$3.10,$3.10 per L,N/A,N/A,https://foodlandbalaklava.com.au/lines/vitasoy-c-nut-milk-u-sw-uht-1l
+6893395f72848030bb227f6e,N/A,N/A,Western Star Chef's Choice Unsalted Cultured Butter,N/A,$8.95,$1.79 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/w-star-butter-u-s-500gm
+6893395f72848030bb227f6f,N/A,N/A,Yopro High Protein Strawberry Greek Yoghurt Pouch,N/A,$3.15,$2.10 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/danone-yopro-ygt-strbry-150gm
+6893395f72848030bb227f70,N/A,N/A,Yopro High Protein Vanilla Greek Yoghurt,N/A,$3.15,$1.97 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/danone-ygt-pro-vanilla-160gm
+6893395f72848030bb227f71,N/A,N/A,Abbott's Bakery Rustic White Bread,was $6.50,$5.00,$0.71 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/abbotts-bread-wht-rustic-700gm
+6893395f72848030bb227f72,N/A,N/A,Allen's Killer Pythons,was $5.25,$3.00,$1.56 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/allens-killer-pythons-192gm
+6893395f72848030bb227f73,N/A,N/A,Arnott's Choc Ripple Biscuits,N/A,$3.45,$1.38 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-choc-ripple-250gm
+6893395f72848030bb227f74,N/A,N/A,Arnott's Teevee Snacks Malt Sticks Chocolate Biscuits,was $5.80,$2.75,$1.57 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-choc-tv-snk-malt-stk-175gm
+6893395f72848030bb227f75,N/A,N/A,Arnott's Tim Tam Chewy Caramel,N/A,$6.00,$3.43 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/arn-choc-tim-tam-chwy-car175gm
+6893395f72848030bb227f76,N/A,N/A,Balf Roll Spinach Cheese C/​Wrap,was $4.00,$3.40,$2.27 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/balf-roll-spn-chs-c-wrap-150gm
+6893395f72848030bb227f77,N/A,N/A,Balfours Fresh Premium Potato Pie,N/A,$5.00,$2.27 per 100g,N/A,N/A,https://foodlandbalaklava.com.au/lines/balf-prem-pie-bkd-pot-220gm
+6893395f72848030bb227f78,N/A,N/A,Band-Aid Tough Strips 40 Pack,was $5.80,$5.45,$0.14 Each,N/A,N/A,https://foodlandbalaklava.com.au/lines/bandaid-tough-strips-reg-40s
