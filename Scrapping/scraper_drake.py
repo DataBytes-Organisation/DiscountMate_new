@@ -111,7 +111,7 @@ def save_to_csv(products):
     filename = f"Drakes_{timestamp}.csv"
 
     with open(filename, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["Name", "Category", "Size", "Price", "Previous Price", "Unit Price", "Image URL"])
+        writer = csv.DictWriter(f, fieldnames=["Name", "Category", "Size", "Price", "Previous Price", "Unit Price", "Image URL", "Timestamp"])
         writer.writeheader()
         writer.writerows(products)
 
