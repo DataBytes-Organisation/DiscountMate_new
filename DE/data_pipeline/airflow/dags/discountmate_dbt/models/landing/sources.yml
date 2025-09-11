@@ -1,0 +1,20 @@
+sources:
+  - name: landing
+    description: Landing zone for data loaded from data lake
+    schema: landing
+    database: discountmate
+    tables:
+      - name: users
+        identifier: lnd_users
+      - name: baskets
+        identifier: lnd_baskets
+      - name: product_pricing
+        identifier: lnd_product_pricing
+      - name: products
+        identifier: lnd_products
+      - name: shopping_list_items
+        identifier: lnd_shopping_list_items
+      - name: shopping_lists
+        identifier: lnd_shopping_lists
+      - name: stores
+        identifier: lnd_stores

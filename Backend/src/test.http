@@ -4,14 +4,14 @@ POST http://localhost:3000/api/users/signup
 Content-Type: application/json
 
 {
-  "useremail": "naru@gmail.com",
-  "password": "12345678",
-  "verifyPassword": "12345678",
-  "user_fname": "Naruto",
-  "user_lname": "Uzumaki",
-  "address": "leaf",
-  "phone_number": "7876556890",
-  "admin": true
+  "email": "testuser@example.com",
+  "password": "Test@123",
+  "verifyPassword": "Test@123",
+  "user_fname": "John",
+  "user_lname": "Doe",
+  "address": "123 Test Street",
+  "phone_number": "1234567890",
+  "admin": false
 }
 
 ### Signin Request
@@ -19,10 +19,9 @@ POST http://localhost:3000/api/users/signin
 Content-Type: application/json
 
 {
-  "email": "naru@gmail.com",
-  "password": "12345678"
+  "email": "testuser@example.com",
+  "password": "Test@123"
 }
-
 
 ### Get Products Request
 GET  http://localhost:3000/api/products
