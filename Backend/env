@@ -1,0 +1,18 @@
+# .env file to be added within the root folder
+# Purpose: Store sensitive credentials and config values
+
+# Server Config
+PORT=3000
+BASE_URL=http://localhost:3000
+
+# MongoDB Config
+MONGO_URI=mongodb+srv://discountmate:discountmate1@discountmatecluster.u80y7ta.mongodb.net/?retryWrites=true&w=majority&appName=DiscountMateCluster
+# DB_HOST=localhost
+# DB_USER=root
+# DB_PASSWORD=supersecurepassword
+# DB_NAME=mydatabase
+
+
+# JWT Secret
+JWT_SECRET=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwiYWRtaW4iOmZhbHNlLCJpYXQiOjE3NDc0OTU0NjgsImV4cCI6MTc0NzQ5OTA2OH0.SDfwI2u6zZzmfGDjA4bP92ux6AeHaf9lREeOkVV8W_U
+
