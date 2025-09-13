@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import shutil
 from datetime import datetime
 from urllib.parse import quote_plus
 from dotenv import load_dotenv
@@ -10,6 +11,12 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+# Clear previous Chrome session to prevent lock errors
+# Configuration for EC2 automation, you can remove this or set as per your computer while testing locally on your computer
+USER_DATA_DIR = "/home/ubuntu/DiscountMate_new/Scrapping/chrome-user-data-IGA"
+if os.path.exists(USER_DATA_DIR):
+    shutil.rmtree(USER_DATA_DIR)
 
 
 def get_mongo_collection():
@@ -77,10 +84,14 @@ def get_text_or_default(elem, default="N/A"):
 
 
 def scrape_iga_specials():
+
     chrome_options = Options()
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
+    
+    # The following is added for EC2 Automation. You can remove or adjust accordingly while testing locally
+    chrome_options.add_argument(f"--user-data-dir={USER_DATA_DIR}")
 
     driver = webdriver.Chrome(options=chrome_options)
     collection = get_mongo_collection()
