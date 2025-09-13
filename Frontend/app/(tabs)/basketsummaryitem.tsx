@@ -1,126 +1,222 @@
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import React, { Component } from 'react';
-import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 
-interface basketsummaryitemprops {
-    basketItemId?: number;
-    price: number;
-    productId: number;
-    image: string;
-    name: string;
-    shortDescription: string;
-    addToBasket: (productId: number) => void;
-    removeFromBasket: (productId: number) => void;
-    quantity: number;
-    deleteItemFromBasket: (productId: number) => void;
-  }
- 
-  interface basketsummaryitemstate {
-   
-  }
- 
-class basketsummaryitem extends Component<basketsummaryitemprops, basketsummaryitemstate> {
-  constructor(props: basketsummaryitemprops) {
-      super(props);
-  }
+type Props = {
+  productId: string | number;
+  name: string;
+  price: number | string;
+  image?: string;
+  shortDescription?: string;
+  quantity: number;
+  basketItemId?: number;
+  addToBasket: (productId: any) => void;
+  removeFromBasket: (productId: any) => void;
+  deleteItemFromBasket: (productId: any) => void;
+};
 
-  formattedCurrency(price: number) {
-    const formatter = new Intl.NumberFormat('en-AU', {
-        style: 'currency',
-        currency: 'AUD'
-    });
-    return formatter.format(price);
-}
+export default function BasketSummaryItem(props: Props) {
+  const {
+    productId,
+    name,
+    price,
+    image,
+    shortDescription,
+    quantity,
+    addToBasket,
+    removeFromBasket,
+    deleteItemFromBasket,
+  } = props;
 
-  render() {
-    const { name, price, image, shortDescription, basketItemId, productId, addToBasket, removeFromBasket, quantity, deleteItemFromBasket } = this.props;
-   
-    return (
-      <View style={styles.card}>
-      <Image source={{ uri: image }} style={styles.image} />
-      <View style={styles.details}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.price}>{this.formattedCurrency(price)}</Text>
-        <Text style={styles.description}>{shortDescription}</Text>
-        <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={() => deleteItemFromBasket(productId)}>
-            <TabBarIcon name="trash-bin" color="#000" />
-          </TouchableOpacity>
-          <TouchableOpacity disabled={quantity == 0} onPress={() => removeFromBasket(productId)}>
-          <TabBarIcon name="remove" color="#000" />
-          </TouchableOpacity>
-          <Text style={styles.amount}>{quantity}</Text>
-          <TouchableOpacity onPress={() => addToBasket(productId)}>
-          <TabBarIcon name="add" color="#000" />
+  const numericPrice =
+    typeof price === 'number' ? price : Number(price || 0);
+
+  return (
+    <View style={styles.card}>
+      <Image
+        source={{ uri: image || '' }}
+        style={styles.image}
+        resizeMode="cover"
+      />
+
+      <View style={styles.info}>
+        <Text style={styles.name} numberOfLines={2}>
+          {name || 'Unnamed Product'}
+        </Text>
+
+        {!!shortDescription && (
+          <Text style={styles.desc} numberOfLines={2}>
+            {shortDescription}
+          </Text>
+        )}
+
+        <Text style={styles.price}>${numericPrice.toFixed(2)}</Text>
+
+        <View style={styles.row}>
+          <View style={styles.stepper}>
+            <TouchableOpacity
+              onPress={() => removeFromBasket(productId)}
+              style={[styles.stepBtn, styles.stepBtnLeft]}
+              accessibilityRole="button"
+              accessibilityLabel="Decrease quantity"
+            >
+              <Text style={styles.stepIcon}>−</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.qty}>{quantity ?? 1}</Text>
+
+            <TouchableOpacity
+              onPress={() => addToBasket(productId)}
+              style={[styles.stepBtn, styles.stepBtnRight]}
+              accessibilityRole="button"
+              accessibilityLabel="Increase quantity"
+            >
+              <Text style={styles.stepIcon}>＋</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            onPress={() => deleteItemFromBasket(productId)}
+            style={styles.removeBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Remove item"
+          >
+            <Text style={styles.removeIcon}>🗑️</Text>
+            <Text style={styles.removeText}>Remove</Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
 }
-}
+
+/** Keep these aligned with your Category card tokens */
+const COLORS = {
+  cardBg: '#FFFFFF',
+  border: '#E5E7EB',
+  text: '#111827',
+  subtext: '#6B7280',
+  price: '#10B981',      // emerald/teal like Categories
+  stepBg: '#F3F4F6',
+  danger: '#EF4444',
+  removeBg: '#FFF1F2',
+  removeBorder: '#FEE2E2',
+  shadow: 'rgba(17, 24, 39, 0.06)',
+};
 
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    padding: 10,
-    margin: 10,
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  imageContainer: {
-    flex: 1,
+    alignItems: 'stretch',
+    backgroundColor: COLORS.cardBg,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: 12,
+    gap: 12,
+    ...(Platform.select({
+      ios: {
+        shadowColor: COLORS.shadow,
+        shadowOpacity: 1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 2,
+      },
+      default: {},
+    }) as object),
   },
   image: {
-    width: 50,
-    height: 60,
-    borderRadius: 5,
+    width: 76,
+    height: 76,
+    borderRadius: 10,
+    backgroundColor: '#F9FAFB',
   },
-  details: {
-    flex: 2,
-    marginLeft: 10,
+  info: {
+    flex: 1,
+    minHeight: 76,
   },
   name: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 15.5,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  desc: {
+    marginTop: 2,
+    fontSize: 13,
+    color: COLORS.subtext,
   },
   price: {
-    fontSize: 16,
-    color: '#888',
+    marginTop: 6,
+    fontSize: 14.5,
+    fontWeight: '700',
+    color: COLORS.price,
   },
-  description: {
-    fontSize: 14,
-    color: '#666',
-  },
-  buttonContainer: {
+  row: {
+    marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10
   },
-  button: {
-    backgroundColor: '#1e90ff',
-    padding: 10,
-    borderRadius: 5,
+  stepper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.stepBg,
   },
-  disabledbutton: {
-    backgroundColor: '#ddd',
-    padding: 10,
-    borderRadius: 5,
+  stepBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
-  buttonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  stepBtnLeft: {
+    borderRightWidth: 1,
+    borderRightColor: COLORS.border,
   },
-  amount: {
-    marginHorizontal: 20,
-    fontSize: 18,
+  stepBtnRight: {
+    borderLeftWidth: 1,
+    borderLeftColor: COLORS.border,
+  },
+  stepIcon: {
+    fontSize: 16,
+    color: COLORS.text,
+    fontWeight: '600',
+    textAlign: 'center',
+    minWidth: 12,
+  },
+  qty: {
+    minWidth: 26,
+    textAlign: 'center',
+    fontSize: 14.5,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  removeBtn: {
+    marginLeft: 'auto',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: COLORS.removeBg,
+    borderWidth: 1,
+    borderColor: COLORS.removeBorder,
+  },
+  removeIcon: {
+    fontSize: 14,
+  },
+  removeText: {
+    color: COLORS.danger,
+    fontSize: 13.5,
+    fontWeight: '700',
   },
 });
-
-
-export default basketsummaryitem;

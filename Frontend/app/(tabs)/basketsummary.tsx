@@ -1,5 +1,5 @@
-import React, { Component, useEffect, useState } from 'react';
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import BasketSummaryItem from './basketsummaryitem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSegments } from 'expo-router';
@@ -7,37 +7,32 @@ import { useSegments } from 'expo-router';
 interface Basket {
   basketItemId: number;
   price: number;
-  productId: number;
+  productId: string | number;
   image: string;
   name: string;
   shortDescription: string;
   quantity: number;
 }
-interface BasketSummaryItemState {
-  basket: Basket[];
-}
-interface BasketSummaryItemProps {}
 
 export default function basketsummary() {
-  // Explicitly type the state array to avoid "never[]" inference.
-  const [basketData, setBasketData] = useState<any[]>([]);
+  const [basketData, setBasketData] = useState<Basket[]>([]);
   const segments = useSegments();
 
   useEffect(() => {
     const fetchAndSetBasket = async () => {
       await getBasketItems();
-      console.log("Fetched basket in use effect:", basketData);
+      console.log('Fetched basket in use effect:', basketData);
     };
     fetchAndSetBasket();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [segments]);
 
   const getBasketItems = async () => {
     console.log('Getting basket items');
     const url = 'http://localhost:3000/api/baskets/getbasket';
     const token = await AsyncStorage.getItem('authToken');
-    if (!token) {
-      return;
-    }
+    if (!token) return;
+
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -53,68 +48,66 @@ export default function basketsummary() {
     }
   };
 
-  const addToBasket = (productId: number) => {
-    const basketItem = basketData.find(item => item.productId === productId);
-    const quantity = basketItem?.quantity === undefined ? 0 : basketItem.quantity + 1;
+  const addToBasket = (productId: string | number) => {
+    const basketItem = basketData.find((item) => item.productId === productId);
+    const quantity =
+      basketItem?.quantity === undefined ? 1 : basketItem.quantity + 1;
     updateQuantity(productId, quantity);
   };
 
-  const removeFromBasket = (productId: number) => {
-    const basketItem = basketData.find(item => item.productId === productId);
-    const quantity = basketItem?.quantity === undefined ? 0 : basketItem.quantity - 1;
+  const removeFromBasket = (productId: string | number) => {
+    const basketItem = basketData.find((item) => item.productId === productId);
+    const current = basketItem?.quantity ?? 1;
+    const quantity = Math.max(1, current - 1); // keep >= 1; use delete for removal
     updateQuantity(productId, quantity);
   };
 
-  const deleteItemFromBasket = async (productId: number) => {
+  const deleteItemFromBasket = async (productId: string | number) => {
     const url = 'http://localhost:3000/api/baskets/deleteitemfrombasket';
     const token = await AsyncStorage.getItem('authToken');
-    if (!token) {
-      return;
-    }
-    const data = {
-      productId: productId
-    };
+    if (!token) return;
+
+    const data = { productId };
     fetch(url, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     })
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setBasketData(data);
       })
-      .catch(err => console.error(err.message));
+      .catch((err) => console.error(err.message));
   };
 
-  const updateQuantity = async (productId: number, quantity: number) => {
+  const updateQuantity = async (productId: string | number, quantity: number) => {
     const url = 'http://localhost:3000/api/baskets/updatequantity';
     const token = await AsyncStorage.getItem('authToken');
-    const data = {
-      quantity: quantity,
-      productId: productId
-    };
+    if (!token) return;
+
+    const data = { quantity, productId };
     fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     })
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setBasketData(data);
       })
-      .catch(err => console.error(err.message));
+      .catch((err) => console.error(err.message));
   };
 
   const getTotal = (basket: Basket[]) => {
     let total = 0;
     for (let i = 0; i < basket.length; i++) {
-      total += basket[i].price * basket[i].quantity;
+      total += Number(basket[i].price || 0) * Number(basket[i].quantity || 0);
     }
     return total;
   };
@@ -122,7 +115,7 @@ export default function basketsummary() {
   const formattedCurrency = (price: number) => {
     const formatter = new Intl.NumberFormat('en-AU', {
       style: 'currency',
-      currency: 'AUD'
+      currency: 'AUD',
     });
     return formatter.format(price);
   };
@@ -131,24 +124,29 @@ export default function basketsummary() {
   const array = basketData;
 
   return (
-    <ScrollView>
-      <View style={styles.fadeIn}>
-        <View style={styles.row}>
-          <View style={styles.col}></View>
+    <ScrollView style={styles.container} contentContainerStyle={styles.inner}>
+      <View style={[styles.row, styles.my2]}>
+        <View style={[styles.col, { alignItems: 'center' }]}>
+          <Text style={[styles.h3, styles.textDark, styles.ml3]}>My Basket</Text>
         </View>
-        <View style={[styles.row, styles.my2]}>
-          <View style={[styles.col, { alignItems: 'center' }]}>
-            <Text style={[styles.h3, styles.textDark, styles.ml3]}>My Basket</Text>
-          </View>
-        </View>
-        <View style={[styles.row, styles.basketSummaryCustom, styles.mxAuto]}>
-          {total > 0 ? (
-            <View style={[styles.col, styles.alignItemsCenter]}>
-              {array.map((item, index) => {
-                const { productId, name, price, image, shortDescription, basketItemId, quantity } = item;
-                return (
+      </View>
+
+      <View style={[styles.row, styles.mxAuto]}>
+        {total > 0 ? (
+          <View style={[styles.col, styles.alignItemsStretch]}>
+            {array.map((item, index) => {
+              const {
+                productId,
+                name,
+                price,
+                image,
+                shortDescription,
+                basketItemId,
+                quantity,
+              } = item;
+              return (
+                <View key={index} style={{ marginBottom: 12 }}>
                   <BasketSummaryItem
-                    key={index}
                     productId={productId}
                     name={name}
                     price={price}
@@ -160,22 +158,26 @@ export default function basketsummary() {
                     removeFromBasket={removeFromBasket}
                     deleteItemFromBasket={deleteItemFromBasket}
                   />
-                );
-              })}
-            </View>
-          ) : (
-            <View style={[styles.col, styles.my5]}>
-              <Text style={[styles.h3, styles.textCenter]}>Your basket is empty!</Text>
-            </View>
-          )}
-        </View>
-        <View style={styles.hr} />
-        <View style={[styles.row, styles.my2]}>
-          <View style={[styles.col, styles.textLeft, styles.ml3, styles.myAuto]}>
-            <Text style={[styles.h4, styles.textDark, { fontWeight: 'bold' }]}>
-              Basket Total: {total > 0 ? formattedCurrency(total) : ''}
+                </View>
+              );
+            })}
+          </View>
+        ) : (
+          <View style={[styles.col, styles.my5]}>
+            <Text style={[styles.h3, styles.textCenter]}>
+              Your basket is empty!
             </Text>
           </View>
+        )}
+      </View>
+
+      <View style={styles.hr} />
+
+      <View style={[styles.row, styles.my2]}>
+        <View style={[styles.col, styles.textLeft, styles.ml3, styles.myAuto]}>
+          <Text style={[styles.h4, styles.textDark, { fontWeight: 'bold' }]}>
+            Basket Total: {total > 0 ? formattedCurrency(total) : ''}
+          </Text>
         </View>
       </View>
     </ScrollView>
@@ -183,81 +185,30 @@ export default function basketsummary() {
 }
 
 const styles = StyleSheet.create({
-  fadeIn: {
-    // Add your fade-in styles here
-  },
+  container: { backgroundColor: '#F8FAFC' },
+  inner: { padding: 16, paddingBottom: 24 },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  col: {
-    flex: 1,
-  },
-  my2: {
-    marginVertical: 10,
-  },
-  my5: {
-    marginVertical: 50,
-  },
-  ml3: {
-    marginLeft: 10,
-  },
-  mr3: {
-    marginRight: 10,
-  },
-  mxAuto: {
-    marginHorizontal: 'auto',
-  },
-  textRight: {
-    alignItems: 'flex-end',
-  },
-  textLeft: {
-    alignItems: 'flex-start',
-  },
-  textCenter: {
-    textAlign: 'center',
-  },
-  textDark: {
-    color: '#000',
-  },
-  textSecondary: {
-    color: '#888',
-  },
-  h3: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  h4: {
-    fontSize: 18,
-  },
-  h5: {
-    fontSize: 16,
-  },
-  basketSummaryCustom: {
-    // Add your custom styles here
-  },
-  alignItemsCenter: {
-    alignItems: 'center',
-  },
+  col: { flex: 1 },
+  my2: { marginVertical: 10 },
+  my5: { marginVertical: 50 },
+  ml3: { marginLeft: 10 },
+  mr3: { marginRight: 10 },
+  mxAuto: { marginHorizontal: 'auto' as any },
+  textRight: { alignItems: 'flex-end' },
+  textLeft: { alignItems: 'flex-start' },
+  textCenter: { textAlign: 'center' },
+  textDark: { color: '#000' },
+  h3: { fontSize: 20, fontWeight: 'bold' },
+  h4: { fontSize: 18 },
   hr: {
-    borderBottomColor: '#ddd',
+    borderBottomColor: '#E5E7EB',
     borderBottomWidth: 1,
-    marginVertical: 10,
+    marginVertical: 12,
   },
-  myAuto: {
-    marginVertical: 'auto',
-  },
-  checkoutButton: {
-    backgroundColor: '#000',
-    padding: 10,
-    borderRadius: 5,
-  },
-  checkoutText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  boldText: {
-    fontWeight: 'bold',
-  },
+  myAuto: { marginVertical: 'auto' as any },
+  alignItemsStretch: { alignItems: 'stretch' },
 });
