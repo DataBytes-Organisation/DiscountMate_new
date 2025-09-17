@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import CartBadge from '@/components/CartBadge'; 
 
 export default function Sidebar({ isSidebarCollapsed, toggleSidebar }) {
   return (
@@ -16,26 +17,33 @@ export default function Sidebar({ isSidebarCollapsed, toggleSidebar }) {
             <TabBarIcon name="home-outline" color="#000" />
             <Text style={styles.iconButtonText}>Home</Text>
           </TouchableOpacity>
+
           <TouchableOpacity onPress={() => router.push('/productpage')} style={styles.iconButton}>
             <TabBarIcon name="search" color="#000" />
             <Text style={styles.iconButtonText}>Product Page</Text>
           </TouchableOpacity>
+
           <TouchableOpacity onPress={() => router.push('/profile')} style={styles.iconButton}>
             <TabBarIcon name="person-outline" color="#000" />
             <Text style={styles.iconButtonText}>Profile</Text>
           </TouchableOpacity>
+
+          {/* ✅ Basket row now shows the bubble and uses the same icon shape as the header */}
           <TouchableOpacity onPress={() => router.push('/basketsummary')} style={styles.iconButton}>
-            <TabBarIcon name="basket-outline" color="#000" />
+            <CartBadge to="/basketsummary" variant="sidebar" />
             <Text style={styles.iconButtonText}>My Basket</Text>
           </TouchableOpacity>
+
           <TouchableOpacity onPress={() => router.push('/wishlist')} style={styles.iconButton}>
             <TabBarIcon name="heart-outline" color="#000" />
             <Text style={styles.iconButtonText}>My Wishlist</Text>
           </TouchableOpacity>
+
           <TouchableOpacity onPress={() => router.push('/contact')} style={styles.iconButton}>
             <TabBarIcon name="call-outline" color="#000" />
             <Text style={styles.iconButtonText}>Contact Us</Text>
           </TouchableOpacity>
+
           <TouchableOpacity onPress={() => router.push('/blog')} style={styles.iconButton}>
             <TabBarIcon name="document-text-outline" color="#000" />
             <Text style={styles.iconButtonText}>Blog</Text>

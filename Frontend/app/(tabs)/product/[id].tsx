@@ -84,6 +84,7 @@ export default function ProductDetailScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
+        <Stack.Screen options={{ headerShown: false }} />
         <Stack.Screen
           options={{
             title: 'Product',
@@ -136,12 +137,7 @@ export default function ProductDetailScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Stack.Screen
-        options={{
-          title: product?.product_name ?? 'Product',
-          headerRight: () => <CartBadge count={basketQty} />,
-        }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.card}>
         <Text style={styles.title}>{product.product_name}</Text>
         <Text style={styles.price}>${Number(product.current_price ?? 0).toFixed(2)}</Text>

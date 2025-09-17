@@ -1,11 +1,10 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image, Animated, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSegments, Stack } from 'expo-router';
 import DashboardEmbed from './DashboardEmbed';
 import { API_URL } from '@/constants/Api';
-import CartBadge from '@/components/CartBadge';
+import { useBasket } from './BasketContext';
 
 const { width: viewportWidth } = Dimensions.get('window');
 
@@ -46,16 +45,15 @@ export default function HomeScreen() {
   const flatListRef = useRef<FlatList>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
   const [bigItemsData, setBigItemsData] = useState<any[]>([]);
-  const [basketData, setBasketData] = useState<any[]>([]);
   const animatedScroll = useRef(new Animated.Value(0)).current;
   const itemWidth = viewportWidth * 0.3;
   const segments = useSegments();
 
-  const addToBasket = async (item: any) => {
-    const url = 'http://localhost:3000/api/baskets/addtobasket';
-    const token = await AsyncStorage.getItem('authToken');
-    if (!token) return;
+  // ✅ global basket state & actions
+  const { addToBasket, getBasket, basketData } = useBasket() as any;
 
+  // Add via context so the badge in your custom header updates immediately
+  const handleAdd = async (item: any) => {
     const sid = getStableId(item);
     if (!sid) return;
 
@@ -65,31 +63,7 @@ export default function HomeScreen() {
     if (item?.current_price != null) payload.price = Number(item.current_price);
     if (item?.link_image) payload.image = item.link_image;
 
-    try {
-      await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(payload),
-      }).then(r => r.json().catch(() => {}));
-      await getBasket();
-    } catch {}
-  };
-
-  const getBasket = async () => {
-    const url = 'http://localhost:3000/api/baskets/getbasket';
-    const token = await AsyncStorage.getItem('authToken');
-    if (!token) return;
-
-    await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    })
-      .then(res => res.json())
-      .then(data => {
-        const items = Array.isArray(data) ? data : Array.isArray((data as any)?.items) ? (data as any).items : [];
-        setBasketData(items);
-      })
-      .catch(() => {});
+    await addToBasket(payload);
   };
 
   const doesItemExistInBasket = (item: any) => {
@@ -103,11 +77,12 @@ export default function HomeScreen() {
     });
   };
 
-  const basketQty = useMemo(() => {
-    if (!Array.isArray(basketData)) return 0;
-    const sum = basketData.reduce((s, it) => s + Number(it.quantity || 0), 0);
-    return sum || basketData.length || 0;
-  }, [basketData]);
+  useEffect(() => { getBasket(); }, [segments]);
+  useEffect(() => { fetchProducts().then(setBigItemsData); }, []);
+  useEffect(() => {
+    animatedScroll.addListener(({ value }) => flatListRef.current?.scrollToOffset({ offset: value, animated: false }));
+    return () => animatedScroll.removeAllListeners();
+  }, [animatedScroll]);
 
   const handleScroll = (newOffset: number) => {
     Animated.timing(animatedScroll, { toValue: newOffset, duration: 300, useNativeDriver: false }).start(() => {
@@ -120,13 +95,6 @@ export default function HomeScreen() {
     if (newOffset <= maxOffset) handleScroll(newOffset);
   };
   const handlePrev = () => handleScroll(Math.max(scrollOffset - itemWidth, 0));
-
-  useEffect(() => { getBasket(); }, [segments]);
-  useEffect(() => { fetchProducts().then(setBigItemsData); }, []);
-  useEffect(() => {
-    animatedScroll.addListener(({ value }) => flatListRef.current?.scrollToOffset({ offset: value, animated: false }));
-    return () => animatedScroll.removeAllListeners();
-  }, [animatedScroll]);
 
   const renderBigItem = ({ item }: { item: any }) => {
     const inBasket = doesItemExistInBasket(item);
@@ -141,7 +109,7 @@ export default function HomeScreen() {
           <View style={styles.bigItemButtons}>
             <TouchableOpacity
               disabled={inBasket}
-              onPress={() => addToBasket(item)}
+              onPress={() => handleAdd(item)}
               style={inBasket ? styles.bigItemButtonBasketDisabled : styles.bigItemButtonBasket}
             >
               <Text style={styles.bigItemButtonText}>{inBasket ? 'In Basket' : 'Add To Basket'}</Text>
@@ -160,12 +128,8 @@ export default function HomeScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: 'Home',
-          headerRight: () => <CartBadge count={basketQty} />, // still pass count here (uses local state)
-        }}
-      />
+      {/* ✅ Hide native header; you already render a custom header */}
+      <Stack.Screen options={{ headerShown: false }} />
       <ScrollView style={styles.scrollView}>
         <View style={styles.container}>
           <Text style={styles.title}>Welcome to DiscountMate</Text>

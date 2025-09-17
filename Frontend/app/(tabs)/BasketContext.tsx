@@ -25,12 +25,16 @@ type BasketContextType = {
   basketData: BasketRow[];
   getBasket: () => Promise<void>;
   addToBasket: (item: AddItem) => Promise<boolean>;
+  removeFromBasket: (idOrCode: string) => Promise<boolean>;
+  updateQuantity: (idOrCode: string, quantity: number) => Promise<boolean>;
 };
 
 const BasketContext = createContext<BasketContextType>({
   basketData: [],
   getBasket: async () => {},
   addToBasket: async () => false,
+  removeFromBasket: async () => false,
+  updateQuantity: async () => false,
 });
 
 const API_BASE =
@@ -63,7 +67,12 @@ export const BasketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       });
       if (!res.ok) return;
       const data = await res.json().catch(() => null as any);
-      setBasketData(Array.isArray(data) ? data : Array.isArray((data as any)?.items) ? (data as any).items : []);
+      const items = Array.isArray(data)
+        ? data
+        : Array.isArray((data as any)?.items)
+          ? (data as any).items
+          : [];
+      setBasketData(items);
     } catch (e) {
       console.error('getBasket error:', e);
     }
@@ -82,7 +91,7 @@ export const BasketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (pid != null) payload.product_id = String(pid);
       if (pcode != null) payload.product_code = String(pcode);
 
-      // If we only got a non-ObjectId pid, also send it as product_code (covers Coles)
+      // If only a non-ObjectId pid was provided, also send it as product_code (Coles)
       if (!payload.product_code && payload.product_id && !looksLikeObjectId(payload.product_id)) {
         payload.product_code = payload.product_id;
       }
@@ -102,8 +111,15 @@ export const BasketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         return false;
       }
 
-      const updated = await res.json().catch(() => null as any);
-      setBasketData(Array.isArray(updated) ? updated : []);
+      // If server returns the new list, use it; otherwise refresh.
+      const maybe = await res.json().catch(() => null as any);
+      if (Array.isArray(maybe)) {
+        setBasketData(maybe);
+      } else if (Array.isArray((maybe as any)?.items)) {
+        setBasketData((maybe as any).items);
+      } else {
+        await getBasket();      // ensures bubble updates immediately
+      }
       return true;
     } catch (e) {
       console.error('addToBasket error:', e);
@@ -111,10 +127,66 @@ export const BasketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
+  // remove with immediate context refresh
+  const removeFromBasket = async (idOrCode: string): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_BASE}/api/baskets/removeitem`, {
+        method: 'POST',
+        headers: await authHeaders(),
+        body: JSON.stringify({ product_id: idOrCode, product_code: idOrCode }),
+      });
+      if (!res.ok) {
+        console.error('removeFromBasket failed', res.status);
+        return false;
+      }
+      const maybe = await res.json().catch(() => null as any);
+      if (Array.isArray(maybe)) {
+        setBasketData(maybe);
+      } else if (Array.isArray((maybe as any)?.items)) {
+        setBasketData((maybe as any).items);
+      } else {
+        await getBasket();      // refresh so header/sidebar badges update
+      }
+      return true;
+    } catch (e) {
+      console.error('removeFromBasket error:', e);
+      return false;
+    }
+  };
+
+  // quantity update with immediate context refresh
+  const updateQuantity = async (idOrCode: string, quantity: number): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_BASE}/api/baskets/updatequantity`, {
+        method: 'POST',
+        headers: await authHeaders(),
+        body: JSON.stringify({ product_id: idOrCode, product_code: idOrCode, quantity }),
+      });
+      if (!res.ok) {
+        console.error('updateQuantity failed', res.status);
+        return false;
+      }
+      const maybe = await res.json().catch(() => null as any);
+      if (Array.isArray(maybe)) {
+        setBasketData(maybe);
+      } else if (Array.isArray((maybe as any)?.items)) {
+        setBasketData((maybe as any).items);
+      } else {
+        await getBasket();      // refresh
+      }
+      return true;
+    } catch (e) {
+      console.error('updateQuantity error:', e);
+      return false;
+    }
+  };
+
   useEffect(() => { getBasket(); }, []);
 
   return (
-    <BasketContext.Provider value={{ basketData, getBasket, addToBasket }}>
+    <BasketContext.Provider
+      value={{ basketData, getBasket, addToBasket, removeFromBasket, updateQuantity }}
+    >
       {children}
     </BasketContext.Provider>
   );

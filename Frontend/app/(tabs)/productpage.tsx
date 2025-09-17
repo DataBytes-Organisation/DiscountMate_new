@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ProductCard from '@/components/ProductCard';
 import { Product } from '@/types/product';
 import { useBasket } from './BasketContext';
-import CartBadge from '@/components/CartBadge';
 
 type SortKey = 'featured' | 'priceAsc' | 'priceDesc' | 'nameAsc';
 
@@ -18,7 +17,15 @@ const API_BASE =
 const PAGE_LIMIT = 500;
 
 function getStableId(rec: any): string {
-  return String(rec?.productCode ?? rec?.product_code ?? rec?.id ?? rec?._id ?? rec?.product_id ?? rec?.productId ?? '');
+  return String(
+    rec?.productCode ??
+    rec?.product_code ??
+    rec?.id ??
+    rec?._id ??
+    rec?.product_id ??
+    rec?.productId ??
+    ''
+  );
 }
 
 export default function ProductPage() {
@@ -46,7 +53,10 @@ export default function ProductPage() {
     const sid = getStableId(product);
     if (!sid || addingIds[sid]) return;
 
-    const price = (typeof (product as any).discountPrice === 'number' ? (product as any).discountPrice : undefined) ?? (product as any).price ?? 0;
+    const price =
+      (typeof (product as any).discountPrice === 'number'
+        ? (product as any).discountPrice
+        : undefined) ?? (product as any).price ?? 0;
 
     setAddingIds(prev => ({ ...prev, [sid]: true }));
     const ok = await addToBasket({
@@ -108,13 +118,14 @@ export default function ProductPage() {
     load();
   }, []);
 
-  const basketIdSet = useMemo(() => new Set((basketData || []).map((it: any) => String(it.productId || ''))), [basketData]);
-  const basketCodeSet = useMemo(() => new Set((basketData || []).map((it: any) => String(it.productCode || '').toLowerCase())), [basketData]);
-  const basketQty = useMemo(() => {
-    if (!Array.isArray(basketData)) return 0;
-    const sum = basketData.reduce((s: number, it: any) => s + Number(it.quantity || 0), 0);
-    return sum || basketData.length || 0;
-  }, [basketData]);
+  const basketIdSet = useMemo(
+    () => new Set((basketData || []).map((it: any) => String(it.productId || ''))),
+    [basketData]
+  );
+  const basketCodeSet = useMemo(
+    () => new Set((basketData || []).map((it: any) => String(it.productCode || '').toLowerCase())),
+    [basketData]
+  );
 
   const sorted = useMemo(() => {
     const arr = [...rows];
@@ -128,12 +139,8 @@ export default function ProductPage() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          title: 'Browse products',
-          headerRight: () => <CartBadge count={basketQty} />, // pass or omit; CartBadge can compute by context too
-        }}
-      />
+      {/* 🔧 Hide native header so you don't get a duplicate top bar */}
+      <Stack.Screen options={{ headerShown: false }} />
 
       <View style={styles.headerRow}>
         <Pressable style={styles.backButton} onPress={() => router.push('/')}>

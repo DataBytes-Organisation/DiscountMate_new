@@ -10,20 +10,23 @@ import {
 
 type Props = {
   productId: string | number;
+  /** ✅ optional for Coles rows where code is the stable key */
+  productCode?: string | number;
   name: string;
   price: number | string;
   image?: string;
   shortDescription?: string;
   quantity: number;
   basketItemId?: number;
-  addToBasket: (productId: any) => void;
-  removeFromBasket: (productId: any) => void;
-  deleteItemFromBasket: (productId: any) => void;
+  addToBasket: (idOrCode: string | number) => void;
+  removeFromBasket: (idOrCode: string | number) => void;
+  deleteItemFromBasket: (idOrCode: string | number) => void;
 };
 
 export default function BasketSummaryItem(props: Props) {
   const {
     productId,
+    productCode,          //  NEW
     name,
     price,
     image,
@@ -36,6 +39,10 @@ export default function BasketSummaryItem(props: Props) {
 
   const numericPrice =
     typeof price === 'number' ? price : Number(price || 0);
+
+  // ✅ Use a single stable key across both DBs
+  const idOrCode = (productId ?? productCode) as string | number;
+  const canDecrement = (Number(quantity || 0) > 1);
 
   return (
     <View style={styles.card}>
@@ -61,8 +68,13 @@ export default function BasketSummaryItem(props: Props) {
         <View style={styles.row}>
           <View style={styles.stepper}>
             <TouchableOpacity
-              onPress={() => removeFromBasket(productId)}
-              style={[styles.stepBtn, styles.stepBtnLeft]}
+              onPress={() => canDecrement && removeFromBasket(idOrCode)}
+              disabled={!canDecrement}
+              style={[
+                styles.stepBtn,
+                styles.stepBtnLeft,
+                !canDecrement && { opacity: 0.5 },
+              ]}
               accessibilityRole="button"
               accessibilityLabel="Decrease quantity"
             >
@@ -72,7 +84,7 @@ export default function BasketSummaryItem(props: Props) {
             <Text style={styles.qty}>{quantity ?? 1}</Text>
 
             <TouchableOpacity
-              onPress={() => addToBasket(productId)}
+              onPress={() => addToBasket(idOrCode)}
               style={[styles.stepBtn, styles.stepBtnRight]}
               accessibilityRole="button"
               accessibilityLabel="Increase quantity"
@@ -82,7 +94,7 @@ export default function BasketSummaryItem(props: Props) {
           </View>
 
           <TouchableOpacity
-            onPress={() => deleteItemFromBasket(productId)}
+            onPress={() => deleteItemFromBasket(idOrCode)}
             style={styles.removeBtn}
             accessibilityRole="button"
             accessibilityLabel="Remove item"
