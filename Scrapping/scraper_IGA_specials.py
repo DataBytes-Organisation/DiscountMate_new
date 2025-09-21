@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import logging
 from datetime import datetime
 from urllib.parse import quote_plus
 from dotenv import load_dotenv
@@ -11,6 +12,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler(), logging.FileHandler("iga_scraper.log", mode="a", encoding="utf-8")]
+)
+logger = logging.getLogger(__name__)
 
 def get_mongo_collection():
     load_dotenv()
@@ -19,34 +26,20 @@ def get_mongo_collection():
     cluster = os.getenv("MONGO_CLUSTER")
     appname = os.getenv("MONGO_APPNAME")
     db_name = os.getenv("MONGO_DB")
-
     if not username or not password or not cluster or not appname or not db_name:
-        print("Missing one or more MongoDB env vars (MONGO_USERNAME, MONGO_PASSWORD, MONGO_CLUSTER, MONGO_APPNAME, MONGO_DB).")
-        print("Please check your .env file.")
+        logger.error("Missing MongoDB env vars. Please check your .env file.")
         raise SystemExit(1)
-
-    uri = (
-        "mongodb+srv://"
-        + quote_plus(username)
-        + ":"
-        + quote_plus(password)
-        + "@"
-        + cluster
-        + "/?retryWrites=true&w=majority&appName="
-        + appname
-    )
-
+    uri = f"mongodb+srv://{quote_plus(username)}:{quote_plus(password)}@{cluster}/?retryWrites=true&w=majority&appName={appname}"
     try:
         client = MongoClient(uri)
         db = client[db_name]
         ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         coll_name = f"IGA_Specials_{ts}"
-        print(f"Connected to MongoDB. Using collection: {coll_name}")
+        logger.info(f"Connected to MongoDB. Using collection: {coll_name}")
         return db[coll_name]
     except Exception as e:
-        print("Failed to connect to MongoDB:", e)
+        logger.exception("Failed to connect to MongoDB")
         raise SystemExit(1)
-
 
 def click_browse_as_guest_if_shown(driver):
     try:
@@ -61,63 +54,59 @@ def click_browse_as_guest_if_shown(driver):
         )
         btn.click()
         time.sleep(1)
-        print("Clicked 'Browse as a guest'")
+        logger.info("Clicked 'Browse as a guest'")
     except Exception:
         pass
-
-
-def get_text_or_default(elem, default="N/A"):
-    try:
-        txt = elem.text.strip()
-        if txt:
-            return txt
-        return default
-    except Exception:
-        return default
-
 
 def scrape_iga_specials():
     chrome_options = Options()
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
-
     driver = webdriver.Chrome(options=chrome_options)
     collection = get_mongo_collection()
-
     page = 1
     total_saved = 0
-
+    seen_products = set()
     try:
         while True:
             url = f"https://www.igashop.com.au/specials/{page}"
-            print(f"\n===== Scraping page {page}: {url} =====")
+            logger.info(f"Scraping page {page}: {url}")
             driver.get(url)
-
             click_browse_as_guest_if_shown(driver)
-
             try:
                 WebDriverWait(driver, 20).until(
                     EC.presence_of_all_elements_located((By.CSS_SELECTOR, '[data-product-card="true"]'))
                 )
             except Exception:
-                print("No products found (timeout) — stopping.")
+                logger.info("No products found (timeout) — stopping.")
                 break
-
             cards = driver.find_elements(By.CSS_SELECTOR, '[data-product-card="true"]')
             if not cards:
-                print("No products on this page — stopping.")
+                logger.info("No products on this page — stopping.")
                 break
-
             page_docs = []
-
             for idx, card in enumerate(cards, start=1):
+                product_code = "N/A"
+                raw_link = None
+                try:
+                    a = card.find_element(By.TAG_NAME, "a")
+                    raw_link = a.get_attribute("href")
+                    if raw_link:
+                        m = re.search(r"(\d+)$", raw_link)
+                        if m:
+                            product_code = m.group(1)
+                except Exception:
+                    pass
+                if product_code != "N/A" and product_code in seen_products:
+                    logger.debug(f"Skipping duplicate product {product_code}")
+                    continue
+                seen_products.add(product_code)
                 try:
                     name_elem = card.find_element(By.CSS_SELECTOR, "a span.line-clamp-3")
                     item_name = name_elem.text.strip()
                 except Exception:
                     item_name = "N/A"
-
                 item_size = ""
                 try:
                     size_elem = card.find_element(
@@ -126,10 +115,9 @@ def scrape_iga_specials():
                     )
                     item_size = size_elem.text.strip()
                 except Exception:
-                    item_size = ""
-
-                best_price = "N/A"   
-                item_price = "N/A"   
+                    pass
+                best_price = "N/A"
+                item_price = "N/A"
                 try:
                     price_spans = card.find_elements(By.XPATH, ".//span[contains(text(), '$')]")
                     for span in price_spans:
@@ -144,107 +132,82 @@ def scrape_iga_specials():
                         elif item_price == "N/A":
                             item_price = cleaned
                             break
-
-                    if item_price == "N/A":
-                        try:
-                            was_elem = card.find_element(
-                                By.XPATH,
-                                ".//span[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'was') and contains(text(),'$')]"
-                            )
-                            item_price = was_elem.text.lower().replace("was", "").replace("$", "").strip()
-                        except Exception:
-                            pass
                 except Exception:
                     pass
-
                 unit_price = "N/A"
                 try:
                     unit_elem = card.find_element(By.XPATH, ".//*[contains(text(),'each') or contains(text(),'per')]")
                     unit_price = unit_elem.text.strip()
                 except Exception:
                     pass
-
                 image = "N/A"
                 try:
                     img = card.find_element(By.CSS_SELECTOR, "img")
                     image = img.get_attribute("src") or "N/A"
                 except Exception:
                     pass
-
-                link = "N/A"
-                product_code = "N/A"
-                try:
-                    a = card.find_element(By.TAG_NAME, "a")
-                    raw_link = a.get_attribute("href")
-                    if raw_link:
-                        link = raw_link if raw_link.startswith("http") else f"https://www.igashop.com.au{raw_link}"
-                        m = re.search(r"(\d+)$", link)
-                        if m:
-                            product_code = m.group(1)
-                except Exception:
-                    pass
-
+                link = raw_link if raw_link and raw_link.startswith("http") else f"https://www.igashop.com.au{raw_link}" if raw_link else "N/A"
                 special_text = "N/A"
                 try:
-                    card_text = card.text
-                    lower_text = card_text.lower()
-                    if "better than" in lower_text:
-                        for line in card_text.split("\n"):
-                            if "better than" in line.lower():
-                                special_text = line.strip()
-                                break
-                    elif "%" in lower_text and "off" in lower_text:
-                        for line in card_text.split("\n"):
-                            if "%" in line and "off" in line.lower():
-                                special_text = line.strip()
-                                break
-                    elif "age restricted" in lower_text:
+                    card_text = card.text.lower()
+                    if "better than" in card_text:
+                        special_text = "Better than half price"
+                    elif "%" in card_text and "off" in card_text:
+                        special_text = "Discount"
+                    elif "age restricted" in card_text:
                         special_text = "Age restricted item"
-                    elif "special" in lower_text:
+                    elif "special" in card_text:
                         special_text = "Special"
                 except Exception:
                     pass
-
-                category = "N/A"
-
+                promo_text = "N/A"
+                try:
+                    expiry_elem = card.find_element(
+                        By.XPATH,
+                        ".//*[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'end') or "
+                        "contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'until') or "
+                        "contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'expiry')]"
+                    )
+                    promo_text = expiry_elem.text.strip()
+                except Exception:
+                    try:
+                        for line in card.text.split("\n"):
+                            if any(k in line.lower() for k in ["ends", "until", "expiry"]):
+                                promo_text = line.strip()
+                                break
+                    except Exception:
+                        pass
                 doc = {
                     "product_code": product_code,
-                    "category": category,
+                    "category": "N/A",
                     "item_name": f"{item_name} {item_size}".strip(),
-                    "item_price": item_price,     
-                    "best_price": best_price,     
+                    "item_price": item_price,
+                    "best_price": best_price,
                     "unit_price": unit_price,
                     "special_text": special_text,
-                    "promo_text": "N/A",
+                    "promo_text": promo_text,
                     "image": image,
                     "timestamp": datetime.now().isoformat(),
                     "link": link,
                 }
-
                 page_docs.append(doc)
-
-                print(f"  #{idx} -> {doc['item_name']} | now: {best_price} | was: {item_price}")
-
+                logger.info(f"  #{idx} -> [{doc['category']}] {doc['item_name']} | now: {best_price} | was: {item_price}")
             if page_docs:
                 try:
-                    collection.insert_many(page_docs)
+                    collection.insert_many(page_docs, ordered=False)
                     total_saved += len(page_docs)
-                    print(f"Saved {len(page_docs)} products from page {page} to MongoDB.")
                 except Exception as e:
-                    print(" Failed to save to MongoDB:", e)
+                    logger.error(f"Failed to insert documents: {e}")
             else:
-                print("No items parsed on this page. Stopping.")
+                logger.info("No items parsed on this page. Stopping.")
                 break
-
             page += 1
             time.sleep(1)
     finally:
         driver.quit()
-
-    print(f"\n Done. Scraped total: {total_saved} products.")
-
+    logger.info(f"Done. Scraped total: {total_saved} products.")
 
 if __name__ == "__main__":
-    print("Starting IGA specials scraper...")
+    logger.info("Starting IGA specials scraper...")
     scrape_iga_specials()
-    print("Done.")
+    logger.info("Done.")
