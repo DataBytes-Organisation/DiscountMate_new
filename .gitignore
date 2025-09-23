@@ -4,3 +4,4 @@ Backend/.env
 Frontend/node_modules
 Frontend/.expo
 Scrapping/Australia_GroceriesScraper/configuration.ini
+*.csv
