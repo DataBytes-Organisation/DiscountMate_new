@@ -6,6 +6,7 @@ from scripts.ingestion import _ingest_to_minio, _check_minio_buckets
 from scripts.minio_processor import MinioCSVFileProcessor
 from airflow.decorators import dag, task
 from airflow.providers.docker.operators.docker import DockerOperator
+from airflow.operators.bash import BashOperator
 
 # MongoDB connection details
 MONGO_URI = os.getenv("MONGO_URI")
@@ -89,11 +90,44 @@ def pipeline():
         },
     )
 
+    dbt_Path = "/opt/airflow/dags/discountmate_dbt"
+
+    install_packages_in_dbt = BashOperator(task_id = "install_extensions_for_dbt",
+                                           bash_command = (f"cd {dbt_Path} && dbt deps"))
+
+    dbt_check_error = BashOperator(task_id = "check_error_free_in_dbt",
+                                           bash_command = (f"cd {dbt_Path} && dbt compile"))
+    
+    dbt_seed = BashOperator(task_id = "add_seed_data_to_dbt",
+                                           bash_command = (f"cd {dbt_Path} && dbt seed"))
+    
+    run_staging = BashOperator(task_id = "construct_staging_layer",
+                                           bash_command = (f"cd {dbt_Path} && dbt run --select staging"))
+    
+    run_snapshots = BashOperator(task_id = "track_dim_data_changes",
+                                           bash_command = (f"cd {dbt_Path} && dbt snapshot"))
+    
+    run_intermediate = BashOperator(task_id = "construct_intermediate_layer",
+                                           bash_command = (f"cd {dbt_Path} && dbt run --select intermediate"))
+    
+    run_marts = BashOperator(task_id = "construct_marts_layer",
+                                           bash_command = (f"cd {dbt_Path} && dbt run --select marts"))
+    
     # Define DAG chain
     bucket_check = check_minio_buckets()
     raw_file_path = ingest_from_mongo_to_minio()
     processed_file_path = process_file(raw_file_path)
 
-    bucket_check >> raw_file_path >> processed_file_path >> load_to_dw
+    (bucket_check >> 
+    raw_file_path >> 
+    processed_file_path >> 
+    load_to_dw >> 
+    install_packages_in_dbt >> 
+    dbt_check_error >> 
+    dbt_seed >> 
+    run_staging >> 
+    run_snapshots >> 
+    run_intermediate >> 
+    run_marts)
 
 dag = pipeline()
