@@ -258,25 +258,35 @@ const handleAIResponse = async (message: string): Promise<string> => {
     }
 
     // Generate AI response for general queries
-    const API_KEY = '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';
-    
-    const response = await axios.post(
-      'https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill',
-      { 
-        inputs: message,
-        parameters: {
-          max_length: 100,
-          temperature: 0.7,
-          top_p: 0.9,
-        }
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+const API_KEY = process.env.API_KEY; 
+
+const response = await axios.post( 
+
+'https://api-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', 
+
+{  
+
+inputs: message, 
+
+parameters: { 
+
+max_length: 100, 
+
+temperature: 0.7, 
+
+top_p: 0.9, 
+
+} 
+
+}, 
+
+{ 
+headers: { 
+'Authorization': `Bearer ${API_KEY}`, 
+'Content-Type': 'application/json', 
+}, 
+
+}); 
 
     const aiResponse = response.data[0].generated_text;
     return aiResponse;

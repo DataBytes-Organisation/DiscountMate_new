@@ -18,10 +18,11 @@ class DiscountMateDB:
         
         connection_string = config['connection_string']
         database_name = config['database_name']
+        collection_name = config.get('collection_name', f'Drake_Products_{datetime.now().strftime("%Y-%m-%d")}')
         
         self.client = MongoClient(connection_string)
         self.db = self.client[database_name]
-        self.collection: Collection = self.db.transactions
+        self.collection: Collection = self.db[collection_name]
 
     def write_data(self, data: List[Dict[str, Any]]) -> None:
         if not isinstance(data, list):
@@ -41,3 +42,4 @@ class DiscountMateDB:
 
     def close_connection(self) -> None:
         self.client.close()
+    

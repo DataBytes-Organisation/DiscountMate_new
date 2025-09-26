@@ -1,31 +1,56 @@
+from datetime import datetime
+from bs4 import BeautifulSoup
+from utils import DiscountMateDB
+import requests
+import json
 import csv
 import time
-from datetime import datetime
-import requests
-from bs4 import BeautifulSoup
+import random
 
 # Base URL for Drakes specials page
-BASE_URL = "https://033.drakes.com.au/specials"
+BASE_URL = "https://033.drakes.com.au/search"
 
 # HTTP headers including user-agent and PJAX for dynamic content loading
 HEADERS = {
     "User-Agent": "Mozilla/5.0",
+    "Referer": "https://033.drakes.com.au/",
     "X-PJAX": "true",
 }
+# Categories to scrape
+categories = ['fruit-vegetables', 'bread-bakery', 'deli-seafood', 'meat', 'ready-to-eat-meals', 
+              'dairy', 'freezer', 'pantry', 'drinks', 'confectionery-snacks', 'baby', 
+              'health-beauty', 'household-cleaning-needs', 'petcare', 'general-merch']
 
 # Function to fetch products from a given page
-def fetch_products(page):
+def fetch_products(page, category):
     params = {
         'page': page,
         'q[]': 'special:1',
-        '_pjax': '#search-results-products'
+        'q[]': f'category:{category}',
+        '_pjax': '#search-results-products',
     }
-    response = requests.get(BASE_URL, headers=HEADERS, params=params)
-    response.raise_for_status()
+    max_retries = 5
+    retries = 0
+    while retries < max_retries:
+        try:
+            response = requests.get(BASE_URL, headers=HEADERS, params=params, timeout=10)
+            response.raise_for_status()
+            break
+        except requests.exceptions.RequestException as e:
+            print(f"Error: {e}")
+            time.sleep(1 + random.uniform(0.2, 0.8))
+            retries += 1
+            continue
+    if retries == max_retries:
+        print(f"Failed to fetch products after {max_retries} retries")
+        return None
     return response.text
 
 # Function to parse product details from HTML response
-def parse_products(html):
+def parse_products(html, category):
+    if html is None:
+        return []
+
     soup = BeautifulSoup(html, 'html.parser')
     product_cards = soup.select(".TalkerGrid__Item")
     products = []
@@ -47,11 +72,13 @@ def parse_products(html):
 
         products.append({
             "Name": name,
+            "Category": category,
             "Size": size,
             "Price": price,
             "Previous Price": prev_price,
             "Unit Price": unit_price,
-            "Image URL": image_url
+            "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "Image URL": image_url,
         })
 
     return products
@@ -59,37 +86,53 @@ def parse_products(html):
 # Function to scrape all pages of specials
 def scrape_all_pages():
     all_products = []
-    page = 1
 
-    while True:
-        print(f"Fetching page {page}...")
-        html = fetch_products(page)
-        products = parse_products(html)
-        
-        if not products:
-            print(f"No more products found on page {page}. Ending scrape.")
-            break
-        
-        all_products.extend(products)
-        print(f"✔️ Page {page}: {len(products)} products scraped.")
-        page += 1
-        time.sleep(1)  # Be polite to the server
+    for category in categories:
+        page = 1
+        while True:
+            print(f"Fetching page {page}...")
+            html = fetch_products(page, category)
+            products = parse_products(html, category)
+            
+            if not products:
+                print(f"No more products found on category {category} page {page}. Ending scrape.")
+                break
+            
+            all_products.extend(products)
+            print(f"✔️ category {category} Page {page}: {len(products)} products scraped.")
+            page += 1
+            time.sleep(1)  # Be polite to the server
 
     return all_products
 
 # Function to save scraped data into a CSV file
 def save_to_csv(products):
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"{timestamp}_DrakesSpecials_AllPages.csv"
+    filename = f"Drakes_{timestamp}.csv"
 
     with open(filename, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["Name", "Size", "Price", "Previous Price", "Unit Price", "Image URL"])
+        writer = csv.DictWriter(f, fieldnames=["Name", "Category", "Size", "Price", "Previous Price", "Unit Price", "Image URL", "Timestamp"])
         writer.writeheader()
         writer.writerows(products)
 
     print(f"✅ All data saved to {filename}")
 
+# Function to save scraped data into a JSON file
+def save_to_json(products):
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"Drakes_{timestamp}.json"
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(products, f, indent=4, ensure_ascii=False)
+    print(f"✅ All data saved to {filename}")
+
+def save_to_mongodb(products):
+    db = DiscountMateDB()
+    db.write_data(products)
+    print(f"✅ All data saved to MongoDB")
+
 # Main execution
 if __name__ == "__main__":
     all_products = scrape_all_pages()
     save_to_csv(all_products)
+    save_to_json(all_products)
+    save_to_mongodb(all_products)

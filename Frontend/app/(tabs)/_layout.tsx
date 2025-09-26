@@ -14,6 +14,29 @@ import Sidebar from '@/components/layout/Sidebar';
 
 const { width: viewportWidth } = Dimensions.get('window');
 
+// Updated fetch function with optional query parameter for search
+const fetchProducts = async (query = '') => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/products?search=${query}`); 
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+// Simulated loadNotifications function
+// const loadNotifications = async (setNotifications) => {
+//   // Simulate fetching notifications from an API or database
+//   const simulatedNotifications = [
+//     { id: 1, message: 'New product available', read: false },
+//     { id: 2, message: 'Your order has been shipped', read: true },
+//     { id: 3, message: 'Discount on selected items', read: false },
+//   ];
+//   setNotifications(simulatedNotifications);
+// };
+
 export default function TabLayout() {
   return (
     <AuthProvider>

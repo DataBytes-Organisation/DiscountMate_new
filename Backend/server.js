@@ -16,6 +16,20 @@ const setupSwagger = require('./src/config/swagger');
 const app = express();
 const PORT = process.env.PORT;
 
+const helmet =require('helmet');
+// Use Helmet to set security headers including Content Security Policy
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            imgSrc: ["'self'", "data:"],
+            styleSrc: ["'self'", "https:"]
+        }
+    }
+}));
+
 // CORS Configuration
 app.use(cors({
     origin: "*",
@@ -32,7 +46,7 @@ if (!fs.existsSync(uploadDir)) {
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static(uploadDir));
+app.use('/uploads', express.static(uploadDir)); 
 
 // Initialize Swagger
 setupSwagger(app);
