@@ -1,4 +1,3 @@
-
 # -----------------------------
 #   Import Required Libraries
 # -----------------------------
@@ -10,6 +9,7 @@ import random
 import configparser
 import requests
 import re
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import seleniumwire.undetected_chromedriver.v2 as uc
 from datetime import datetime
 from selenium.webdriver.common.by import By
@@ -21,6 +21,9 @@ from selenium_stealth import stealth
 from datetime import datetime
 from pymongo import MongoClient
 from dotenv import load_dotenv
+import pygetwindow as gw
+import pyautogui
+import time
 import os
 
 
@@ -40,6 +43,13 @@ folderpath = script_dir
 #                                          Utility Functions
 # ---------------------------------------------------------------------------------------------------
 
+def click_hcaptcha_checkbox_locked():
+    # Click on center of checkbox
+    pyautogui.moveTo(785, 505, duration=0.4)
+    pyautogui.click()
+    print("Clicked hCaptcha checkbox")
+    time.sleep(10)
+
 # This function sets random delay based on the parameters provided
 def human_delay(min_sec=1.5, max_sec=3.5):
     if random.random() < 0.8:
@@ -52,23 +62,12 @@ def is_captcha_present(driver):
         bool(driver.find_elements(By.XPATH, "//iframe[contains(@src, '_Incapsula_Resource')]")) or
         "captcha" in driver.page_source.lower()
     )
-    
-# This function is used to pause execution of the further code until the CAPTCHA challenge is manually solved
-def wait_for_captcha(driver, timeout=120):
-    try:
-        print("CAPTCHA iframe detected. Waiting for it to disappear...")
-        WebDriverWait(driver, timeout).until_not(
-            EC.presence_of_element_located((By.XPATH, "//iframe[contains(@src, '_Incapsula_Resource')]"))
-        )
-        print("CAPTCHA solved. Continuing...")
-    except TimeoutException:
-        print("Timed out waiting for CAPTCHA to be solved. Try again")
-
+   
 # --------------------------------------------------------------------------------------------------
 #  This function is used to configure proxy from SmartProxy.com. Each time it is called,
 #  it gives a fresh IP, user-agent, combined with other stealth and anti bot detection techniques
 
-#  ** We are using paid datacenter proxies with location set to Australia so make sure you subscribe 
+#  ** We are using paid datacenter proxies with location set to Australia so make sure you subscribe
 #  to it and add your credentials in the configuration file**
 # --------------------------------------------------------------------------------------------------
 
@@ -92,7 +91,11 @@ def get_rotated_driver():
     }
 
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.7204.157 Safari/537.36"
-    
+
+    caps = DesiredCapabilities.CHROME
+    caps['goog:loggingPrefs'] = {'browser': 'ALL'}
+
+
     options = uc.ChromeOptions()
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--no-sandbox")
@@ -106,7 +109,7 @@ def get_rotated_driver():
         use_subprocess=True
     )
 
-    driver.set_window_size(random.randint(1000, 1400), random.randint(700, 1000))
+    driver.set_window_rect(x=0, y=0, width=1536, height=816)
 
     stealth(driver,
         languages=["en-US", "en"],
@@ -165,6 +168,97 @@ def get_requests_session_with_cookies(driver):
 
     return session
 
+# !IMPORTANT - This function is used to extract the build id dynamically from the elements of the web page.
+# We need build id to send with the API requests otherwise it will fail
+
+def extract_build_id(driver):
+
+    try:
+
+        json_data = driver.execute_script("return document.getElementById('__NEXT_DATA__').textContent;")
+        data = json.loads(json_data)
+        build_id = data.get("buildId")
+
+        if not build_id:
+            raise ValueError("Build ID not found in __NEXT_DATA__.")
+
+        print(f"Detected build ID: {build_id}")
+        return build_id
+   
+    except Exception as e:
+        print(f"Failed to extract build ID: Check build ID extraction process and debug {e}")
+        print("Cannot proceed without a valid build ID.")
+        driver.quit()
+        exit(1)
+
+
+# Function to launch home page
+
+def home_page_launch(max_captcha_attempts=3):
+    driver = get_rotated_driver()
+    driver.get("https://www.coles.com.au")
+    time.sleep(10)  # Let page load after rotation
+    
+    if is_captcha_present(driver):
+        solved, driver_new = wait_for_captcha(driver, max_attempts=max_captcha_attempts)
+        if not solved:
+            print("CAPTCHA could not be solved after retries in home_page_launch. Please Debug the Code. Exiting...")
+            raise RuntimeError("CAPTCHA not solved after retries")
+        driver = driver_new
+        session = get_requests_session_with_cookies(driver)
+        return driver, session
+    
+    print("No CAPTCHA detected. Proceeding...")
+    session = get_requests_session_with_cookies(driver)
+    return driver, session
+
+def wait_for_captcha(driver, max_attempts=3, timeout=120):
+    for attempt in range(1, max_attempts + 1):
+        try:
+            print(f"[CAPTCHA Detected] Solving Attempt {attempt} of {max_attempts}...")
+
+            # Delay to let Incapsula fully render the challenge
+            time.sleep(4)
+
+            click_hcaptcha_checkbox_locked()
+
+            print("Waiting for CAPTCHA iframe to disappear...")
+            WebDriverWait(driver, timeout).until_not(
+                EC.presence_of_element_located((By.XPATH, "//iframe[contains(@src, '_Incapsula_Resource')]"))
+            )
+
+            print("CAPTCHA solved. Continuing...")
+            return True, driver  # CAPTCHA solved successfully
+        
+        except TimeoutException:
+            print("Timed out waiting for CAPTCHA to be solved.")
+
+        except Exception as e:
+            print(f"Error during CAPTCHA solving: {e}")
+
+        # If not last attempt, rotate IP and try again
+
+        if attempt < max_attempts:
+            print("Rotating IP and restarting browser...")
+            try:
+                driver.quit()
+            except:
+                pass
+            
+            #Rotate and relaunch
+            driver = get_rotated_driver()
+            driver.get("https://www.coles.com.au")
+            time.sleep(10)
+
+            # Early return if no CAPTCHA anymore
+            if not is_captcha_present(driver):
+                print("CAPTCHA not present in new session. Proceeding.")
+                return True, driver
+
+    print("Failed to solve CAPTCHA after multiple attempts.")
+    log_error("CAPTCHA could not be solved after retries.")
+    return False, None
+
 # This function is used to fetch data from each paginated pages of the categories
 
 def fetch_category_page(session, build_id, category, page):
@@ -172,12 +266,12 @@ def fetch_category_page(session, build_id, category, page):
 
     try:
         res = session.get(url)
-        
+       
         # Check for block (HTML content or redirect)
         if res.status_code != 200:
             print(f"Failed: {url} returned status {res.status_code}")
             return "serverError"
-        
+       
         if "text/html" in res.headers.get("Content-Type", ""):
             print(f"HTML instead of JSON — possible block or error page for {category}")
             return "blocked"
@@ -254,33 +348,10 @@ def parse_product_data(json_data, category_slug):
 
     return extracted
 
-# !IMPORTANT - This function is used to extract the build id dynamically from the elements of the web page.
-# We need build id to send with the API requests otherwise it will fail
-
-def extract_build_id(driver):
-
-    try:
-
-        json_data = driver.execute_script("return document.getElementById('__NEXT_DATA__').textContent;")
-        data = json.loads(json_data)
-        build_id = data.get("buildId")
-
-        if not build_id:
-            raise ValueError("Build ID not found in __NEXT_DATA__.")
-
-        print(f"Detected build ID: {build_id}")
-        return build_id
-    
-    except Exception as e:
-        print(f"Failed to extract build ID: Check build ID extraction process and debug {e}")
-        print("Cannot proceed without a valid build ID.")
-        driver.quit()
-        exit(1)
-
 # --- Extract Level 1 Categories from Browse API Response - Level 1 are the main product categories displayed in Menu ---
 
 def fetch_main_categories_from_browse_api(session, build_id):
-    
+   
     url = f"https://www.coles.com.au/_next/data/{build_id}/en/browse.json"
 
     try:
@@ -322,29 +393,27 @@ def fetch_main_categories_from_browse_api(session, build_id):
             "Household": "household",
             "Health & Beauty": "health-beauty",
             "Baby": "baby"
-        }   
+        }  
 
 # ---------------------------------- END OF UTILITY FUNCTIONS ----------------------------------------------------------- #
 
 
 # ----------------------------------- START SCRAPING SESSION  ----------------------------------------------------------- #
 
-# Get a new driver and go to the home page of Coles
-driver = get_rotated_driver()
-driver.get("https://www.coles.com.au")
-
-# Check if Coles gives us a CAPTCHA challenge. If yes, wait until it is manually solved
-if is_captcha_present(driver):
-    wait_for_captcha(driver)
-
-# If there is no CAPTCHA challenge or the CAPTCHA is solved, set the session
-session = get_requests_session_with_cookies(driver)
-
+# Launch the home page of Coles and get session credentials
+driver, session = home_page_launch()
 
 # Extract build id from the Coles website. If Coles changes their approach in webpage just obtain their build id from website
 # manually and hardcode below for debugging and modify the respective function
-
-build_id = extract_build_id(driver)
+try:
+    WebDriverWait(driver, 15).until(
+        EC.presence_of_element_located((By.ID, "__NEXT_DATA__"))
+    )
+    build_id = extract_build_id(driver)
+except Exception as e:
+    print("__NEXT_DATA__ did not load — probably still blocked.")
+    driver.quit()
+    exit(1)
 
 # Following are the full categories list that will be returned for a particular store
 # We need to filter the categories we do not need for a particular scraping run after this
@@ -389,7 +458,7 @@ for label, slug in categories_to_scrape.items():
         time.sleep(random.uniform(2, 3))
         print(f" Fetching page {page}...")
         data = fetch_category_page(session, build_id, slug, page)
-        
+       
         if data == "notFound":
             print(f"Skipping '{label}' — category not available.")
             break
@@ -402,16 +471,11 @@ for label, slug in categories_to_scrape.items():
             if retry_count > max_retries:
                 print(f"Max retries exceeded for {label} page {page}. Skipping to next category.")
                 break
-            
+           
             print(f"Blocked while accessing '{label}'. Reinitializing browser and session...")
             driver.quit()
-            driver = get_rotated_driver()
-            driver.get("https://www.coles.com.au")
-
-            if is_captcha_present(driver):
-                wait_for_captcha(driver)
-
-            session = get_requests_session_with_cookies(driver)
+            #Start new session
+            driver, session = home_page_launch()
             continue  # Retry same page with new browser/session
 
         elif data == "schemaError":

@@ -1,3 +1,5 @@
+
+require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../schemas/models');
@@ -44,6 +46,23 @@ const signup = async (req, res) => {
     }
 };
 
+// Defining the limiter 
+const { rateLimit } = require("express-rate-limit"); 
+
+// Only allows for one request every 5 minutes per IP
+const limiter = rateLimit({ 
+
+windowMs: 5 * 60 * 1000, 
+
+limit: 1, 
+
+message: "Too many requests. Please try again later.", 
+
+standardHeaders: true, 
+
+legacyHeaders: false, 
+
+}); 
 
 // Signin Controller
 const signin = async (req, res) => {
