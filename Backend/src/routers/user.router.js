@@ -67,7 +67,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/signup', userController.signup);
+router.post('/signup', userController.signupLimiter, userController.signup); // Signup using limiter
 
 // Signin route
 /**
