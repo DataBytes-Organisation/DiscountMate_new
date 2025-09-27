@@ -188,6 +188,19 @@ IQR_K = 1.5                   # 1.5 (moderate) or 3.0 (strict)
 ZSCORE_THRESHOLD = 3.0        # classic z-score cut
 
 
+# NEW: Product list "A" and sustained-days threshold for seasonal/lasting shifts
+PRODUCT_LIST_A = [
+    "1f59c631-ca0d-47d9-aac2-8da2dbc1f134",
+    "3b3e2c46-9899-4f14-8f8f-74ec3a1d31a7",
+    "485e84e6-5885-4369-9073-27e732b0c01d",
+    "4ae84bdf-f3a5-45ef-817b-d2a69204a251",
+    "54725161-52ca-4b2e-8df7-0dcd9d427adf",
+    "560b49be-32ad-4267-97da-21148ccce35e",
+    "5875ebb3-bba7-4356-bb0e-9f3c7679c975",
+]
+SUSTAINED_DAYS = 14  # NEW: reclassify outliers sustained ≥ this many calendar days
+
+
 # =========================
 # 1) Load and clean
 # =========================
@@ -289,6 +302,90 @@ def detect_outliers(df: pd.DataFrame,
 
 flagged = detect_outliers(df, product_stats, method=OUTLIER_METHOD, iqr_k=IQR_K, z_thresh=ZSCORE_THRESHOLD)
 
+
+
+# =========================
+# 3b) NEW: Exclude seasonal/lasting shifts for product list "A" (changed product_ids="None" to include all products after discussing with the team)
+# =========================
+def exclude_sustained_shifts(flagged: pd.DataFrame,
+                             product_ids=None,
+                             min_days: int = 14) -> pd.DataFrame:
+    """
+    NEW: For the specified product_ids only:
+    - Find consecutive runs where rows are flagged as outliers AND stay on the same side
+      of the baseline (above or below the median).
+    - If a run spans >= min_days calendar days (start to end), reclassify those rows as
+      non-outliers (seasonal/lasting shift). Annotate with 'seasonal_excluded'.
+    """
+    out = flagged.copy()
+    if "day" not in out.columns:
+        out["day"] = pd.to_datetime(out["date"]).dt.date
+    out["sustained_excluded"] = False
+    
+    if product_ids is None:
+        product_ids = out["product_id"].unique()
+        
+    for pid in product_ids:
+        g = out[out["product_id"] == pid].sort_values("day")
+        if g.empty:
+            continue
+
+        # Direction relative to median: +1 (above), -1 (below), 0 (equal)
+        dir_sign = np.sign(g["price"].values - g["median_price"].values)
+        # Keep direction only where row is currently flagged as outlier
+        dir_flag = np.where(g["is_outlier"].values, dir_sign, 0)
+
+        idxs = g.index.to_list()
+        days = pd.to_datetime(g["day"]).to_list()
+
+        current_side = 0
+        run_indices = []
+        run_start_pos = None
+
+        def finalize_run(last_pos: int):
+            if not run_indices:
+                return
+            start_day = days[run_start_pos]
+            end_day = days[last_pos]
+            duration = (end_day - start_day).days + 1  # calendar-day span
+            if duration >= min_days:
+                out.loc[run_indices, "sustained_excluded"] = True
+
+        for i, (idx, side) in enumerate(zip(idxs, dir_flag)):
+            if side == 0:
+                if current_side != 0:
+                    finalize_run(i - 1)
+                current_side = 0
+                run_indices = []
+                run_start_pos = None
+                continue
+
+            if current_side == 0 or side != current_side:
+                if current_side != 0:
+                    finalize_run(i - 1)
+                current_side = side
+                run_indices = [idx]
+                run_start_pos = i
+            else:
+                run_indices.append(idx)
+
+        # finalize last run if needed
+        if current_side != 0:
+            finalize_run(len(idxs) - 1)
+
+    # Reclassify: clear outlier flag for sustained runs, annotate method
+    mask = out["sustained_excluded"]
+    out.loc[mask, "is_outlier"] = False
+    if "outlier_method" in out.columns:
+        out.loc[mask, "outlier_method"] = (
+            out.loc[mask, "outlier_method"].astype(str).replace({"": "seasonal_excluded"})
+            .where(~mask, out.loc[mask, "outlier_method"].astype(str) + ";seasonal_excluded")
+        )
+    return out
+
+# Apply seasonal exclusion for list "A"
+flagged = exclude_sustained_shifts(flagged, product_ids=None, min_days=SUSTAINED_DAYS)
+
 outliers = flagged[flagged["is_outlier"]].copy()
 out_cols = [
     "_id", "product_id", "date", "day", "price",
@@ -297,7 +394,7 @@ out_cols = [
     "z_score", "outlier_method"
 ]
 outliers = outliers[out_cols].sort_values(["product_id", "date"])
-outliers_path = os.path.join(OUTPUT_DIR, "outliers_static_baseline.csv")
+outliers_path = os.path.join(OUTPUT_DIR, "outliers_static_baseline_excl_FalsePositive.csv")
 outliers.to_csv(outliers_path, index=False)
 print(f"Saved outliers → {outliers_path} (rows: {len(outliers)})")
 
@@ -310,7 +407,7 @@ hot_outlier = (outliers.groupby("day")["product_id"]
                .reset_index(name="num_products_outlier"))
 hot_outlier["share_of_all_products"] = hot_outlier["num_products_outlier"] / df["product_id"].nunique()
 hot_outlier = hot_outlier.sort_values("num_products_outlier", ascending=False)
-hot_outlier_path = os.path.join(OUTPUT_DIR, "hot_dates_outliers.csv")
+hot_outlier_path = os.path.join(OUTPUT_DIR, "hot_dates_outliers_excl_FalsePositive.csv")
 hot_outlier.to_csv(hot_outlier_path, index=False)
 print(f"Saved hot dates (outliers) → {hot_outlier_path}")
 
@@ -342,11 +439,11 @@ def plot_product_static_baseline(product_id: str):
 # Example:
 # plot_product_static_baseline(df['product_id'].iloc[0])
 # plot_product_static_baseline('your-product-id-here')
-    
+
 # create PDF for each product's price trend
 from matplotlib.backends.backend_pdf import PdfPages
 
-pdf_path = os.path.join(OUTPUT_DIR, "product_trends.pdf")
+pdf_path = os.path.join(OUTPUT_DIR, "product_trends_excl_FalsePositive.pdf")
 with PdfPages(pdf_path) as pdf:
     for pid in df["product_id"].unique():
         g = flagged[flagged["product_id"] == pid].sort_values("date")
