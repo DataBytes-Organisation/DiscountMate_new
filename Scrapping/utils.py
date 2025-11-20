@@ -7,7 +7,7 @@ import os
 
 
 class DiscountMateDB:
-    def __init__(self, config_path: str = "db-config.json"):
+    def __init__(self, config_path: str = "db-config.json", database_name="ScrappedData", collection_name="Drake_Products"):
     # Check if the config file exists
         if not os.path.exists(config_path):
             raise FileNotFoundError(f"Configuration file not found: {config_path}")
@@ -17,8 +17,7 @@ class DiscountMateDB:
             config = json.load(config_file)
         
         connection_string = config['connection_string']
-        database_name = config['database_name']
-        collection_name = config.get('collection_name', f'Drake_Products_{datetime.now().strftime("%Y-%m-%d")}')
+        collection_name = config.get('collection_name', f'{collection_name}_{datetime.now().strftime("%Y-%m-%d")}')
         
         self.client = MongoClient(connection_string)
         self.db = self.client[database_name]
