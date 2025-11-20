@@ -14,7 +14,6 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 def get_mongo_collection() -> MongoClient:
-
     load_dotenv()
     username = os.getenv("MONGO_USERNAME")
     password = os.getenv("MONGO_PASSWORD")
@@ -64,7 +63,7 @@ def setup_driver() -> webdriver.Chrome:
 def wait_for_any_product(driver: webdriver.Chrome, timeout: int = 20) -> bool:
     try:
         WebDriverWait(driver, timeout).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='itemId=']"))
+            EC.presence_of_element_located((By.CLASS_NAME, "item-container"))
         )
         return True
     except Exception:
@@ -74,13 +73,15 @@ def wait_for_any_product(driver: webdriver.Chrome, timeout: int = 20) -> bool:
 def get_categories(driver: webdriver.Chrome) -> list[dict]:
     categories: dict[str, dict] = {}
     try:
-        tab = driver.find_element(
-            By.XPATH,
-            "//*[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'categories')]",
+        print("  Finding and clicking the 'Categories' tab...")
+        tab = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//a[normalize-space()='Categories']"))
         )
         tab.click()
-        time.sleep(1)
+        time.sleep(2)
+
         links = driver.find_elements(By.CSS_SELECTOR, "a[href*='categoryId=']")
+        print(f"  Found {len(links)} category links to parse.")
         for link in links:
             href = link.get_attribute("href") or ""
             name = link.text.strip()
@@ -91,205 +92,121 @@ def get_categories(driver: webdriver.Chrome) -> list[dict]:
                 continue
             cat_id = m.group(1)
             if cat_id not in categories:
-                categories[cat_id] = {"name": name, "id": cat_id, "href": href}
+                categories[cat_id] = {"name": name, "id": cat_id}
     except Exception as e:
-        print("Failed to extract categories:", e)
+        print(f"  Could not extract categories. Error: {e}")
     return list(categories.values())
 
 
 def parse_card(card_elem) -> dict:
-    product_code = "N/A"
-    item_name = "N/A"
-    best_price = "N/A"
-    unit_price = "N/A"
-    promo_text = "N/A"
-    image_url = "N/A"
-    link = "N/A"
-
+    product_code, item_name, item_size, best_price, item_price, unit_price, special_text, image_url, link = ("N/A",)*9
     try:
         link_elem = card_elem.find_element(By.CSS_SELECTOR, "a[href*='itemId=']")
         raw_link = link_elem.get_attribute("href") or ""
         link = raw_link if raw_link.startswith("http") else f"https://www.iga.com.au{raw_link}"
-        m = re.search(r"itemId=(\d+)", raw_link)
-        if m:
-            product_code = m.group(1)
-    except Exception:
-        pass
-
-    try:
+        match = re.search(r"itemId=(\d+)", raw_link)
+        if match:
+            product_code = match.group(1)
+            
         img_elem = card_elem.find_element(By.TAG_NAME, "img")
-        src = img_elem.get_attribute("src")
-        if src:
-            image_url = src
-    except Exception:
-        pass
-
-    try:
-        text = card_elem.text.strip()
-        lines = [ln.strip() for ln in text.split("\n") if ln.strip()]
-        name_lines: list[str] = []
-        prices: list[str] = []
-        for line in lines:
-            lowered = line.lower()
-            if line.startswith("$") and (
-                "each" in lowered
-                or "pack" in lowered
-                or re.match(r"^\$\d", line)
-            ):
-                prices.append(line)
-                continue
-            if " per " in lowered:
-                unit_price = line
-                continue
-
-            if "save" in lowered or "price" in lowered or "%" in line:
-                promo_text = line
-                continue
-            name_lines.append(line)
-        if name_lines:
-            item_name = " ".join(name_lines)
-        if prices:
-            clean = prices[0].replace("$", "").strip()
-            clean = re.split(r"\s", clean)[0]
-            best_price = clean
-    except Exception:
-        pass
+        image_url = img_elem.get_attribute("src") or "N/A"
+        name_elem = card_elem.find_element(By.CLASS_NAME, "item-name")
+        item_name = name_elem.text.strip()
+        size_elem = card_elem.find_element(By.CLASS_NAME, "item-size")
+        item_size = size_elem.text.strip()
+        price_container = card_elem.find_element(By.CLASS_NAME, "item-prices")
+        price_text = price_container.text.strip().replace('$', '').split('\n')
+        if price_text:
+            best_price = price_text[0]
+            item_price = best_price
+        try:
+            unit_price_elem = card_elem.find_element(By.CLASS_NAME, "price-unit")
+            unit_price = unit_price_elem.text.strip()
+        except Exception: pass
+        try:
+            special_elem = card_elem.find_element(By.CLASS_NAME, "item-badge-wrapper")
+            special_text = special_elem.text.strip()
+        except Exception: pass
+    except Exception: pass
 
     return {
-        "product_code": product_code,
-        "item_name": item_name,
-        "best_price": best_price,
-        "unit_price": unit_price,
-        "promo_text": promo_text,
-        "image": image_url,
-        "link": link,
+        "product_code": product_code, "category": "N/A", "item_name": f"{item_name} {item_size}".strip(),
+        "item_price": item_price, "best_price": best_price, "unit_price": unit_price,
+        "special_text": special_text, "promo_text": "N/A", "image": image_url,
+        "timestamp": datetime.now().isoformat(), "link": link,
     }
 
 
 def scrape_iga_catalogue():
-    sale_id = "60901"
-    area_name = "VIC%20Local%20Grocer"
+    start_url = "https://www.iga.com.au/catalogue/#view=list&saleId=60925&areaName=VIC%20Local%20Grocer" #
     base_url = "https://www.iga.com.au/catalogue/"
 
     collection = get_mongo_collection()
     driver = setup_driver()
-
     product_map: dict[str, dict] = {}
 
     try:
-        initial_url = f"{base_url}#view=list&saleId={sale_id}&areaName={area_name}"
-        print(f"Navigating to {initial_url}")
-        driver.get(initial_url)
+        print(f"Navigating directly to catalogue: {start_url}")
+        driver.get(start_url)
+
+        sale_id_match = re.search(r"saleId=(\d+)", start_url)
+        area_name_match = re.search(r"areaName=([^&]+)", start_url)
+        if not sale_id_match or not area_name_match:
+            print("Provided URL is missing 'saleId' or 'areaName'. Cannot proceed.")
+            return
+
+        sale_id = sale_id_match.group(1)
+        area_name = area_name_match.group(1)
+        print(f"Using Sale ID: {sale_id} and Area Name: {area_name}")
 
         if not wait_for_any_product(driver, timeout=20):
-            print("No products detected on initial load – attempting to set location.")
-            driver.get(base_url)
-
-            try:
-                store_link = driver.find_element(
-                    By.XPATH,
-                    "//*[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'select your iga store')]",
-                )
-                store_link.click()
-                time.sleep(1)
-            except Exception:
-                pass
-
-            try:
-                search_input = driver.find_element(
-                    By.XPATH,
-                    "//input[contains(@placeholder,'postcode') or contains(@placeholder,'suburb')]",
-                )
-                search_input.clear()
-                search_input.send_keys("3000")
-                time.sleep(2)
-                suggestions = driver.find_elements(By.CSS_SELECTOR, "li")
-                if suggestions:
-                    suggestions[0].click()
-                    time.sleep(2)
-            except Exception as e:
-                print("Setting location via postcode failed:", e)
-            driver.get(initial_url)
-
-            if not wait_for_any_product(driver, timeout=20):
-                print(
-                    "Still no products found after attempting to set location. Exiting."
-                )
-                return
-
+            print("Page loaded, but no products were found. Please check the URL.")
+            return
+        
+        print("Extracting all available categories...")
         categories = get_categories(driver)
         if not categories:
-            print("No categories found – scraping the unfiltered list only.")
-            categories = [
-                {"name": "All", "id": None, "href": f"#view=list&saleId={sale_id}&areaName={area_name}"}
-            ]
-
+            print("No categories found – will scrape the unfiltered list only.")
+            categories = [{"name": "All", "id": None}]
         print(f"Found {len(categories)} categories: {[c['name'] for c in categories]}")
 
         for cat in categories:
-            cat_id = cat.get("id")
-            cat_name = cat.get("name") or "Uncategorised"
-            if cat_id:
-                cat_url = f"{base_url}#view=list&saleId={sale_id}&categoryId={cat_id}&areaName={area_name}"
-            else:
-                cat_url = f"{base_url}{cat.get('href')}"
-            print(f"\nScraping category: {cat_name} -> {cat_url}")
+            cat_id = cat.get("id"); cat_name = cat.get("name") or "Uncategorised"
+            
+            cat_url = f"{base_url}#view=list&saleId={sale_id}&categoryId={cat_id}&areaName={area_name}"
+            print(f"\nNavigating to category: {cat_name}")
             driver.get(cat_url)
+
             if not wait_for_any_product(driver, timeout=20):
-                print(f"No products found for category {cat_name}. Skipping.")
-                continue
-
-            anchors = driver.find_elements(By.CSS_SELECTOR, "a[href*='itemId=']")
-            seen_codes: set[str] = set()
-            for anchor in anchors:
-                href = anchor.get_attribute("href") or ""
-                m = re.search(r"itemId=(\d+)", href)
-                if not m:
-                    continue
-                code = m.group(1)
-                if code in seen_codes:
-                    continue
-                seen_codes.add(code)
-
-                card = None
-                try:
-                    card = anchor.find_element(By.XPATH, "./ancestor::div[contains(@class,'column')][1]")
-                except Exception:
-                    try:
-                        card = anchor.find_element(By.XPATH, "./ancestor::div[contains(@class,'col')][1]")
-                    except Exception:
-                        card = anchor.find_element(By.XPATH, "..")
+                print(f"No products found for category {cat_name}. Skipping."); continue
+            
+            product_cards = driver.find_elements(By.CLASS_NAME, "item-container")
+            print(f"  Found {len(product_cards)} product cards on the page.")
+            for card in product_cards:
                 product = parse_card(card)
-                existing = product_map.get(product["product_code"])
-                if existing:
-                    cats = existing.get("categories", [])
-                    if cat_name not in cats:
-                        cats.append(cat_name)
-                    existing.update(product)
-                    existing["categories"] = cats
-                    product_map[product["product_code"]] = existing
+                product_code = product.get('product_code')
+                if not product_code or product_code == 'N/A': continue
+                
+                if product_code in product_map:
+                    if cat_name not in product_map[product_code]['category']:
+                        product_map[product_code]['category'].append(cat_name)
                 else:
-                    product_map[product["product_code"]] = {
-                        **product,
-                        "categories": [cat_name],
-                        "timestamp": datetime.now().isoformat(),
-                    }
-
-            print(f"  Parsed {len(seen_codes)} items from {cat_name}.")
-
+                    product['category'] = [cat_name]
+                    product_map[product_code] = product
+            
         docs = list(product_map.values())
         if docs:
+            for doc in docs: doc['category'] = ', '.join(doc['category'])
             try:
                 collection.insert_many(docs)
-                print(f"Inserted {len(docs)} products into MongoDB.")
-            except Exception as e:
-                print("Failed to write to MongoDB:", e)
-        else:
-            print("No products collected.")
+                print(f"\nInserted {len(docs)} unique products into MongoDB.")
+            except Exception as e: print("Failed to write to MongoDB:", e)
+        else: print("No products collected.")
+
     finally:
         driver.quit()
+        print("Scraping complete.")
 
-    print("Scraping complete.")
 
 if __name__ == "__main__":
     print("Starting IGA catalogue scraper…")
