@@ -6,6 +6,7 @@ const User = require('../schemas/models');
 const { connectToMongoDB } = require('../config/database'); 
 const fs = require('fs');
 const mime = require('mime-types'); 
+const path = require('path');
 
 // Signup Controller
 const signup = async (req, res) => {
@@ -221,7 +222,9 @@ module.exports = {
     signin,
     getProfile,
     updateProfileImage,
-    getProfileImage
+    getProfileImage,
+    // Export the limiter so routers can reference it as signupLimiter
+    signupLimiter: limiter
 };
 
 
