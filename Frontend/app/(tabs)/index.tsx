@@ -4,34 +4,13 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 
 export default function HomeScreen() {
    return (
-      <View style={styles.container}>
-         <Text style={styles.title}>Welcome to DiscountMate</Text>
-         <Text style={styles.subtitle}>Your new homepage starts here</Text>
+      <View className="flex-1 bg-white justify-center items-center p-5">
+         <Text className="text-2xl font-bold text-gray-800 mb-2.5">Welcome to DiscountMate</Text>
+         <Text className="text-base text-gray-600 text-center">Your new homepage starts here</Text>
       </View>
    );
 }
-
-const styles = StyleSheet.create({
-   container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 20,
-   },
-   title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#333',
-      marginBottom: 10,
-   },
-   subtitle: {
-      fontSize: 16,
-      color: '#666',
-      textAlign: 'center',
-   },
-});

@@ -5,19 +5,12 @@
 
 import { Slot } from 'expo-router';
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 
 export default function TabLayout() {
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-white">
       <Slot />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});
