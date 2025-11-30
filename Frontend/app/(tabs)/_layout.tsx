@@ -8,9 +8,9 @@ import React from 'react';
 import { View } from 'react-native';
 
 export default function TabLayout() {
-  return (
-    <View className="flex-1 bg-white">
-      <Slot />
-    </View>
-  );
+   return (
+      <View className="flex-1 bg-white">
+         <Slot />
+      </View>
+   );
 }
