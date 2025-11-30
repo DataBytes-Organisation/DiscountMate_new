@@ -4,14 +4,14 @@ import { FontAwesome, Feather } from "@expo/vector-icons";
 
 const FooterSection: React.FC = () => {
    return (
-      <View className="bg-slate-900">
+      <View className="bg-dark">
          <View className="w-full max-w-[1920px] mx-auto px-6 py-10">
             {/* Top grid */}
             <View className="flex flex-col gap-10 md:flex-row md:justify-between md:gap-8 mb-10">
                {/* Brand + description + social */}
                <View className="flex-1">
                   <View className="flex flex-row items-center gap-2 mb-6">
-                     <View className="w-11 h-11 rounded-lg bg-gradient-to-br from-primary to-secondary items-center justify-center shadow-md">
+                     <View className="w-11 h-11 rounded-lg items-center justify-center bg-gradient-to-br from-[#10B981] to-[#059669] shadow-md" >
                         <Feather name="tag" size={20} color="#FFFFFF" />
                      </View>
                      <Text className="text-2xl font-bold text-white">
@@ -114,7 +114,7 @@ const FooterSection: React.FC = () => {
                </View>
             </View>
          </View>
-      </View>
+      </View >
    );
 };
 
