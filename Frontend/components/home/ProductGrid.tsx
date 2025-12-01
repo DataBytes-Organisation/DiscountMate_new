@@ -1,136 +1,350 @@
+// Frontend/components/product/ProductGrid.tsx
 import React from "react";
-import { View, Text, Pressable } from "react-native";
-import ProductCard from "./ProductCard";
+import { View, Text, Pressable, ScrollView } from "react-native";
+import ProductCard, { Product } from "./ProductCard";
 
-const PRODUCTS = [
+const PRODUCTS: Product[] = [
    {
       name: "Milk Full Cream 2L",
       subtitle: "Fresh dairy milk",
+      icon: "wine-glass",
       badge: "Save $1.20",
-      badgeTone: "accent",
       trendLabel: "Trending down",
       trendTone: "green",
+      retailers: [
+         {
+            storeKey: "coles",
+            name: "Coles",
+            price: "$3.80",
+            originalPrice: "$5.00",
+         },
+         {
+            storeKey: "woolworths",
+            name: "Woolworths",
+            price: "$4.20",
+            originalPrice: "$5.00",
+         },
+         {
+            storeKey: "aldi",
+            name: "Aldi",
+            price: "$3.50",
+            originalPrice: "$4.70",
+            isCheapest: true,
+         },
+      ],
    },
    {
       name: "White Bread 700g",
       subtitle: "Soft white sandwich bread",
+      icon: "bread-slice",
       badge: "Save $0.85",
-      badgeTone: "accent",
       trendLabel: "Price rising",
       trendTone: "red",
+      retailers: [
+         {
+            storeKey: "coles",
+            name: "Coles",
+            price: "$2.50",
+            originalPrice: "$3.35",
+            isCheapest: true,
+         },
+         {
+            storeKey: "woolworths",
+            name: "Woolworths",
+            price: "$2.80",
+            originalPrice: "$3.20",
+         },
+         {
+            storeKey: "aldi",
+            name: "Aldi",
+            price: "$2.90",
+            originalPrice: "-",
+         },
+      ],
    },
    {
       name: "Bananas 1kg",
       subtitle: "Fresh Australian bananas",
+      icon: "apple-whole",
       badge: "Save $1.50",
-      badgeTone: "accent",
       trendLabel: "Stable",
       trendTone: "neutral",
+      retailers: [
+         {
+            storeKey: "coles",
+            name: "Coles",
+            price: "$3.20",
+            originalPrice: "$4.00",
+         },
+         {
+            storeKey: "woolworths",
+            name: "Woolworths",
+            price: "$2.90",
+            originalPrice: "$4.40",
+            isCheapest: true,
+         },
+         {
+            storeKey: "aldi",
+            name: "Aldi",
+            price: "$3.10",
+            originalPrice: "$3.90",
+         },
+      ],
    },
    {
       name: "Pasta Penne 500g",
       subtitle: "Italian durum wheat pasta",
+      icon: "wheat-awn",
       badge: "Save $0.50",
-      badgeTone: "accent",
       trendLabel: "Trending down",
       trendTone: "green",
+      retailers: [
+         {
+            storeKey: "coles",
+            name: "Coles",
+            price: "$2.00",
+            originalPrice: "$2.50",
+         },
+         {
+            storeKey: "woolworths",
+            name: "Woolworths",
+            price: "$2.10",
+            originalPrice: "$2.50",
+         },
+         {
+            storeKey: "aldi",
+            name: "Aldi",
+            price: "$1.79",
+            originalPrice: "$2.29",
+            isCheapest: true,
+         },
+      ],
    },
    {
       name: "Cheddar Cheese Block 500g",
       subtitle: "Tasty mature cheddar",
+      icon: "cheese",
       badge: "Save $2.30",
-      badgeTone: "accent",
       trendLabel: "Hot deal",
       trendTone: "orange",
+      retailers: [
+         {
+            storeKey: "coles",
+            name: "Coles",
+            price: "$7.50",
+            originalPrice: "$9.00",
+         },
+         {
+            storeKey: "woolworths",
+            name: "Woolworths",
+            price: "$6.80",
+            originalPrice: "$9.10",
+            isCheapest: true,
+         },
+         {
+            storeKey: "aldi",
+            name: "Aldi",
+            price: "$7.20",
+            originalPrice: "$8.50",
+         },
+      ],
    },
    {
       name: "Orange Juice 2L",
       subtitle: "100% pure squeezed orange juice",
+      icon: "glass-water",
       badge: "Save $1.80",
-      badgeTone: "accent",
       trendLabel: "Trending down",
       trendTone: "green",
+      retailers: [
+         {
+            storeKey: "coles",
+            name: "Coles",
+            price: "$5.20",
+            originalPrice: "$7.00",
+            isCheapest: true,
+         },
+         {
+            storeKey: "woolworths",
+            name: "Woolworths",
+            price: "$5.50",
+            originalPrice: "$6.80",
+         },
+         {
+            storeKey: "aldi",
+            name: "Aldi",
+            price: "$5.90",
+            originalPrice: "$6.50",
+         },
+      ],
    },
    {
       name: "Toilet Paper 24 Pack",
       subtitle: "Soft 3-ply quilted tissue",
+      icon: "toilet-paper",
       badge: "Save $3.00",
-      badgeTone: "accent",
       trendLabel: "Bulk deal",
       trendTone: "orange",
+      retailers: [
+         {
+            storeKey: "coles",
+            name: "Coles",
+            price: "$16.00",
+            originalPrice: "$19.00",
+         },
+         {
+            storeKey: "woolworths",
+            name: "Woolworths",
+            price: "$15.80",
+            originalPrice: "$18.50",
+         },
+         {
+            storeKey: "aldi",
+            name: "Aldi",
+            price: "$14.99",
+            originalPrice: "$17.99",
+            isCheapest: true,
+         },
+      ],
    },
    {
       name: "Coffee Beans 1kg",
       subtitle: "Premium arabica coffee beans",
+      icon: "mug-hot",
       badge: "Save $4.50",
-      badgeTone: "accent",
       trendLabel: "Trending down",
       trendTone: "green",
+      retailers: [
+         {
+            storeKey: "coles",
+            name: "Coles",
+            price: "$22.00",
+            originalPrice: "$26.50",
+         },
+         {
+            storeKey: "woolworths",
+            name: "Woolworths",
+            price: "$21.50",
+            originalPrice: "$26.00",
+            isCheapest: true,
+         },
+         {
+            storeKey: "aldi",
+            name: "Aldi",
+            price: "$23.90",
+            originalPrice: "$25.50",
+         },
+      ],
    },
    {
       name: "Greek Yogurt 1kg",
       subtitle: "Natural full fat yogurt",
+      icon: "bowl-food",
       badge: "Save $1.90",
-      badgeTone: "accent",
       trendLabel: "Trending down",
       trendTone: "green",
+      retailers: [
+         {
+            storeKey: "coles",
+            name: "Coles",
+            price: "$6.50",
+            originalPrice: "$8.00",
+         },
+         {
+            storeKey: "woolworths",
+            name: "Woolworths",
+            price: "$6.80",
+            originalPrice: "$8.20",
+         },
+         {
+            storeKey: "aldi",
+            name: "Aldi",
+            price: "$5.99",
+            originalPrice: "$7.89",
+            isCheapest: true,
+         },
+      ],
    },
 ];
 
-export default function ProductGrid() {
+const ProductGrid: React.FC = () => {
    return (
-      <View>
-         {/* Controls */}
-         <View className="flex-row justify-between items-center mb-6">
+      <ScrollView
+         className="flex-1 px-4 md:px-8 pt-4 pb-10"
+         contentContainerStyle={{ paddingBottom: 40 }}
+      >
+         {/* Controls section */}
+         <View className="flex-row items-center justify-between mb-6">
             <View className="flex-row items-center space-x-4">
-               <Pressable className="flex-row items-center px-4 py-2.5 rounded-xl border-2 border-gray-200 bg-white">
-                  <Text className="mr-2 text-sm text-gray-700">⚙️</Text>
-                  <Text className="text-sm font-medium text-gray-700">Add Filters</Text>
+               {/* Add Filters button */}
+               <Pressable className="flex-row items-center px-5 py-2.5 rounded-xl border-2 border-gray-200 bg-white">
+                  <Text className="mr-2 text-base">⚙️</Text>
+                  <Text className="text-sm font-medium text-gray-700">
+                     Add Filters
+                  </Text>
                </Pressable>
+
+               {/* Showing count */}
                <Text className="text-sm text-gray-600">
-                  Showing <Text className="text-[#10B981] font-bold">247</Text> products
+                  Showing{" "}
+                  <Text className="font-semibold text-[#0DAD79]">247</Text>{" "}
+                  products
                </Text>
             </View>
-            <Pressable className="px-4 py-2.5 rounded-xl border-2 border-gray-200 bg-white">
+
+            {/* Sort dropdown (static for now) */}
+            <Pressable className="flex-row items-center px-5 py-2.5 rounded-xl border-2 border-gray-200 bg-white">
                <Text className="text-sm font-medium text-gray-700">
                   Sort by: Best Savings
                </Text>
+               <Text className="ml-2 text-xs text-gray-400">⌄</Text>
             </Pressable>
          </View>
 
-         {/* Grid */}
-         <View className="flex-row flex-wrap -mx-3">
-            {PRODUCTS.map((p) => (
-               <View key={p.name} className="w-full md:w-1/2 lg:w-1/3 px-3 mb-6">
-                  <ProductCard {...p} />
+         {/* Product grid */}
+         <View className="flex-row flex-wrap -mx-2">
+            {PRODUCTS.map((product, index) => (
+               <View
+                  key={`${product.name}-${index}`}
+                  className="w-full md:w-1/2 lg:w-1/3 px-2 mb-6"
+               >
+                  <ProductCard product={product} />
                </View>
             ))}
          </View>
 
          {/* Pagination */}
-         <View className="mt-8 flex-row justify-center items-center space-x-2">
-            <Pressable className="px-4 py-2 rounded-xl border-2 border-gray-200 opacity-40">
+         <View className="mt-8 flex-row items-center justify-center space-x-2">
+            <Pressable className="px-4 py-2 rounded-xl border-2 border-gray-200">
                <Text className="text-sm text-gray-400">{"<"}</Text>
             </Pressable>
-            <Pressable className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#10B981] to-[#059669]">
+
+            <Pressable className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#0DAD79] to-[#13C296]">
                <Text className="text-sm font-semibold text-white">1</Text>
             </Pressable>
-            {[2, 3, 4].map((n) => (
-               <Pressable
-                  key={n}
-                  className="px-4 py-2 rounded-xl border-2 border-gray-200 bg-white"
-               >
-                  <Text className="text-sm text-gray-700">{n}</Text>
-               </Pressable>
-            ))}
+
+            <Pressable className="px-4 py-2 rounded-xl border-2 border-gray-200">
+               <Text className="text-sm text-gray-700">2</Text>
+            </Pressable>
+            <Pressable className="px-4 py-2 rounded-xl border-2 border-gray-200">
+               <Text className="text-sm text-gray-700">3</Text>
+            </Pressable>
+            <Pressable className="px-4 py-2 rounded-xl border-2 border-gray-200">
+               <Text className="text-sm text-gray-700">4</Text>
+            </Pressable>
+
             <Text className="px-2 text-gray-500">...</Text>
-            <Pressable className="px-4 py-2 rounded-xl border-2 border-gray-200 bg-white">
+
+            <Pressable className="px-4 py-2 rounded-xl border-2 border-gray-200">
                <Text className="text-sm text-gray-700">12</Text>
             </Pressable>
-            <Pressable className="px-4 py-2 rounded-xl border-2 border-gray-200 bg-white">
+
+            <Pressable className="px-4 py-2 rounded-xl border-2 border-gray-200">
                <Text className="text-sm text-gray-700">{">"}</Text>
             </Pressable>
          </View>
-      </View>
+      </ScrollView>
    );
-}
+};
+
+export default ProductGrid;
