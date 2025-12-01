@@ -1,59 +1,99 @@
 import React from "react";
 import { View, Text, Pressable, Image } from "react-native";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
-export default function Header() {
+type HeaderProps = {
+   activeRoute?: "Home" | "Compare" | "Specials" | "My Lists" | "Profile";
+};
+
+const navItems: Array<HeaderProps["activeRoute"]> = [
+   "Home",
+   "Compare",
+   "Specials",
+   "My Lists",
+   "Profile",
+];
+
+export default function Header({ activeRoute = "Home" }: HeaderProps) {
    return (
-      <View className="bg-white shadow-sm">
-         <View className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-4 border-b border-gray-100 flex-row items-center justify-between">
-            {/* Left: logo + nav */}
-            <View className="flex-row items-center space-x-6">
-               <View className="flex-row items-center space-x-2">
-                  <View className="w-11 h-11 rounded-lg items-center justify-center bg-gradient-to-br from-[#10B981] to-[#059669] shadow-md" />
-                  <Text className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] to-[#059669]">
-                     DiscountMate
-                  </Text>
+      <View className="w-full flex-row items-center justify-between px-4 md:px-8 py-4 border-b border-gray-100 bg-white">
+         {/* Left: logo + nav */}
+         <View className="flex-row items-center gap-6 md:gap-8">
+            {/* Logo + brand */}
+            <View className="flex-row items-center gap-2">
+               <View className="w-11 h-11 bg-gradient-to-br from-primary_green to-secondary_green rounded-lg flex items-center justify-center shadow-md">
+                  <FontAwesome6 name="tag" size={18} color="#FFFFFF" />
                </View>
-
-               <View className="hidden md:flex flex-row items-center space-x-1">
-                  <Pressable className="px-4 py-2 rounded-lg bg-[#10B9811A]">
-                     <Text className="text-sm font-semibold text-[#10B981]">Home</Text>
-                  </Pressable>
-                  <Pressable className="px-4 py-2 rounded-lg">
-                     <Text className="text-sm text-gray-600">Compare</Text>
-                  </Pressable>
-                  <Pressable className="px-4 py-2 rounded-lg">
-                     <Text className="text-sm text-gray-600">Specials</Text>
-                  </Pressable>
-                  <Pressable className="px-4 py-2 rounded-lg">
-                     <Text className="text-sm text-gray-600">My Lists</Text>
-                  </Pressable>
-                  <Pressable className="px-4 py-2 rounded-lg">
-                     <Text className="text-sm text-gray-600">Profile</Text>
-                  </Pressable>
-               </View>
+               <Text className="text-2xl font-bold bg-gradient-to-r from-primary_green to-secondary_green bg-clip-text text-transparent">
+                  DiscountMate
+               </Text>
             </View>
 
-            {/* Right: bell + basket summary + avatar */}
-            <View className="flex-row items-center space-x-4">
-               <Pressable className="relative">
-                  <View className="w-6 h-6 rounded-full items-center justify-center">
-                     <Text className="text-lg text-gray-600">🔔</Text>
-                  </View>
-                  <View className="w-2 h-2 rounded-full bg-red-500 absolute -top-0.5 -right-0.5" />
-               </Pressable>
+            {/* Nav */}
+            <View className="flex-row items-center gap-1">
+               {navItems.map((item) => {
+                  const isActive = item === activeRoute;
+                  if (isActive) {
+                     return (
+                        <Pressable
+                           key={item}
+                           className="px-4 py-2 rounded-lg bg-primary_green/10"
+                        >
+                           <Text className="text-[15px] font-semibold text-primary_green">
+                              {item}
+                           </Text>
+                        </Pressable>
+                     );
+                  }
 
-               <View className="flex-row items-center space-x-2 px-4 py-2.5 rounded-xl border border-[#10B98133] bg-[#10B9811A]">
-                  <Text className="text-xs font-semibold text-gray-800">3 items</Text>
-                  <Text className="text-xs font-bold text-[#10B981]">$12.40 saved</Text>
-               </View>
+                  return (
+                     <Pressable
+                        key={item}
+                        className="group px-4 py-2 rounded-lg hover:bg-primary_green/5"
+                     >
+                        <Text className="text-[15px] text-gray-600 group-hover:text-primary_green transition-colors">
+                           {item}
+                        </Text>
+                     </Pressable>
+                  );
+               })}
+            </View>
+         </View>
 
-               <Image
-                  source={{
-                     uri: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
-                  }}
-                  className="w-10 h-10 rounded-full border-2 border-[#10B9814D]"
+         {/* Right: bell + basket + avatar */}
+         <View className="flex-row items-center gap-3 md:gap-4">
+            {/* Notifications */}
+            <Pressable className="relative">
+               <FontAwesome6
+                  name="bell"
+                  size={20}
+                  className="text-gray-600"
                />
+               <View className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500" />
+            </Pressable>
+
+            {/* Basket summary */}
+            <View className="flex-row items-center gap-3 px-4 md:px-5 py-2.5 bg-gradient-to-r from-primary_green/10 to-secondary_green/10 rounded-xl border border-primary_green/20">
+               <FontAwesome6
+                  name="basket-shopping"
+                  size={16}
+                  className="text-primary_green"
+               />
+               <Text className="text-sm font-semibold text-[#111827]">
+                  3 items
+               </Text>
+               <Text className="text-sm font-bold text-primary_green">
+                  $12.40 saved
+               </Text>
             </View>
+
+            {/* Avatar */}
+            <Image
+               source={{
+                  uri: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
+               }}
+               className="w-10 h-10 rounded-full border-2 border-primary_green/30"
+            />
          </View>
       </View>
    );

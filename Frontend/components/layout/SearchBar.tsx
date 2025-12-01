@@ -1,21 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, TextInput, Text, Pressable } from "react-native";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
 export default function SearchBar() {
+   const [isFocused, setIsFocused] = useState(false);
+
    return (
-      <View className="bg-white border-b border-gray-100">
-         <View className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-6 flex-row items-center space-x-4">
-            <View className="flex-1 flex-row items-center bg-white rounded-xl border-2 border-gray-200 px-3 py-2">
-               <Text className="mr-2 text-gray-400 text-base">🔍</Text>
-               <TextInput
-                  placeholder="Search for products, brands, or categories..."
-                  placeholderTextColor="#9CA3AF"
-                  className="flex-1 text-sm text-[#111827] py-1"
-               />
+      <View className="bg-white border-b border-gray-100 sticky top-[128px] z-40 shadow-sm">
+         <View className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-6">
+            <View className="flex-row items-center gap-4">
+               {/* Search input */}
+               <View
+                  className={[
+                     "flex-1 relative rounded-xl border-2 bg-white",
+                     isFocused
+                        ? "border-primary_green shadow-[0_0_0_3px_rgba(16,185,129,0.25)]"
+                        : "border-gray-200",
+                  ].join(" ")}
+               >
+                  <FontAwesome6
+                     name="magnifying-glass"
+                     size={16}
+                     className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
+                  <TextInput
+                     placeholder="Search for products, brands, or categories..."
+                     placeholderTextColor="#9CA3AF"
+                     className="w-full pl-14 pr-4 py-4 text-base text-[#111827] focus:outline-none focus:ring-0"
+                     onFocus={() => setIsFocused(true)}
+                     onBlur={() => setIsFocused(false)}
+                  />
+               </View>
+
+               {/* Search button */}
+               <Pressable className="px-8 py-4 bg-gradient-to-r from-primary_green to-secondary_green rounded-xl shadow-sm hover:shadow-lg transition-shadow">
+                  <Text className="text-white font-semibold">Search</Text>
+               </Pressable>
             </View>
-            <Pressable className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#10B981] to-[#059669]">
-               <Text className="text-sm font-semibold text-white">Search</Text>
-            </Pressable>
          </View>
       </View>
    );
