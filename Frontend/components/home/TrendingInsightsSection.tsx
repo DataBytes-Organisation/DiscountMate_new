@@ -1,94 +1,126 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
 export default function TrendingInsightsSection() {
    return (
       <View className="bg-white border-t border-gray-100">
          <View className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-16">
-            <View className="mb-8">
-               <Text className="text-3xl font-bold text-[#111827] mb-1">
+            {/* Header */}
+            <View className="mb-10">
+               <Text className="text-3xl font-bold text-[#111827] mb-2">
                   Trending Insights
                </Text>
-               <Text className="text-sm text-gray-600">
+               <Text className="text-gray-600">
                   See what's moving in the market this week
                </Text>
             </View>
 
-            <View className="flex-row flex-wrap -mx-3">
-               {/* Dairy */}
-               <View className="w-full md:w-1/3 px-3 mb-6">
-                  <View className="rounded-2xl border border-[#10B98133] p-6 bg-[#ECFDF5]">
-                     <View className="flex-row justify-between items-center mb-6">
-                        <View className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#10B981] to-[#059669] items-center justify-center">
-                           <Text className="text-xl text-white">📉</Text>
+            {/* Cards */}
+            <View className="flex flex-col md:flex-row gap-6">
+               {/* Dairy Products */}
+               <Pressable className="flex-1">
+                  <View className="bg-gradient-to-br from-primary_green/5 to-secondary_green/5 border border-primary_green/20 rounded-2xl p-8 hover:shadow-lg transition-all">
+                     <View className="flex-row items-center justify-between mb-6">
+                        <View className="w-14 h-14 bg-gradient-to-br from-primary_green to-secondary_green rounded-xl flex items-center justify-center shadow-md">
+                           <FontAwesome6
+                              name="arrow-trend-down"
+                              size={20}
+                              color="#FFFFFF"
+                           />
                         </View>
-                        <Text className="text-sm font-bold text-[#10B981]">
+                        <Text className="text-sm font-bold text-primary_green">
                            23% price drop
                         </Text>
                      </View>
+
                      <Text className="text-xl font-bold text-[#111827] mb-2">
                         Dairy Products
                      </Text>
-                     <Text className="text-sm text-gray-600 mb-4">
+                     <Text className="text-sm text-gray-600 mb-6">
                         Average savings of $2.40 across milk, cheese, and yogurt
                      </Text>
-                     <Pressable>
-                        <Text className="text-sm font-semibold text-[#10B981]">
-                           View all dairy deals →
+
+                     <Pressable className="flex-row items-center gap-2">
+                        <Text className="text-sm text-primary_green font-semibold">
+                           View all dairy deals
                         </Text>
+                        <FontAwesome6
+                           name="arrow-right"
+                           size={14}
+                           className="text-primary_green"
+                        />
                      </Pressable>
                   </View>
-               </View>
+               </Pressable>
 
-               {/* Household */}
-               <View className="w-full md:w-1/3 px-3 mb-6">
-                  <View className="rounded-2xl border border-[#FBBF244D] p-6 bg-[#FEF3C7]">
-                     <View className="flex-row justify-between items-center mb-6">
-                        <View className="w-14 h-14 rounded-xl bg-[#FBBF24] items-center justify-center">
-                           <Text className="text-xl text-white">🔥</Text>
+               {/* Household Essentials */}
+               <Pressable className="flex-1">
+                  <View className="bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20 rounded-2xl p-8 hover:shadow-lg transition-all">
+                     <View className="flex-row items-center justify-between mb-6">
+                        <View className="w-14 h-14 bg-gradient-to-br from-accent to-orange-400 rounded-xl flex items-center justify-center shadow-md">
+                           <FontAwesome6 name="fire" size={20} color="#FFFFFF" />
                         </View>
-                        <Text className="text-sm font-bold text-[#F59E0B]">
+                        <Text className="text-sm font-bold text-accent">
                            Hot deals
                         </Text>
                      </View>
+
                      <Text className="text-xl font-bold text-[#111827] mb-2">
                         Household Essentials
                      </Text>
-                     <Text className="text-sm text-gray-600 mb-4">
+                     <Text className="text-sm text-gray-600 mb-6">
                         Bulk deals on cleaning supplies and paper products
                      </Text>
-                     <Pressable>
-                        <Text className="text-sm font-semibold text-[#F59E0B]">
-                           Explore household →
+
+                     <Pressable className="flex-row items-center gap-2">
+                        <Text className="text-sm text-accent font-semibold">
+                           Explore household
                         </Text>
+                        <FontAwesome6
+                           name="arrow-right"
+                           size={14}
+                           className="text-accent"
+                        />
                      </Pressable>
                   </View>
-               </View>
+               </Pressable>
 
-               {/* Fresh produce */}
-               <View className="w-full md:w-1/3 px-3 mb-6">
-                  <View className="rounded-2xl border border-blue-200 p-6 bg-[#DBEAFE]">
-                     <View className="flex-row justify-between items-center mb-6">
-                        <View className="w-14 h-14 rounded-xl bg-blue-500 items-center justify-center">
-                           <Text className="text-xl text-white">📈</Text>
+               {/* Fresh Produce */}
+               <Pressable className="flex-1">
+                  <View className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl p-8 hover:shadow-lg transition-all">
+                     <View className="flex-row items-center justify-between mb-6">
+                        <View className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                           <FontAwesome6
+                              name="chart-line"
+                              size={20}
+                              color="#FFFFFF"
+                           />
                         </View>
                         <Text className="text-sm font-bold text-blue-600">
                            Price watch
                         </Text>
                      </View>
+
                      <Text className="text-xl font-bold text-[#111827] mb-2">
                         Fresh Produce
                      </Text>
-                     <Text className="text-sm text-gray-600 mb-4">
+                     <Text className="text-sm text-gray-600 mb-6">
                         Seasonal fruits and vegetables at best prices
                      </Text>
-                     <Pressable>
-                        <Text className="text-sm font-semibold text-blue-600">
-                           Check fresh produce →
+
+                     <Pressable className="flex-row items-center gap-2">
+                        <Text className="text-sm text-blue-600 font-semibold">
+                           Check fresh produce
                         </Text>
+                        <FontAwesome6
+                           name="arrow-right"
+                           size={14}
+                           className="text-blue-600"
+                        />
                      </Pressable>
                   </View>
-               </View>
+               </Pressable>
             </View>
          </View>
       </View>

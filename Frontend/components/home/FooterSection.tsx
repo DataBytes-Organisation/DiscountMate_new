@@ -1,18 +1,20 @@
 import React from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { FontAwesome, Feather } from "@expo/vector-icons";
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+
 
 const FooterSection: React.FC = () => {
    return (
-      <View className="bg-dark">
+      <View className="bg-dark m-0" style={{ marginHorizontal: -16, marginBottom: -24 }}>
          <View className="w-full max-w-[1920px] mx-auto px-6 py-10">
             {/* Top grid */}
             <View className="flex flex-col gap-10 md:flex-row md:justify-between md:gap-8 mb-10">
                {/* Brand + description + social */}
                <View className="flex-1">
                   <View className="flex flex-row items-center gap-2 mb-6">
-                     <View className="w-11 h-11 rounded-lg items-center justify-center bg-gradient-to-br from-[#10B981] to-[#059669] shadow-md" >
-                        <Feather name="tag" size={20} color="#FFFFFF" />
+                     <View className="w-11 h-11 rounded-lg items-center justify-center bg-gradient-to-br from-primary_green to-secondary_green shadow-md" >
+                        <FontAwesome6 name="tag" size={20} color="#FFFFFF" solid />
                      </View>
                      <Text className="text-2xl font-bold text-white">
                         DiscountMate
@@ -90,8 +92,8 @@ const FooterSection: React.FC = () => {
                         placeholderTextColor="#9CA3AF"
                         className="flex-1 px-4 py-3 rounded-lg border border-white/20 bg-white/10 text-sm text-white"
                      />
-                     <TouchableOpacity className="px-4 py-3 rounded-lg bg-gradient-to-r from-primary to-secondary items-center justify-center shadow-lg">
-                        <Feather name="send" size={18} color="#FFFFFF" />
+                     <TouchableOpacity className="px-4 py-3 rounded-lg bg-gradient-to-r from-primary_green to-secondary_green items-center justify-center shadow-lg">
+                        <FontAwesome6 name="paper-plane" size={15} color="#FFFFFF" solid />
                      </TouchableOpacity>
                   </View>
                </View>

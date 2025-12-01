@@ -6,7 +6,7 @@ export default function AddButton({ label = "Add", onPress }: { label?: string; 
    return (
       <Pressable
          onPress={onPress}
-         className="flex-row items-center justify-center py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary shadow-sm active:opacity-90"
+         className="flex-row items-center justify-center py-2.5 rounded-xl bg-gradient-to-r from-primary_green to-secondary_green active:opacity-90"
       >
          <FontAwesome5
             name="shopping-basket"
