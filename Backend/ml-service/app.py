@@ -12,6 +12,7 @@ import sys
 
 # Import ML model functions
 from ml_models.weekly_specials import get_weekly_specials_ml
+from ml_models.recommendations import get_recommendations_ml
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -70,6 +71,58 @@ def get_current_week():
     today = datetime.now()
     week_start = today - timedelta(days=today.weekday())
     return week_start.strftime('%Y-W%W')
+
+@app.route('/api/ml/recommendations', methods=['POST'])
+def get_recommendations():
+    """
+    Get product recommendations using existing ML model
+
+    This endpoint demonstrates how to integrate an existing trained model:
+    - The model file exists at: ML/Recommendation_system/Recommendation-by-Simba/product_recommendation_model.joblib
+    - Currently returns demo output showing the expected structure
+    - Ready to be connected to the actual model when data sources are available
+
+    Request body:
+    {
+        "product_id": 21137,
+        "limit": 5
+    }
+    """
+    try:
+        data = request.get_json() or {}
+        product_id = data.get('product_id')
+        limit = int(data.get('limit', 5))
+
+        if product_id is None:
+            return jsonify({
+                'success': False,
+                'error': 'product_id is required'
+            }), 400
+
+        # Call ML model function from ml_models module
+        # This demonstrates the integration pattern:
+        # - app.py handles HTTP requests/responses
+        # - ml_models/recommendations.py contains the ML model logic
+        recommendations = get_recommendations_ml(product_id=product_id, limit=limit)
+
+        return jsonify({
+            'success': True,
+            'message': 'Product recommendations (demo output - model integration ready)',
+            'input_product_id': product_id,
+            'recommendations': recommendations,
+            'count': len(recommendations),
+            'model_info': {
+                'model_type': 'Association Rule Learning',
+                'model_location': 'ML/Recommendation_system/Recommendation-by-Simba/product_recommendation_model.joblib',
+                'status': 'demo_mode'
+            }
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 if __name__ == '__main__':
     print(f"Starting ML/AI Service on port {ML_SERVICE_PORT}")
