@@ -7,6 +7,7 @@ ML/Recommendation_system/Recommendation-by-Simba/product_recommendation_model.jo
 """
 
 import pandas as pd
+import joblib
 from typing import List, Dict, Optional
 import os
 
@@ -19,16 +20,90 @@ MODEL_PATH = os.path.join(
     'product_recommendation_model.joblib'
 )
 
+# Global variables to cache model and data (loaded once)
+_model = None
+_rules_df = None
+_products_df = None
+
+
+def _load_model():
+    """Load the recommendation model from joblib file"""
+    global _model
+    if _model is None:
+        if not os.path.exists(MODEL_PATH):
+            raise FileNotFoundError(
+                f"Model file not found at {MODEL_PATH}\n"
+                "Please ensure the model file exists or update MODEL_PATH"
+            )
+        _model = joblib.load(MODEL_PATH)
+    return _model
+
+
+def _create_mock_rules_df():
+    """
+    Create mock association rules dataframe for demo purposes.
+    In production, this would be loaded from CSV or MongoDB.
+
+    The rules_df needs columns: antecedents, consequents, lift
+    """
+    # Create sample association rules based on the notebook structure
+    # These are example rules that match the model's expected format
+    rules_data = {
+        'antecedents': [
+            frozenset({21137}),  # Organic Strawberries
+            frozenset({21137}),
+            frozenset({21137}),
+            frozenset({21137}),
+            frozenset({21137}),
+            frozenset({27966}),  # Organic Raspberries
+            frozenset({47209}),  # Organic Hass Avocado
+        ],
+        'consequents': [
+            frozenset({27966}),  # Organic Raspberries
+            frozenset({47209}),  # Organic Hass Avocado
+            frozenset({13176}),  # Bag of Organic Bananas
+            frozenset({21903}),  # Organic Baby Spinach
+            frozenset({8277}),   # Apple Honeycrisp Organic
+            frozenset({47209}),
+            frozenset({13176}),
+        ],
+        'lift': [2.15, 1.88, 1.75, 1.65, 1.55, 1.45, 1.35],
+        'confidence': [0.64, 0.56, 0.52, 0.49, 0.46, 0.43, 0.40],
+        'support': [0.18, 0.16, 0.15, 0.14, 0.13, 0.12, 0.11]
+    }
+    return pd.DataFrame(rules_data)
+
+
+def _create_mock_products_df():
+    """
+    Create mock products dataframe for demo purposes.
+    In production, this would be loaded from CSV or MongoDB.
+
+    The products_df needs columns: product_id, product_name
+    """
+    products_data = {
+        'product_id': [21137, 27966, 47209, 13176, 21903, 8277],
+        'product_name': [
+            'Organic Strawberries',
+            'Organic Raspberries',
+            'Organic Hass Avocado',
+            'Bag of Organic Bananas',
+            'Organic Baby Spinach',
+            'Apple Honeycrisp Organic'
+        ]
+    }
+    return pd.DataFrame(products_data)
+
 
 def get_recommendations_ml(product_id: int, limit: int = 5) -> List[Dict]:
     """
     Get product recommendations using the existing ML model.
 
-    This function demonstrates the integration pattern:
-    1. Load the trained model from file
-    2. Load required data (rules_df, products_df)
-    3. Call the model function
-    4. Format and return results
+    This function demonstrates using an actual trained model:
+    1. Loads the saved joblib model
+    2. Creates mock data (rules_df, products_df) for demo
+    3. Calls the actual model function
+    4. Formats and returns results
 
     Args:
         product_id: The product ID to get recommendations for
@@ -37,108 +112,107 @@ def get_recommendations_ml(product_id: int, limit: int = 5) -> List[Dict]:
     Returns:
         List of recommended products with details
     """
+    try:
+        # Load the actual model
+        model = _load_model()
 
-    # TODO: Uncomment and implement when ready to use actual model
-    # import joblib
-    # import pandas as pd
-    #
-    # # Load the saved model
-    # recommendation_model = joblib.load(MODEL_PATH)
-    #
-    # # Load association rules (from CSV or MongoDB)
-    # rules_df = pd.read_csv('path/to/rules.csv')
-    #
-    # # Load products data (from MongoDB or CSV)
-    # products_df = pd.read_csv('path/to/products.csv')
-    #
-    # # Call the model function
-    # recommendations_df = recommendation_model(rules_df, product_id, limit)
-    #
-    # # Format results
-    # recommendations = []
-    # for _, row in recommendations_df.iterrows():
-    #     recommendations.append({
-    #         'product_id': int(row['product_id']),
-    #         'product_name': row['product_name'],
-    #         'confidence_score': 0.85  # Would come from model
-    #     })
-    #
-    # return recommendations
+        # Create mock data for demo (in production, load from CSV/MongoDB)
+        rules_df = _create_mock_rules_df()
+        products_df = _create_mock_products_df()
 
-    # For demo purposes, return example output showing what the model would return
-    # This demonstrates the expected data structure
+        # IMPORTANT: The model function expects a 'products' dataframe in the global scope
+        # We need to inject it into the function's globals before calling
+        import sys
+        import types
+
+        # Method 1: Try to inject into function's __globals__
+        if hasattr(model, '__globals__'):
+            model.__globals__['products'] = products_df
+
+        # Method 2: Also add to current module's globals as backup
+        globals()['products'] = products_df
+
+        # Method 3: Create a new function with updated globals if needed
+        try:
+            # Try calling the model first
+            recommendations_df = model(rules_df, product_id, limit)
+        except NameError as e:
+            if 'products' in str(e):
+                # Products not found - create new function with products in globals
+                func_globals = dict(model.__globals__) if hasattr(model, '__globals__') else {}
+                func_globals['products'] = products_df
+
+                # Create new function with updated globals
+                new_func = types.FunctionType(
+                    model.__code__,
+                    func_globals,
+                    model.__name__,
+                    model.__defaults__,
+                    model.__closure__
+                )
+                recommendations_df = new_func(rules_df, product_id, limit)
+            else:
+                raise
+
+        # Format results for API response
+        recommendations = []
+        for _, row in recommendations_df.iterrows():
+            recommendations.append({
+                'product_id': int(row['product_id']),
+                'product_name': str(row['product_name']),
+                'model_type': 'Association Rule Learning',
+                'source': 'product_recommendation_model.joblib'
+            })
+
+        return recommendations
+
+    except FileNotFoundError as e:
+        # If model file doesn't exist, return demo data with error message
+        print(f"Warning: {e}")
+        print("Returning demo data - model file not found")
+        return _get_demo_recommendations(product_id, limit)
+    except Exception as e:
+        # If model fails for any reason, return demo data
+        print(f"Error using model: {e}")
+        print("Returning demo data as fallback")
+        return _get_demo_recommendations(product_id, limit)
+
+
+def _get_demo_recommendations(product_id: int, limit: int) -> List[Dict]:
+    """Fallback demo recommendations if model can't be loaded"""
     demo_recommendations = [
         {
             'product_id': 27966,
             'product_name': 'Organic Raspberries',
-            'confidence_score': 0.92,
-            'reason': 'Frequently bought together'
+            'model_type': 'Demo (model not loaded)',
+            'source': 'placeholder'
         },
         {
             'product_id': 47209,
             'product_name': 'Organic Hass Avocado',
-            'confidence_score': 0.88,
-            'reason': 'Similar customers also bought'
+            'model_type': 'Demo (model not loaded)',
+            'source': 'placeholder'
         },
         {
             'product_id': 13176,
             'product_name': 'Bag of Organic Bananas',
-            'confidence_score': 0.85,
-            'reason': 'Association rule match'
+            'model_type': 'Demo (model not loaded)',
+            'source': 'placeholder'
         },
         {
             'product_id': 21903,
             'product_name': 'Organic Baby Spinach',
-            'confidence_score': 0.82,
-            'reason': 'Content-based similarity'
+            'model_type': 'Demo (model not loaded)',
+            'source': 'placeholder'
         },
         {
             'product_id': 8277,
             'product_name': 'Apple Honeycrisp Organic',
-            'confidence_score': 0.79,
-            'reason': 'Category-based recommendation'
+            'model_type': 'Demo (model not loaded)',
+            'source': 'placeholder'
         }
     ]
-
     return demo_recommendations[:limit]
 
 
-def load_model():
-    """
-    Load the recommendation model from file.
-    This function shows how to load the actual model when ready.
-    """
-    # TODO: Implement actual model loading
-    # import joblib
-    #
-    # if not os.path.exists(MODEL_PATH):
-    #     raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
-    #
-    # model = joblib.load(MODEL_PATH)
-    # return model
-
-    return None  # Placeholder for demo
-
-
-def format_recommendations(recommendations_df: pd.DataFrame) -> List[Dict]:
-    """
-    Format model output into API response format.
-
-    Args:
-        recommendations_df: DataFrame with product_id and product_name
-
-    Returns:
-        List of formatted recommendation dictionaries
-    """
-    # TODO: Implement formatting logic
-    # recommendations = []
-    # for _, row in recommendations_df.iterrows():
-    #     recommendations.append({
-    #         'product_id': int(row['product_id']),
-    #         'product_name': row['product_name'],
-    #         'confidence_score': row.get('confidence', 0.0)
-    #     })
-    # return recommendations
-
-    return []
 

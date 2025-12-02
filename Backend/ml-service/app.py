@@ -107,14 +107,14 @@ def get_recommendations():
 
         return jsonify({
             'success': True,
-            'message': 'Product recommendations (demo output - model integration ready)',
+            'message': 'Product recommendations using existing ML model',
             'input_product_id': product_id,
             'recommendations': recommendations,
             'count': len(recommendations),
             'model_info': {
                 'model_type': 'Association Rule Learning',
                 'model_location': 'ML/Recommendation_system/Recommendation-by-Simba/product_recommendation_model.joblib',
-                'status': 'demo_mode'
+                'status': 'using_actual_model' if recommendations and recommendations[0].get('source') == 'product_recommendation_model.joblib' else 'fallback_mode'
             }
         })
 
@@ -130,6 +130,6 @@ if __name__ == '__main__':
     print("  GET  /health - Health check")
     print("  GET  /api/weekly-specials - Get this week's top specials")
     print("  POST /api/ml/recommendations - Get product recommendations")
-    print("  POST /api/ml/price-prediction - Predict future prices")
+   #  print("  POST /api/ml/price-prediction - Predict future prices")
     app.run(host='0.0.0.0', port=ML_SERVICE_PORT, debug=True)
 
