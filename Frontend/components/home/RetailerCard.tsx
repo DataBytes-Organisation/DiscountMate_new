@@ -6,31 +6,33 @@ import { STORE_THEMES } from "../../storeThemes.config";
 export type StoreKey = keyof typeof STORE_THEMES;
 
 export type Retailer = {
-   storeKey: StoreKey;         // "coles" | "woolworths" | "aldi"
-   name: string;               // label shown on card: "Coles"
-   price: string;              // "$3.50"
-   originalPrice?: string;     // "$4.70"
+   storeKey: StoreKey;
+   name: string;
+   price: string;
+   originalPrice?: string;
    isCheapest?: boolean;
 };
 
-type RetailerCardProps = {
-   retailer: Retailer;
-};
+type Props = { retailer: Retailer };
 
-export default function RetailerCard({ retailer }: RetailerCardProps) {
+export default function RetailerCard({ retailer }: Props) {
    const { storeKey, name, price, originalPrice, isCheapest } = retailer;
 
    const theme = STORE_THEMES[storeKey];
 
    if (isCheapest) {
-      // The highlighted cheapest block (gradient + “Cheapest” badge)
       return (
          <View
             className={[
                "flex-1 p-2 rounded-lg items-center",
+
+               // gradients MUST be literal to be recognized
                "bg-gradient-to-br",
-               theme.bg,          // gradient background
-               theme.border,      // themed border
+               theme.from,           // e.g. "from-blue-50"
+               theme.to,             // e.g. "to-blue-100"
+
+               "border",
+               theme.border,         // e.g. "border-blue-300"
             ].join(" ")}
          >
             <Text className="text-[11px] text-gray-500 mb-1 font-medium">
@@ -51,7 +53,8 @@ export default function RetailerCard({ retailer }: RetailerCardProps) {
                className={[
                   "mt-1 px-2 py-0.5 rounded-full",
                   "bg-gradient-to-r",
-                  theme.cheapestGradient,
+                  theme.badgeFrom,    // must be literal
+                  theme.badgeTo,
                ].join(" ")}
             >
                <Text className="text-[10px] font-bold text-white">
@@ -62,15 +65,16 @@ export default function RetailerCard({ retailer }: RetailerCardProps) {
       );
    }
 
-   // Normal gray card for non-cheapest retailers
    return (
       <View className="flex-1 p-2 rounded-lg bg-gray-50 items-center">
          <Text className="text-[11px] text-gray-500 mb-1 font-medium">
             {name}
          </Text>
+
          <Text className="text-base font-bold text-[#111827]">
             {price}
          </Text>
+
          {originalPrice && (
             <Text className="text-[11px] text-gray-400 line-through">
                {originalPrice}

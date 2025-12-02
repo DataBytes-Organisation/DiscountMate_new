@@ -1,20 +1,34 @@
 export const STORE_THEMES = {
-   coles: {
-      text: "text-[#EF4444]",
-      border: "border-[#EF44444D]",
-      bg: "bg-gradient-to-br from-[#EF44441A] to-[#B91C1C1A]",
-      cheapestGradient: "bg-gradient-to-r from-[#EF4444] to-[#B91C1C]",
-   },
-   woolworths: {
-      text: "text-[#10B981]",
-      border: "border-[#10B9814D]",
-      bg: "bg-gradient-to-br from-[#10B9811A] to-[#0596691A]",
-      cheapestGradient: "bg-gradient-to-r from-[#10B981] to-[#059669]",
-   },
    aldi: {
-      text: "text-[#3B82F6]",
-      border: "border-[#3B82F64D]",
-      bg: "bg-gradient-to-br from-[#3B82F61A] to-[#1D4ED81A]",
-      cheapestGradient: "bg-gradient-to-r from-[#3B82F6] to-[#1D4ED8]",
+      text: "text-blue-600",
+      border: "border-blue-300",
+
+      from: "from-blue-50",
+      to: "to-blue-100",
+
+      badgeFrom: "from-blue-500",
+      badgeTo: "to-blue-600",
    },
-} as const;
+
+   woolworths: {
+      text: "text-green-600",
+      border: "border-green-300",
+
+      from: "from-green-50",
+      to: "to-green-100",
+
+      badgeFrom: "from-green-500",
+      badgeTo: "to-green-600",
+   },
+
+   coles: {
+      text: "text-red-600",
+      border: "border-red-300",
+
+      from: "from-red-50",
+      to: "to-red-100",
+
+      badgeFrom: "from-red-500",
+      badgeTo: "to-red-600",
+   },
+};
