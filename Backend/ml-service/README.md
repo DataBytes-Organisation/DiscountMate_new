@@ -4,15 +4,165 @@ Python Flask service that provides ML/AI endpoints for the DiscountMate applicat
 
 ## Table of Contents
 
-1. [Architecture Overview](#architecture-overview)
-2. [Quick Start](#quick-start)
-3. [Setup & Installation](#setup--installation)
-4. [Service Management](#service-management)
+1. [NativeWind Setup](#1-nativewind-setup)
+2. [Python Flask Setup](#2-python-flask-setup)
+3. [Architecture Overview](#architecture-overview)
+4. [Quick Start](#quick-start)
 5. [API Endpoints](#api-endpoints)
 6. [Integrating ML Models](#integrating-ml-models)
 7. [Testing](#testing)
 8. [Troubleshooting](#troubleshooting)
 9. [Next Steps](#next-steps)
+10. [Service Management with manage.sh](#service-management-with-managesh)
+
+
+
+## 1. NativeWind Setup
+
+NativeWind is already configured in the Frontend. After pulling the latest changes, you only need to install dependencies:
+
+```bash
+cd Frontend
+npm install
+# or if using yarn:
+yarn install
+```
+
+That's it! All configuration files (babel.config.js, tailwind.config.js, postcss.config.js, global.css) are already committed to the repository.
+
+**No additional setup required** - NativeWind will work immediately after installing dependencies.
+
+
+
+## 2. Python Flask Setup
+
+### Prerequisites
+
+Before setting up the Flask service, ensure you have:
+
+- **Python 3.8+** installed
+- **python3-venv** package (for creating virtual environments)
+
+#### Installing Prerequisites
+
+**Windows:**
+1. Download Python 3.8+ from [python.org](https://www.python.org/downloads/)
+2. During installation, check **"Add Python to PATH"**
+3. Verify installation:
+   ```bash
+   python --version
+   ```
+4. Python's `venv` module is included by default with Python 3.8+
+
+**macOS:**
+1. Python 3 is usually pre-installed. Check version:
+   ```bash
+   python3 --version
+   ```
+2. If not installed or outdated, use Homebrew:
+   ```bash
+   brew install python3
+   ```
+3. Python's `venv` module is included by default
+
+**WSL / Linux (Debian/Ubuntu):**
+```bash
+sudo apt update
+sudo apt install python3 python3-venv python3-full
+```
+
+Verify installation:
+```bash
+python3 --version
+python3 -m venv --help
+```
+
+### Installation Steps
+
+#### Option 1: Using Start Script (Recommended)
+
+```bash
+cd Backend/ml-service
+./start.sh
+```
+
+**Note about `chmod +x start.sh`:**
+- **When needed**: If you get a "Permission denied" error when running `./start.sh`, you need to make it executable first:
+  ```bash
+  chmod +x start.sh
+  ./start.sh
+  ```
+- **When not needed**: If the file already has execute permissions (common on Linux/WSL), you can run `./start.sh` directly
+- **Alternative**: You can always run the script without execute permissions using:
+  ```bash
+  bash start.sh
+  ```
+
+The `start.sh` script will:
+- Check if Python 3 and python3-venv are installed
+- Create a virtual environment if it doesn't exist
+- Activate the virtual environment
+- Upgrade pip
+- Install all dependencies from `requirements.txt`
+- Start the Flask service on port 5001
+
+The service will run in the foreground (you'll see logs in the terminal). Press `Ctrl+C` to stop it.
+
+#### Option 2: Manual Setup
+
+1. **Create virtual environment**:
+   ```bash
+   cd Backend/ml-service
+   python3 -m venv venv
+   ```
+
+2. **Activate virtual environment**:
+   ```bash
+   # On Windows (Command Prompt):
+   venv\Scripts\activate
+
+   # On Windows (PowerShell):
+   venv\Scripts\Activate.ps1
+
+   # On macOS/Linux/WSL:
+   source venv/bin/activate
+   ```
+   You should see `(venv)` in your prompt.
+
+3. **Install dependencies**:
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+4. **Run the service**:
+   ```bash
+   python app.py
+   ```
+
+The service will start on `http://localhost:5001`
+
+### Environment Variables (Optional)
+
+Create a `.env` file in `Backend/ml-service/`:
+
+```env
+ML_SERVICE_PORT=5001
+MONGO_URI=your_mongodb_connection_string
+MONGO_DB=your_database_name
+```
+
+### Analytics Service
+
+The `Backend/analytics-service` uses the **exact same setup process** as the ML service:
+- Same prerequisites (Python 3.8+, python3-venv)
+- Same installation steps (use `./start.sh` or manual setup)
+- Same virtual environment structure
+- Runs on port 5002 instead of 5001
+
+Simply follow the same instructions in the `analytics-service` directory.
+
+
 
 ## Architecture Overview
 
@@ -30,18 +180,15 @@ Your ML Models & Notebooks
 - `app.py` - Handles HTTP requests/responses (API layer)
 - `ml_models/` - Contains ML logic and model integrations (business logic layer)
 
+
+
 ## Quick Start
 
 ### Start the ML Service
 
 ```bash
 cd Backend/ml-service
-./manage.sh start    # Recommended - handles everything
-# OR
-./start.sh           # Alternative script
-# OR manually:
-source venv/bin/activate
-python app.py
+./start.sh
 ```
 
 ### Start the Node.js Backend
@@ -64,115 +211,7 @@ curl 'http://localhost:5001/api/weekly-specials?limit=4'
 curl 'http://localhost:3000/api/ml/weekly-specials?limit=4'
 ```
 
-## Setup & Installation
 
-### Prerequisites
-
-- Python 3.8+ installed
-- `python3-venv` package (for virtual environment)
-
-### Installation Steps
-
-#### Option 1: Using Start Script (Recommended)
-
-```bash
-cd Backend/ml-service
-chmod +x start.sh
-./start.sh
-```
-
-#### Option 2: Manual Setup
-
-1. **Install Python venv** (if not already installed):
-   ```bash
-   sudo apt install python3-venv python3-full  # Debian/Ubuntu/WSL
-   ```
-
-2. **Create virtual environment**:
-   ```bash
-   cd Backend/ml-service
-   python3 -m venv venv
-   ```
-
-3. **Activate virtual environment**:
-   ```bash
-   source venv/bin/activate
-   ```
-   You should see `(venv)` in your prompt.
-
-4. **Install dependencies**:
-   ```bash
-   pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
-
-5. **Run the service**:
-   ```bash
-   python app.py
-   ```
-
-The service will start on `http://localhost:5001`
-
-### Environment Variables (Optional)
-
-Create a `.env` file in `Backend/ml-service/`:
-
-```env
-ML_SERVICE_PORT=5001
-MONGO_URI=your_mongodb_connection_string
-MONGO_DB=your_database_name
-```
-
-## Service Management
-
-### Using Management Script (Recommended)
-
-```bash
-cd Backend/ml-service
-
-./manage.sh status   # Check if service is running
-./manage.sh start    # Start the service
-./manage.sh stop     # Stop the service
-./manage.sh restart  # Restart the service
-```
-
-### Manual Management
-
-**Check what's using port 5001:**
-```bash
-lsof -i :5001
-# or
-netstat -tulpn | grep 5001
-```
-
-**Stop the service:**
-```bash
-kill $(lsof -ti :5001)
-```
-
-### Port Management
-
-**Port 5001 is in use?**
-- Check status: `./manage.sh status`
-- Stop existing: `./manage.sh stop`
-- Or change port: `ML_SERVICE_PORT=5002 python app.py`
-
-**Change the port:**
-
-1. **Environment variable**:
-   ```bash
-   ML_SERVICE_PORT=5002 python app.py
-   ```
-
-2. **Update Node.js backend** (if port changed):
-   ```bash
-   ML_SERVICE_URL=http://localhost:5002 node server.js
-   ```
-
-**Common ports:**
-- Port 5001: ML Service (default)
-- Port 3000: Node.js Backend
-- Port 5000: Sometimes used by other Flask apps
 
 ## API Endpoints
 
@@ -193,6 +232,8 @@ kill $(lsof -ti :5001)
 
 ### Price Prediction (To be implemented)
 - `POST /api/ml/price-prediction` - Predict future prices
+
+
 
 ## Integrating ML Models
 
@@ -279,6 +320,8 @@ See `ml_models/recommendations.py` for a complete example of:
 - Creating mock data for demo
 - Error handling and fallbacks
 
+
+
 ## Testing
 
 ### Test ML Service Directly
@@ -315,6 +358,8 @@ curl 'http://localhost:3000/api/ml/weekly-specials?limit=4'
    }
    ```
 
+
+
 ## Troubleshooting
 
 ### Service Won't Start
@@ -329,16 +374,20 @@ curl 'http://localhost:3000/api/ml/weekly-specials?limit=4'
 
 **"python3-venv" Not Found:**
 - **Solution**: Install it
-  ```bash
-  sudo apt install python3-venv python3-full
-  ```
+  - **WSL/Linux**: `sudo apt install python3-venv python3-full`
+  - **Windows**: Reinstall Python and ensure "Add Python to PATH" is checked
+  - **macOS**: `brew install python3`
 
 **Port 5001 is in use:**
 - **Solution**:
   ```bash
+  # Use manage.sh if available
   ./manage.sh stop
-  # or
-  kill $(lsof -ti :5001)
+  # or manually
+  kill $(lsof -ti :5001)  # Linux/WSL/macOS
+  # On Windows, use Task Manager or:
+  netstat -ano | findstr :5001
+  taskkill /PID <PID> /F
   ```
 
 **Import errors:**
@@ -350,8 +399,8 @@ curl 'http://localhost:3000/api/ml/weekly-specials?limit=4'
 
 ### Connection Refused
 
-- Ensure the service is running: `./manage.sh status`
-- Check port: `lsof -i :5001`
+- Ensure the service is running: `./manage.sh status` (if using manage.sh)
+- Check port: `lsof -i :5001` (Linux/WSL/macOS) or `netstat -ano | findstr :5001` (Windows)
 - Verify Node.js backend can reach it: `curl http://localhost:5001/health`
 - Check `ML_SERVICE_URL` in Node.js backend matches the Python service port
 
@@ -367,13 +416,18 @@ curl 'http://localhost:3000/api/ml/weekly-specials?limit=4'
 **Not activating:**
 ```bash
 cd Backend/ml-service
-source venv/bin/activate
-which python  # Should show venv/bin/python
+source venv/bin/activate  # Linux/WSL/macOS
+# or
+venv\Scripts\activate     # Windows
+which python  # Should show venv/bin/python (Linux/WSL/macOS)
+where python  # Should show venv\Scripts\python.exe (Windows)
 ```
 
 **Dependencies not found:**
 - Ensure venv is activated (you should see `(venv)` in prompt)
 - Reinstall: `pip install -r requirements.txt`
+
+
 
 ## Next Steps
 
@@ -385,6 +439,8 @@ which python  # Should show venv/bin/python
 6. 🔄 **Add authentication** - Secure your ML endpoints if needed
 7. 🔄 **Deploy to production** - Consider Docker for containerization
 
+
+
 ## Running All Services
 
 For the full application, you need **3 services** running:
@@ -392,8 +448,7 @@ For the full application, you need **3 services** running:
 ### Terminal 1: Python ML Service
 ```bash
 cd Backend/ml-service
-source venv/bin/activate
-python app.py
+./start.sh
 ```
 ✅ Runs on: `http://localhost:5001`
 
@@ -409,8 +464,110 @@ node server.js
 cd Frontend
 npm start
 # or
-expo start
+npx expo start
 ```
+
+
+
+## Service Management with manage.sh
+
+The `manage.sh` script provides production-like service management capabilities. It's useful when you want to run the service in the background and manage it separately.
+
+### What does `manage.sh` do differently?
+
+**`./start.sh`** (recommended for development):
+- Runs the service in the **foreground** (blocks the terminal)
+- Shows logs directly in the terminal
+- Simple: just run and see output
+- Stop with `Ctrl+C`
+
+**`./manage.sh start`** (useful for background operation):
+- Runs the service in the **background** (detached process)
+- Logs are written to `ml-service.log` file
+- Terminal remains free for other commands
+- Tracks the process with a PID file
+- Checks if port 5001 is already in use before starting
+- Provides status checking and process management
+
+### Using manage.sh
+
+```bash
+cd Backend/ml-service
+
+# Start the service in background
+./manage.sh start
+
+# Check if service is running
+./manage.sh status
+
+# Stop the service
+./manage.sh stop
+
+# Restart the service
+./manage.sh restart
+```
+
+### Viewing Logs
+
+When using `manage.sh start`, logs are written to `ml-service.log`:
+
+```bash
+# View logs in real-time
+tail -f ml-service.log
+
+# View last 50 lines
+tail -n 50 ml-service.log
+
+# View entire log file
+cat ml-service.log
+```
+
+### When to use manage.sh vs start.sh
+
+- **Use `./start.sh`**: For development, testing, or when you want to see logs in real-time
+- **Use `./manage.sh start`**: When you want to run the service in the background, need the terminal for other tasks, or want production-like process management
+
+### Manual Port Management
+
+**Check what's using port 5001:**
+```bash
+# Linux/WSL/macOS:
+lsof -i :5001
+# or
+netstat -tulpn | grep 5001
+
+# Windows:
+netstat -ano | findstr :5001
+```
+
+**Stop the service manually:**
+```bash
+# Linux/WSL/macOS:
+kill $(lsof -ti :5001)
+
+# Windows:
+# Find PID from netstat, then:
+taskkill /PID <PID> /F
+```
+
+**Change the port:**
+1. **Environment variable**:
+   ```bash
+   ML_SERVICE_PORT=5002 python app.py
+   ```
+
+2. **Update Node.js backend** (if port changed):
+   ```bash
+   ML_SERVICE_URL=http://localhost:5002 node server.js
+   ```
+
+**Common ports:**
+- Port 5001: ML Service (default)
+- Port 5002: Analytics Service (default)
+- Port 3000: Node.js Backend
+- Port 5000: Sometimes used by other Flask apps
+
+
 
 ## File Structure
 
@@ -418,8 +575,8 @@ expo start
 Backend/ml-service/
 ├── app.py                    # Flask API server
 ├── requirements.txt          # Python dependencies
-├── manage.sh                 # Service management script
-├── start.sh                  # Quick start script
+├── manage.sh                 # Service management script (background)
+├── start.sh                  # Quick start script (foreground)
 ├── ml_models/
 │   ├── __init__.py
 │   ├── weekly_specials.py    # Simple demo (placeholder)
@@ -427,22 +584,11 @@ Backend/ml-service/
 └── venv/                     # Virtual environment (gitignored)
 ```
 
+
+
 ## Additional Resources
 
 - Flask Documentation: https://flask.palletsprojects.com/
 - MongoDB Python Driver: https://pymongo.readthedocs.io/
 - Model Serialization: https://scikit-learn.org/stable/modules/model_persistence.html
 - Joblib Documentation: https://joblib.readthedocs.io/
-
-## Quick Reference
-
-| Task | Command |
-|------|---------|
-| Start service | `./manage.sh start` |
-| Stop service | `./manage.sh stop` |
-| Check status | `./manage.sh status` |
-| Restart service | `./manage.sh restart` |
-| Check port | `lsof -i :5001` |
-| Kill process on port | `kill $(lsof -ti :5001)` |
-| Activate venv | `source venv/bin/activate` |
-| Install dependencies | `pip install -r requirements.txt` |

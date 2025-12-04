@@ -39,30 +39,10 @@ curl http://localhost:5002/health
 
 Or visit: http://localhost:5002/health
 
-## Service Management
-
-Use the `manage.sh` script to control the service:
-
-```bash
-# Start the service
-./manage.sh start
-
-# Stop the service
-./manage.sh stop
-
-# Check status
-./manage.sh status
-
-# Restart the service
-./manage.sh restart
-```
-
 ### Using a Different Port
 
 ```bash
 ANALYTICS_SERVICE_PORT=5003 ./start.sh
-# or
-ANALYTICS_SERVICE_PORT=5003 ./manage.sh start
 ```
 
 ## API Endpoints
@@ -230,7 +210,7 @@ http://localhost:3000/api/analytics/data-cleaning
 1. **Start the analytics service:**
    ```bash
    cd Backend/analytics-service
-   ./manage.sh start
+   ./start.sh
    ```
 
 2. **Test endpoints directly:**
@@ -306,10 +286,14 @@ If these files are not found, the endpoints will return demo data with a note.
 ### Port Already in Use
 ```bash
 # Check what's using the port
-lsof -i :5002
+lsof -i :5002  # Linux/WSL/macOS
+# or
+netstat -ano | findstr :5002  # Windows
 
-# Stop the service
-./manage.sh stop
+# Stop the process manually
+kill $(lsof -ti :5002)  # Linux/WSL/macOS
+# or on Windows, find PID from netstat and:
+taskkill /PID <PID> /F
 
 # Or use a different port
 ANALYTICS_SERVICE_PORT=5003 ./start.sh
@@ -318,7 +302,8 @@ ANALYTICS_SERVICE_PORT=5003 ./start.sh
 ### Service Won't Start
 1. Check if virtual environment exists: `ls venv/`
 2. If not, run `./start.sh` to create it
-3. Check logs: `cat analytics-service.log`
+3. If using `manage.sh start`, check logs: `cat analytics-service.log`
+4. Otherwise, logs appear directly in the terminal when using `./start.sh`
 
 ### Module Import Errors
 - Ensure you're in the `analytics-service` directory
