@@ -2,8 +2,18 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, Switch, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from './AuthContext';
+import { Picker } from '@react-native-picker/picker';
+
 
 const windowWidth = Dimensions.get('window').width;
+
+const PERSONAS = [
+  "Budget-conscious shopper 💸",
+  "Health enthusiast 🥗",
+  "Family planner 👨‍👩‍👧‍👦",
+  "Convenience seeker ⚡",
+  "Premium shopper 💎"
+];
 
 const PASSWORD_REQUIREMENTS = [
   { id: 1, text: 'At least 8 characters long' },
@@ -29,6 +39,9 @@ export default function Login() {
   const [verificationCode, setVerificationCode] = useState('');
   const [tempToken, setTempToken] = useState('');
   const [showVerification, setShowVerification] = useState(false);
+  const [persona, setPersona] = useState('');
+  const [selectedPersona, setSelectedPersona] = useState('');
+  const [showPersonaModal, setShowPersonaModal] = useState(false);
 
   // Check individual password requirements
   const checkPasswordRequirement = (password: string) => {
@@ -70,6 +83,9 @@ export default function Login() {
       if (!userFname) newErrors.userFname = 'First name is required';
       if (!userLname) newErrors.userLname = 'Last name is required';
     }
+
+    if (!persona) newErrors.persona = 'Please select a persona';
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -121,7 +137,8 @@ export default function Login() {
             user_lname: userLname,
             address,
             phone_number: phoneNumber,
-            admin: isAdmin
+            admin: isAdmin,
+            persona
           };
 
       const response = await fetch(url, {
@@ -145,7 +162,6 @@ export default function Login() {
         } else {
           alert('Signup successful, please login');
           setIsLogin(true);
-          // Clear form
           setEmail('');
           setPassword('');
           setVerifyPassword('');
@@ -320,6 +336,25 @@ export default function Login() {
               keyboardType="phone-pad"
               placeholder="Enter your phone number"
             />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Select Persona <Text style={styles.required}>*</Text>
+            </Text>
+            <View style={[styles.input, styles.pickerBox]}>
+              <Picker
+                selectedValue={persona}
+                onValueChange={(value) => setPersona(value)}
+                style={styles.picker}   
+                
+              >
+                <Picker.Item label="Select persona" value="" />
+                {PERSONAS.map((p) => (
+                  <Picker.Item key={p} label={p} value={p} />
+                ))}
+              </Picker>
+            </View>
+            {renderError('persona')}
           </View>
 
           <View style={styles.checkboxContainer}>
@@ -536,6 +571,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-
-
-});
+  pickerBox: {
+    height: 50,        
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  picker: {
+    flex: 1,             
+    color: '#333',
+    borderColor: '#fff',
+    backgroundColor: '#fff',
+    fontSize: 16,
+    fontFamily: 'System',
+  },
+  }
+);
