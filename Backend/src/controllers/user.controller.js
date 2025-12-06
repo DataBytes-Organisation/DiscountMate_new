@@ -3,9 +3,9 @@ require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../schemas/models');
-const { connectToMongoDB } = require('../config/database'); 
+const { connectToMongoDB } = require('../config/database');
 const fs = require('fs');
-const mime = require('mime-types'); 
+const mime = require('mime-types');
 
 // Signup Controller
 const signup = async (req, res) => {
@@ -46,30 +46,30 @@ const signup = async (req, res) => {
     }
 };
 
-// Defining the limiter 
-const { rateLimit } = require("express-rate-limit"); 
+// Defining the limiter
+const { rateLimit } = require("express-rate-limit");
 
 // Only allows for one request every 5 minutes per IP
-const limiter = rateLimit({ 
+const limiter = rateLimit({
 
-windowMs: 5 * 60 * 1000, 
+windowMs: 5 * 60 * 1000,
 
-limit: 1, 
+limit: 1,
 
-message: "Too many requests. Please try again later.", 
+message: "Too many requests. Please try again later.",
 
-standardHeaders: true, 
+standardHeaders: true,
 
-legacyHeaders: false, 
+legacyHeaders: false,
 
-}); 
+});
 
 // Signin Controller
 const signin = async (req, res) => {
     const { email, password } = req.body;
     try {
-        const db = await connectToMongoDB(); 
-        
+        const db = await connectToMongoDB();
+
 
         if (!db) {
             return res.status(500).json({ message: 'Database not initialized' });
@@ -128,7 +128,7 @@ const getProfile = async (req, res) => {
             address: user.address,
             phone_number: user.phone_number,
             admin: user.admin,
-            profile_image: user.profile_image || null, 
+            profile_image: user.profile_image || null,
         });
     });
 } catch (error) {
@@ -177,7 +177,7 @@ const updateProfileImage = async (req, res) => {
               },
             }
           );
-        
+
 
         if (updateResult.modifiedCount === 1) {
             return res.status(200).json({ profile_image: 'Updated successfully' });
@@ -197,17 +197,17 @@ const getProfileImage = async (req, res) => {
       if (!token) {
         return res.status(401).json({ message: 'No token provided' });
       }
-  
+
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const email = decoded.email;
-  
+
       const db = await connectToMongoDB();
       const user = await db.collection('users').findOne({ email });
-  
+
       if (!user || !user.profile_image) {
         return res.status(404).json({ message: 'Profile image not found' });
       }
-  
+
       const filePath = path.join(__dirname, '../..', user.profile_image);
       res.sendFile(filePath);
     } catch (error) {
@@ -221,7 +221,8 @@ module.exports = {
     signin,
     getProfile,
     updateProfileImage,
-    getProfileImage
+    getProfileImage,
+    signupLimiter: limiter
 };
 
 

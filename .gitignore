@@ -4,3 +4,26 @@ Backend/.env
 Frontend/node_modules
 Frontend/.expo
 .env
+
+venv/
+env/
+ENV/
+.venv/
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ML Service specific
+Backend/ml-service/venv/
+Backend/ml-service/ml-service.log
+Backend/ml-service/ml-service.pid
+Backend/ml-service/__pycache__/
+
+# Analytics Service specific
+Backend/analytics-service/venv/
+Backend/analytics-service/analytics-service.log
+Backend/analytics-service/analytics-service.pid
+Backend/analytics-service/__pycache__/
