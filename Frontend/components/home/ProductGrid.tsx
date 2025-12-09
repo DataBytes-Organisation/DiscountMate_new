@@ -2,6 +2,7 @@
 import React from "react";
 import { View, Text, Pressable, ScrollView } from "react-native";
 import ProductCard, { Product } from "./ProductCard";
+import ProductFilterSection from "../common/ProductFilterSection";
 
 const PRODUCTS: Product[] = [
    {
@@ -268,38 +269,15 @@ const PRODUCTS: Product[] = [
 ];
 
 const ProductGrid: React.FC = () => {
+   const productCount = PRODUCTS.length; // You can replace this with actual count from your data
+
    return (
       <ScrollView
          className="flex-1 px-4 md:px-8 pt-4 pb-10"
          contentContainerStyle={{ paddingBottom: 40 }}
       >
-         {/* Controls section */}
-         <View className="flex-row items-center justify-between mb-6">
-            <View className="flex-row items-center space-x-4">
-               {/* Add Filters button */}
-               <Pressable className="flex-row items-center px-5 py-2.5 rounded-xl border-2 border-gray-200 bg-white">
-                  <Text className="mr-2 text-base">⚙️</Text>
-                  <Text className="text-sm font-medium text-gray-700">
-                     Add Filters
-                  </Text>
-               </Pressable>
-
-               {/* Showing count */}
-               <Text className="text-sm text-gray-600">
-                  Showing{" "}
-                  <Text className="font-semibold text-[#0DAD79]">247</Text>{" "}
-                  products
-               </Text>
-            </View>
-
-            {/* Sort dropdown (static for now) */}
-            <Pressable className="flex-row items-center px-5 py-2.5 rounded-xl border-2 border-gray-200 bg-white">
-               <Text className="text-sm font-medium text-gray-700">
-                  Sort by: Best Savings
-               </Text>
-               <Text className="ml-2 text-xs text-gray-400">⌄</Text>
-            </Pressable>
-         </View>
+         {/* Product Filter Section */}
+         <ProductFilterSection productCount={productCount} />
 
          {/* Product grid */}
          <View className="flex-row flex-wrap -mx-2">
