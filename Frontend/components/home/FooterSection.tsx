@@ -4,9 +4,19 @@ import { FontAwesome, Feather } from "@expo/vector-icons";
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 
 
-const FooterSection: React.FC = () => {
+interface FooterSectionProps {
+   disableEdgeOffset?: boolean;
+}
+
+const FooterSection: React.FC<FooterSectionProps> = ({ disableEdgeOffset }) => {
    return (
-      <View className="bg-dark m-0" style={{ marginHorizontal: -16, marginBottom: -24 }}>
+      <View
+         className="bg-dark m-0"
+         style={[
+            disableEdgeOffset ? undefined : { marginHorizontal: -16 },
+            { marginBottom: -24 },
+         ]}
+      >
          <View className="w-full max-w-[1920px] mx-auto px-6 py-10">
             {/* Top grid */}
             <View className="flex flex-col gap-10 md:flex-row md:justify-between md:gap-8 mb-10">

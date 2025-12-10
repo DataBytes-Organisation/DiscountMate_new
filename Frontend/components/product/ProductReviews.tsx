@@ -182,7 +182,10 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                      </View>
                   </View>
 
-                  <View className="flex-row items-center gap-4 pl-13">
+                  <View
+                     className="flex-row items-center gap-4"
+                     style={{ marginLeft: 52 }} // align with text start after avatar
+                  >
                      <Pressable className="flex-row items-center gap-1.5">
                         <FontAwesome6
                            name="thumbs-up"

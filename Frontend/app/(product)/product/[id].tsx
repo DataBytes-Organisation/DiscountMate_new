@@ -56,7 +56,7 @@ export default function ProductDetailPage() {
          </View>
          {/* Related Products - full width */}
          <ProductRelatedProducts productId={id} fullWidth />
-         <FooterSection />
+         <FooterSection disableEdgeOffset />
       </View>
    );
 }
