@@ -27,21 +27,20 @@ export default function LoginPage() {
          >
             <View className="w-full max-w-[520px] self-center bg-white rounded-3xl border border-gray-100 px-6 py-8 shadow-2xl">
                {/* Brand badge */}
-               <View className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary_green to-secondary_green items-center justify-center shadow-lg">
-                  <FontAwesome6 name="tag" size={22} color="#FFFFFF" />
-               </View>
+               <View className="items-center">
+                  <View className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary_green to-secondary_green items-center justify-center shadow-lg">
+                     <FontAwesome6 name="tag" size={22} color="#FFFFFF" />
+                  </View>
 
-               <View className="mt-4">
-                  <Text className="text-2xl font-bold text-gray-900">
-                     Welcome to
-                  </Text>
-                  <Text className="text-2xl font-bold text-gray-900">
-                     DiscountMate
-                  </Text>
-                  <Text className="text-sm text-gray-500 mt-2 leading-5">
-                     Sign in to continue comparing prices and maximizing your
-                     savings
-                  </Text>
+                  <View className="mt-4 items-center">
+                     <Text className="text-2xl font-bold text-gray-900">
+                        Welcome to DiscountMate
+                     </Text>
+                     <Text className="text-sm text-gray-500 mt-2 leading-5 text-center">
+                        Sign in to continue comparing prices and maximizing your
+                        savings
+                     </Text>
+                  </View>
                </View>
 
                {/* Form */}
