@@ -1,0 +1,116 @@
+### Test Signup Request
+
+POST http://localhost:3000/api/users/signup
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "Test@123",
+  "verifyPassword": "Test@123",
+  "user_fname": "John",
+  "user_lname": "Doe",
+  "address": "123 Test Street",
+  "phone_number": "1234567890",
+  "admin": false
+}
+
+### Signin Request
+POST http://localhost:3000/api/users/signin
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "Test@123"
+}
+
+### Get Products Request
+GET  http://localhost:3000/api/products
+
+### Get Product Request
+POST  http://localhost:3000/api/products/getproduct
+Content-Type: application/json
+
+{
+  "productId": "P001"
+}
+
+
+### Get Profile Request
+GET  http://localhost:3000/api/users/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hcnVAZ21haWwuY29tIiwiYWRtaW4iOnRydWUsImlhdCI6MTczMjQzNDU2NywiZXhwIjoxNzMyNDM4MTY3fQ.8aoYn4l4DPLI5kOTvYz6kAR7yO_A6Do6uEdPauyv_Cs
+
+
+### Update Profile 
+PUT http://localhost:3000/api/users/edit-profile 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hcnVAZ21haWwuY29tIiwiYWRtaW4iOnRydWUsImlhdCI6MTczMjQyNTc5MywiZXhwIjoxNzMyNDI5MzkzfQ.GbFHEfdJDGcF69aRn-BonQ9opW1XOyh5VkWi2SmKDtE
+Content-Type: application/json
+
+{
+    "user_fname": "Naruto",
+    "user_lname": "Uzumaki",
+    "address": "Hidden Leaf Village",
+    "phone_number": "7876556890"
+}
+
+### add to basket
+POST http://localhost:3000/api/baskets/addtobasket
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hcnVAZ21haWwuY29tIiwiYWRtaW4iOnRydWUsImlhdCI6MTczMjcwMjQzOCwiZXhwIjoxNzMyNzA2MDM4fQ.XM-YU9lngJIe4RdGmlJaUD1loP24Azi6cA23h1G2vcU
+Content-Type: application/json
+
+{
+  "product_id": "P001",
+  "quantity": 2,
+  "user_id": "674249a3b3b19be28f233675"
+}
+
+### Get Baskets Request
+POST  http://localhost:3000/api/baskets/getbasket
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hcnVAZ21haWwuY29tIiwiYWRtaW4iOnRydWUsImlhdCI6MTczMjcwMzE1MCwiZXhwIjoxNzMyNzA2NzUwfQ.6MJHmHlcIcRdEKirsofRfVUG8wS9KhjR34NHCBtmapg
+
+### Update Quantity in Basket
+POST http://localhost:3000/api/baskets/updatequantity
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hcnVAZ21haWwuY29tIiwiYWRtaW4iOnRydWUsImlhdCI6MTczMjcwMjQzOCwiZXhwIjoxNzMyNzA2MDM4fQ.XM-YU9lngJIe4RdGmlJaUD1loP24Azi6cA23h1G2vcU
+Content-Type: application/json
+
+{
+  "productId": "66ea0a288a3dfa94a7013473",
+  "quantity": 5
+}
+
+### Delete Item from Basket
+DELETE  http://localhost:3000/api/baskets/deleteitemfrombasket
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hcnVAZ21haWwuY29tIiwiYWRtaW4iOnRydWUsImlhdCI6MTczMjcwMjQzOCwiZXhwIjoxNzMyNzA2MDM4fQ.XM-YU9lngJIe4RdGmlJaUD1loP24Azi6cA23h1G2vcU
+Content-Type: application/json
+
+{
+  "productId": "66ea0a288a3dfa94a7013473"
+}
+
+
+### Get All blogs
+GET  http://localhost:3000/api/blogs
+
+### Test: Submit Blog
+POST http://localhost:3000/api/blogs/submit-blog
+Content-Type: application/json
+
+{
+  "heading": "How to Test HTTP Requests",
+  "date": "2024-11-27",
+  "description": "This blog explains how to use HTTP requests for testing your API.",
+  "user": "naru@gmail.com"
+}
+
+### Get All news
+GET  http://localhost:3000/api/news
+
+### Test: Submit News
+POST http://localhost:3000/api/news/submit-news
+Content-Type: application/json
+
+{
+  "heading": "Testing News",
+  "date": "2024-11-27",
+  "description": "This is a test.",
+  "user": "naru@gmail.com"
+}
