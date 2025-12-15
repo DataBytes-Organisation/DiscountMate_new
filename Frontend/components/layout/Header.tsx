@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, Pressable, Image } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type HeaderProps = {
    activeRoute?: "Home" | "Compare" | "Specials" | "My Lists" | "Profile";
@@ -15,8 +17,25 @@ const navItems: Array<HeaderProps["activeRoute"]> = [
 ];
 
 export default function Header({ activeRoute = "Home" }: HeaderProps) {
+   const router = useRouter();
+   const [showMenu, setShowMenu] = useState(false);
+
+   const handleLogout = async () => {
+      await AsyncStorage.removeItem("authToken");
+      setShowMenu(false);
+      router.push("/login");
+   };
+
+   const handleProfile = () => {
+      setShowMenu(false);
+      router.push("/profile");
+   };
+
    return (
-      <View className="w-full flex-row items-center justify-between px-4 md:px-8 py-4 border-b border-gray-100 bg-white">
+      <View
+         className="w-full flex-row items-center justify-between px-4 md:px-8 py-4 border-b border-gray-100 bg-white"
+         style={{ zIndex: 60, elevation: 12 }}
+      >
          {/* Left: logo + nav */}
          <View className="flex-row items-center gap-6 md:gap-8">
             {/* Logo + brand */}
@@ -87,13 +106,41 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
                </Text>
             </View>
 
-            {/* Avatar */}
-            <Image
-               source={{
-                  uri: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
-               }}
-               className="w-10 h-10 rounded-full border-2 border-primary_green/30"
-            />
+            {/* Avatar + menu */}
+            <View
+               className="relative"
+               onMouseEnter={() => setShowMenu(true)}
+               onMouseLeave={() => setShowMenu(false)}
+            >
+               <Pressable onPress={() => setShowMenu((prev) => !prev)}>
+                  <Image
+                     source={{
+                        uri: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
+                     }}
+                     className="w-10 h-10 rounded-full border-2 border-primary_green/30"
+                  />
+               </Pressable>
+
+               {showMenu && (
+                  <View
+                     className="absolute right-0 mt-3 w-40 bg-white shadow-xl rounded-xl border border-gray-100 py-2"
+                     style={{ top: "70%", zIndex: 70, elevation: 20 }}
+                  >
+                     <Pressable
+                        className="px-4 py-2 hover:bg-gray-50"
+                        onPress={handleProfile}
+                     >
+                        <Text className="text-gray-800">Profile</Text>
+                     </Pressable>
+                     <Pressable
+                        className="px-4 py-2 hover:bg-gray-50"
+                        onPress={handleLogout}
+                     >
+                        <Text className="text-gray-800">Logout</Text>
+                     </Pressable>
+                  </View>
+               )}
+            </View>
          </View>
       </View>
    );

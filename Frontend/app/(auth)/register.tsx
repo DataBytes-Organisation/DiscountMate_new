@@ -6,18 +6,32 @@ import {
    Pressable,
    ScrollView,
    Modal,
+   ActivityIndicator,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AuthFooter from "../../components/auth/AuthFooter";
+import { useRouter } from "expo-router";
+import { API_URL } from "../../constants/Api";
 
 type InputProps = {
    label: string;
    placeholder?: string;
    icon?: string;
    secure?: boolean;
+   value?: string;
+   onChangeText?: (value: string) => void;
+   keyboardType?: "default" | "email-address" | "phone-pad";
 };
 
-function Input({ label, placeholder, icon, secure }: InputProps) {
+function Input({
+   label,
+   placeholder,
+   icon,
+   secure,
+   value,
+   onChangeText,
+   keyboardType = "default",
+}: InputProps) {
    return (
       <View className="gap-1">
          <Text className="text-sm font-medium text-gray-700">{label}</Text>
@@ -29,6 +43,10 @@ function Input({ label, placeholder, icon, secure }: InputProps) {
                placeholder={placeholder}
                placeholderTextColor="#9CA3AF"
                secureTextEntry={secure}
+               value={value}
+               onChangeText={onChangeText}
+               keyboardType={keyboardType}
+               autoCapitalize={keyboardType === "email-address" ? "none" : "sentences"}
                className="flex-1 text-gray-900 text-base"
             />
          </View>
@@ -61,9 +79,8 @@ function Select({ label, placeholder, icon, options, value, onValueChange }: Sel
                <Ionicons name={icon as any} size={20} color="#9CA3AF" />
             ) : null}
             <Text
-               className={`flex-1 text-base ${
-                  selectedOption ? "text-gray-900" : "text-gray-400"
-               }`}
+               className={`flex-1 text-base ${selectedOption ? "text-gray-900" : "text-gray-400"
+                  }`}
             >
                {selectedOption ? selectedOption.label : placeholder}
             </Text>
@@ -318,6 +335,62 @@ const groceryRetailers = [
 
 export default function RegisterScreen() {
    const [selectedStore, setSelectedStore] = useState<string>("");
+   const [firstName, setFirstName] = useState("");
+   const [lastName, setLastName] = useState("");
+   const [email, setEmail] = useState("");
+   const [phoneNumber, setPhoneNumber] = useState("");
+   const [password, setPassword] = useState("");
+   const [confirmPassword, setConfirmPassword] = useState("");
+   const [error, setError] = useState<string | null>(null);
+   const [isSubmitting, setIsSubmitting] = useState(false);
+   const router = useRouter();
+
+   const handleRegister = async () => {
+      setError(null);
+
+      if (!firstName || !lastName || !email || !password || !confirmPassword) {
+         setError("Please fill in all required fields.");
+         return;
+      }
+      if (password.length < 8) {
+         setError("Password must be at least 8 characters.");
+         return;
+      }
+      if (password !== confirmPassword) {
+         setError("Passwords do not match.");
+         return;
+      }
+
+      setIsSubmitting(true);
+      try {
+         const response = await fetch(`${API_URL}/users/signup`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+               email,
+               password,
+               verifyPassword: confirmPassword,
+               user_fname: firstName,
+               user_lname: lastName,
+               address: "",
+               phone_number: phoneNumber,
+               admin: false,
+            }),
+         });
+
+         const data = await response.json();
+
+         if (!response.ok) {
+            setError(data?.message || "Signup failed. Please try again.");
+         } else {
+            router.push("/(auth)/login");
+         }
+      } catch (err) {
+         setError("An error occurred. Please try again.");
+      } finally {
+         setIsSubmitting(false);
+      }
+   };
 
    return (
       <ScrollView
@@ -343,7 +416,7 @@ export default function RegisterScreen() {
                <Text className="text-sm text-gray-500">
                   Already have an account?
                </Text>
-               <Pressable>
+               <Pressable onPress={() => router.push("/(auth)/login")}>
                   <Text className="text-sm font-semibold text-emerald-700">
                      Sign in here
                   </Text>
@@ -373,10 +446,20 @@ export default function RegisterScreen() {
                      {/* Name row */}
                      <View className="mt-1 flex-row gap-3">
                         <View className="flex-1">
-                           <Input label="First name" placeholder="Alex" />
+                           <Input
+                              label="First name"
+                              placeholder="Alex"
+                              value={firstName}
+                              onChangeText={setFirstName}
+                           />
                         </View>
                         <View className="flex-1">
-                           <Input label="Last name" placeholder="Smith" />
+                           <Input
+                              label="Last name"
+                              placeholder="Smith"
+                              value={lastName}
+                              onChangeText={setLastName}
+                           />
                         </View>
                      </View>
 
@@ -386,11 +469,17 @@ export default function RegisterScreen() {
                            label="Email address"
                            placeholder="you@example.com"
                            icon="mail-outline"
+                           keyboardType="email-address"
+                           value={email}
+                           onChangeText={setEmail}
                         />
                         <Input
                            label="Mobile number"
                            placeholder="+61 ••• ••• •••"
                            icon="call-outline"
+                           keyboardType="phone-pad"
+                           value={phoneNumber}
+                           onChangeText={setPhoneNumber}
                         />
                         <View className="flex-row items-center gap-2">
                            <Ionicons
@@ -454,6 +543,16 @@ export default function RegisterScreen() {
                            placeholder="Choose a strong password"
                            secure
                            icon="lock-closed-outline"
+                           value={password}
+                           onChangeText={setPassword}
+                        />
+                        <Input
+                           label="Confirm password"
+                           placeholder="Re-enter your password"
+                           secure
+                           icon="lock-closed-outline"
+                           value={confirmPassword}
+                           onChangeText={setConfirmPassword}
                         />
                         <Text className="text-sm text-gray-500">
                            Use at least 8 characters with a mix of letters and numbers.
@@ -488,17 +587,28 @@ export default function RegisterScreen() {
 
                      {/* Actions */}
                      <View className="mt-6 gap-3">
-                        <Pressable className="h-12 items-center justify-center rounded-2xl bg-emerald-600">
-                           <Text className="text-sm font-semibold uppercase tracking-[0.16em] text-white">
-                              Create free account
-                           </Text>
+                        {error ? (
+                           <Text className="text-sm text-red-500">{error}</Text>
+                        ) : null}
+                        <Pressable
+                           className="h-12 items-center justify-center rounded-2xl bg-emerald-600"
+                           onPress={handleRegister}
+                           disabled={isSubmitting}
+                        >
+                           {isSubmitting ? (
+                              <ActivityIndicator color="#fff" />
+                           ) : (
+                              <Text className="text-sm font-semibold uppercase tracking-[0.16em] text-white">
+                                 Create free account
+                              </Text>
+                           )}
                         </Pressable>
 
                         <View className="flex-row items-center justify-center gap-1">
                            <Text className="text-sm text-gray-500">
                               Already using DiscountMate?
                            </Text>
-                           <Pressable>
+                           <Pressable onPress={() => router.push("/(auth)/login")}>
                               <Text className="text-sm font-semibold text-emerald-700">
                                  Sign in instead
                               </Text>
@@ -745,7 +855,11 @@ export default function RegisterScreen() {
                   </Text>
 
                   <View className="mt-4 flex-row flex-wrap items-center gap-3">
-                     <Pressable className="h-12 items-center justify-center rounded-2xl bg-emerald-500 px-5">
+                     <Pressable
+                        className="h-12 items-center justify-center rounded-2xl bg-emerald-500 px-5"
+                        onPress={handleRegister}
+                        disabled={isSubmitting}
+                     >
                         <Text className="text-sm font-semibold uppercase tracking-[0.16em] text-white">
                            Create free account
                         </Text>

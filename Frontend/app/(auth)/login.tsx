@@ -1,14 +1,60 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, ScrollView } from "react-native";
+import {
+   View,
+   Text,
+   TextInput,
+   Pressable,
+   ScrollView,
+   ActivityIndicator,
+} from "react-native";
 import { useRouter } from "expo-router";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_URL } from "../../constants/Api";
 
 export default function LoginPage() {
    const router = useRouter();
    const [email, setEmail] = useState("");
    const [password, setPassword] = useState("");
    const [rememberMe, setRememberMe] = useState(false);
+   const [isSubmitting, setIsSubmitting] = useState(false);
+   const [error, setError] = useState<string | null>(null);
+
+   const handleLogin = async () => {
+      setError(null);
+      if (!email || !password) {
+         setError("Please enter both email and password.");
+         return;
+      }
+      setIsSubmitting(true);
+      try {
+         const response = await fetch(`${API_URL}/users/signin`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+         });
+
+         const data = await response.json();
+
+         if (!response.ok) {
+            const details =
+               typeof data === "string"
+                  ? data
+                  : data?.message || JSON.stringify(data || {});
+            setError(`Login failed: ${details}`);
+         } else {
+            if (data?.token) {
+               await AsyncStorage.setItem("authToken", data.token);
+            }
+            router.push("/(tabs)");
+         }
+      } catch (err) {
+         setError("Unable to reach the server. Please try again.");
+      } finally {
+         setIsSubmitting(false);
+      }
+   };
 
    return (
       <View className="flex-1 bg-[#f7fbfa] relative">
@@ -112,10 +158,22 @@ export default function LoginPage() {
                      </Pressable>
                   </View>
 
-                  <Pressable className="mt-2 bg-primary_green rounded-xl h-12 items-center justify-center shadow-md shadow-primary_green/30">
-                     <Text className="text-base font-semibold text-white">
-                        Sign In
-                     </Text>
+                  {error ? (
+                     <Text className="text-sm text-red-500">{error}</Text>
+                  ) : null}
+                  <Pressable
+                     className={`mt-2 bg-primary_green rounded-xl h-12 items-center justify-center shadow-md shadow-primary_green/30 ${isSubmitting ? "opacity-80" : ""
+                        }`}
+                     onPress={handleLogin}
+                     disabled={isSubmitting}
+                  >
+                     {isSubmitting ? (
+                        <ActivityIndicator color="#FFFFFF" />
+                     ) : (
+                        <Text className="text-base font-semibold text-white">
+                           Sign In
+                        </Text>
+                     )}
                   </Pressable>
 
                   <View className="flex-row items-center gap-3 mt-6">
