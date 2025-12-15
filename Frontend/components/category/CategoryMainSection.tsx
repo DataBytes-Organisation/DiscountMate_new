@@ -19,7 +19,7 @@ export default function CategoryMainSection({ categoryId }: CategoryMainSectionP
 
    return (
       <View className="bg-[#F9FAFB]">
-         <View className="w-full max-w-[1920px] mx-auto flex-row">
+         <View className="w-full max-w-[1920px] mx-auto flex-row items-start">
             {/* Sidebar */}
             <SidebarCategories
                activeCategory={activeCategory}

@@ -33,40 +33,49 @@ export default function SidebarCategories({
    activeCategory,
    onSelect,
 }: SidebarCategoriesProps) {
-
    return (
       <View
-         // wrapper so we can use sticky only on web
-         style={{ position: "sticky" as any, top: 200, height: "calc(100vh - 200px)" as any }}
+         // outer wrapper: sticky on web, aligned with product grid
+         style={{
+            position: "sticky" as any,
+            top: 0,                            // no huge gap; sits with content
+            alignSelf: "flex-start",
+            maxHeight: "100vh",               // limit height so inner scroll can work
+         }}
          className="hidden md:flex w-64"
       >
-         <View className="flex-1 bg-white border-r border-gray-100 shadow-sm">
+         <View className="flex-1 bg-white border-r border-gray-100 shadow-sm overflow-hidden">
             <ScrollView
-               contentContainerStyle={{ paddingVertical: 24, paddingHorizontal: 16 }}
+               style={{ flex: 1 }}
+               contentContainerStyle={{
+                  paddingVertical: 24,
+                  paddingHorizontal: 16,
+               }}
+               showsVerticalScrollIndicator={true}
             >
-               <Text className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-4">
+               <Text className="text-xs text-gray-500 uppercase tracking-[0.15em] mb-4">
                   Categories
                </Text>
 
                {CATEGORIES.map(({ label, icon }) => {
-                  const isActive = label === activeCategory;
+                  const isActive = activeCategory === label;
 
                   return (
                      <Pressable
                         key={label}
                         onPress={() => onSelect(label)}
                         className={[
-                           "flex-row items-center px-4 py-3 rounded-xl mb-1 group transition-all",
+                           "group flex-row items-center px-3 py-2 rounded-xl mb-1",
                            isActive
-                              ? "bg-primary_green/10 border border-primary_green/40"
-                              : "bg-white border border-transparent hover:bg-primary_green/5",
+                              ? "bg-[#E5F7F0]"
+                              : "bg-transparent hover:bg-gray-50",
                         ].join(" ")}
                      >
                         <FontAwesome6
-                           name={icon}
-                           size={18}
+                           name={icon as any}
+                           size={16}
                            className={[
-                              "mr-3 text-gray-400 transition-colors",
+                              "mr-3",
                               isActive
                                  ? "text-primary_green"
                                  : "group-hover:text-primary_green",
