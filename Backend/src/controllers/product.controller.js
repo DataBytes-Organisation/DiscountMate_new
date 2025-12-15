@@ -89,21 +89,71 @@ function normaliseColesProduct(product) {
   };
 }
 
-// Fetch all products from CleanedData.Coles
+// Fetch products from CleanedData.Coles
 const getProducts = async (req, res) => {
   try {
     const coles = await getColesCollection();
 
-    // For now we ignore any search query and just return all products,
-    // as the original implementation did.
-    const products = await coles.find({}).toArray();
+    // Basic search support (by name/category) – optional and intentionally
+    // lightweight so we can still use indexes effectively if they are added.
+    const { search } = req.query || {};
+    const query = {};
 
-    if (!products || products.length === 0) {
-      return res.status(404).json({ message: 'No products found' });
+    if (search && typeof search === 'string' && search.trim().length > 0) {
+      const regex = new RegExp(search.trim(), 'i');
+      query.$or = [
+        { product_name: regex },
+        { name: regex },
+        { item_name: regex },
+        { category: regex },
+      ];
     }
 
+    // If no pagination parameters are provided, preserve the original
+    // behaviour and return all matching products as an array so that
+    // existing callers (e.g. search page, chatbot) keep working.
+    const { page, limit, pageSize } = req.query || {};
+    const hasPagingParams = Boolean(page || limit || pageSize);
+
+    if (!hasPagingParams) {
+      const products = await coles.find(query).toArray();
+
+      if (!products || products.length === 0) {
+        return res.status(404).json({ message: 'No products found' });
+      }
+
+      const normalisedAll = products.map(normaliseColesProduct).filter(Boolean);
+      return res.json(normalisedAll);
+    }
+
+    // Paginated mode – used by the new product grid so that we only
+    // load one page of products at a time.
+    const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+    const rawPageSize =
+      parseInt(limit, 10) || parseInt(pageSize, 10) || 30;
+    const pageSizeNumber = Math.min(Math.max(rawPageSize, 1), 100);
+
+    const total = await coles.countDocuments(query);
+    const totalPages = Math.max(
+      1,
+      Math.ceil(total / pageSizeNumber)
+    );
+
+    const cursor = coles
+      .find(query)
+      .skip((pageNumber - 1) * pageSizeNumber)
+      .limit(pageSizeNumber);
+
+    const products = await cursor.toArray();
     const normalised = products.map(normaliseColesProduct).filter(Boolean);
-    return res.json(normalised);
+
+    return res.json({
+      items: normalised,
+      page: pageNumber,
+      pageSize: pageSizeNumber,
+      total,
+      totalPages,
+    });
   } catch (error) {
     console.error('Error fetching products from CleanedData.Coles:', error);
     return res.status(500).json({ message: 'Failed to fetch products' });

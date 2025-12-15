@@ -7,23 +7,21 @@ type Category = {
    icon: string;
 };
 
+// Keep UI labels aligned with database categories. Close-but-not-identical
+// names have been normalised to match the dataset (e.g. "Fruit & Veg" ->
+// "Fruit & Vegetables", "Health" -> "Health & Beauty").
 const CATEGORIES: Category[] = [
    { label: "All", icon: "border-all" },
-   { label: "Pantry", icon: "box" },
-   { label: "Dairy", icon: "cheese" },
+   { label: "Bakery", icon: "bread-slice" },
+   { label: "Dairy, Eggs & Fridge", icon: "cheese" },
+   { label: "Deli", icon: "bacon" },
    { label: "Drinks", icon: "bottle-water" },
    { label: "Frozen", icon: "snowflake" },
+   { label: "Fruit & Vegetables", icon: "apple-whole" },
+   { label: "Health & Beauty", icon: "heart-pulse" },
    { label: "Household", icon: "house" },
-   { label: "Snacks", icon: "cookie" },
-   { label: "Health", icon: "heart-pulse" },
-   { label: "Baby", icon: "baby" },
-   { label: "Pet Care", icon: "paw" },
-   { label: "Personal Care", icon: "spray-can" },
-   { label: "Bakery", icon: "bread-slice" },
    { label: "Meat & Seafood", icon: "drumstick-bite" },
-   { label: "Fruit & Veg", icon: "apple-whole" },
-   { label: "Tea & Coffee", icon: "mug-hot" },
-   { label: "Liquor", icon: "wine-bottle" },
+   { label: "Pantry", icon: "box" },
 ];
 
 type SidebarCategoriesProps = {

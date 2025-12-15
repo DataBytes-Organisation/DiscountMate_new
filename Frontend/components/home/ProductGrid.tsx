@@ -165,23 +165,48 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
    const [loading, setLoading] = useState<boolean>(true);
    const [error, setError] = useState<string | null>(null);
    const [currentPage, setCurrentPage] = useState<number>(1);
+   const [totalProducts, setTotalProducts] = useState<number>(0);
+   const [totalPagesFromApi, setTotalPagesFromApi] = useState<number | null>(null);
 
    const pageSize = 9; // cards per page
 
    useEffect(() => {
-      const fetchProducts = async () => {
+      const fetchProducts = async (page: number) => {
          try {
             setLoading(true);
             setError(null);
 
-            const response = await fetch(`${API_URL}/products`);
+            const response = await fetch(
+               `${API_URL}/products?page=${page}&limit=${pageSize}`
+            );
             const data = await response.json();
 
-            if (!Array.isArray(data)) {
+            // Support both the new paginated shape and the legacy
+            // "array of products" shape so other callers that rely on
+            // /products still work while the backend is evolving.
+            let items: ApiProduct[] = [];
+            let total = 0;
+            let totalPages = 1;
+
+            if (Array.isArray(data)) {
+               items = data;
+               total = data.length;
+               totalPages = Math.max(1, Math.ceil(total / pageSize));
+            } else if (data && Array.isArray(data.items)) {
+               items = data.items;
+               total =
+                  typeof data.total === "number" ? data.total : data.items.length;
+               totalPages =
+                  typeof data.totalPages === "number"
+                     ? data.totalPages
+                     : Math.max(1, Math.ceil(total / pageSize));
+            } else {
                throw new Error("Unexpected products response shape");
             }
 
-            setApiProducts(data);
+            setApiProducts(items);
+            setTotalProducts(total);
+            setTotalPagesFromApi(totalPages);
          } catch (err) {
             console.error("Error fetching products for home grid:", err);
             setError(
@@ -192,8 +217,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
          }
       };
 
-      fetchProducts();
-   }, []);
+      fetchProducts(currentPage);
+   }, [currentPage]);
 
    useEffect(() => {
       // Reset to first page when the category changes
@@ -211,14 +236,20 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
 
    const productsToShow = filteredProducts;
 
-   const totalProducts = productsToShow.length;
-   const totalPages = Math.max(1, Math.ceil(totalProducts / pageSize));
+   // For the overall count, use the backend-reported total when we have it.
+   // When a specific category is active, fall back to the current page's
+   // filtered count as we don't yet filter by category server-side.
+   const overallProductCount =
+      activeCategory && activeCategory !== "All"
+         ? productsToShow.length
+         : totalProducts || productsToShow.length;
+
+   const totalPages =
+      totalPagesFromApi && totalPagesFromApi > 0
+         ? totalPagesFromApi
+         : Math.max(1, Math.ceil((totalProducts || productsToShow.length) / pageSize));
    const safePage = Math.min(Math.max(1, currentPage), totalPages);
-   const startIndex = (safePage - 1) * pageSize;
-   const pagedProducts = productsToShow.slice(
-      startIndex,
-      startIndex + pageSize
-   );
+   const pagedProducts = productsToShow;
 
    const canGoPrev = safePage > 1;
    const canGoNext = safePage < totalPages;
@@ -229,7 +260,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
          contentContainerStyle={{ paddingBottom: 40 }}
       >
          {/* Product Filter Section */}
-         <ProductFilterSection productCount={loading ? 0 : totalProducts} />
+         <ProductFilterSection productCount={loading ? 0 : overallProductCount} />
 
          {/* Error message */}
          {error && !loading && (
@@ -275,8 +306,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
                   </View>
                )}
 
-               {/* Pagination */}
-               {totalPages > 1 && (
+               {/* Pagination - only show when there are products to display */}
+               {productsToShow.length > 0 && totalPages > 1 && (
                   <View className="mt-8 flex-row items-center justify-center space-x-2">
                      {/* First page */}
                      <Pressable
