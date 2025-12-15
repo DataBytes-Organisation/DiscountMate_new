@@ -9,6 +9,7 @@ import {
    ActivityIndicator,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import AuthFooter from "../../components/auth/AuthFooter";
 import { useRouter } from "expo-router";
 import { API_URL } from "../../constants/Api";
@@ -405,9 +406,18 @@ export default function RegisterScreen() {
                   Create your DiscountMate account in under 2 minutes
                </Text>
             </View>
-            <Text className="text-3xl font-bold text-gray-900 text-center">
-               Join DiscountMate Today
-            </Text>
+            <View className="flex-row flex-wrap items-center justify-center gap-2">
+               <Text className="text-3xl font-bold text-gray-900">Join</Text>
+               <View className="flex-row items-center gap-2">
+                  <View className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary_green to-secondary_green items-center justify-center shadow-md">
+                     <FontAwesome6 name="tag" size={18} color="#FFFFFF" />
+                  </View>
+                  <Text className="text-3xl font-extrabold bg-gradient-to-r from-primary_green to-secondary_green bg-clip-text text-transparent">
+                     DiscountMate
+                  </Text>
+               </View>
+               <Text className="text-3xl font-bold text-gray-900">Today</Text>
+            </View>
             <Text className="mt-2 text-base text-gray-500 text-center leading-6 max-w-[360px]">
                Start tracking personalised weekly savings, price drops, and smarter
                grocery planning across your regular stores.
@@ -429,7 +439,8 @@ export default function RegisterScreen() {
                {/* Main layout: form and value props */}
                <View className="flex-col gap-6 md:flex-row md:items-start">
                   {/* Form card */}
-                  <View className="flex-1 rounded-3xl border border-gray-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+                  <View className="relative flex-1 overflow-hidden rounded-3xl border border-gray-200 bg-gray-50 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
+                     <View className="pointer-events-none absolute inset-x-5 top-0 h-1 rounded-b-full bg-gradient-to-r from-emerald-400 via-primary_green to-secondary_green opacity-80" />
                      <View className="mb-4">
                         <Text className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-600">
                            Create your account
