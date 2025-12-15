@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable, ScrollView, Image } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { UserProfile } from "../../types/UserProfile";
 
 type ProfileTabKey =
    | "account"
@@ -20,16 +21,21 @@ const PROFILE_TABS: { key: ProfileTabKey; label: string }[] = [
    { key: "privacy", label: "Privacy" },
 ];
 
-export default function ProfileHeaderCard() {
-   // Mock data - replace with actual user data
-   const user = {
-      name: "Sarah Mitchell",
-      memberSince: "January 2024",
-      totalSaved: 487.6,
-      shoppingTrips: 23,
-      activeAlerts: 8,
-      shoppingLists: 5,
-   };
+type Props = {
+   user?: UserProfile | null;
+   loading?: boolean;
+};
+
+const FALLBACK_AVATAR =
+   "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg";
+
+function ProfileHeaderCard({ user, loading }: Props): JSX.Element {
+   const displayName = `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || "Guest";
+   const memberSince = user?.memberSince || "Member";
+   const totalSaved = user?.totalSaved ?? 0;
+   const shoppingTrips = user?.shoppingTrips ?? 0;
+   const activeAlerts = user?.activeAlerts ?? 0;
+   const shoppingLists = user?.shoppingLists ?? 0;
 
    const [activeTab, setActiveTab] = React.useState<ProfileTabKey>("account");
 
@@ -42,9 +48,10 @@ export default function ProfileHeaderCard() {
                {/* Left: Avatar & Name */}
                <View className="flex-row items-center gap-4 flex-1">
                   <View className="relative">
-                     <View className="w-20 h-20 rounded-full bg-gradient-to-br from-primary_green to-secondary_green items-center justify-center">
-                        <FontAwesome6 name="user" size={32} color="#FFFFFF" />
-                     </View>
+                     <Image
+                        source={{ uri: user?.profileImage ?? FALLBACK_AVATAR }}
+                        className="w-20 h-20 rounded-full border-2 border-primary_green/40 bg-white"
+                     />
                      <View className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary_green rounded-full border-2 border-white items-center justify-center">
                         <Ionicons name="checkmark" size={12} color="#FFFFFF" />
                      </View>
@@ -52,7 +59,7 @@ export default function ProfileHeaderCard() {
 
                   <View className="flex-1">
                      <Text className="text-2xl font-bold text-gray-900">
-                        {user.name}
+                        {displayName}
                      </Text>
                      <View className="flex-row items-center mt-1">
                         <Ionicons
@@ -61,7 +68,7 @@ export default function ProfileHeaderCard() {
                            color="#6B7280"
                         />
                         <Text className="ml-2 text-sm text-gray-600">
-                           Member since {user.memberSince}
+                           Member since {memberSince}
                         </Text>
                      </View>
                   </View>
@@ -79,7 +86,7 @@ export default function ProfileHeaderCard() {
                {/* Total Saved */}
                <View className="flex-1 min-w-[150px] bg-white px-5 py-4 border border-emerald-100">
                   <Text className="text-2xl font-bold text-primary_green">
-                     ${user.totalSaved.toFixed(2)}
+                     ${totalSaved.toFixed(2)}
                   </Text>
                   <Text className="mt-1 text-sm text-gray-600">Total Saved</Text>
                   <View className="h-1.5 bg-emerald-100 rounded-full mt-3 overflow-hidden">
@@ -93,7 +100,7 @@ export default function ProfileHeaderCard() {
                {/* Shopping Trips */}
                <View className="flex-1 min-w-[150px] bg-white px-5 py-4 border border-gray-200 items-center">
                   <Text className="text-2xl font-bold text-gray-900">
-                     {user.shoppingTrips}
+                     {shoppingTrips}
                   </Text>
                   <Text className="mt-1 text-sm text-gray-600">Shopping Trips</Text>
                   <View className="flex-row mt-3 gap-1">
@@ -106,7 +113,7 @@ export default function ProfileHeaderCard() {
                {/* Active Alerts */}
                <View className="flex-1 min-w-[150px] bg-white px-5 py-4 border border-gray-200 items-center">
                   <Text className="text-2xl font-bold text-gray-900">
-                     {user.activeAlerts}
+                     {activeAlerts}
                   </Text>
                   <Text className="mt-1 text-sm text-gray-600">Active Alerts</Text>
                   <View className="mt-3">
@@ -121,7 +128,7 @@ export default function ProfileHeaderCard() {
                {/* Shopping Lists */}
                <View className="flex-1 min-w-[150px] bg-white px-5 py-4 border border-gray-200 items-center">
                   <Text className="text-2xl font-bold text-gray-900">
-                     {user.shoppingLists}
+                     {shoppingLists}
                   </Text>
                   <Text className="mt-1 text-sm text-gray-600">Shopping Lists</Text>
                   <View className="mt-3">
@@ -165,3 +172,5 @@ export default function ProfileHeaderCard() {
       </View>
    );
 }
+
+export default ProfileHeaderCard;

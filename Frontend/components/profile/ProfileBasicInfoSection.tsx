@@ -1,19 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Pressable } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { UserProfile } from "../../types/UserProfile";
 
-export default function ProfileBasicInfoSection() {
+type Props = {
+   user?: UserProfile | null;
+   loading?: boolean;
+};
+
+const EMPTY_PROFILE: UserProfile = {
+   firstName: "",
+   lastName: "",
+   email: "",
+   phoneNumber: "",
+   phoneVerified: false,
+   postcode: "",
+};
+
+function ProfileBasicInfoSection({ user, loading }: Props): JSX.Element {
    const [isEditing, setIsEditing] = useState(false);
+   const [userInfo, setUserInfo] = useState<UserProfile>(EMPTY_PROFILE);
 
-   // Mock data - replace with actual user data
-   const [userInfo, setUserInfo] = useState({
-      firstName: "Sarah",
-      lastName: "Mitchell",
-      email: "sarah.mitchell@email.com",
-      phone: "+01 412 345 678",
-      phoneVerified: true,
-      postcode: "2000 Sydney CBD",
-   });
+   useEffect(() => {
+      if (user) {
+         setUserInfo({
+            firstName: user.firstName ?? "",
+            lastName: user.lastName ?? "",
+            email: user.email ?? "",
+            phoneNumber: user.phoneNumber ?? "",
+            phoneVerified: user.phoneVerified ?? Boolean(user.phoneNumber),
+            postcode: user.postcode ?? "",
+         });
+      }
+   }, [user]);
+
+   const info = userInfo || EMPTY_PROFILE;
+   const readOnlyValue = (value?: string) =>
+      value && value.trim().length > 0 ? value : loading ? "Loading..." : "Not provided";
 
    return (
       <View className="bg-white rounded-3xl border border-gray-200 p-6 mb-6 shadow-sm">
@@ -47,15 +70,15 @@ export default function ProfileBasicInfoSection() {
                </Text>
                {isEditing ? (
                   <TextInput
-                     value={userInfo.firstName}
+                     value={info.firstName}
                      onChangeText={(text) =>
-                        setUserInfo({ ...userInfo, firstName: text })
+                        setUserInfo({ ...info, firstName: text })
                      }
                      className="border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 text-gray-900"
                   />
                ) : (
                   <Text className="text-gray-900 text-base py-2">
-                     {userInfo.firstName}
+                     {readOnlyValue(info.firstName)}
                   </Text>
                )}
             </View>
@@ -67,15 +90,15 @@ export default function ProfileBasicInfoSection() {
                </Text>
                {isEditing ? (
                   <TextInput
-                     value={userInfo.lastName}
+                     value={info.lastName}
                      onChangeText={(text) =>
-                        setUserInfo({ ...userInfo, lastName: text })
+                        setUserInfo({ ...info, lastName: text })
                      }
                      className="border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 text-gray-900"
                   />
                ) : (
                   <Text className="text-gray-900 text-base py-2">
-                     {userInfo.lastName}
+                     {readOnlyValue(info.lastName)}
                   </Text>
                )}
             </View>
@@ -87,9 +110,9 @@ export default function ProfileBasicInfoSection() {
                </Text>
                {isEditing ? (
                   <TextInput
-                     value={userInfo.email}
+                     value={info.email}
                      onChangeText={(text) =>
-                        setUserInfo({ ...userInfo, email: text })
+                        setUserInfo({ ...info, email: text })
                      }
                      keyboardType="email-address"
                      autoCapitalize="none"
@@ -97,7 +120,7 @@ export default function ProfileBasicInfoSection() {
                   />
                ) : (
                   <Text className="text-gray-900 text-base py-2">
-                     {userInfo.email}
+                     {readOnlyValue(info.email)}
                   </Text>
                )}
             </View>
@@ -110,9 +133,9 @@ export default function ProfileBasicInfoSection() {
                <View className="flex-row items-center gap-3">
                   {isEditing ? (
                      <TextInput
-                        value={userInfo.phone}
+                        value={info.phoneNumber}
                         onChangeText={(text) =>
-                           setUserInfo({ ...userInfo, phone: text })
+                           setUserInfo({ ...info, phoneNumber: text })
                         }
                         keyboardType="phone-pad"
                         className="flex-1 border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 text-gray-900"
@@ -120,9 +143,9 @@ export default function ProfileBasicInfoSection() {
                   ) : (
                      <>
                         <Text className="text-gray-900 text-base flex-1">
-                           {userInfo.phone}
+                           {readOnlyValue(info.phoneNumber)}
                         </Text>
-                        {userInfo.phoneVerified && (
+                        {info.phoneVerified && (
                            <View className="flex-row items-center gap-1 bg-green-100 px-3 py-1 rounded-lg">
                               <Ionicons name="checkmark-circle" size={16} color="#10B981" />
                               <Text className="text-xs text-green-700 font-medium">
@@ -142,15 +165,15 @@ export default function ProfileBasicInfoSection() {
                </Text>
                {isEditing ? (
                   <TextInput
-                     value={userInfo.postcode}
+                     value={info.postcode}
                      onChangeText={(text) =>
-                        setUserInfo({ ...userInfo, postcode: text })
+                        setUserInfo({ ...info, postcode: text })
                      }
                      className="border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 text-gray-900"
                   />
                ) : (
                   <Text className="text-gray-900 text-base py-2">
-                     {userInfo.postcode}
+                     {readOnlyValue(info.postcode)}
                   </Text>
                )}
             </View>
@@ -167,3 +190,5 @@ export default function ProfileBasicInfoSection() {
       </View>
    );
 }
+
+export default ProfileBasicInfoSection;

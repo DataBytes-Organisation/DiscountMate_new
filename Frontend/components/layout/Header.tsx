@@ -8,13 +8,23 @@ type HeaderProps = {
    activeRoute?: "Home" | "Compare" | "Specials" | "My Lists" | "Profile";
 };
 
-const navItems: Array<HeaderProps["activeRoute"]> = [
+type RouteKey = NonNullable<HeaderProps["activeRoute"]>;
+
+const navItems: RouteKey[] = [
    "Home",
    "Compare",
    "Specials",
    "My Lists",
    "Profile",
 ];
+
+const navRoutes: Record<RouteKey, string> = {
+   Home: "/",
+   Compare: "/compare",
+   Specials: "/specials",
+   "My Lists": "/my-lists",
+   Profile: "/(tabs)/profile",
+};
 
 export default function Header({ activeRoute = "Home" }: HeaderProps) {
    const router = useRouter();
@@ -28,7 +38,15 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
 
    const handleProfile = () => {
       setShowMenu(false);
-      router.push("/profile");
+      const profileRoute = navRoutes.Profile ?? "/profile";
+      router.push(profileRoute);
+   };
+
+   const handleNavPress = (item: RouteKey) => {
+      const route = navRoutes[item];
+      if (route) {
+         router.push(route);
+      }
    };
 
    return (
@@ -57,6 +75,7 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
                         <Pressable
                            key={item}
                            className="px-4 py-2 rounded-lg bg-primary_green/10"
+                           onPress={() => handleNavPress(item)}
                         >
                            <Text className="text-[15px] font-semibold text-primary_green">
                               {item}
@@ -69,6 +88,7 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
                      <Pressable
                         key={item}
                         className="group px-4 py-2 rounded-lg hover:bg-primary_green/5"
+                        onPress={() => handleNavPress(item)}
                      >
                         <Text className="text-[15px] text-gray-600 group-hover:text-primary_green transition-colors">
                            {item}
@@ -107,11 +127,7 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
             </View>
 
             {/* Avatar + menu */}
-            <View
-               className="relative"
-               onMouseEnter={() => setShowMenu(true)}
-               onMouseLeave={() => setShowMenu(false)}
-            >
+            <View className="relative">
                <Pressable onPress={() => setShowMenu((prev) => !prev)}>
                   <Image
                      source={{
