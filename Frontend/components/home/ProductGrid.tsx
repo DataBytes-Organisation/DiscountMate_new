@@ -171,13 +171,21 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
    const pageSize = 9; // cards per page
 
    useEffect(() => {
-      const fetchProducts = async (page: number) => {
+      const fetchProducts = async (page: number, category?: string) => {
          try {
             setLoading(true);
             setError(null);
 
+            const params = new URLSearchParams();
+            params.set("page", String(page));
+            params.set("limit", String(pageSize));
+
+            if (category && category !== "All") {
+               params.set("category", category);
+            }
+
             const response = await fetch(
-               `${API_URL}/products?page=${page}&limit=${pageSize}`
+               `${API_URL}/products?${params.toString()}`
             );
             const data = await response.json();
 
@@ -217,8 +225,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
          }
       };
 
-      fetchProducts(currentPage);
-   }, [currentPage]);
+      fetchProducts(currentPage, activeCategory);
+   }, [currentPage, activeCategory]);
 
    useEffect(() => {
       // Reset to first page when the category changes
@@ -227,22 +235,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
 
    const apiMappedProducts: Product[] = apiProducts.map(mapApiProductToCard);
 
-   const filteredProducts =
-      activeCategory && activeCategory !== "All"
-         ? apiMappedProducts.filter((product) =>
-            (product.category || "").toLowerCase() === activeCategory.toLowerCase()
-         )
-         : apiMappedProducts;
+   // When backend provides pagination totals, rely on those; otherwise fall
+   // back to the current payload length.
+   const productsToShow = apiMappedProducts;
 
-   const productsToShow = filteredProducts;
-
-   // For the overall count, use the backend-reported total when we have it.
-   // When a specific category is active, fall back to the current page's
-   // filtered count as we don't yet filter by category server-side.
-   const overallProductCount =
-      activeCategory && activeCategory !== "All"
-         ? productsToShow.length
-         : totalProducts || productsToShow.length;
+   const overallProductCount = totalProducts || productsToShow.length;
 
    const totalPages =
       totalPagesFromApi && totalPagesFromApi > 0

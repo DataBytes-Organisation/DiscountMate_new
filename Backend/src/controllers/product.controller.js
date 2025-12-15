@@ -96,7 +96,7 @@ const getProducts = async (req, res) => {
 
     // Basic search support (by name/category) – optional and intentionally
     // lightweight so we can still use indexes effectively if they are added.
-    const { search } = req.query || {};
+    const { search, category } = req.query || {};
     const query = {};
 
     if (search && typeof search === 'string' && search.trim().length > 0) {
@@ -107,6 +107,14 @@ const getProducts = async (req, res) => {
         { item_name: regex },
         { category: regex },
       ];
+    }
+
+    if (category && typeof category === 'string' && category.trim().length > 0) {
+      // Match category case-insensitively while keeping index-friendly equality when possible.
+      // Normalise by trimming whitespace and matching the whole value.
+      const trimmed = category.trim();
+      const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      query.category = { $regex: new RegExp(`^${escaped}$`, 'i') };
     }
 
     // If no pagination parameters are provided, preserve the original
