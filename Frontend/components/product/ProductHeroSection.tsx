@@ -2,12 +2,20 @@ import React, { useState } from "react";
 import { View, Text, Image, Pressable } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
-export default function ProductHeroSection() {
+interface ProductHeroSectionProps {
+   productId?: string;
+   productName?: string;
+}
+
+export default function ProductHeroSection({
+   productId,
+   productName,
+}: ProductHeroSectionProps) {
    const [selected, setSelected] = useState(0);
    const [isFavorited, setIsFavorited] = useState(false);
 
    const product = {
-      name: "Milk Full Cream 2L",
+      name: productName || "Milk Full Cream 2L",
       subtitle: "Fresh dairy milk",
       brand: "Dairy Valley",
       sku: "DV-MILK-2L",

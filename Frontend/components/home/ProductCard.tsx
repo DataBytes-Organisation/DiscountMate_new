@@ -4,9 +4,11 @@ import { View, Text, Pressable } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import RetailerCard, { Retailer } from "./RetailerCard";
 import AddButton from "../common/AddButton";
+import { useRouter } from "expo-router";
 export type TrendTone = "green" | "red" | "orange" | "neutral";
 
 export type Product = {
+   id: string;
    name: string;
    subtitle: string;
    icon: React.ComponentProps<typeof FontAwesome6>["name"]; // e.g. "wine-glass"
@@ -35,7 +37,8 @@ function getTrendColorClass(tone: TrendTone): string {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-   const { name, subtitle, icon, badge, trendLabel, trendTone, retailers } = product;
+   const router = useRouter();
+   const { id, name, subtitle, icon, badge, trendLabel, trendTone, retailers } = product;
 
    // Make sure exactly one retailer has isCheapest = true
    const normalizedRetailers: Retailer[] = (() => {
@@ -63,8 +66,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const trendIcon = getTrendIcon(trendTone);
    const trendColorClass = getTrendColorClass(trendTone);
 
+   const handleOpenDetails = () => {
+      // Navigate to the dedicated product detail route: app/(product)/product/[id].tsx
+      // Pass both the ID and name so the detail page can show the correct title
+      router.push({
+         pathname: "/product/[id]",
+         params: { id, name },
+      });
+   };
+
    return (
-      <View className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300">
+      <Pressable
+         className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300"
+         onPress={handleOpenDetails}
+      >
          <View className="p-5">
             {/* Top: icon + title + badges */}
             <View className="flex-row items-start gap-4 mb-4">
@@ -121,17 +136,27 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                <AddButton className="flex-1" />
 
                {/* Add to list */}
-               <Pressable className="px-3 py-2.5 rounded-xl border-2 border-gray-200 items-center justify-center">
+               <Pressable
+                  className="px-3 py-2.5 rounded-xl border-2 border-gray-200 items-center justify-center"
+                  onPress={(e) => {
+                     e.stopPropagation();
+                  }}
+               >
                   <FontAwesome6 name="list" size={14} color="#4B5563" />
                </Pressable>
 
                {/* Alert */}
-               <Pressable className="px-3 py-2.5 rounded-xl border-2 border-gray-200 items-center justify-center">
+               <Pressable
+                  className="px-3 py-2.5 rounded-xl border-2 border-gray-200 items-center justify-center"
+                  onPress={(e) => {
+                     e.stopPropagation();
+                  }}
+               >
                   <FontAwesome6 name="bell" size={14} color="#4B5563" />
                </Pressable>
             </View>
          </View>
-      </View>
+      </Pressable>
    );
 };
 
