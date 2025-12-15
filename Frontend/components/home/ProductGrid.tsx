@@ -453,7 +453,7 @@ const ProductGrid: React.FC = () => {
             setApiProducts(data);
          } catch (err) {
             console.error("Error fetching products for home grid:", err);
-            setError("Unable to load live products. Showing sample deals.");
+            setError("Unable to load live products.");
          } finally {
             setLoading(false);
          }
@@ -462,10 +462,7 @@ const ProductGrid: React.FC = () => {
       fetchProducts();
    }, []);
 
-   const sourceProducts: Product[] =
-      apiProducts.length > 0
-         ? apiProducts.map(mapApiProductToCard)
-         : STATIC_PRODUCTS;
+   const sourceProducts: Product[] = apiProducts.map(mapApiProductToCard);
 
    const totalProducts = sourceProducts.length;
    const totalPages = Math.max(1, Math.ceil(totalProducts / pageSize));
@@ -485,161 +482,209 @@ const ProductGrid: React.FC = () => {
          contentContainerStyle={{ paddingBottom: 40 }}
       >
          {/* Product Filter Section */}
-         <ProductFilterSection productCount={totalProducts} />
+         <ProductFilterSection productCount={loading ? 0 : totalProducts} />
 
-         {/* Loading state */}
-         {loading && (
-            <View className="py-10 items-center justify-center">
-               <ActivityIndicator size="large" color="#0DAD79" />
-               <Text className="mt-4 text-gray-600">
-                  Loading products...
-               </Text>
-            </View>
-         )}
-
-         {/* Error message (we still show products, using fallback if needed) */}
+         {/* Error message */}
          {error && !loading && (
             <View className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200">
                <Text className="text-sm text-red-700">{error}</Text>
             </View>
          )}
 
-         {/* Product grid */}
-         <View className="flex-row flex-wrap -mx-2">
-            {pagedProducts.map((product) => (
-               <View
-                  key={product.id}
-                  className="w-full md:w-1/2 lg:w-1/3 px-2 mb-6"
-               >
-                  <ProductCard product={product} />
-               </View>
-            ))}
-         </View>
-
-         {/* Pagination */}
-         {totalPages > 1 && (
-            <View className="mt-8 flex-row items-center justify-center space-x-2">
-               {/* First page */}
-               <Pressable
-                  className={`px-3 py-2 rounded-xl border-2 ${safePage > 1
-                     ? "border-gray-200"
-                     : "border-gray-100 bg-gray-50"
-                     }`}
-                  disabled={safePage === 1}
-                  onPress={() => setCurrentPage(1)}
-               >
-                  <Text
-                     className={`text-sm ${safePage > 1 ? "text-emerald-500" : "text-gray-300"
-                        }`}
+         {/* Loading state - Skeleton loaders */}
+         {loading ? (
+            <View className="flex-row flex-wrap -mx-2">
+               {Array.from({ length: pageSize }).map((_, index) => (
+                  <View
+                     key={`skeleton-${index}`}
+                     className="w-full md:w-1/2 lg:w-1/3 px-2 mb-6"
                   >
-                     {"≪"}
-                  </Text>
-               </Pressable>
-
-               {/* Previous */}
-               <Pressable
-                  className={`px-3 py-2 rounded-xl border-2 ${canGoPrev
-                     ? "border-gray-200"
-                     : "border-gray-100 bg-gray-50"
-                     }`}
-                  disabled={!canGoPrev}
-                  onPress={() =>
-                     setCurrentPage((prev) => Math.max(1, prev - 1))
-                  }
-               >
-                  <Text
-                     className={`text-sm ${canGoPrev ? "text-emerald-500" : "text-gray-300"
-                        }`}
-                  >
-                     {"<"}
-                  </Text>
-               </Pressable>
-
-               {/* Numbered pages (max 5, current centered when possible) */}
-               {(() => {
-                  const maxVisible = 5;
-                  let start = Math.max(1, safePage - 2);
-                  let end = Math.min(totalPages, safePage + 2);
-
-                  if (end - start + 1 < maxVisible) {
-                     if (start === 1) {
-                        end = Math.min(totalPages, start + maxVisible - 1);
-                     } else if (end === totalPages) {
-                        start = Math.max(1, end - maxVisible + 1);
-                     }
-                  }
-
-                  const pages: number[] = [];
-                  for (let p = start; p <= end; p++) {
-                     pages.push(p);
-                  }
-
-                  return pages.map((page) => {
-                     const isActive = page === safePage;
-                     return (
-                        <Pressable
-                           key={page}
-                           onPress={() => setCurrentPage(page)}
-                           className={
-                              isActive
-                                 ? "px-4 py-2 rounded-xl bg-emerald-500"
-                                 : "px-4 py-2 rounded-xl border-2 border-gray-200 bg-white"
-                           }
-                        >
-                           <Text
-                              className={
-                                 isActive
-                                    ? "text-sm font-semibold text-white"
-                                    : "text-sm font-semibold text-emerald-500"
-                              }
-                           >
-                              {page}
-                           </Text>
-                        </Pressable>
-                     );
-                  });
-               })()}
-
-               {/* Next */}
-               <Pressable
-                  className={`px-3 py-2 rounded-xl border-2 ${canGoNext
-                     ? "border-gray-200"
-                     : "border-gray-100 bg-gray-50"
-                     }`}
-                  disabled={!canGoNext}
-                  onPress={() =>
-                     setCurrentPage((prev) =>
-                        Math.min(totalPages, prev + 1)
-                     )
-                  }
-               >
-                  <Text
-                     className={`text-sm ${canGoNext ? "text-emerald-500" : "text-gray-300"
-                        }`}
-                  >
-                     {">"}
-                  </Text>
-               </Pressable>
-
-               {/* Last page */}
-               <Pressable
-                  className={`px-3 py-2 rounded-xl border-2 ${safePage < totalPages
-                     ? "border-gray-200"
-                     : "border-gray-100 bg-gray-50"
-                     }`}
-                  disabled={safePage === totalPages}
-                  onPress={() => setCurrentPage(totalPages)}
-               >
-                  <Text
-                     className={`text-sm ${safePage < totalPages ? "text-emerald-500" : "text-gray-300"
-                        }`}
-                  >
-                     {"≫"}
-                  </Text>
-               </Pressable>
+                     <ProductCardSkeleton />
+                  </View>
+               ))}
             </View>
+         ) : (
+            <>
+               {/* Product grid */}
+               <View className="flex-row flex-wrap -mx-2">
+                  {pagedProducts.map((product) => (
+                     <View
+                        key={product.id}
+                        className="w-full md:w-1/2 lg:w-1/3 px-2 mb-6"
+                     >
+                        <ProductCard product={product} />
+                     </View>
+                  ))}
+               </View>
+
+               {/* Pagination */}
+               {totalPages > 1 && (
+                  <View className="mt-8 flex-row items-center justify-center space-x-2">
+                     {/* First page */}
+                     <Pressable
+                        className={`px-3 py-2 rounded-xl border-2 ${safePage > 1
+                           ? "border-gray-200"
+                           : "border-gray-100 bg-gray-50"
+                           }`}
+                        disabled={safePage === 1}
+                        onPress={() => setCurrentPage(1)}
+                     >
+                        <Text
+                           className={`text-sm ${safePage > 1 ? "text-emerald-500" : "text-gray-300"
+                              }`}
+                        >
+                           {"≪"}
+                        </Text>
+                     </Pressable>
+
+                     {/* Previous */}
+                     <Pressable
+                        className={`px-3 py-2 rounded-xl border-2 ${canGoPrev
+                           ? "border-gray-200"
+                           : "border-gray-100 bg-gray-50"
+                           }`}
+                        disabled={!canGoPrev}
+                        onPress={() =>
+                           setCurrentPage((prev) => Math.max(1, prev - 1))
+                        }
+                     >
+                        <Text
+                           className={`text-sm ${canGoPrev ? "text-emerald-500" : "text-gray-300"
+                              }`}
+                        >
+                           {"<"}
+                        </Text>
+                     </Pressable>
+
+                     {/* Numbered pages (max 5, current centered when possible) */}
+                     {(() => {
+                        const maxVisible = 5;
+                        let start = Math.max(1, safePage - 2);
+                        let end = Math.min(totalPages, safePage + 2);
+
+                        if (end - start + 1 < maxVisible) {
+                           if (start === 1) {
+                              end = Math.min(totalPages, start + maxVisible - 1);
+                           } else if (end === totalPages) {
+                              start = Math.max(1, end - maxVisible + 1);
+                           }
+                        }
+
+                        const pages: number[] = [];
+                        for (let p = start; p <= end; p++) {
+                           pages.push(p);
+                        }
+
+                        return pages.map((page) => {
+                           const isActive = page === safePage;
+                           return (
+                              <Pressable
+                                 key={page}
+                                 onPress={() => setCurrentPage(page)}
+                                 className={
+                                    isActive
+                                       ? "px-4 py-2 rounded-xl bg-emerald-500"
+                                       : "px-4 py-2 rounded-xl border-2 border-gray-200 bg-white"
+                                 }
+                              >
+                                 <Text
+                                    className={
+                                       isActive
+                                          ? "text-sm font-semibold text-white"
+                                          : "text-sm font-semibold text-emerald-500"
+                                    }
+                                 >
+                                    {page}
+                                 </Text>
+                              </Pressable>
+                           );
+                        });
+                     })()}
+
+                     {/* Next */}
+                     <Pressable
+                        className={`px-3 py-2 rounded-xl border-2 ${canGoNext
+                           ? "border-gray-200"
+                           : "border-gray-100 bg-gray-50"
+                           }`}
+                        disabled={!canGoNext}
+                        onPress={() =>
+                           setCurrentPage((prev) =>
+                              Math.min(totalPages, prev + 1)
+                           )
+                        }
+                     >
+                        <Text
+                           className={`text-sm ${canGoNext ? "text-emerald-500" : "text-gray-300"
+                              }`}
+                        >
+                           {">"}
+                        </Text>
+                     </Pressable>
+
+                     {/* Last page */}
+                     <Pressable
+                        className={`px-3 py-2 rounded-xl border-2 ${safePage < totalPages
+                           ? "border-gray-200"
+                           : "border-gray-100 bg-gray-50"
+                           }`}
+                        disabled={safePage === totalPages}
+                        onPress={() => setCurrentPage(totalPages)}
+                     >
+                        <Text
+                           className={`text-sm ${safePage < totalPages ? "text-emerald-500" : "text-gray-300"
+                              }`}
+                        >
+                           {"≫"}
+                        </Text>
+                     </Pressable>
+                  </View>
+               )}
+            </>
          )}
       </ScrollView>
+   );
+};
+
+// Skeleton loader component matching ProductCard layout
+const ProductCardSkeleton: React.FC = () => {
+   return (
+      <View className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+         <View className="p-5">
+            {/* Top: icon + title + badges */}
+            <View className="flex-row items-start gap-4 mb-4">
+               <View className="w-24 h-24 rounded-xl bg-gray-200 flex-shrink-0" />
+               <View className="flex-1 min-w-0">
+                  <View className="h-5 bg-gray-200 rounded mb-2" style={{ width: "80%" } as any} />
+                  <View className="h-3 bg-gray-100 rounded mb-3" style={{ width: "60%" } as any} />
+                  <View className="flex-row flex-wrap items-center gap-2">
+                     <View className="h-5 bg-gray-200 rounded-full" style={{ width: 70 } as any} />
+                     <View className="h-5 bg-gray-100 rounded" style={{ width: 90 } as any} />
+                  </View>
+               </View>
+            </View>
+
+            {/* Retailer grid */}
+            <View className="border-t border-gray-100 pt-4 mb-4">
+               <View className="flex-row justify-between gap-3">
+                  {[1, 2, 3].map((i) => (
+                     <View key={i} className="flex-1 p-2 rounded-lg bg-gray-50 items-center">
+                        <View className="h-3 bg-gray-200 rounded mb-2" style={{ width: "60%" } as any} />
+                        <View className="h-4 bg-gray-300 rounded mb-1" style={{ width: "50%" } as any} />
+                        <View className="h-2 bg-gray-100 rounded" style={{ width: "40%" } as any} />
+                     </View>
+                  ))}
+               </View>
+            </View>
+
+            {/* Actions row */}
+            <View className="flex-row items-center gap-2">
+               <View className="flex-1 h-10 bg-gray-200 rounded-xl" />
+               <View className="w-10 h-10 bg-gray-200 rounded-xl" />
+               <View className="w-10 h-10 bg-gray-200 rounded-xl" />
+            </View>
+         </View>
+      </View>
    );
 };
 

@@ -63,6 +63,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       );
    })();
 
+   // Calculate maximum savings from all retailers
+   const maxSavings = (() => {
+      let maxSavingsValue = 0;
+
+      normalizedRetailers.forEach(retailer => {
+         if (retailer.originalPrice && retailer.price) {
+            const original = parseFloat(retailer.originalPrice.replace(/[^0-9.]/g, ""));
+            const current = parseFloat(retailer.price.replace(/[^0-9.]/g, ""));
+
+            if (!isNaN(original) && !isNaN(current) && original > current) {
+               const savings = original - current;
+               maxSavingsValue = Math.max(maxSavingsValue, savings);
+            }
+         }
+      });
+
+      return maxSavingsValue > 0 ? `Save $${maxSavingsValue.toFixed(2)}` : badge;
+   })();
+
    const trendIcon = getTrendIcon(trendTone);
    const trendColorClass = getTrendColorClass(trendTone);
 
@@ -102,7 +121,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                      {/* Savings badge */}
                      <View className="px-3 py-1 rounded-full bg-gradient-to-r from-accent/20 to-accent/10">
                         <Text className="text-[11px] font-bold text-accent">
-                           {badge}
+                           {maxSavings}
                         </Text>
                      </View>
 
