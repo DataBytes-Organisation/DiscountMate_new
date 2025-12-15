@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
@@ -8,6 +8,7 @@ type Category = {
 };
 
 const CATEGORIES: Category[] = [
+   { label: "All", icon: "border-all" },
    { label: "Pantry", icon: "box" },
    { label: "Dairy", icon: "cheese" },
    { label: "Drinks", icon: "bottle-water" },
@@ -25,8 +26,15 @@ const CATEGORIES: Category[] = [
    { label: "Liquor", icon: "wine-bottle" },
 ];
 
-export default function SidebarCategories() {
-   const [activeCategory, setActiveCategory] = useState<string>("Pantry");
+type SidebarCategoriesProps = {
+   activeCategory: string;
+   onSelect: (category: string) => void;
+};
+
+export default function SidebarCategories({
+   activeCategory,
+   onSelect,
+}: SidebarCategoriesProps) {
 
    return (
       <View
@@ -48,10 +56,12 @@ export default function SidebarCategories() {
                   return (
                      <Pressable
                         key={label}
-                        onPress={() => setActiveCategory(label)}
+                        onPress={() => onSelect(label)}
                         className={[
                            "flex-row items-center px-4 py-3 rounded-xl mb-1 group transition-all",
-                           isActive ? "bg-primary/5" : "bg-white hover:bg-primary/5",
+                           isActive
+                              ? "bg-primary_green/10 border border-primary_green/40"
+                              : "bg-white border border-transparent hover:bg-primary_green/5",
                         ].join(" ")}
                      >
                         <FontAwesome6
@@ -59,15 +69,17 @@ export default function SidebarCategories() {
                            size={18}
                            className={[
                               "mr-3 text-gray-400 transition-colors",
-                              isActive ? "text-primary" : "group-hover:text-primary",
+                              isActive
+                                 ? "text-primary_green"
+                                 : "group-hover:text-primary_green",
                            ].join(" ")}
                         />
                         <Text
                            className={[
                               "text-sm font-medium",
                               isActive
-                                 ? "text-primary"
-                                 : "text-gray-700 group-hover:text-primary",
+                                 ? "text-primary_green"
+                                 : "text-gray-700 group-hover:text-primary_green",
                            ].join(" ")}
                         >
                            {label}

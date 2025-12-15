@@ -11,6 +11,7 @@ export type Product = {
    id: string;
    name: string;
    subtitle: string;
+   category?: string;
    icon: React.ComponentProps<typeof FontAwesome6>["name"]; // e.g. "wine-glass"
    badge: string;       // e.g. "Save $1.20"
    trendLabel: string;  // e.g. "Trending down"

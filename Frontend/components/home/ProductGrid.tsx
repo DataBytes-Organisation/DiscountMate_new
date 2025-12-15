@@ -1,6 +1,6 @@
 // Frontend/components/product/ProductGrid.tsx
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import ProductCard, { Product } from "./ProductCard";
 import ProductFilterSection from "../common/ProductFilterSection";
 import { API_URL } from "@/constants/Api";
@@ -18,280 +18,6 @@ type ApiProduct = {
    unit_price?: number | null;
    link?: string | null;
 };
-
-// Fallback/sample products used when API data is unavailable.
-const STATIC_PRODUCTS: Product[] = [
-   {
-      id: "static-milk-full-cream-2l",
-      name: "Milk Full Cream 2L",
-      subtitle: "Fresh dairy milk",
-      icon: "wine-glass",
-      badge: "Save $1.20",
-      trendLabel: "Trending down",
-      trendTone: "green",
-      retailers: [
-         {
-            storeKey: "coles",
-            name: "Coles",
-            price: "$3.80",
-            originalPrice: "$5.00",
-         },
-         {
-            storeKey: "woolworths",
-            name: "Woolworths",
-            price: "$4.20",
-            originalPrice: "$5.00",
-         },
-         {
-            storeKey: "aldi",
-            name: "Aldi",
-            price: "$3.50",
-            originalPrice: "$4.70",
-            isCheapest: true,
-         },
-      ],
-   },
-   {
-      id: "static-white-bread-700g",
-      name: "White Bread 700g",
-      subtitle: "Soft white sandwich bread",
-      icon: "bread-slice",
-      badge: "Save $0.85",
-      trendLabel: "Price rising",
-      trendTone: "red",
-      retailers: [
-         {
-            storeKey: "coles",
-            name: "Coles",
-            price: "$2.50",
-            originalPrice: "$3.35",
-            isCheapest: true,
-         },
-         {
-            storeKey: "woolworths",
-            name: "Woolworths",
-            price: "$2.80",
-            originalPrice: "$3.20",
-         },
-         {
-            storeKey: "aldi",
-            name: "Aldi",
-            price: "$2.90",
-            originalPrice: "-",
-         },
-      ],
-   },
-   {
-      id: "static-bananas-1kg",
-      name: "Bananas 1kg",
-      subtitle: "Fresh Australian bananas",
-      icon: "apple-whole",
-      badge: "Save $1.50",
-      trendLabel: "Stable",
-      trendTone: "neutral",
-      retailers: [
-         {
-            storeKey: "coles",
-            name: "Coles",
-            price: "$3.20",
-            originalPrice: "$4.00",
-         },
-         {
-            storeKey: "woolworths",
-            name: "Woolworths",
-            price: "$2.90",
-            originalPrice: "$4.40",
-            isCheapest: true,
-         },
-         {
-            storeKey: "aldi",
-            name: "Aldi",
-            price: "$3.10",
-            originalPrice: "$3.90",
-         },
-      ],
-   },
-   {
-      id: "static-pasta-penne-500g",
-      name: "Pasta Penne 500g",
-      subtitle: "Italian durum wheat pasta",
-      icon: "wheat-awn",
-      badge: "Save $0.50",
-      trendLabel: "Trending down",
-      trendTone: "green",
-      retailers: [
-         {
-            storeKey: "coles",
-            name: "Coles",
-            price: "$2.00",
-            originalPrice: "$2.50",
-         },
-         {
-            storeKey: "woolworths",
-            name: "Woolworths",
-            price: "$2.10",
-            originalPrice: "$2.50",
-         },
-         {
-            storeKey: "aldi",
-            name: "Aldi",
-            price: "$1.79",
-            originalPrice: "$2.29",
-            isCheapest: true,
-         },
-      ],
-   },
-   {
-      id: "static-cheddar-cheese-block-500g",
-      name: "Cheddar Cheese Block 500g",
-      subtitle: "Tasty mature cheddar",
-      icon: "cheese",
-      badge: "Save $2.30",
-      trendLabel: "Hot deal",
-      trendTone: "orange",
-      retailers: [
-         {
-            storeKey: "coles",
-            name: "Coles",
-            price: "$7.50",
-            originalPrice: "$9.00",
-         },
-         {
-            storeKey: "woolworths",
-            name: "Woolworths",
-            price: "$6.80",
-            originalPrice: "$9.10",
-            isCheapest: true,
-         },
-         {
-            storeKey: "aldi",
-            name: "Aldi",
-            price: "$7.20",
-            originalPrice: "$8.50",
-         },
-      ],
-   },
-   {
-      id: "static-orange-juice-2l",
-      name: "Orange Juice 2L",
-      subtitle: "100% pure squeezed orange juice",
-      icon: "glass-water",
-      badge: "Save $1.80",
-      trendLabel: "Trending down",
-      trendTone: "green",
-      retailers: [
-         {
-            storeKey: "coles",
-            name: "Coles",
-            price: "$5.20",
-            originalPrice: "$7.00",
-            isCheapest: true,
-         },
-         {
-            storeKey: "woolworths",
-            name: "Woolworths",
-            price: "$5.50",
-            originalPrice: "$6.80",
-         },
-         {
-            storeKey: "aldi",
-            name: "Aldi",
-            price: "$5.90",
-            originalPrice: "$6.50",
-         },
-      ],
-   },
-   {
-      id: "static-toilet-paper-24-pack",
-      name: "Toilet Paper 24 Pack",
-      subtitle: "Soft 3-ply quilted tissue",
-      icon: "toilet-paper",
-      badge: "Save $3.00",
-      trendLabel: "Bulk deal",
-      trendTone: "orange",
-      retailers: [
-         {
-            storeKey: "coles",
-            name: "Coles",
-            price: "$16.00",
-            originalPrice: "$19.00",
-         },
-         {
-            storeKey: "woolworths",
-            name: "Woolworths",
-            price: "$15.80",
-            originalPrice: "$18.50",
-         },
-         {
-            storeKey: "aldi",
-            name: "Aldi",
-            price: "$14.99",
-            originalPrice: "$17.99",
-            isCheapest: true,
-         },
-      ],
-   },
-   {
-      id: "static-coffee-beans-1kg",
-      name: "Coffee Beans 1kg",
-      subtitle: "Premium arabica coffee beans",
-      icon: "mug-hot",
-      badge: "Save $4.50",
-      trendLabel: "Trending down",
-      trendTone: "green",
-      retailers: [
-         {
-            storeKey: "coles",
-            name: "Coles",
-            price: "$22.00",
-            originalPrice: "$26.50",
-         },
-         {
-            storeKey: "woolworths",
-            name: "Woolworths",
-            price: "$21.50",
-            originalPrice: "$26.00",
-            isCheapest: true,
-         },
-         {
-            storeKey: "aldi",
-            name: "Aldi",
-            price: "$23.90",
-            originalPrice: "$25.50",
-         },
-      ],
-   },
-   {
-      id: "static-greek-yogurt-1kg",
-      name: "Greek Yogurt 1kg",
-      subtitle: "Natural full fat yogurt",
-      icon: "bowl-food",
-      badge: "Save $1.90",
-      trendLabel: "Trending down",
-      trendTone: "green",
-      retailers: [
-         {
-            storeKey: "coles",
-            name: "Coles",
-            price: "$6.50",
-            originalPrice: "$8.00",
-         },
-         {
-            storeKey: "woolworths",
-            name: "Woolworths",
-            price: "$6.80",
-            originalPrice: "$8.20",
-         },
-         {
-            storeKey: "aldi",
-            name: "Aldi",
-            price: "$5.99",
-            originalPrice: "$7.89",
-            isCheapest: true,
-         },
-      ],
-   },
-];
 
 // Simple deterministic pseudo-random generator based on a string seed.
 function pseudoRandom(seed: string): number {
@@ -421,6 +147,7 @@ function mapApiProductToCard(product: ApiProduct): Product {
       id: id || name,
       name,
       subtitle,
+      category,
       icon,
       badge,
       trendLabel: trend.label,
@@ -429,7 +156,11 @@ function mapApiProductToCard(product: ApiProduct): Product {
    };
 }
 
-const ProductGrid: React.FC = () => {
+type ProductGridProps = {
+   activeCategory?: string;
+};
+
+const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
    const [apiProducts, setApiProducts] = useState<ApiProduct[]>([]);
    const [loading, setLoading] = useState<boolean>(true);
    const [error, setError] = useState<string | null>(null);
@@ -453,7 +184,9 @@ const ProductGrid: React.FC = () => {
             setApiProducts(data);
          } catch (err) {
             console.error("Error fetching products for home grid:", err);
-            setError("Unable to load live products.");
+            setError(
+               "We couldn't load products just now. Please refresh the page to try again."
+            );
          } finally {
             setLoading(false);
          }
@@ -462,13 +195,27 @@ const ProductGrid: React.FC = () => {
       fetchProducts();
    }, []);
 
-   const sourceProducts: Product[] = apiProducts.map(mapApiProductToCard);
+   useEffect(() => {
+      // Reset to first page when the category changes
+      setCurrentPage(1);
+   }, [activeCategory]);
 
-   const totalProducts = sourceProducts.length;
+   const apiMappedProducts: Product[] = apiProducts.map(mapApiProductToCard);
+
+   const filteredProducts =
+      activeCategory && activeCategory !== "All"
+         ? apiMappedProducts.filter((product) =>
+            (product.category || "").toLowerCase() === activeCategory.toLowerCase()
+         )
+         : apiMappedProducts;
+
+   const productsToShow = filteredProducts;
+
+   const totalProducts = productsToShow.length;
    const totalPages = Math.max(1, Math.ceil(totalProducts / pageSize));
    const safePage = Math.min(Math.max(1, currentPage), totalPages);
    const startIndex = (safePage - 1) * pageSize;
-   const pagedProducts = sourceProducts.slice(
+   const pagedProducts = productsToShow.slice(
       startIndex,
       startIndex + pageSize
    );
@@ -505,17 +252,28 @@ const ProductGrid: React.FC = () => {
             </View>
          ) : (
             <>
-               {/* Product grid */}
-               <View className="flex-row flex-wrap -mx-2">
-                  {pagedProducts.map((product) => (
-                     <View
-                        key={product.id}
-                        className="w-full md:w-1/2 lg:w-1/3 px-2 mb-6"
-                     >
-                        <ProductCard product={product} />
-                     </View>
-                  ))}
-               </View>
+               {/* Empty state when there are no products to show (e.g. category has none) */}
+               {totalProducts === 0 && !error ? (
+                  <View className="border border-dashed border-gray-200 rounded-2xl p-8 items-center justify-center bg-white">
+                     <Text className="text-base font-semibold text-gray-700 mb-1">
+                        There are currently no products to show.
+                     </Text>
+                     <Text className="text-sm text-gray-500">
+                        Try choosing another category or check back again soon.
+                     </Text>
+                  </View>
+               ) : (
+                  <View className="flex-row flex-wrap -mx-2">
+                     {pagedProducts.map((product) => (
+                        <View
+                           key={product.id}
+                           className="w-full md:w-1/2 lg:w-1/3 px-2 mb-6"
+                        >
+                           <ProductCard product={product} />
+                        </View>
+                     ))}
+                  </View>
+               )}
 
                {/* Pagination */}
                {totalPages > 1 && (
