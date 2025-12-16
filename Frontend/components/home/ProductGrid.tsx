@@ -158,9 +158,10 @@ function mapApiProductToCard(product: ApiProduct): Product {
 
 type ProductGridProps = {
    activeCategory?: string;
+   searchQuery?: string;
 };
 
-const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
+const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory, searchQuery }) => {
    const [apiProducts, setApiProducts] = useState<ApiProduct[]>([]);
    const [loading, setLoading] = useState<boolean>(true);
    const [error, setError] = useState<string | null>(null);
@@ -171,7 +172,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
    const pageSize = 9; // cards per page
 
    useEffect(() => {
-      const fetchProducts = async (page: number, category?: string) => {
+      const fetchProducts = async (page: number, category?: string, search?: string) => {
          try {
             setLoading(true);
             setError(null);
@@ -182,6 +183,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
 
             if (category && category !== "All") {
                params.set("category", category);
+            }
+
+            if (search && search.trim().length > 0) {
+               params.set("search", search.trim());
             }
 
             const response = await fetch(
@@ -225,13 +230,13 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory }) => {
          }
       };
 
-      fetchProducts(currentPage, activeCategory);
-   }, [currentPage, activeCategory]);
+      fetchProducts(currentPage, activeCategory, searchQuery);
+   }, [currentPage, activeCategory, searchQuery]);
 
    useEffect(() => {
-      // Reset to first page when the category changes
+      // Reset to first page when the category or search query changes
       setCurrentPage(1);
-   }, [activeCategory]);
+   }, [activeCategory, searchQuery]);
 
    const apiMappedProducts: Product[] = apiProducts.map(mapApiProductToCard);
 

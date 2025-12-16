@@ -17,7 +17,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ disableEdgeOffset }) => {
             { marginBottom: -24 },
          ]}
       >
-         <View className="w-full max-w-[1920px] mx-auto px-6 py-10">
+         <View className="w-full px-6 md:px-12 py-12">
             {/* Top grid */}
             <View className="flex flex-col gap-10 md:flex-row md:justify-between md:gap-8 mb-10">
                {/* Brand + description + social */}
