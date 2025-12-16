@@ -50,8 +50,13 @@ export default function SidebarFilters({
    };
 
    const selectPriceRange = (min: number | null, max: number | null) => {
-      setPriceRange({ min, max });
-      notifyFiltersChange({ priceRange: { min, max }, retailers: selectedRetailers });
+      // If clicking the same range that's already selected, uncheck it
+      const isCurrentlySelected = priceRange.min === min && priceRange.max === max;
+      const newPriceRange = isCurrentlySelected
+         ? { min: null, max: null }
+         : { min, max };
+      setPriceRange(newPriceRange);
+      notifyFiltersChange({ priceRange: newPriceRange, retailers: selectedRetailers });
    };
 
    const notifyFiltersChange = (filters: {

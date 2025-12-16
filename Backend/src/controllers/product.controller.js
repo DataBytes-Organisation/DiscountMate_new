@@ -105,7 +105,6 @@ const getProducts = async (req, res) => {
         { product_name: regex },
         { name: regex },
         { item_name: regex },
-        { category: regex },
       ];
     }
 

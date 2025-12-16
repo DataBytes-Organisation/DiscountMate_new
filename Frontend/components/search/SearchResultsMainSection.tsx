@@ -63,7 +63,11 @@ export default function SearchResultsMainSection() {
                )}
 
                {/* Product Grid */}
-               <ProductGrid activeCategory={undefined} searchQuery={searchQuery} />
+               <ProductGrid
+                  activeCategory={undefined}
+                  searchQuery={searchQuery}
+                  priceRangeFilter={filters.priceRange}
+               />
             </View>
          </View>
       </View>

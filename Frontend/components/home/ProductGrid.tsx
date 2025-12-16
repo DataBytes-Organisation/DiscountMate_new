@@ -159,9 +159,14 @@ function mapApiProductToCard(product: ApiProduct): Product {
 type ProductGridProps = {
    activeCategory?: string;
    searchQuery?: string;
+   priceRangeFilter?: { min: number | null; max: number | null };
 };
 
-const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory, searchQuery }) => {
+const ProductGrid: React.FC<ProductGridProps> = ({
+   activeCategory,
+   searchQuery,
+   priceRangeFilter,
+}) => {
    const [apiProducts, setApiProducts] = useState<ApiProduct[]>([]);
    const [loading, setLoading] = useState<boolean>(true);
    const [error, setError] = useState<string | null>(null);
@@ -238,13 +243,42 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory, searchQuery }
       setCurrentPage(1);
    }, [activeCategory, searchQuery]);
 
-   const apiMappedProducts: Product[] = apiProducts.map(mapApiProductToCard);
+   // Apply price range filter on unit price (or best_unit_price as fallback)
+   const filteredApiProducts: ApiProduct[] = apiProducts.filter((product) => {
+      if (!priceRangeFilter || (priceRangeFilter.min == null && priceRangeFilter.max == null)) {
+         return true;
+      }
+
+      const unit =
+         typeof product.unit_price === "number" && !isNaN(product.unit_price)
+            ? product.unit_price
+            : typeof product.best_unit_price === "number" && !isNaN(product.best_unit_price)
+               ? product.best_unit_price
+               : null;
+
+      if (unit == null) {
+         // If we have no unit price information, keep the product
+         return true;
+      }
+
+      if (priceRangeFilter.min != null && unit < priceRangeFilter.min) {
+         return false;
+      }
+
+      if (priceRangeFilter.max != null && unit > priceRangeFilter.max) {
+         return false;
+      }
+
+      return true;
+   });
+
+   const apiMappedProducts: Product[] = filteredApiProducts.map(mapApiProductToCard);
 
    // When backend provides pagination totals, rely on those; otherwise fall
    // back to the current payload length.
    const productsToShow = apiMappedProducts;
 
-   const overallProductCount = totalProducts || productsToShow.length;
+   const overallProductCount = productsToShow.length;
 
    const totalPages =
       totalPagesFromApi && totalPagesFromApi > 0
@@ -285,8 +319,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ activeCategory, searchQuery }
             </View>
          ) : (
             <>
-               {/* Empty state when there are no products to show (e.g. category has none) */}
-               {totalProducts === 0 && !error ? (
+               {/* Empty state when there are no products to show (e.g. category has none or filters exclude all) */}
+               {overallProductCount === 0 && !error ? (
                   <View className="border border-dashed border-gray-200 rounded-2xl p-8 items-center justify-center bg-white">
                      <Text className="text-base font-semibold text-gray-700 mb-1">
                         There are currently no products to show.
