@@ -82,8 +82,6 @@ const signin = async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, user.encrypted_password);
 
-        console.log(isMatch);
-
         if (isMatch) {
             const token = jwt.sign({ email, admin: user.admin }, process.env.JWT_SECRET, { expiresIn: '1h' });
             return res.status(200).json({ message: 'Signin successful', token, admin: user.admin });

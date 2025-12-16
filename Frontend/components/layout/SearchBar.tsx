@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import { View, TextInput, Text, Pressable } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { useRouter } from "expo-router";
 
 export default function SearchBar() {
    const [isFocused, setIsFocused] = useState(false);
+   const [searchQuery, setSearchQuery] = useState("");
+   const router = useRouter();
+
+   const handleSearch = () => {
+      if (searchQuery.trim().length > 0) {
+         router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+      }
+   };
 
    return (
       <View className="bg-white border-b border-gray-100 sticky top-[128px] z-40 shadow-sm">
@@ -27,13 +36,20 @@ export default function SearchBar() {
                      placeholder="Search for products, brands, or categories..."
                      placeholderTextColor="#9CA3AF"
                      className="w-full pl-14 pr-4 py-4 text-base text-[#111827] focus:outline-none focus:ring-0"
+                     value={searchQuery}
+                     onChangeText={setSearchQuery}
                      onFocus={() => setIsFocused(true)}
                      onBlur={() => setIsFocused(false)}
+                     onSubmitEditing={handleSearch}
+                     returnKeyType="search"
                   />
                </View>
 
                {/* Search button */}
-               <Pressable className="px-8 py-4 bg-gradient-to-r from-primary_green to-secondary_green rounded-xl shadow-sm hover:shadow-lg transition-shadow">
+               <Pressable
+                  className="px-8 py-4 bg-gradient-to-r from-primary_green to-secondary_green rounded-xl shadow-sm hover:shadow-lg transition-shadow"
+                  onPress={handleSearch}
+               >
                   <Text className="text-white font-semibold">Search</Text>
                </Pressable>
             </View>

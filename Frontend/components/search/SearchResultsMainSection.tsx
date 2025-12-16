@@ -16,10 +16,12 @@ export default function SearchResultsMainSection() {
    });
 
    useEffect(() => {
-      if (typeof query === "string") {
-         setSearchQuery(query);
-      } else if (Array.isArray(query) && query.length > 0) {
-         setSearchQuery(query[0]);
+      if (typeof query === "string" && query.trim().length > 0) {
+         setSearchQuery(query.trim());
+      } else if (Array.isArray(query) && query.length > 0 && query[0]?.trim().length > 0) {
+         setSearchQuery(query[0].trim());
+      } else {
+         setSearchQuery("");
       }
    }, [query]);
 
@@ -40,14 +42,25 @@ export default function SearchResultsMainSection() {
             {/* Main Content Area */}
             <View className="flex-1 px-4 md:px-8 py-8">
                {/* Search Results Header */}
-               <View className="mb-6">
-                  <Text className="text-2xl font-bold text-gray-900 mb-2">
-                     Search Results for "{searchQuery}"
-                  </Text>
-                  <Text className="text-sm text-gray-600">
-                     723 results for {searchQuery}
-                  </Text>
-               </View>
+               {searchQuery ? (
+                  <View className="mb-6">
+                     <Text className="text-2xl font-bold text-gray-900 mb-2">
+                        Search Results for "{searchQuery}"
+                     </Text>
+                     <Text className="text-sm text-gray-600">
+                        Results for {searchQuery}
+                     </Text>
+                  </View>
+               ) : (
+                  <View className="mb-6">
+                     <Text className="text-2xl font-bold text-gray-900 mb-2">
+                        Search Results
+                     </Text>
+                     <Text className="text-sm text-gray-600">
+                        Enter a search query to see results
+                     </Text>
+                  </View>
+               )}
 
                {/* Product Grid */}
                <ProductGrid activeCategory={undefined} searchQuery={searchQuery} />

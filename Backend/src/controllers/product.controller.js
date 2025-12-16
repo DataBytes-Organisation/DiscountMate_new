@@ -117,21 +117,37 @@ const getProducts = async (req, res) => {
       query.category = { $regex: new RegExp(`^${escaped}$`, 'i') };
     }
 
-    // If no pagination parameters are provided, preserve the original
-    // behaviour and return all matching products as an array so that
-    // existing callers (e.g. search page, chatbot) keep working.
+    // Standardize response structure: always return an object with items array
+    // and pagination metadata for consistent client handling.
     const { page, limit, pageSize } = req.query || {};
     const hasPagingParams = Boolean(page || limit || pageSize);
 
+    // Get total count for pagination metadata
+    const total = await coles.countDocuments(query);
+
     if (!hasPagingParams) {
+      // No pagination: return all products but in consistent structure
       const products = await coles.find(query).toArray();
 
       if (!products || products.length === 0) {
-        return res.status(404).json({ message: 'No products found' });
+        return res.status(404).json({
+          message: 'No products found',
+          items: [],
+          page: 1,
+          pageSize: total,
+          total: 0,
+          totalPages: 0,
+        });
       }
 
       const normalisedAll = products.map(normaliseColesProduct).filter(Boolean);
-      return res.json(normalisedAll);
+      return res.json({
+        items: normalisedAll,
+        page: 1,
+        pageSize: normalisedAll.length,
+        total: normalisedAll.length,
+        totalPages: 1,
+      });
     }
 
     // Paginated mode – used by the new product grid so that we only
@@ -141,7 +157,6 @@ const getProducts = async (req, res) => {
       parseInt(limit, 10) || parseInt(pageSize, 10) || 30;
     const pageSizeNumber = Math.min(Math.max(rawPageSize, 1), 100);
 
-    const total = await coles.countDocuments(query);
     const totalPages = Math.max(
       1,
       Math.ceil(total / pageSizeNumber)
