@@ -15,14 +15,14 @@ export default function TabsLayout() {
          <AppHeader activeRoute={activeRoute} />
          <CategoryTabs />
          {!isProfilePage && (
-            <View className="px-4 mb-1">
+            <View className="mb-1">
                <SearchBar />
             </View>
          )}
 
          <ScrollView
             className="flex-1"
-            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
+            contentContainerStyle={{ paddingBottom: 24 }}
          >
             <Slot />
          </ScrollView>

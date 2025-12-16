@@ -7,7 +7,7 @@ export default function SearchBar() {
 
    return (
       <View className="bg-white border-b border-gray-100 sticky top-[128px] z-40 shadow-sm">
-         <View className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-6">
+         <View className="w-full px-4 md:px-8 py-6">
             <View className="flex-row items-center gap-4">
                {/* Search input */}
                <View

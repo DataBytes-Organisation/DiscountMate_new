@@ -15,7 +15,7 @@ export default function TabsLayout() {
    return (
       <View className="flex-1 bg-[#F3F4F6]">
          <AppHeader />
-         <View className="px-4 mb-1">
+         <View className="mb-1">
             <SearchBar />
          </View>
 
