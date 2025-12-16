@@ -33,10 +33,19 @@ function Input({
    onChangeText,
    keyboardType = "default",
 }: InputProps) {
+   const [isFocused, setIsFocused] = useState(false);
+
    return (
       <View className="gap-1">
          <Text className="text-sm font-medium text-gray-700">{label}</Text>
-         <View className="flex-row items-center gap-2 border border-gray-200 rounded-xl px-3 h-12 bg-gray-50">
+         <View
+            className={[
+               "flex-row items-center gap-2 border-2 rounded-xl px-3 h-12 bg-gray-50",
+               isFocused
+                  ? "border-primary_green shadow-[0_0_0_3px_rgba(16,185,129,0.25)]"
+                  : "border-gray-200",
+            ].join(" ")}
+         >
             {icon ? (
                <Ionicons name={icon as any} size={20} color="#9CA3AF" />
             ) : null}
@@ -48,9 +57,46 @@ function Input({
                onChangeText={onChangeText}
                keyboardType={keyboardType}
                autoCapitalize={keyboardType === "email-address" ? "none" : "sentences"}
-               className="flex-1 text-gray-900 text-base"
+               className="flex-1 text-gray-900 text-base outline-none"
+               onFocus={() => setIsFocused(true)}
+               onBlur={() => setIsFocused(false)}
+               style={{ outlineStyle: 'none', outlineWidth: 0 }}
             />
          </View>
+      </View>
+   );
+}
+
+type PhoneInputProps = {
+   value?: string;
+   onChangeText?: (value: string) => void;
+};
+
+function PhoneInput({ value, onChangeText }: PhoneInputProps) {
+   const [isFocused, setIsFocused] = useState(false);
+
+   return (
+      <View
+         className={[
+            "flex-row items-center gap-2 border-2 rounded-xl px-3 h-12 bg-gray-50",
+            isFocused
+               ? "border-primary_green shadow-[0_0_0_3px_rgba(16,185,129,0.25)]"
+               : "border-gray-200",
+         ].join(" ")}
+      >
+         <Ionicons name="call-outline" size={20} color="#9CA3AF" />
+         <Text className="text-gray-900 text-base font-medium">+61</Text>
+         <TextInput
+            placeholder="••• ••• •••"
+            placeholderTextColor="#9CA3AF"
+            value={value}
+            onChangeText={onChangeText}
+            keyboardType="phone-pad"
+            className="flex-1 text-gray-900 text-base outline-none"
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            style={{ outlineStyle: 'none', outlineWidth: 0 }}
+         />
       </View>
    );
 }
@@ -342,6 +388,9 @@ export default function RegisterScreen() {
    const [phoneNumber, setPhoneNumber] = useState("");
    const [password, setPassword] = useState("");
    const [confirmPassword, setConfirmPassword] = useState("");
+   const [groceryPattern, setGroceryPattern] = useState<string>("");
+   const [allowDataUsage, setAllowDataUsage] = useState(true);
+   const [allowMarketingEmails, setAllowMarketingEmails] = useState(false);
    const [error, setError] = useState<string | null>(null);
    const [isSubmitting, setIsSubmitting] = useState(false);
    const router = useRouter();
@@ -374,7 +423,7 @@ export default function RegisterScreen() {
                user_fname: firstName,
                user_lname: lastName,
                address: "",
-               phone_number: phoneNumber,
+               phone_number: phoneNumber ? `+61${phoneNumber}` : "",
                admin: false,
             }),
          });
@@ -484,14 +533,15 @@ export default function RegisterScreen() {
                            value={email}
                            onChangeText={setEmail}
                         />
-                        <Input
-                           label="Mobile number"
-                           placeholder="+61 ••• ••• •••"
-                           icon="call-outline"
-                           keyboardType="phone-pad"
-                           value={phoneNumber}
-                           onChangeText={setPhoneNumber}
-                        />
+                        <View className="gap-1">
+                           <Text className="text-sm font-medium text-gray-700">
+                              Mobile number
+                           </Text>
+                           <PhoneInput
+                              value={phoneNumber}
+                              onChangeText={setPhoneNumber}
+                           />
+                        </View>
                         <View className="flex-row items-center gap-2">
                            <Ionicons
                               name="shield-checkmark-outline"
@@ -521,29 +571,69 @@ export default function RegisterScreen() {
                               How would you describe your usual grocery pattern?
                            </Text>
 
-                           <View className="flex-row items-start gap-2">
-                              <View className="mt-[3px] h-4 w-4 items-center justify-center rounded-full border border-emerald-600 bg-emerald-600">
-                                 <View className="h-2 w-2 rounded-full bg-white" />
+                           <Pressable
+                              onPress={() => setGroceryPattern("one-store")}
+                              className="flex-row items-start gap-2"
+                           >
+                              <View
+                                 className={[
+                                    "mt-[3px] h-4 w-4 items-center justify-center rounded-full border",
+                                    groceryPattern === "one-store"
+                                       ? "border-emerald-600 bg-emerald-600"
+                                       : "border-gray-300 bg-white",
+                                 ].join(" ")}
+                              >
+                                 {groceryPattern === "one-store" && (
+                                    <View className="h-2 w-2 rounded-full bg-white" />
+                                 )}
                               </View>
                               <Text className="flex-1 text-sm text-gray-700">
                                  I mostly shop at one main store each week.
                               </Text>
-                           </View>
+                           </Pressable>
 
-                           <View className="flex-row items-start gap-2">
-                              <View className="mt-[3px] h-4 w-4 rounded-full border border-gray-300 bg-white" />
+                           <Pressable
+                              onPress={() => setGroceryPattern("two-stores")}
+                              className="flex-row items-start gap-2"
+                           >
+                              <View
+                                 className={[
+                                    "mt-[3px] h-4 w-4 items-center justify-center rounded-full border",
+                                    groceryPattern === "two-stores"
+                                       ? "border-emerald-600 bg-emerald-600"
+                                       : "border-gray-300 bg-white",
+                                 ].join(" ")}
+                              >
+                                 {groceryPattern === "two-stores" && (
+                                    <View className="h-2 w-2 rounded-full bg-white" />
+                                 )}
+                              </View>
                               <Text className="flex-1 text-sm text-gray-700">
                                  I usually split my shop across two different stores.
                               </Text>
-                           </View>
+                           </Pressable>
 
-                           <View className="flex-row items-start gap-2">
-                              <View className="mt-[3px] h-4 w-4 rounded-full border border-gray-300 bg-white" />
+                           <Pressable
+                              onPress={() => setGroceryPattern("varies")}
+                              className="flex-row items-start gap-2"
+                           >
+                              <View
+                                 className={[
+                                    "mt-[3px] h-4 w-4 items-center justify-center rounded-full border",
+                                    groceryPattern === "varies"
+                                       ? "border-emerald-600 bg-emerald-600"
+                                       : "border-gray-300 bg-white",
+                                 ].join(" ")}
+                              >
+                                 {groceryPattern === "varies" && (
+                                    <View className="h-2 w-2 rounded-full bg-white" />
+                                 )}
+                              </View>
                               <Text className="flex-1 text-sm text-gray-700">
                                  It changes week to week, depending on specials or what is
                                  nearby.
                               </Text>
-                           </View>
+                           </Pressable>
                         </View>
                      </View>
 
@@ -572,23 +662,49 @@ export default function RegisterScreen() {
 
                      {/* Checkboxes + terms */}
                      <View className="mt-5 gap-2">
-                        <View className="flex-row items-start gap-2">
-                           <View className="mt-[2px] h-5 w-5 items-center justify-center rounded-[6px] bg-emerald-600">
-                              <Ionicons name="checkmark" size={14} color="#ECFDF3" />
+                        <Pressable
+                           onPress={() => setAllowDataUsage(!allowDataUsage)}
+                           className="flex-row items-start gap-2"
+                        >
+                           <View
+                              className={[
+                                 "mt-[2px] h-5 w-5 items-center justify-center rounded-[6px]",
+                                 allowDataUsage
+                                    ? "bg-emerald-600"
+                                    : "border border-gray-300 bg-white",
+                              ].join(" ")}
+                           >
+                              {allowDataUsage && (
+                                 <Ionicons name="checkmark" size={14} color="#ECFDF3" />
+                              )}
                            </View>
                            <Text className="flex-1 text-sm text-gray-600">
                               I am happy for DiscountMate to use anonymous usage data to
                               improve pricing accuracy and product coverage.
                            </Text>
-                        </View>
+                        </Pressable>
 
-                        <View className="flex-row items-start gap-2">
-                           <View className="mt-[2px] h-5 w-5 items-center justify-center rounded-[6px] border border-gray-300 bg-white" />
+                        <Pressable
+                           onPress={() => setAllowMarketingEmails(!allowMarketingEmails)}
+                           className="flex-row items-start gap-2"
+                        >
+                           <View
+                              className={[
+                                 "mt-[2px] h-5 w-5 items-center justify-center rounded-[6px]",
+                                 allowMarketingEmails
+                                    ? "bg-emerald-600"
+                                    : "border border-gray-300 bg-white",
+                              ].join(" ")}
+                           >
+                              {allowMarketingEmails && (
+                                 <Ionicons name="checkmark" size={14} color="#ECFDF3" />
+                              )}
+                           </View>
                            <Text className="flex-1 text-sm text-gray-600">
                               Email me about new features, experiments, and early access
                               tools that could help me save more.
                            </Text>
-                        </View>
+                        </Pressable>
 
                         <Text className="mt-1 text-xs text-gray-400">
                            By continuing, you agree to the DiscountMate Terms of Use and

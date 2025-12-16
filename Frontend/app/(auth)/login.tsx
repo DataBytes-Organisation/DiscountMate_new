@@ -20,6 +20,8 @@ export default function LoginPage() {
    const [rememberMe, setRememberMe] = useState(false);
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [error, setError] = useState<string | null>(null);
+   const [isEmailFocused, setIsEmailFocused] = useState(false);
+   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
    const handleLogin = async () => {
       setError(null);
@@ -95,7 +97,14 @@ export default function LoginPage() {
                      <Text className="text-sm font-semibold text-gray-800">
                         Email Address
                      </Text>
-                     <View className="flex-row items-center gap-3 border border-gray-200 rounded-xl px-3 h-12 bg-gray-50">
+                     <View
+                        className={[
+                           "flex-row items-center gap-3 border-2 rounded-xl px-3 h-12 bg-gray-50",
+                           isEmailFocused
+                              ? "border-primary_green shadow-[0_0_0_3px_rgba(16,185,129,0.25)]"
+                              : "border-gray-200",
+                        ].join(" ")}
+                     >
                         <Ionicons name="mail-outline" size={18} color="#9CA3AF" />
                         <TextInput
                            value={email}
@@ -104,7 +113,10 @@ export default function LoginPage() {
                            placeholderTextColor="#9CA3AF"
                            autoCapitalize="none"
                            keyboardType="email-address"
-                           className="flex-1 text-gray-900"
+                           className="flex-1 text-gray-900 outline-none"
+                           onFocus={() => setIsEmailFocused(true)}
+                           onBlur={() => setIsEmailFocused(false)}
+                           style={{ outlineStyle: 'none', outlineWidth: 0 }}
                         />
                      </View>
                   </View>
@@ -113,7 +125,14 @@ export default function LoginPage() {
                      <Text className="text-sm font-semibold text-gray-800">
                         Password
                      </Text>
-                     <View className="flex-row items-center gap-3 border border-gray-200 rounded-xl px-3 h-12 bg-gray-50">
+                     <View
+                        className={[
+                           "flex-row items-center gap-3 border-2 rounded-xl px-3 h-12 bg-gray-50",
+                           isPasswordFocused
+                              ? "border-primary_green shadow-[0_0_0_3px_rgba(16,185,129,0.25)]"
+                              : "border-gray-200",
+                        ].join(" ")}
+                     >
                         <Ionicons name="lock-closed-outline" size={18} color="#9CA3AF" />
                         <TextInput
                            value={password}
@@ -121,7 +140,10 @@ export default function LoginPage() {
                            placeholder="Enter your password"
                            placeholderTextColor="#9CA3AF"
                            secureTextEntry
-                           className="flex-1 text-gray-900"
+                           className="flex-1 text-gray-900 outline-none"
+                           onFocus={() => setIsPasswordFocused(true)}
+                           onBlur={() => setIsPasswordFocused(false)}
+                           style={{ outlineStyle: 'none', outlineWidth: 0 }}
                         />
                      </View>
                   </View>
