@@ -77,6 +77,17 @@ function mapApiProductToCard(product: ApiProduct): Product {
 
    const savings = Math.max(0, baseOriginal - basePrice);
 
+   // Use unit price (or best_unit_price) for Coles unit price display
+   const unitPriceValue =
+      typeof product.unit_price === "number" && !isNaN(product.unit_price)
+         ? product.unit_price
+         : typeof product.best_unit_price === "number" && !isNaN(product.best_unit_price)
+            ? product.best_unit_price
+            : null;
+
+   const colesUnitPriceLabel =
+      unitPriceValue != null ? `$${unitPriceValue.toFixed(2)} / unit` : undefined;
+
    const badge =
       savings > 0
          ? `Save $${savings.toFixed(2)}`
@@ -141,6 +152,9 @@ function mapApiProductToCard(product: ApiProduct): Product {
             ? `$${originalForRetailer.toFixed(2)}`
             : undefined,
       isCheapest: p === cheapest,
+      // Since all products are currently from Coles, surface the unit price
+      // specifically on the Coles retailer card.
+      unitPriceLabel: p.storeKey === "coles" ? colesUnitPriceLabel : undefined,
    }));
 
    return {
@@ -244,8 +258,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({
    }, [activeCategory, searchQuery]);
 
    // Apply price range filter on unit price (or best_unit_price as fallback)
+   const hasPriceRangeFilter =
+      !!priceRangeFilter &&
+      (priceRangeFilter.min != null || priceRangeFilter.max != null);
+
    const filteredApiProducts: ApiProduct[] = apiProducts.filter((product) => {
-      if (!priceRangeFilter || (priceRangeFilter.min == null && priceRangeFilter.max == null)) {
+      if (!hasPriceRangeFilter) {
          return true;
       }
 
@@ -261,11 +279,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({
          return true;
       }
 
-      if (priceRangeFilter.min != null && unit < priceRangeFilter.min) {
+      if (priceRangeFilter?.min != null && unit < priceRangeFilter.min) {
          return false;
       }
 
-      if (priceRangeFilter.max != null && unit > priceRangeFilter.max) {
+      if (priceRangeFilter?.max != null && unit > priceRangeFilter.max) {
          return false;
       }
 
@@ -278,7 +296,14 @@ const ProductGrid: React.FC<ProductGridProps> = ({
    // back to the current payload length.
    const productsToShow = apiMappedProducts;
 
-   const overallProductCount = productsToShow.length;
+   // For the "Showing X products" label, prefer the total count returned
+   // by the backend so it reflects all matching products, not just the
+   // current page. When a client-side price range filter is active we
+   // can only count the products we've actually filtered on the current
+   // page, so fall back to that in that case.
+   const overallProductCount = hasPriceRangeFilter
+      ? productsToShow.length
+      : (totalProducts || productsToShow.length);
 
    const totalPages =
       totalPagesFromApi && totalPagesFromApi > 0

@@ -11,12 +11,13 @@ export type Retailer = {
    price: string;
    originalPrice?: string;
    isCheapest?: boolean;
+   unitPriceLabel?: string; // e.g. "$1.23 / unit"
 };
 
 type Props = { retailer: Retailer };
 
 export default function RetailerCard({ retailer }: Props) {
-   const { storeKey, name, price, originalPrice, isCheapest } = retailer;
+   const { storeKey, name, price, originalPrice, isCheapest, unitPriceLabel } = retailer;
 
    const theme = STORE_THEMES[storeKey];
 
@@ -42,6 +43,12 @@ export default function RetailerCard({ retailer }: Props) {
             <Text className={["text-base font-bold", theme.text].join(" ")}>
                {price}
             </Text>
+
+            {unitPriceLabel && (
+               <Text className="text-[11px] text-gray-600 mt-0.5">
+                  {unitPriceLabel}
+               </Text>
+            )}
 
             {originalPrice && (
                <Text className="text-[11px] text-gray-400 line-through">
@@ -74,6 +81,12 @@ export default function RetailerCard({ retailer }: Props) {
          <Text className="text-base font-bold text-[#111827]">
             {price}
          </Text>
+
+         {unitPriceLabel && (
+            <Text className="text-[11px] text-gray-600 mt-0.5">
+               {unitPriceLabel}
+            </Text>
+         )}
 
          {originalPrice && (
             <Text className="text-[11px] text-gray-400 line-through">
