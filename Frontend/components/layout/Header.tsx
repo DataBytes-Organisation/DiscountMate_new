@@ -3,6 +3,8 @@ import { View, Text, Pressable, Image } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCart } from "../../app/(tabs)/CartContext";
+import CartPopover from "./CartPopover";
 
 type HeaderProps = {
    activeRoute?: "Home" | "Compare" | "Specials" | "My Lists" | "Profile";
@@ -29,6 +31,9 @@ const navRoutes: Record<RouteKey, string> = {
 export default function Header({ activeRoute = "Home" }: HeaderProps) {
    const router = useRouter();
    const [showMenu, setShowMenu] = useState(false);
+   const [showCartPopover, setShowCartPopover] = useState(false);
+   const { getTotalItems } = useCart();
+   const cartItemCount = getTotalItems();
 
    const handleLogout = async () => {
       await AsyncStorage.removeItem("authToken");
@@ -112,19 +117,21 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
             </Pressable>
 
             {/* Basket summary */}
-            <View className="flex-row items-center gap-3 px-4 md:px-5 py-2.5 bg-gradient-to-r from-primary_green/10 to-secondary_green/10 rounded-xl border border-primary_green/20">
-               <FontAwesome6
-                  name="basket-shopping"
-                  size={16}
-                  className="text-primary_green"
-               />
-               <Text className="text-sm font-semibold text-[#111827]">
-                  3 items
-               </Text>
-               <Text className="text-sm font-bold text-primary_green">
-                  $12.40 saved
-               </Text>
-            </View>
+            <Pressable onPress={() => setShowCartPopover(true)}>
+               <View className="flex-row items-center gap-3 px-4 md:px-5 py-2.5 bg-gradient-to-r from-primary_green/10 to-secondary_green/10 rounded-xl border border-primary_green/20">
+                  <FontAwesome6
+                     name="basket-shopping"
+                     size={16}
+                     className="text-primary_green"
+                  />
+                  <Text className="text-sm font-semibold text-[#111827]">
+                     {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'}
+                  </Text>
+                  <Text className="text-sm font-bold text-primary_green">
+                     $12.40 saved
+                  </Text>
+               </View>
+            </Pressable>
 
             {/* Avatar + menu */}
             <View className="relative">
@@ -158,6 +165,12 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
                )}
             </View>
          </View>
+
+         {/* Cart Popover */}
+         <CartPopover
+            visible={showCartPopover}
+            onClose={() => setShowCartPopover(false)}
+         />
       </View>
    );
 }

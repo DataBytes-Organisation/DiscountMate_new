@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { useCart } from "../../app/(tabs)/CartContext";
 
 type StoreKey = "coles" | "woolworths" | "aldi";
 
@@ -20,6 +21,7 @@ type ProductRow = {
 
 export default function ProductComparisonSection() {
    const [searchQuery, setSearchQuery] = useState("");
+   const { addToCart } = useCart();
 
    const data: ProductRow[] = [
       {
@@ -255,7 +257,17 @@ export default function ProductComparisonSection() {
 
                               {/* Actions */}
                               <View className="w-[140px] px-4 py-5 items-center justify-center">
-                                 <Pressable className="bg-primary_green px-6 py-2.5 rounded-xl shadow-sm">
+                                 <Pressable
+                                    className="bg-primary_green px-6 py-2.5 rounded-xl shadow-sm"
+                                    onPress={() => {
+                                       addToCart({
+                                          id: row.id,
+                                          name: row.name,
+                                          price: best.bestPrice,
+                                          store: storeLabel(best.bestStore),
+                                       });
+                                    }}
+                                 >
                                     <Text className="text-white font-semibold text-sm">Add</Text>
                                  </Pressable>
                               </View>

@@ -4,6 +4,7 @@ import { Slot, useSegments } from "expo-router";
 import AppHeader from "../../components/layout/Header";
 import CategoryTabs from "../../components/layout/CategoryTabs";
 import SearchBar from "../../components/layout/SearchBar";
+import { CartProvider } from "./CartContext";
 
 export default function TabsLayout() {
    const segments = useSegments();
@@ -18,25 +19,27 @@ export default function TabsLayout() {
    }
 
    return (
-      <View className="flex-1 bg-[#F3F4F6]">
-         <AppHeader activeRoute={activeRoute} />
-         <CategoryTabs />
-         {!isProfilePage && !isComparePage && (
-            <View className="mb-1">
-               <SearchBar />
-            </View>
-         )}
+      <CartProvider>
+         <View className="flex-1 bg-[#F3F4F6]">
+            <AppHeader activeRoute={activeRoute} />
+            <CategoryTabs />
+            {!isProfilePage && !isComparePage && (
+               <View className="mb-1">
+                  <SearchBar />
+               </View>
+            )}
 
-         {isComparePage ? (
-            <Slot />
-         ) : (
-            <ScrollView
-               className="flex-1"
-               contentContainerStyle={{ paddingBottom: 24 }}
-            >
+            {isComparePage ? (
                <Slot />
-            </ScrollView>
-         )}
-      </View>
+            ) : (
+               <ScrollView
+                  className="flex-1"
+                  contentContainerStyle={{ paddingBottom: 24 }}
+               >
+                  <Slot />
+               </ScrollView>
+            )}
+         </View>
+      </CartProvider>
    );
 }

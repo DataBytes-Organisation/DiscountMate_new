@@ -5,6 +5,7 @@ import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import RetailerCard, { Retailer } from "./RetailerCard";
 import AddButton from "../common/AddButton";
 import { useRouter } from "expo-router";
+import { useCart } from "../../app/(tabs)/CartContext";
 export type TrendTone = "green" | "red" | "orange" | "neutral";
 
 export type Product = {
@@ -39,6 +40,7 @@ function getTrendColorClass(tone: TrendTone): string {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const router = useRouter();
+   const { addToCart } = useCart();
    const { id, name, subtitle, icon, badge, trendLabel, trendTone, retailers } = product;
 
    // Make sure exactly one retailer has isCheapest = true
@@ -92,6 +94,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       router.push({
          pathname: "/product/[id]",
          params: { id, name },
+      });
+   };
+
+   const handleAddToCart = () => {
+      // Find the cheapest retailer to get the best price
+      const cheapestRetailer = normalizedRetailers.find(r => r.isCheapest) || normalizedRetailers[0];
+      const price = cheapestRetailer?.price
+         ? parseFloat(cheapestRetailer.price.replace(/[^0-9.]/g, ""))
+         : 0;
+
+      addToCart({
+         id: id,
+         name: name,
+         price: price,
+         store: cheapestRetailer?.name,
       });
    };
 
@@ -153,7 +170,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {/* Actions row */}
             <View className="flex-row items-center gap-2">
                {/* Add button */}
-               <AddButton className="flex-1" />
+               <AddButton className="flex-1" onPress={handleAddToCart} />
 
                {/* Add to list */}
                <Pressable
