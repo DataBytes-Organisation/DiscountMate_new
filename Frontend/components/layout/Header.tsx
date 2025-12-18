@@ -20,7 +20,7 @@ const navItems: RouteKey[] = [
 
 const navRoutes: Record<RouteKey, string> = {
    Home: "/",
-   Compare: "/compare",
+   Compare: "/(tabs)/compare",
    Specials: "/specials",
    "My Lists": "/my-lists",
    Profile: "/(tabs)/profile",

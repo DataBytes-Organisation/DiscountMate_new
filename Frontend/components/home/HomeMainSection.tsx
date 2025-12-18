@@ -1,18 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 import { View } from "react-native";
 import SidebarCategories from "./SidebarCategories";
 import ProductGrid from "./ProductGrid";
 
 export default function HomeMainSection() {
-   const [activeCategory, setActiveCategory] = useState<string>("All");
+   // Home page always shows "All" category
+   const activeCategory = "All";
 
    return (
       <View className="bg-[#F9FAFB]">
          <View className="w-full flex-row items-start">
-            {/* Sidebar */}
+            {/* Sidebar with navigation enabled */}
             <SidebarCategories
                activeCategory={activeCategory}
-               onSelect={setActiveCategory}
+               useNavigation={true}
             />
 
             {/* Product area */}

@@ -8,24 +8,35 @@ import SearchBar from "../../components/layout/SearchBar";
 export default function TabsLayout() {
    const segments = useSegments();
    const isProfilePage = segments.includes("profile");
-   const activeRoute = isProfilePage ? "Profile" : "Home";
+   const isComparePage = segments.includes("compare");
+
+   let activeRoute: "Home" | "Compare" | "Specials" | "My Lists" | "Profile" = "Home";
+   if (isProfilePage) {
+      activeRoute = "Profile";
+   } else if (isComparePage) {
+      activeRoute = "Compare";
+   }
 
    return (
       <View className="flex-1 bg-[#F3F4F6]">
          <AppHeader activeRoute={activeRoute} />
          <CategoryTabs />
-         {!isProfilePage && (
+         {!isProfilePage && !isComparePage && (
             <View className="mb-1">
                <SearchBar />
             </View>
          )}
 
-         <ScrollView
-            className="flex-1"
-            contentContainerStyle={{ paddingBottom: 24 }}
-         >
+         {isComparePage ? (
             <Slot />
-         </ScrollView>
+         ) : (
+            <ScrollView
+               className="flex-1"
+               contentContainerStyle={{ paddingBottom: 24 }}
+            >
+               <Slot />
+            </ScrollView>
+         )}
       </View>
    );
 }

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { View } from "react-native";
-import SidebarCategories from "../home/SidebarCategories";
+import SidebarCategories, { slugToCategoryLabel } from "../home/SidebarCategories";
 import ProductGrid from "../home/ProductGrid";
 import CategoryTitleSection from "../common/CategoryTitleSection";
 
@@ -9,21 +9,27 @@ interface CategoryMainSectionProps {
 }
 
 export default function CategoryMainSection({ categoryId }: CategoryMainSectionProps) {
-   const [activeCategory, setActiveCategory] = useState<string>(
-      typeof categoryId === "string" ? categoryId : "All"
-   );
+   // Convert URL slug to category label, using URL as source of truth
+   const activeCategory = useMemo(() => {
+      if (!categoryId || typeof categoryId !== "string") {
+         return "All";
+      }
 
-   // Get category name from id (map this to actual category data later)
-   const categoryName =
-      typeof categoryId === "string" ? categoryId : activeCategory || "Category";
+      // Try to convert slug back to category label
+      const categoryLabel = slugToCategoryLabel(categoryId);
+      return categoryLabel || categoryId; // Fallback to raw value if not found
+   }, [categoryId]);
+
+   // Get category name for display (use the label)
+   const categoryName = activeCategory;
 
    return (
       <View className="bg-[#F9FAFB]">
          <View className="w-full flex-row items-start">
-            {/* Sidebar */}
+            {/* Sidebar with navigation enabled */}
             <SidebarCategories
                activeCategory={activeCategory}
-               onSelect={setActiveCategory}
+               useNavigation={true}
             />
 
             {/* Product area */}

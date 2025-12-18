@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
+import { useRouter } from "expo-router";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
 type Category = {
@@ -24,15 +25,62 @@ const CATEGORIES: Category[] = [
    { label: "Pantry", icon: "box" },
 ];
 
+// Convert category label to URL-friendly slug
+function categoryLabelToSlug(label: string): string {
+   return label
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/&/g, "and")
+      .replace(/,/g, "")
+      .replace(/--+/g, "-")
+      .replace(/^-|-$/g, "");
+}
+
+// Convert URL slug back to category label
+function slugToCategoryLabel(slug: string): string | null {
+   const normalizedSlug = slug.toLowerCase().trim();
+   const category = CATEGORIES.find(cat =>
+      categoryLabelToSlug(cat.label) === normalizedSlug
+   );
+   return category ? category.label : null;
+}
+
 type SidebarCategoriesProps = {
    activeCategory: string;
-   onSelect: (category: string) => void;
+   onSelect?: (category: string) => void; // Optional for backward compatibility
+   useNavigation?: boolean; // If true, use router navigation instead of onSelect
 };
 
 export default function SidebarCategories({
    activeCategory,
    onSelect,
+   useNavigation = false,
 }: SidebarCategoriesProps) {
+   const router = useRouter();
+
+   const handleCategorySelect = (label: string) => {
+      if (useNavigation) {
+         // Use navigation approach (always takes precedence)
+         if (label === "All") {
+            router.push("/");
+         } else {
+            const slug = categoryLabelToSlug(label);
+            router.push(`/category/${slug}`);
+         }
+      } else if (onSelect) {
+         // Use callback approach (for backward compatibility)
+         onSelect(label);
+      } else {
+         // Fallback to navigation if no callback provided
+         if (label === "All") {
+            router.push("/");
+         } else {
+            const slug = categoryLabelToSlug(label);
+            router.push(`/category/${slug}`);
+         }
+      }
+   };
+
    return (
       <View
          // outer wrapper: sticky on web, aligned with product grid
@@ -63,7 +111,7 @@ export default function SidebarCategories({
                   return (
                      <Pressable
                         key={label}
-                        onPress={() => onSelect(label)}
+                        onPress={() => handleCategorySelect(label)}
                         className={[
                            "group flex-row items-center px-3 py-2 rounded-xl mb-1",
                            isActive
@@ -99,3 +147,6 @@ export default function SidebarCategories({
       </View>
    );
 }
+
+// Export helper functions for use in other components
+export { categoryLabelToSlug, slugToCategoryLabel };
