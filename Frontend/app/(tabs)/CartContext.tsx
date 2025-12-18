@@ -12,6 +12,7 @@ type CartContextType = {
    cartItems: CartItem[];
    addToCart: (item: CartItem) => void;
    removeFromCart: (itemId: string) => void;
+   updateQuantity: (itemId: string, quantity: number) => void;
    clearCart: () => void;
    getTotalItems: () => number;
 };
@@ -44,6 +45,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
    };
 
+   const updateQuantity = (itemId: string, quantity: number) => {
+      if (quantity <= 0) {
+         removeFromCart(itemId);
+         return;
+      }
+      setCartItems((prevItems) =>
+         prevItems.map((item) =>
+            item.id === itemId ? { ...item, quantity } : item
+         )
+      );
+   };
+
    const clearCart = () => {
       setCartItems([]);
    };
@@ -58,6 +71,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             cartItems,
             addToCart,
             removeFromCart,
+            updateQuantity,
             clearCart,
             getTotalItems,
          }}
