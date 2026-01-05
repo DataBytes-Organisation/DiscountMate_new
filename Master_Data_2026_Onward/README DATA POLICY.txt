@@ -26,20 +26,19 @@ INTENDED FILE STRUCTURE
 
 >> MAIN_TABLE1(provisioned) final_master_table: all products description, pricing tagged by store. This should power all data to the website.
 
->> MAIN_TABLE2(provisioned) historic_data: all tracked scrapes or all tracked catalogoues. This should power all analysis and ML efforts. No subsetting to be committed see rules below.  
+>> MAIN_TABLE2(provisioned) historic_data: all tracked scrapes or all tracked catalogues. This should power all analysis and ML efforts. No subsetting to be committed see rules below.  
 
 Other tables to assist development and processing for the above tables:
 
-> Master_coles_scrape.csv: This file contains a full scrape of 26,000 product URLs extracted over 28/12/2025-04/01/2026. This was required to gain additional product details for the previoulsy scraped products to allow easier relation and tracking across stores using brands/categories. This scrape also allowed for the download of +61,000 product images from the coles. This processed utilised paid ScraperAPI subscription ($80) and is intented to a be one time scrape for the purpose of extracting more detailed product information.
+> Master_coles_scrape.csv: This file contains a full scrape of 26,000 product URLs extracted over 28/12/2025-04/01/2026. This was required to gain additional product details for the previously scraped products to allow easier relation and tracking across stores using brands/categories. This scrape also allowed for the download of +61,000 product images from the Coles (supermarket chain). This processed utilised paid ScraperAPI subscription ($80) and is intended to a be one time scrape for the purpose of extracting more detailed product information.
 
-> (Provisioned) all_scraped_products.csv
-To consolidate all retailer scrapes into a unified master table.
+> (Provisioned) all_scraped_products.csv: example - To consolidate all retailer scrapes into a unified master table.
 
-> (Provisioned) cleaned_master_products.csv Post-processing and standardisation a new dataset now that master coles scrape has been completed.
+> (Provisioned) cleaned_master_products.csv Post-processing and standardisation a new dataset now that master Coles scrape has been completed.
 
 > (Provisioned) catalogue OCR extraction outputs - for historic data
 
-> (Not included here) Catalogue tracking is maintained separately at:Catalogue_Scraping_2025/catalogue_data/catalogue_tracking.csv
+> (Not included here) Catalogue tracking is maintained separately at: Catalogue_Scraping_2025/catalogue_data/catalogue_tracking.csv
 ___________________________________________________________________________________________________________________________________
 CORE DATA USAGE AND POLICY
 
