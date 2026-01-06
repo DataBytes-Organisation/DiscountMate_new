@@ -104,7 +104,7 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
             </View>
          </View>
 
-         {/* Right: bell + basket + avatar */}
+         {/* Right: bell + list + avatar */}
          <View className="flex-row items-center gap-3 md:gap-4">
             {/* Notifications */}
             <Pressable className="relative">
@@ -116,11 +116,11 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
                <View className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500" />
             </Pressable>
 
-            {/* Basket summary */}
+            {/* List summary */}
             <Pressable onPress={() => setShowCartPopover(true)}>
                <View className="flex-row items-center gap-3 px-4 md:px-5 py-2.5 bg-gradient-to-r from-primary_green/10 to-secondary_green/10 rounded-xl border border-primary_green/20">
                   <FontAwesome6
-                     name="basket-shopping"
+                     name="list"
                      size={16}
                      className="text-primary_green"
                   />

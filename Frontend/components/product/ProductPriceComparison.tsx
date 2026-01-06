@@ -157,11 +157,11 @@ export default function ProductPriceComparison({
                            </View>
                         </View>
 
-                        {/* Bottom row: Add to Basket + View at Store */}
+                        {/* Bottom row: Add to List + View at Store */}
                         <View className="flex-row gap-3">
                            <Pressable className="flex-1 bg-primary_green rounded-xl py-3 items-center">
                               <Text className="text-white font-semibold">
-                                 Add to Basket
+                                 Add to List
                               </Text>
                            </Pressable>
 
@@ -257,7 +257,7 @@ export default function ProductPriceComparison({
                      <View className="flex-row justify-end gap-3">
                         <Pressable className="px-5 py-3 rounded-xl bg-primary_green items-center">
                            <Text className="text-sm font-semibold text-white">
-                              Add to Basket
+                              Add to List
                            </Text>
                         </Pressable>
 

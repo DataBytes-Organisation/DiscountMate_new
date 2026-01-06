@@ -143,26 +143,26 @@ export default function BasketComparisonSection() {
             <View className="flex-row items-start justify-between mb-8">
                <View>
                   <Text className="text-3xl font-bold text-gray-900 mb-2">
-                     Basket Comparison
+                     Grocery List Comparison
                   </Text>
                   <Text className="text-base text-gray-600">
-                     Compare your basket total across all retailers
+                     Compare your grocery list total across all retailers
                   </Text>
                </View>
 
                <Pressable className="bg-primary_green rounded-2xl px-5 py-3 flex-row items-center gap-2 shadow-sm">
                   <FontAwesome6 name="arrows-rotate" size={14} color="#FFFFFF" />
-                  <Text className="text-white font-semibold">Optimize Basket</Text>
+                  <Text className="text-white font-semibold">Optimize Grocery List</Text>
                </Pressable>
             </View>
 
-            {/* Top grid: Basket + Store totals */}
+            {/* Top grid: Grocery List + Store totals */}
             <View className="flex-row gap-6 mb-8">
-               {/* Your Basket */}
+               {/* Your Grocery List */}
                <View className="flex-[2] bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
                   <View className="flex-row items-center justify-between mb-4">
                      <Text className="text-lg font-bold text-gray-900">
-                        Your Basket{" "}
+                        Your Grocery List{" "}
                         <Text className="text-primary_green font-bold">
                            ({basketItems.length} items)
                         </Text>
@@ -179,8 +179,8 @@ export default function BasketComparisonSection() {
                   <View className="rounded-2xl border border-gray-200 overflow-hidden">
                      {basketItems.length === 0 ? (
                         <View className="px-4 py-12 items-center">
-                           <FontAwesome6 name="basket-shopping" size={32} color="#D1D5DB" />
-                           <Text className="text-sm text-gray-500 mt-3">Your basket is empty</Text>
+                           <FontAwesome6 name="list" size={32} color="#D1D5DB" />
+                           <Text className="text-sm text-gray-500 mt-3">Your list is empty</Text>
                         </View>
                      ) : (
                         basketItems.map((item, idx) => (
@@ -300,7 +300,7 @@ export default function BasketComparisonSection() {
                      <View className="min-w-full">
                         {basketItems.length === 0 ? (
                            <View className="px-6 py-12 items-center">
-                              <FontAwesome6 name="basket-shopping" size={32} color="#D1D5DB" />
+                              <FontAwesome6 name="list" size={32} color="#D1D5DB" />
                               <Text className="text-sm text-gray-500 mt-3">No items to compare</Text>
                            </View>
                         ) : (

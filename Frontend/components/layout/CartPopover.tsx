@@ -43,7 +43,7 @@ export default function CartPopover({ visible, onClose }: CartPopoverProps) {
                <View className="px-6 py-5 border-b border-gray-200 flex-row items-center justify-between">
                   <View>
                      <Text className="text-2xl font-bold text-gray-900">
-                        Your Basket
+                        Your Grocery List
                      </Text>
                      <Text className="text-sm text-gray-600 mt-1">
                         {totalItems} {totalItems === 1 ? "item" : "items"}
@@ -58,12 +58,12 @@ export default function CartPopover({ visible, onClose }: CartPopoverProps) {
                {cartItems.length === 0 ? (
                   <View className="px-6 py-12 items-center">
                      <FontAwesome6
-                        name="basket-shopping"
+                        name="list"
                         size={48}
                         color="#D1D5DB"
                      />
                      <Text className="text-lg font-semibold text-gray-600 mt-4">
-                        Your basket is empty
+                        Your list is empty
                      </Text>
                      <Text className="text-sm text-gray-500 mt-2">
                         Add items to get started
@@ -150,7 +150,7 @@ export default function CartPopover({ visible, onClose }: CartPopoverProps) {
                            onPress={handleGoToCompare}
                         >
                            <Text className="text-white text-lg font-semibold">
-                              View Basket Comparison
+                              View Grocery List Comparison
                            </Text>
                         </Pressable>
                      </View>

@@ -191,7 +191,7 @@ export default function ProductHeroSection({
                <View className="flex-row gap-3">
                   <Pressable className="flex-1 bg-primary_green py-4 rounded-xl items-center">
                      <Text className="text-white text-lg font-semibold">
-                        Add to Basket
+                        Add to List
                      </Text>
                   </Pressable>
                   <Pressable className="px-5 py-4 border-2 border-gray-200 rounded-xl items-center justify-center">

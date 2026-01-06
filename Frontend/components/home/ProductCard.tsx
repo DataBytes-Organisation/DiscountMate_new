@@ -172,14 +172,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                {/* Add button */}
                <AddButton className="flex-1" onPress={handleAddToCart} />
 
-               {/* Add to list */}
+               {/* Add to favourites */}
                <Pressable
                   className="px-3 py-2.5 rounded-xl border-2 border-gray-200 items-center justify-center"
                   onPress={(e) => {
                      e.stopPropagation();
                   }}
                >
-                  <FontAwesome6 name="list" size={14} color="#4B5563" />
+                  <FontAwesome6 name="heart" size={14} color="#4B5563" />
                </Pressable>
 
                {/* Alert */}

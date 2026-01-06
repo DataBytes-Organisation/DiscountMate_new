@@ -29,16 +29,16 @@ export default function CompareScreen() {
                   {/* Title + subtitle */}
                   <View className="mb-7 items-center">
                      <Text className="text-4xl font-bold text-gray-900 mb-2 text-center">
-                        Product & Basket Comparison
+                        Product & Grocery List Comparison
                      </Text>
                      <Text className="text-lg text-gray-600 text-center">
-                        Compare products across retailers or review your basket to maximize savings
+                        Compare products across retailers or review your grocery list to maximize savings
                      </Text>
                   </View>
 
                   {/* Tabs */}
                   <View className="flex-row items-center gap-4 justify-center">
-                     {/* Basket Comparison Tab */}
+                     {/* Grocery List Comparison Tab */}
                      <Pressable
                         onPress={() => setActiveView("basket")}
                         className={`flex-row items-center gap-3 px-6 py-4 rounded-2xl ${activeView === "basket"
@@ -47,7 +47,7 @@ export default function CompareScreen() {
                            }`}
                      >
                         <FontAwesome6
-                           name="basket-shopping"
+                           name="list"
                            size={16}
                            color={activeView === "basket" ? "#FFFFFF" : "#374151"}
                         />
@@ -55,7 +55,7 @@ export default function CompareScreen() {
                            className={`text-base font-semibold ${activeView === "basket" ? "text-white" : "text-gray-800"
                               }`}
                         >
-                           Basket Comparison
+                           Grocery List Comparison
                         </Text>
                      </Pressable>
 
