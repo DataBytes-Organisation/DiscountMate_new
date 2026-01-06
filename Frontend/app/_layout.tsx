@@ -5,34 +5,39 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import React from 'react';
+import '../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { CartProvider } from './(tabs)/CartContext';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+   const colorScheme = useColorScheme();
+   const [loaded] = useFonts({
+      SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+   });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+   useEffect(() => {
+      if (loaded) {
+         SplashScreen.hideAsync();
+      }
+   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+   if (!loaded) {
+      return null;
+   }
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
-  );
+   return (
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+         <CartProvider>
+            <Stack>
+               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+               <Stack.Screen name="(product)" options={{ headerShown: false }} />
+               <Stack.Screen name="+not-found" />
+            </Stack>
+         </CartProvider>
+      </ThemeProvider>
+   );
 }

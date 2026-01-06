@@ -8,7 +8,7 @@ export default function Sidebar({ isSidebarCollapsed, toggleSidebar }) {
   return (
     <View style={[styles.sidebar, isSidebarCollapsed ? styles.sidebarCollapsed : null]}>
       <TouchableOpacity onPress={toggleSidebar} style={styles.toggleButton}>
-        <Icon name={isSidebarCollapsed ? "arrow-right" : "arrow-left"} size={15} color="#888" /> 
+        <Icon name={isSidebarCollapsed ? "arrow-right" : "arrow-left"} size={15} color="#888" />
       </TouchableOpacity>
       {!isSidebarCollapsed && (
         <View style={styles.sidebarButtons}>
