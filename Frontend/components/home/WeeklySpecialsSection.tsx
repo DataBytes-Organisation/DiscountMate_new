@@ -167,7 +167,7 @@ export default function WeeklySpecialsSection() {
                               </View>
 
                               <View className="mt-2">
-                                 <AddButton label="Add to Basket" />
+                                 <AddButton label="Add to List" />
                               </View>
                            </View>
                         </View>

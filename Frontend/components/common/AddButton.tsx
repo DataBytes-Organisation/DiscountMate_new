@@ -15,7 +15,7 @@ export default function AddButton({ label = "Add", onPress, className = "" }: Ad
          className={`flex-row items-center justify-center py-2.5 rounded-xl bg-gradient-to-r from-primary_green to-secondary_green active:opacity-90 ${className}`}
       >
          <FontAwesome5
-            name="shopping-basket"
+            name="list"
             size={14}
             color="#FFFFFF"
             style={{ marginRight: 6 }}

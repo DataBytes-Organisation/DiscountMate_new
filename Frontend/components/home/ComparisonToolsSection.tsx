@@ -76,17 +76,17 @@ export default function ComparisonToolsSection() {
                   </View>
                </View>
 
-               {/* Basket Optimizer card */}
+               {/* Grocery List Optimizer card */}
                <View className="w-full md:w-1/2">
                   <View className="bg-gradient-to-br from-light to-white border border-gray-200 rounded-2xl p-10 hover:shadow-xl transition-all">
                      {/* Header row */}
                      <View className="flex-row items-start gap-5 mb-8">
                         <View className="w-16 h-16 bg-gradient-to-br from-primary_green to-secondary_green rounded-xl flex items-center justify-center shadow-lg">
-                           <FontAwesome6 name="basket-shopping" size={24} color="#FFFFFF" />
+                           <FontAwesome6 name="list" size={24} color="#FFFFFF" />
                         </View>
                         <View className="flex-1">
                            <Text className="text-xl text-[#111827] font-bold mb-2">
-                              Basket Optimizer
+                              Grocery List Optimizer
                            </Text>
                            <Text className="text-sm text-gray-600">
                               Split your shopping across stores to maximize savings
@@ -95,11 +95,11 @@ export default function ComparisonToolsSection() {
                      </View>
 
                      <View className="space-y-4">
-                        {/* Current basket */}
+                        {/* Current grocery list */}
                         <View className="p-5 bg-white border border-gray-200 rounded-xl">
                            <View className="flex-row items-center justify-between mb-3">
                               <Text className="text-sm text-[#111827] font-semibold">
-                                 Current basket
+                                 Current grocery list
                               </Text>
                               <Text className="text-sm text-gray-600 font-semibold">
                                  $87.50
@@ -140,7 +140,7 @@ export default function ComparisonToolsSection() {
                      {/* CTA */}
                      <Pressable className="w-full mt-8 py-4 bg-gradient-to-r from-primary_green to-secondary_green rounded-xl items-center justify-center hover:shadow-lg transition-all">
                         <Text className="text-white font-semibold">
-                           Optimize My Basket
+                           Optimize My Grocery List
                         </Text>
                      </Pressable>
                   </View>
