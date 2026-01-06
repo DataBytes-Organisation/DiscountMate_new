@@ -4,7 +4,6 @@ import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { Svg, Path } from "react-native-svg";
 
 export default function AdvancedComparisonToolsSection() {
-   // Mock data based on the screenshot
    const budget = {
       weeklyBudget: 150,
       spent: 97.5,

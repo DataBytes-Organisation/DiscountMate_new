@@ -2,8 +2,7 @@ const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 // We now read products from the `CleanedData` database, `Coles` collection.
-// This module manages its own MongoDB client so we can connect directly to
-// that database while keeping the public API the same for the frontend.
+// This module manages its own MongoDB client so we can connect directly to that database while keeping the public API the same for the frontend.
 
 const uri = process.env.MONGO_URI;
 
@@ -33,7 +32,7 @@ function normaliseColesProduct(product) {
   if (!product) return null;
 
   // Map the Coles document shape to the fields the frontend expects.
-  // Example Coles fields (from screenshot):
+  // Example Coles fields:
   // - product_code
   // - category
   // - item_name

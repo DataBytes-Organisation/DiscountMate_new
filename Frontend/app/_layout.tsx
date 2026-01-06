@@ -8,6 +8,7 @@ import React from 'react';
 import '../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { CartProvider } from './(tabs)/CartContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,12 +30,14 @@ export default function RootLayout() {
 
    return (
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-         <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(product)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-         </Stack>
+         <CartProvider>
+            <Stack>
+               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+               <Stack.Screen name="(product)" options={{ headerShown: false }} />
+               <Stack.Screen name="+not-found" />
+            </Stack>
+         </CartProvider>
       </ThemeProvider>
    );
 }
