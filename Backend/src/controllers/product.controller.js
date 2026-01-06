@@ -1,7 +1,7 @@
 const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
 
-// We now read products from the `CleanedData` database, `Coles` collection.
+// We now read products from the `DiscountMate_DB` database, `products` collection.
 // This module manages its own MongoDB client so we can connect directly to that database while keeping the public API the same for the frontend.
 
 const uri = process.env.MONGO_URI;
@@ -23,8 +23,8 @@ async function getColesCollection() {
     await client.connect();
   }
 
-  const db = client.db('CleanedData');
-  colesCollection = db.collection('Coles');
+  const db = client.db('DiscountMate_DB');
+  colesCollection = db.collection('products');
   return colesCollection;
 }
 
@@ -88,7 +88,7 @@ function normaliseColesProduct(product) {
   };
 }
 
-// Fetch products from CleanedData.Coles
+// Fetch products from DiscountMate_DB.products
 const getProducts = async (req, res) => {
   try {
     const coles = await getColesCollection();
@@ -176,12 +176,12 @@ const getProducts = async (req, res) => {
       totalPages,
     });
   } catch (error) {
-    console.error('Error fetching products from CleanedData.Coles:', error);
+    console.error('Error fetching products from DiscountMate_DB.products:', error);
     return res.status(500).json({ message: 'Failed to fetch products' });
   }
 };
 
-// Fetch a single product by various possible IDs from CleanedData.Coles
+// Fetch a single product by various possible IDs from DiscountMate_DB.products
 const getProduct = async (req, res) => {
   try {
     const coles = await getColesCollection();
@@ -224,7 +224,7 @@ const getProduct = async (req, res) => {
     const normalised = normaliseColesProduct(product);
     return res.json(normalised);
   } catch (error) {
-    console.error('Error fetching product from CleanedData.Coles:', error);
+    console.error('Error fetching product from DiscountMate_DB.products:', error);
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
