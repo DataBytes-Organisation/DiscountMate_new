@@ -5,3 +5,6 @@ Frontend/node_modules
 Frontend/.expo
 .env
 Catalogue_Scraping_2025/catalogues/
+venv/
+*/venv/
+Backend/ml-service/venv/
