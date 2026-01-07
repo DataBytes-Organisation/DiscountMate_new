@@ -1,0 +1,5 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# Run daily at 21:35 AEDT (10:35 UTC)
+30 10 * * * root /usr/local/bin/python3 /app/catalogue_scraper_main.py --automated >> /var/log/cron.log 2>&1
