@@ -1,6 +1,6 @@
 // Frontend/components/product/ProductCard.tsx
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Image } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import RetailerCard, { Retailer } from "./RetailerCard";
 import AddButton from "../common/AddButton";
@@ -14,10 +14,11 @@ export type Product = {
    subtitle: string;
    category?: string;
    icon: React.ComponentProps<typeof FontAwesome6>["name"]; // e.g. "wine-glass"
+   link_image?: string | null; // Product image URL
    badge: string;       // e.g. "Save $1.20"
    trendLabel: string;  // e.g. "Trending down"
    trendTone: TrendTone;
-   retailers: Retailer[];   // exactly 3 in your current design
+   retailers: Retailer[];
 };
 
 type ProductCardProps = {
@@ -41,48 +42,32 @@ function getTrendColorClass(tone: TrendTone): string {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const router = useRouter();
    const { addToCart } = useCart();
-   const { id, name, subtitle, icon, badge, trendLabel, trendTone, retailers } = product;
+   const { id, name, subtitle, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
+   const [imageError, setImageError] = React.useState(false);
 
-   // Make sure exactly one retailer has isCheapest = true
-   const normalizedRetailers: Retailer[] = (() => {
-      const hasExplicitCheapest = retailers.some(r => r.isCheapest);
+   // Find Coles retailer
+   const colesRetailer = retailers.find(r =>
+      r.storeKey === "coles" || r.name?.toLowerCase() === "coles"
+   ) || retailers[0];
 
-      if (hasExplicitCheapest || retailers.length === 0) {
-         return retailers;
+   // Use retailers as-is for display
+   const normalizedRetailers: Retailer[] = retailers;
+
+   // Calculate savings
+   const maxSavings = (() => {
+      if (!colesRetailer || !colesRetailer.originalPrice || !colesRetailer.price) {
+         return badge;
       }
 
-      // No isCheapest flag set: pick the lowest price as backup
-      const withNumericPrice = retailers.map(r => {
-         const numeric = parseFloat((r.price || "").replace(/[^0-9.]/g, ""));
-         return { r, numeric: isNaN(numeric) ? Number.POSITIVE_INFINITY : numeric };
-      });
+      const original = parseFloat(colesRetailer.originalPrice.replace(/[^0-9.]/g, ""));
+      const current = parseFloat(colesRetailer.price.replace(/[^0-9.]/g, ""));
 
-      const min = withNumericPrice.reduce((acc, curr) =>
-         curr.numeric < acc.numeric ? curr : acc
-      );
+      if (!isNaN(original) && !isNaN(current) && original > current) {
+         const savings = original - current;
+         return savings > 0 ? `Save $${savings.toFixed(2)}` : badge;
+      }
 
-      return retailers.map(r =>
-         r === min.r ? { ...r, isCheapest: true } : r
-      );
-   })();
-
-   // Calculate maximum savings from all retailers
-   const maxSavings = (() => {
-      let maxSavingsValue = 0;
-
-      normalizedRetailers.forEach(retailer => {
-         if (retailer.originalPrice && retailer.price) {
-            const original = parseFloat(retailer.originalPrice.replace(/[^0-9.]/g, ""));
-            const current = parseFloat(retailer.price.replace(/[^0-9.]/g, ""));
-
-            if (!isNaN(original) && !isNaN(current) && original > current) {
-               const savings = original - current;
-               maxSavingsValue = Math.max(maxSavingsValue, savings);
-            }
-         }
-      });
-
-      return maxSavingsValue > 0 ? `Save $${maxSavingsValue.toFixed(2)}` : badge;
+      return badge;
    })();
 
    const trendIcon = getTrendIcon(trendTone);
@@ -98,17 +83,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    };
 
    const handleAddToCart = () => {
-      // Find the cheapest retailer to get the best price
-      const cheapestRetailer = normalizedRetailers.find(r => r.isCheapest) || normalizedRetailers[0];
-      const price = cheapestRetailer?.price
-         ? parseFloat(cheapestRetailer.price.replace(/[^0-9.]/g, ""))
+      // Coles is the only retailer with value
+      const price = colesRetailer?.price
+         ? parseFloat(colesRetailer.price.replace(/[^0-9.]/g, ""))
          : 0;
 
       addToCart({
          id: id,
          name: name,
          price: price,
-         store: cheapestRetailer?.name,
+         store: colesRetailer?.name || "Coles",
       });
    };
 
@@ -118,10 +102,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
          onPress={handleOpenDetails}
       >
          <View className="p-5">
-            {/* Top: icon + title + badges */}
+            {/* Top: icon/image + title + badges */}
             <View className="flex-row items-start gap-4 mb-4">
-               <View className="w-24 h-24 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 items-center justify-center flex-shrink-0">
-                  <FontAwesome6 name={icon} size={24} color="#9CA3AF" />
+               <View className="w-24 h-24 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 items-center justify-center flex-shrink-0 overflow-hidden">
+                  {link_image && !imageError ? (
+                     <Image
+                        source={{ uri: link_image }}
+                        style={{ width: '100%', height: '100%' }}
+                        resizeMode="cover"
+                        onError={() => setImageError(true)}
+                     />
+                  ) : (
+                     <FontAwesome6 name={icon} size={24} color="#9CA3AF" />
+                  )}
                </View>
 
                <View className="flex-1 min-w-0">

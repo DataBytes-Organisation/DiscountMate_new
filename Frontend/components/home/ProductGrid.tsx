@@ -9,6 +9,7 @@ type ApiProduct = {
    _id: string;
    product_id?: string | number | null;
    product_name?: string | null;
+   description?: string | null;
    link_image?: string | null;
    current_price?: number | null;
    category?: string | null;
@@ -19,23 +20,10 @@ type ApiProduct = {
    link?: string | null;
 };
 
-// Simple deterministic pseudo-random generator based on a string seed.
-function pseudoRandom(seed: string): number {
-   let h = 0;
-   for (let i = 0; i < seed.length; i++) {
-      h = (h * 31 + seed.charCodeAt(i)) | 0;
-   }
-   // Convert to [0,1)
-   return ((h >>> 0) % 10000) / 10000;
-}
-
-function pickFromArray<T>(arr: T[], seed: string): T {
-   const index = Math.floor(pseudoRandom(seed) * arr.length);
-   return arr[Math.max(0, Math.min(arr.length - 1, index))];
-}
-
 function mapApiProductToCard(product: ApiProduct): Product {
-   const rawId = product.product_id ?? product._id;
+   // Always use _id for consistency in URLs since it's guaranteed to exist for all MongoDB documents
+   // The backend's getProduct endpoint can handle both _id (MongoDB ObjectId) and product_code
+   const rawId = product._id ?? product.product_id;
    const id = String(rawId ?? "");
 
    const name =
@@ -45,26 +33,34 @@ function mapApiProductToCard(product: ApiProduct): Product {
          : "Unnamed product");
    const category = product.category?.trim() || "";
 
-   // Subtitle: use category if present, otherwise a randomized but stable tagline.
-   const subtitle =
-      category ||
-      pickFromArray(
-         [
-            "Smart choice for everyday savings",
-            "Popular pick this week",
-            "Great value for families",
-            "Customer favourite item",
-         ],
-         name + "-subtitle"
-      );
+   // Truncate description for grid display
+   const truncateDescription = (text: string | null | undefined, maxWords: number = 20): string => {
+      if (!text) return "no description";
 
-   const numericPrice =
+      // Strip HTML tags
+      const stripped = text.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
+      if (!stripped) return "no description";
+
+      // Split into words and truncate
+      const words = stripped.split(/\s+/);
+      if (words.length <= maxWords) {
+         return stripped;
+      }
+
+      return words.slice(0, maxWords).join(" ") + "...";
+   };
+
+   // Use description from API, truncated for grid display
+   const subtitle = truncateDescription(product.description);
+
+   console.log(subtitle);
+
+   // Use price from API, default to 0 if not available
+   const basePrice =
       typeof product.current_price === "number" && !isNaN(product.current_price)
          ? product.current_price
-         : undefined;
-
-   // Base price from data if available; otherwise synthesize a reasonable value.
-   const basePrice = numericPrice ?? 5 + pseudoRandom(name + "-price") * 15; // $5–$20
+         : 0;
 
    const baseOriginal =
       (typeof product.item_price === "number" && !isNaN(product.item_price)
@@ -73,7 +69,7 @@ function mapApiProductToCard(product: ApiProduct): Product {
       (typeof product.best_price === "number" && !isNaN(product.best_price)
          ? product.best_price
          : undefined) ??
-      basePrice * (1.1 + pseudoRandom(name + "-original") * 0.3); // 10–40% higher
+      basePrice;
 
    const savings = Math.max(0, baseOriginal - basePrice);
 
@@ -88,47 +84,18 @@ function mapApiProductToCard(product: ApiProduct): Product {
    const colesUnitPriceLabel =
       unitPriceValue != null ? `$${unitPriceValue.toFixed(2)} / unit` : undefined;
 
-   const badge =
-      savings > 0
-         ? `Save $${savings.toFixed(2)}`
-         : pickFromArray(
-            ["Hot deal", "Member offer", "Limited time", "Great value"],
-            name + "-badge"
-         );
+   const badge = savings > 0 ? `Save $${savings.toFixed(2)}` : "Great value";
 
-   const icons: Product["icon"][] = [
-      "wine-glass",
-      "bread-slice",
-      "apple-whole",
-      "wheat-awn",
-      "cheese",
-      "glass-water",
-      "toilet-paper",
-      "mug-hot",
-      "bowl-food",
-      "tag",
-   ];
+   // Use default icon
+   const icon: Product["icon"] = "tag";
 
-   const icon = pickFromArray(icons, name + "-icon");
+   // Use default trend
+   const trend = { label: "Stable", tone: "neutral" as Product["trendTone"] };
 
-   const trendOptions: { label: string; tone: Product["trendTone"] }[] = [
-      { label: "Trending down", tone: "green" },
-      { label: "Stable", tone: "neutral" },
-      { label: "Price rising", tone: "red" },
-      { label: "Hot deal", tone: "orange" },
-      { label: "Bulk deal", tone: "orange" },
-   ];
-
-   const trend = pickFromArray(trendOptions, name + "-trend");
-
-   // Generate three retailers similar to the original layout, with Coles as
-   // the primary data source and Woolworths/Aldi randomized around the same price.
-   const woolworthsFactor = 0.95 + pseudoRandom(name + "-wool") * 0.15; // 0.95–1.10
-   const aldiFactor = 0.9 + pseudoRandom(name + "-aldi") * 0.2; // 0.9–1.10
-
+   // Only Coles has pricing data; other retailers set to 0 for now
    const colesPrice = basePrice;
-   const woolworthsPrice = basePrice * woolworthsFactor;
-   const aldiPrice = basePrice * aldiFactor;
+   const woolworthsPrice = 0;
+   const aldiPrice = 0;
 
    const prices = [
       { storeKey: "coles" as const, name: "Coles", price: colesPrice },
@@ -136,9 +103,8 @@ function mapApiProductToCard(product: ApiProduct): Product {
       { storeKey: "aldi" as const, name: "Aldi", price: aldiPrice },
    ];
 
-   const cheapest = prices.reduce((min, p) =>
-      p.price < min.price ? p : min
-   );
+   // Coles is always the cheapest (and only one with pricing)
+   const cheapest = prices.find(p => p.storeKey === "coles") || prices[0];
 
    const originalForRetailer =
       baseOriginal > basePrice ? baseOriginal : basePrice * 1.15;
@@ -146,14 +112,13 @@ function mapApiProductToCard(product: ApiProduct): Product {
    const retailers = prices.map((p) => ({
       storeKey: p.storeKey,
       name: p.name,
-      price: `$${p.price.toFixed(2)}`,
+      price: p.price > 0 ? `$${p.price.toFixed(2)}` : "$0.00",
       originalPrice:
-         originalForRetailer > p.price
+         p.storeKey === "coles" && originalForRetailer > p.price
             ? `$${originalForRetailer.toFixed(2)}`
             : undefined,
       isCheapest: p === cheapest,
-      // Since all products are currently from Coles, surface the unit price
-      // specifically on the Coles retailer card.
+      // Since all products are currently from Coles, surface the unit price specifically on the Coles retailer card.
       unitPriceLabel: p.storeKey === "coles" ? colesUnitPriceLabel : undefined,
    }));
 
@@ -163,6 +128,7 @@ function mapApiProductToCard(product: ApiProduct): Product {
       subtitle,
       category,
       icon,
+      link_image: product.link_image || null,
       badge,
       trendLabel: trend.label,
       trendTone: trend.tone,
@@ -214,8 +180,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
             const data = await response.json();
 
             // Support both the new paginated shape and the legacy
-            // "array of products" shape so other callers that rely on
-            // /products still work while the backend is evolving.
+            // "array of products" shape so other callers that rely on products still work while the backend is evolving.
             let items: ApiProduct[] = [];
             let total = 0;
             let totalPages = 1;
@@ -292,15 +257,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
    const apiMappedProducts: Product[] = filteredApiProducts.map(mapApiProductToCard);
 
-   // When backend provides pagination totals, rely on those; otherwise fall
-   // back to the current payload length.
+   // When backend provides pagination totals, rely on those; otherwise fall back to the current payload length.
    const productsToShow = apiMappedProducts;
 
-   // For the "Showing X products" label, prefer the total count returned
-   // by the backend so it reflects all matching products, not just the
-   // current page. When a client-side price range filter is active we
-   // can only count the products we've actually filtered on the current
-   // page, so fall back to that in that case.
+   // For the "Showing X products" label, prefer the total count returned  by the backend so it reflects all matching products, not just the current page. When a client-side price range filter is active we can only count the products we've actually filtered on the current page, so fall back to that in that case.
    const overallProductCount = hasPriceRangeFilter
       ? productsToShow.length
       : (totalProducts || productsToShow.length);

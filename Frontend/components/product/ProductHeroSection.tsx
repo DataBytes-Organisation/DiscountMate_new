@@ -1,43 +1,108 @@
-import React, { useState } from "react";
-import { View, Text, Image, Pressable } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Image, Pressable, ActivityIndicator } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { API_URL } from "@/constants/Api";
 
 interface ProductHeroSectionProps {
    productId?: string;
    productName?: string;
 }
 
+type ApiProduct = {
+   _id: string;
+   product_id?: string | number | null;
+   product_name?: string | null;
+   link_image?: string | null;
+   description?: string | null;
+   brand?: string | null;
+   product_code?: string | null;
+   current_price?: number | null;
+   item_price?: number | null;
+   unit_price?: number | null;
+   category?: string | null;
+};
+
 export default function ProductHeroSection({
    productId,
    productName,
 }: ProductHeroSectionProps) {
-   const [selected, setSelected] = useState(0);
    const [isFavorited, setIsFavorited] = useState(false);
+   const [product, setProduct] = useState<ApiProduct | null>(null);
+   const [loading, setLoading] = useState(true);
+   const [imageError, setImageError] = useState(false);
 
-   const product = {
-      name: productName || "Milk Full Cream 2L",
-      subtitle: "Fresh dairy milk",
-      brand: "Dairy Valley",
-      sku: "DV-MILK-2L",
+   useEffect(() => {
+      const fetchProduct = async () => {
+         if (!productId) {
+            setLoading(false);
+            return;
+         }
+
+         try {
+            setLoading(true);
+            // The API endpoint is POST /api/products/getproduct with productId in body
+            const response = await fetch(`${API_URL}/products/getproduct`, {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
+               body: JSON.stringify({ productId: productId }),
+            });
+
+            if (response.ok) {
+               const data = await response.json();
+               console.log("Fetched product data:", data); // Debug log
+               console.log("link_image value:", data?.link_image); // Debug log
+               setProduct(data);
+               // Reset image error when new product is loaded
+               setImageError(false);
+            } else {
+               const errorText = await response.text();
+               console.error("Failed to fetch product:", response.status, errorText);
+               console.error("ProductId used:", productId);
+            }
+         } catch (error) {
+            console.error("Error fetching product:", error);
+         } finally {
+            setLoading(false);
+         }
+      };
+
+      fetchProduct();
+   }, [productId]);
+
+   const displayProduct = {
+      name: product?.product_name || "Product",
+      subtitle: product?.description || "Product description",
+      brand: product?.brand || "Unknown Brand",
+      sku: product?.product_code || "N/A",
       rating: 4.5,
       reviews: 1247,
-      images: [
-         "https://images.pexels.com/photos/3738096/pexels-photo-3738096.jpeg",
-         "https://images.pexels.com/photos/4109993/pexels-photo-4109993.jpeg",
-         "https://images.pexels.com/photos/4457151/pexels-photo-4457151.jpeg",
-         "https://images.pexels.com/photos/4109992/pexels-photo-4109992.jpeg",
-      ],
-      price: 3.5,
-      oldPrice: 4.7,
-      retailer: "Aldi",
-      savings: 1.2,
-      percent: 25,
+      link_image: product?.link_image || null,
+      price: product?.current_price || 0,
+      oldPrice: product?.item_price || product?.best_price || 0,
+      retailer: "Coles",
+      savings: (product?.item_price || product?.best_price) && product?.current_price
+         ? (product.item_price || product.best_price) - product.current_price
+         : 0,
+      percent: (product?.item_price || product?.best_price) && product?.current_price
+         ? Math.round((((product.item_price || product.best_price) - product.current_price) / (product.item_price || product.best_price)) * 100)
+         : 0,
       trend: "down",
-      size: "2 Liters",
-      unitPrice: 1.75,
+      size: "Standard",
+      unitPrice: product?.unit_price || product?.best_unit_price || 0,
       availability: "Available for delivery & pickup",
       updated: "2 hours ago",
    };
+
+   if (loading) {
+      return (
+         <View className="bg-white rounded-2xl p-6 border border-gray-200 items-center justify-center min-h-[400px]">
+            <ActivityIndicator size="large" color="#10B981" />
+            <Text className="text-gray-600 mt-4">Loading product...</Text>
+         </View>
+      );
+   }
 
    return (
       <View className="bg-white rounded-2xl p-6 border border-gray-200">
@@ -45,33 +110,21 @@ export default function ProductHeroSection({
          {/* Row: image left + info right */}
          <View className="flex-col lg:flex-row gap-6">
 
-            {/* LEFT SIDE: Main image + thumbnails */}
+            {/* LEFT SIDE: Single product image */}
             <View className="lg:w-1/2">
-               <Image
-                  source={{ uri: product.images[selected] }}
-                  className="w-full h-72 rounded-2xl"
-               />
-
-               <View className="flex-row gap-3 mt-4">
-                  {product.images.map((img, i) => (
-                     <Pressable
-                        key={i}
-                        onPress={() => setSelected(i)}
-                        className={[
-                           "w-16 h-16 rounded-xl overflow-hidden border",
-                           selected === i
-                              ? "border-primary_green"
-                              : "border-gray-200",
-                        ].join(" ")}
-                     >
-                        <Image
-                           source={{ uri: img }}
-                           className="w-full h-full"
-                           resizeMode="cover"
-                        />
-                     </Pressable>
-                  ))}
-               </View>
+               {displayProduct.link_image && !imageError ? (
+                  <Image
+                     source={{ uri: displayProduct.link_image }}
+                     className="w-full h-72 rounded-2xl"
+                     resizeMode="contain"
+                     onError={() => setImageError(true)}
+                  />
+               ) : (
+                  <View className="w-full h-72 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 items-center justify-center">
+                     <FontAwesome6 name="image" size={48} color="#9CA3AF" />
+                     <Text className="text-gray-500 mt-2">No image available</Text>
+                  </View>
+               )}
             </View>
 
             {/* RIGHT SIDE */}
@@ -81,7 +134,7 @@ export default function ProductHeroSection({
                <View>
                   <View className="flex-row items-start justify-between mb-1">
                      <Text className="text-3xl font-bold text-gray-900 flex-1">
-                        {product.name}
+                        {displayProduct.name}
                      </Text>
                      <Pressable
                         onPress={() => setIsFavorited(!isFavorited)}
@@ -96,10 +149,10 @@ export default function ProductHeroSection({
                      </Pressable>
                   </View>
 
-                  <Text className="text-gray-600 mt-1">{product.subtitle}</Text>
+                  <Text className="text-gray-600 mt-1">{displayProduct.subtitle}</Text>
 
                   <Text className="text-gray-500 text-sm mt-1">
-                     Brand: {product.brand} | SKU: {product.sku}
+                     Brand: {displayProduct.brand} | SKU: {displayProduct.sku}
                   </Text>
 
                   {/* Ratings */}
@@ -111,13 +164,13 @@ export default function ProductHeroSection({
                               name="star"
                               size={16}
                               solid
-                              color={i < Math.floor(product.rating) ? "#FBBF24" : "#E5E7EB"}
+                              color={i < Math.floor(displayProduct.rating) ? "#FBBF24" : "#E5E7EB"}
                            />
                         ))}
                      </View>
 
                      <Text className="text-gray-600 text-sm">
-                        {product.rating} ({product.reviews.toLocaleString()} reviews)
+                        {displayProduct.rating} ({displayProduct.reviews.toLocaleString()} reviews)
                      </Text>
                   </View>
                </View>
@@ -130,33 +183,37 @@ export default function ProductHeroSection({
 
                   <View className="flex-row items-baseline gap-3">
                      <Text className="text-4xl font-bold text-gray-900">
-                        ${product.price.toFixed(2)}
+                        ${displayProduct.price.toFixed(2)}
                      </Text>
 
-                     <Text className="text-gray-400 line-through text-lg">
-                        ${product.oldPrice.toFixed(2)}
-                     </Text>
-
-                     <Text className="text-gray-700 text-lg">at {product.retailer}</Text>
-                  </View>
-
-                  <View className="flex-row items-center gap-4 mt-2">
-                     <View className="flex-row items-center gap-1">
-                        <FontAwesome6 name="tag" size={14} color="#16A34A" />
-                        <Text className="text-green-700 text-sm">
-                           Save ${product.savings.toFixed(2)} ({product.percent}% off)
+                     {displayProduct.oldPrice > displayProduct.price && (
+                        <Text className="text-gray-400 line-through text-lg">
+                           ${displayProduct.oldPrice.toFixed(2)}
                         </Text>
-                     </View>
+                     )}
 
-                     <View className="flex-row items-center gap-1">
-                        <FontAwesome6
-                           name="arrow-trend-down"
-                           size={14}
-                           color="#16A34A"
-                        />
-                        <Text className="text-green-700 text-sm">Trending down</Text>
-                     </View>
+                     <Text className="text-gray-700 text-lg">at {displayProduct.retailer}</Text>
                   </View>
+
+                  {displayProduct.savings > 0 && (
+                     <View className="flex-row items-center gap-4 mt-2">
+                        <View className="flex-row items-center gap-1">
+                           <FontAwesome6 name="tag" size={14} color="#16A34A" />
+                           <Text className="text-green-700 text-sm">
+                              Save ${displayProduct.savings.toFixed(2)} ({displayProduct.percent}% off)
+                           </Text>
+                        </View>
+
+                        <View className="flex-row items-center gap-1">
+                           <FontAwesome6
+                              name="arrow-trend-down"
+                              size={14}
+                              color="#16A34A"
+                           />
+                           <Text className="text-green-700 text-sm">Trending down</Text>
+                        </View>
+                     </View>
+                  )}
                </View>
 
                {/* Product info rows */}
@@ -164,25 +221,27 @@ export default function ProductHeroSection({
 
                   <View className="flex-row gap-2 items-center">
                      <FontAwesome6 name="box" size={16} color="#4B5563" />
-                     <Text className="text-gray-700">Size: {product.size}</Text>
+                     <Text className="text-gray-700">Size: {displayProduct.size}</Text>
                   </View>
 
-                  <View className="flex-row gap-2 items-center">
-                     <FontAwesome6 name="money-bill" size={16} color="#4B5563" />
-                     <Text className="text-gray-700">
-                        Unit Price: ${product.unitPrice}/L
-                     </Text>
-                  </View>
+                  {displayProduct.unitPrice > 0 && (
+                     <View className="flex-row gap-2 items-center">
+                        <FontAwesome6 name="money-bill" size={16} color="#4B5563" />
+                        <Text className="text-gray-700">
+                           Unit Price: ${displayProduct.unitPrice.toFixed(2)}/unit
+                        </Text>
+                     </View>
+                  )}
 
                   <View className="flex-row gap-2 items-center">
                      <FontAwesome6 name="truck" size={16} color="#4B5563" />
-                     <Text className="text-gray-700">{product.availability}</Text>
+                     <Text className="text-gray-700">{displayProduct.availability}</Text>
                   </View>
 
                   <View className="flex-row gap-2 items-center">
                      <FontAwesome6 name="clock" size={16} color="#4B5563" />
                      <Text className="text-gray-700">
-                        Price updated {product.updated}
+                        Price updated {displayProduct.updated}
                      </Text>
                   </View>
                </View>

@@ -7,7 +7,7 @@ import { useCart } from "../../app/(tabs)/CartContext";
 import CartPopover from "./CartPopover";
 
 type HeaderProps = {
-   activeRoute?: "Home" | "Compare" | "Specials" | "My Lists" | "Profile";
+   activeRoute?: "Home" | "Compare" | "Specials" | "My Lists" | "Profile" | "Dashboard";
 };
 
 type RouteKey = NonNullable<HeaderProps["activeRoute"]>;
@@ -17,6 +17,7 @@ const navItems: RouteKey[] = [
    "Compare",
    "Specials",
    "My Lists",
+   "Dashboard",
    "Profile",
 ];
 
@@ -25,6 +26,7 @@ const navRoutes: Record<RouteKey, string> = {
    Compare: "/(tabs)/compare",
    Specials: "/specials",
    "My Lists": "/my-lists",
+   Dashboard: "/(tabs)/product-dashboard",
    Profile: "/(tabs)/profile",
 };
 

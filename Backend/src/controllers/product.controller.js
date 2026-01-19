@@ -1,13 +1,11 @@
 const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
 
-// We now read products from the `DiscountMate_DB` database, `products` collection.
-// This module manages its own MongoDB client so we can connect directly to that database while keeping the public API the same for the frontend.
-
 const uri = process.env.MONGO_URI;
 
 let client;
 let colesCollection;
+let productPricingsCollection;
 
 async function getColesCollection() {
   if (colesCollection) {
@@ -28,26 +26,34 @@ async function getColesCollection() {
   return colesCollection;
 }
 
-function normaliseColesProduct(product) {
+async function getProductPricingsCollection() {
+  if (productPricingsCollection) {
+    return productPricingsCollection;
+  }
+
+  if (!uri) {
+    throw new Error('MONGO_URI is not defined in environment variables');
+  }
+
+  if (!client || !client.topology || client.topology.isConnected() === false) {
+    client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    await client.connect();
+  }
+
+  const db = client.db('DiscountMate_DB');
+  productPricingsCollection = db.collection('product_pricings');
+  return productPricingsCollection;
+}
+
+function normaliseColesProduct(product, latestPricing = null) {
   if (!product) return null;
 
-  // Map the Coles document shape to the fields the frontend expects.
-  // Example Coles fields:
-  // - product_code
-  // - category
-  // - item_name
-  // - best_price
-  // - best_unit_price
-  // - item_price
-  // - unit_price
-  // - link
-
+  // Use current_price from product_pricings (latest pricing)
+  // If no pricing exists, set to 0
   const currentPrice =
-    product.best_price ??
-    product.item_price ??
-    product.current_price ??
-    product.price ??
-    0;
+    (latestPricing && typeof latestPricing.current_price === 'number' && !isNaN(latestPricing.current_price))
+      ? latestPricing.current_price
+      : 0;
 
   return {
     // Preserve Mongo _id so existing keyExtractor `_id` still works.
@@ -67,7 +73,9 @@ function normaliseColesProduct(product) {
       product.item_name ??
       'Unnamed Product',
 
-    // We don't have a dedicated image URL in Coles data.
+    // Description
+    description: product.description ?? null,
+
     // Reuse `link_image`/`image` if present; otherwise fall back to product page `link` or null.
     link_image:
       product.link_image ??
@@ -75,26 +83,22 @@ function normaliseColesProduct(product) {
       product.link ??
       null,
 
-    // Price used throughout the UI
+    // Price used throughout the UI - from product_pricings only, or 0 if no pricing exists
     current_price: currentPrice,
 
     // Extra fields that may be useful to callers
     category: product.category ?? null,
-    best_price: product.best_price ?? null,
-    best_unit_price: product.best_unit_price ?? null,
-    item_price: product.item_price ?? null,
-    unit_price: product.unit_price ?? null,
     link: product.link ?? null,
   };
 }
 
-// Fetch products from DiscountMate_DB.products
+// Fetch products from DiscountMate_DB.products with latest pricing from product_pricings
 const getProducts = async (req, res) => {
   try {
     const coles = await getColesCollection();
+    const pricings = await getProductPricingsCollection();
 
-    // Basic search support (by name/category) – optional and intentionally
-    // lightweight so we can still use indexes effectively if they are added.
+    // Basic search support (by name/category) – optional and intentionally lightweight so we can still use indexes effectively if they are added.
     const { search, category } = req.query || {};
     const query = {};
 
@@ -120,53 +124,149 @@ const getProducts = async (req, res) => {
     const { page, limit, pageSize } = req.query || {};
     const hasPagingParams = Boolean(page || limit || pageSize);
 
-    // Get total count for pagination metadata
+    // Get total count for pagination metadata (before aggregation)
     const total = await coles.countDocuments(query);
 
-    if (!hasPagingParams) {
-      // No pagination: return all products but in consistent structure
-      const products = await coles.find(query).toArray();
+    // Build aggregation pipeline to join with product_pricings and get latest pricing
+    const pipeline = [
+      // Match products based on query
+      { $match: query },
 
-      if (!products || products.length === 0) {
-        return res.status(404).json({
-          message: 'No products found',
-          items: [],
-          page: 1,
-          pageSize: total,
-          total: 0,
-          totalPages: 0,
-        });
+      // Join with product_pricings collection
+      {
+        $lookup: {
+          from: 'product_pricings',
+          localField: '_id',
+          foreignField: 'product_id',
+          as: 'pricings'
+        }
+      },
+
+      // Unwind pricings array (preserve products without pricings)
+      {
+        $unwind: {
+          path: '$pricings',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+
+      // Sort by collected_at (or created_datetime as fallback) descending to get latest first
+      {
+        $sort: {
+          'pricings.collected_at': -1,
+          'pricings.created_datetime': -1
+        }
+      },
+
+      // Group by product _id to get only the latest pricing
+      {
+        $group: {
+          _id: '$_id',
+          product: { $first: '$$ROOT' },
+          latestPricing: { $first: '$pricings' }
+        }
+      },
+
+      // Restore product structure with latest pricing, excluding the unwound pricings field
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [
+              {
+                $arrayToObject: {
+                  $filter: {
+                    input: { $objectToArray: '$product' },
+                    cond: { $ne: ['$$this.k', 'pricings'] }
+                  }
+                }
+              },
+              { latestPricing: '$latestPricing' }
+            ]
+          }
+        }
+      },
+
+      // Add a sort key field using the first available name field (for case-insensitive sorting)
+      {
+        $addFields: {
+          sortName: {
+            $toLower: {
+              $ifNull: [
+                '$product_name',
+                { $ifNull: ['$name', { $ifNull: ['$item_name', ''] }] }
+              ]
+            }
+          }
+        }
+      },
+
+      // Sort products alphabetically by name (case-insensitive)
+      {
+        $sort: {
+          sortName: 1,
+          _id: 1
+        }
+      },
+
+      // Remove the temporary sort key field
+      {
+        $project: {
+          sortName: 0
+        }
       }
+    ];
 
-      const normalisedAll = products.map(normaliseColesProduct).filter(Boolean);
+    // Add pagination after grouping (on final product set)
+    if (hasPagingParams) {
+      const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+      const rawPageSize =
+        parseInt(limit, 10) || parseInt(pageSize, 10) || 30;
+      const pageSizeNumber = Math.min(Math.max(rawPageSize, 1), 100);
+
+      pipeline.push(
+        { $skip: (pageNumber - 1) * pageSizeNumber },
+        { $limit: pageSizeNumber }
+      );
+    }
+
+    const products = await coles.aggregate(pipeline).toArray();
+
+    if (!products || products.length === 0) {
+      const totalPages = hasPagingParams
+        ? Math.max(1, Math.ceil(total / (parseInt(limit, 10) || parseInt(pageSize, 10) || 30)))
+        : 0;
+
+      return res.status(404).json({
+        message: 'No products found',
+        items: [],
+        page: hasPagingParams ? (Math.max(parseInt(page, 10) || 1, 1)) : 1,
+        pageSize: hasPagingParams ? (parseInt(limit, 10) || parseInt(pageSize, 10) || 30) : total,
+        total: 0,
+        totalPages,
+      });
+    }
+
+    // Normalize products with latest pricing
+    const normalised = products.map(product => {
+      const latestPricing = product.latestPricing || null;
+      return normaliseColesProduct(product, latestPricing);
+    }).filter(Boolean);
+
+    if (!hasPagingParams) {
       return res.json({
-        items: normalisedAll,
+        items: normalised,
         page: 1,
-        pageSize: normalisedAll.length,
-        total: normalisedAll.length,
+        pageSize: normalised.length,
+        total: normalised.length,
         totalPages: 1,
       });
     }
 
-    // Paginated mode – used by the new product grid so that we only
-    // load one page of products at a time.
     const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
     const rawPageSize =
       parseInt(limit, 10) || parseInt(pageSize, 10) || 30;
     const pageSizeNumber = Math.min(Math.max(rawPageSize, 1), 100);
-
-    const totalPages = Math.max(
-      1,
-      Math.ceil(total / pageSizeNumber)
-    );
-
-    const cursor = coles
-      .find(query)
-      .skip((pageNumber - 1) * pageSizeNumber)
-      .limit(pageSizeNumber);
-
-    const products = await cursor.toArray();
-    const normalised = products.map(normaliseColesProduct).filter(Boolean);
+    const totalPages = Math.max(1, Math.ceil(total / pageSizeNumber));
 
     return res.json({
       items: normalised,
@@ -181,10 +281,11 @@ const getProducts = async (req, res) => {
   }
 };
 
-// Fetch a single product by various possible IDs from DiscountMate_DB.products
+// Fetch a single product by various possible IDs from DiscountMate_DB.products with latest pricing
 const getProduct = async (req, res) => {
   try {
     const coles = await getColesCollection();
+    const pricings = await getProductPricingsCollection();
 
     // Incoming ID can come as `productId` or `product_id`
     const identifier = req.body.productId ?? req.body.product_id;
@@ -194,26 +295,42 @@ const getProduct = async (req, res) => {
     }
 
     let product = null;
+    let productId = null;
 
     // 1. Try treating the identifier as a MongoDB _id if it's a 24-hex string
     if (typeof identifier === 'string' && /^[0-9a-fA-F]{24}$/.test(identifier)) {
       try {
-        product = await coles.findOne({ _id: new ObjectId(identifier) });
+        productId = new ObjectId(identifier);
+        product = await coles.findOne({ _id: productId });
       } catch (_) {
         // Ignore invalid ObjectId conversion
       }
     }
 
-    // 2. Try matching on string-based or numeric product_code
+    // 2. Try matching on product_id (for products like "P001")
     if (!product) {
-      product = await coles.findOne({ product_code: identifier });
+      product = await coles.findOne({ product_id: identifier });
+      if (product) {
+        productId = product._id;
+      }
     }
 
-    // 3. If identifier can be coerced to a number, try numeric product_code as well
+    // 3. Try matching on string-based or numeric product_code
+    if (!product) {
+      product = await coles.findOne({ product_code: identifier });
+      if (product) {
+        productId = product._id;
+      }
+    }
+
+    // 4. If identifier can be coerced to a number, try numeric product_code as well
     if (!product && (typeof identifier === 'string' || typeof identifier === 'number')) {
       const numId = Number(identifier);
       if (!Number.isNaN(numId)) {
         product = await coles.findOne({ product_code: numId });
+        if (product) {
+          productId = product._id;
+        }
       }
     }
 
@@ -221,7 +338,15 @@ const getProduct = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    const normalised = normaliseColesProduct(product);
+    // Get latest pricing for this product
+    const latestPricing = await pricings
+      .find({ product_id: product._id })
+      .sort({ collected_at: -1, created_datetime: -1 })
+      .limit(1)
+      .toArray();
+
+    const pricing = latestPricing && latestPricing.length > 0 ? latestPricing[0] : null;
+    const normalised = normaliseColesProduct(product, pricing);
     return res.json(normalised);
   } catch (error) {
     console.error('Error fetching product from DiscountMate_DB.products:', error);

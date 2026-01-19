@@ -33,12 +33,6 @@ export default function ProductSidebarQuickPanel({
             </Text>
 
             <View className="gap-3">
-               {/* Add to List */}
-               <Pressable className="bg-primary_green rounded-2xl py-3.5 items-center flex-row justify-center gap-2">
-                  <FontAwesome6 name="list" size={16} color="#FFFFFF" />
-                  <Text className="text-white font-semibold">Add to List</Text>
-               </Pressable>
-
                {/* Secondary actions */}
                <QuickActionButton
                   icon="list"
