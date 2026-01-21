@@ -1,43 +1,52 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-import React from 'react';
-import '../global.css';
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
+import "react-native-reanimated";
+import React from "react";
+import { View } from "react-native";
+import "../global.css";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { CartProvider } from './(tabs)/CartContext';
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { CartProvider } from "./(tabs)/CartContext";
+
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-   const colorScheme = useColorScheme();
-   const [loaded] = useFonts({
-      SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-   });
+  const colorScheme = useColorScheme();
 
-   useEffect(() => {
-      if (loaded) {
-         SplashScreen.hideAsync();
-      }
-   }, [loaded]);
+  const [loaded] = useFonts({
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+  });
 
-   if (!loaded) {
-      return null;
-   }
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
 
-   return (
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-         <CartProvider>
+  if (!loaded) {
+    return null;
+  }
+
+  return (
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <CartProvider>
+        <View style={{ flex: 1 }}>
+          {/* Main app navigation */}
+          <View style={{ flex: 1 }}>
             <Stack>
-               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-               <Stack.Screen name="(product)" options={{ headerShown: false }} />
-               <Stack.Screen name="+not-found" />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(product)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
             </Stack>
-         </CartProvider>
-      </ThemeProvider>
-   );
+          </View>
+
+        </View>
+      </CartProvider>
+    </ThemeProvider>
+  );
 }
