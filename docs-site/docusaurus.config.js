@@ -5,7 +5,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'DiscountMate Docs',
   tagline: 'Smart Price Scraping & ML Predictions',
-  favicon: 'img/discountmatemain.PNG',
+  favicon: 'img/discountmatemain.png',
 
   // The LIVE URL of your site (Notice the .io format)
   url: 'https://DataBytes-Organisation.github.io',
@@ -52,7 +52,7 @@ const config = {
         title: 'DiscountMate',
         logo: {
           alt: 'DiscountMate Logo',
-          src: 'img/databytes.PNG', // Ensure you have a logo.svg in static/img/
+          src: 'img/databytes.png', // Ensure you have a logo.svg in static/img/
         },
         items: [
           {
