@@ -6,7 +6,7 @@
 
 """
 IGA brand based weekly scraper.
-
+Originally supplied by Steven Le. Modified to allow reruns, original did not clear checkpoints automatically
 How it works.
 . Loads a list of brands from a CSV
 . For each brand, pages the store search endpoint to collect product rows
@@ -53,7 +53,19 @@ DOWNLOAD_IMAGES = False
 # ============================================================
 # INPUT. BRAND LIST
 # ============================================================
-BRANDS_CSV_PATH = "brands_to_scrape_optimal_IGA_website.csv"
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Go two levels up from this file (to repo root)
+REPO_ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))
+
+BRANDS_CSV_PATH = os.path.join(
+    REPO_ROOT,
+    "Master_Data_2026_Onward",
+    "MajorBrandsforSearchAPI_optimal.csv"
+)
+
 BRAND_COLUMN_CANDIDATES = ["brand", "Brands", "BrandName", "brand_name", "name"]
 
 # ============================================================
@@ -687,8 +699,23 @@ def scrape_weekly_snapshot_by_brands(brands: List[str]) -> pd.DataFrame:
 # RUN
 # ============================================================
 if __name__ == "__main__":
+    import sys
+    
+    # Force new run if --force-new flag is passed
+    force_new = "--force-new" in sys.argv
+    
+    if force_new:
+        print("[FORCE NEW] Clearing cache files for fresh start")
+        if os.path.exists(RUN_PROGRESS_JSON):
+            os.remove(RUN_PROGRESS_JSON)
+        if os.path.exists(BRAND_PROGRESS_JSON):
+            os.remove(BRAND_PROGRESS_JSON)
+        if os.path.exists(SKU_INDEX_JSON):
+            os.remove(SKU_INDEX_JSON)
+    
     brands = load_brands_from_csv(BRANDS_CSV_PATH)
     print(f"[BOOT] loaded brands={len(brands)} sample={brands[:10]}")
     df_week = scrape_weekly_snapshot_by_brands(brands)
     print(df_week.head(5))
-
+# run this from the cmd line using:
+# python Scrapping\website_api_scraper\iga_ipa_scraping_force_new_run.py --force-new
