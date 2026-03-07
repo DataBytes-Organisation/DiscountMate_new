@@ -1,48 +1,42 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { API_URL } from "@/constants/Api";
 
 type Category = {
+   id?: string | null;
    label: string;
-   icon: string;
 };
 
-// Keep UI labels aligned with database categories. Close-but-not-identical
-// names have been normalised to match the dataset (e.g. "Fruit & Veg" ->
-// "Fruit & Vegetables", "Health" -> "Health & Beauty").
-const CATEGORIES: Category[] = [
-   { label: "All", icon: "border-all" },
-   { label: "Bakery", icon: "bread-slice" },
-   { label: "Dairy, Eggs & Fridge", icon: "cheese" },
-   { label: "Deli", icon: "bacon" },
-   { label: "Drinks", icon: "bottle-water" },
-   { label: "Frozen", icon: "snowflake" },
-   { label: "Fruit & Vegetables", icon: "apple-whole" },
-   { label: "Health & Beauty", icon: "heart-pulse" },
-   { label: "Household", icon: "house" },
-   { label: "Meat & Seafood", icon: "drumstick-bite" },
-   { label: "Pantry", icon: "box" },
-];
+type DbCategory = {
+   _id: string;
+   category_name: string;
+   description?: string | null;
+   icon_url?: string | null;
+   display_order?: number | null;
+   is_active?: boolean;
+};
 
-// Convert category label to URL-friendly slug
-function categoryLabelToSlug(label: string): string {
-   return label
+function toTitleCase(input: string): string {
+   const s = input.trim();
+   if (!s) return s;
+   return s
       .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/&/g, "and")
-      .replace(/,/g, "")
-      .replace(/--+/g, "-")
-      .replace(/^-|-$/g, "");
+      .replace(/\b[a-z]/g, (m) => m.toUpperCase());
 }
 
-// Convert URL slug back to category label
-function slugToCategoryLabel(slug: string): string | null {
-   const normalizedSlug = slug.toLowerCase().trim();
-   const category = CATEGORIES.find(cat =>
-      categoryLabelToSlug(cat.label) === normalizedSlug
-   );
-   return category ? category.label : null;
+function normaliseCategoryKey(name: string): string {
+   return name
+      .trim()
+      .toUpperCase()
+      .replace(/&/g, "AND")
+      .replace(/[^A-Z0-9]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+}
+
+function isObjectId(value: string): boolean {
+   return /^[0-9a-fA-F]{24}$/.test(value);
 }
 
 type SidebarCategoriesProps = {
@@ -51,35 +45,93 @@ type SidebarCategoriesProps = {
    useNavigation?: boolean; // If true, use router navigation instead of onSelect
 };
 
+function SidebarCategorySkeletonRow({ widthClass }: { widthClass: string }) {
+   return (
+      <View className="px-3 py-2 rounded-xl mb-1 bg-transparent">
+         <View className={["h-4 rounded bg-gray-200", widthClass].join(" ")} />
+      </View>
+   );
+}
+
 export default function SidebarCategories({
    activeCategory,
    onSelect,
    useNavigation = false,
 }: SidebarCategoriesProps) {
    const router = useRouter();
+   const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
+   const [loading, setLoading] = useState(true);
 
-   const handleCategorySelect = (label: string) => {
+   const handleCategorySelect = (category: Category) => {
       if (useNavigation) {
-         // Use navigation approach (always takes precedence)
-         if (label === "All") {
+         if (category.label === "All") {
             router.push("/");
-         } else {
-            const slug = categoryLabelToSlug(label);
-            router.push(`/category/${slug}`);
+            return;
          }
+
+         if (category.id) {
+            router.push(`/category/${category.id}`);
+            return;
+         }
+         router.push("/");
       } else if (onSelect) {
          // Use callback approach (for backward compatibility)
-         onSelect(label);
+         onSelect(category.label);
       } else {
          // Fallback to navigation if no callback provided
-         if (label === "All") {
+         if (category.label === "All") {
             router.push("/");
          } else {
-            const slug = categoryLabelToSlug(label);
-            router.push(`/category/${slug}`);
+            if (category.id) {
+               router.push(`/category/${category.id}`);
+            } else {
+               router.push("/");
+            }
          }
       }
    };
+
+   useEffect(() => {
+      let cancelled = false;
+
+      async function loadCategories() {
+         try {
+            setLoading(true);
+            const res = await fetch(`${API_URL}/categories`);
+            if (!res.ok) {
+               throw new Error(`Failed to fetch categories (${res.status})`);
+            }
+            const data = (await res.json()) as DbCategory[];
+            if (!cancelled) {
+               setDbCategories(Array.isArray(data) ? data : []);
+            }
+         } catch (e) {
+            console.error("Failed to load categories:", e);
+            if (!cancelled) {
+               setDbCategories([]);
+            }
+         } finally {
+            if (!cancelled) {
+               setLoading(false);
+            }
+         }
+      }
+
+      loadCategories();
+      return () => {
+         cancelled = true;
+      };
+   }, []);
+
+   const categoriesForUi: Category[] = useMemo(() => {
+      const dynamic: Category[] = dbCategories
+         .filter((c) => c?.category_name)
+         .map((c) => ({
+            id: c._id,
+            label: toTitleCase(c.category_name),
+         }));
+      return [{ id: null, label: "All" }, ...dynamic];
+   }, [dbCategories]);
 
    return (
       <View
@@ -105,48 +157,64 @@ export default function SidebarCategories({
                   Categories
                </Text>
 
-               {CATEGORIES.map(({ label, icon }) => {
-                  const isActive = activeCategory === label;
+               {loading ? (
+                  <>
+                     {Array.from({ length: 10 }).map((_, idx) => {
+                        const widthClass =
+                           idx % 4 === 0
+                              ? "w-40"
+                              : idx % 4 === 1
+                                 ? "w-32"
+                                 : idx % 4 === 2
+                                    ? "w-44"
+                                    : "w-28";
+                        return (
+                           <SidebarCategorySkeletonRow
+                              key={`cat-skel-${idx}`}
+                              widthClass={widthClass}
+                           />
+                        );
+                     })}
+                  </>
+               ) : (
+                  categoriesForUi.map((cat) => {
+                     const byId =
+                        isObjectId(activeCategory) &&
+                        !!cat.id &&
+                        String(cat.id).toLowerCase() === activeCategory.toLowerCase();
+                     const byName =
+                        normaliseCategoryKey(activeCategory) === normaliseCategoryKey(cat.label);
+                     const isActive = byId || byName;
 
-                  return (
-                     <Pressable
-                        key={label}
-                        onPress={() => handleCategorySelect(label)}
-                        className={[
-                           "group flex-row items-center px-3 py-2 rounded-xl mb-1",
-                           isActive
-                              ? "bg-[#E5F7F0]"
-                              : "bg-transparent hover:bg-gray-50",
-                        ].join(" ")}
-                     >
-                        <FontAwesome6
-                           name={icon as any}
-                           size={16}
+                     return (
+                        <Pressable
+                           key={cat.id || cat.label}
+                           onPress={() => handleCategorySelect(cat)}
                            className={[
-                              "mr-3",
+                              "group flex-row items-center px-3 py-2 rounded-xl mb-1",
                               isActive
-                                 ? "text-primary_green"
-                                 : "group-hover:text-primary_green",
-                           ].join(" ")}
-                        />
-                        <Text
-                           className={[
-                              "text-sm font-medium",
-                              isActive
-                                 ? "text-primary_green"
-                                 : "text-gray-700 group-hover:text-primary_green",
+                                 ? "bg-[#E5F7F0]"
+                                 : "bg-transparent hover:bg-gray-50",
                            ].join(" ")}
                         >
-                           {label}
-                        </Text>
-                     </Pressable>
-                  );
-               })}
+                           <Text
+                              className={[
+                                 "text-sm font-medium",
+                                 isActive
+                                    ? "text-primary_green"
+                                    : "text-gray-700 group-hover:text-primary_green",
+                              ].join(" ")}
+                           >
+                              {cat.label}
+                           </Text>
+                        </Pressable>
+                     );
+                  })
+               )}
             </ScrollView>
          </View>
       </View>
    );
 }
 
-// Export helper functions for use in other components
-export { categoryLabelToSlug, slugToCategoryLabel };
+export { };

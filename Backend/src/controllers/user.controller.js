@@ -12,6 +12,15 @@ const signup = async (req, res) => {
     const { email, password, verifyPassword, user_fname, user_lname, address, phone_number, admin } = req.body;
 
     try {
+        const normalizedEmail = (email || '').trim().toLowerCase();
+
+        if (!normalizedEmail) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+        if (!password || !verifyPassword) {
+            return res.status(400).json({ message: 'Password and verifyPassword are required' });
+        }
+
         // Establish MongoDB connection and get the db object
         const db = await connectToMongoDB(); // Await the connection to get the db object
 
@@ -25,7 +34,11 @@ const signup = async (req, res) => {
 
         // Create the new user object to insert
         const user = {
-            email: email,
+            // `account_user_name` is uniquely indexed in prod; if omitted, MongoDB
+            // indexes missing fields as null and will reject the 2nd insert.
+            // Use email as a stable unique username for now.
+            account_user_name: normalizedEmail,
+            email: normalizedEmail,
             encrypted_password: hashedPassword,
             user_fname,
             user_lname,
@@ -89,6 +102,7 @@ const signin = async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
     } catch (error) {
+        console.error('Error signing in user:', error);
         res.status(500).json({ message: 'Error signing in user' });
     }
 };

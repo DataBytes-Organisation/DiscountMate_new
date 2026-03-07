@@ -15,7 +15,7 @@ import ProductRelatedProducts from "../../../components/product/ProductRelatedPr
 import FooterSection from "../../../components/home/FooterSection";
 
 export default function ProductDetailPage() {
-   const { id, name } = useLocalSearchParams<{ id: string; name?: string }>();
+   const { id } = useLocalSearchParams<{ id: string }>();
 
    return (
       <View className="flex-1 bg-[#F9FAFB]">
@@ -23,7 +23,7 @@ export default function ProductDetailPage() {
             {/* Main Content Area - Left */}
             <View className="flex-1">
                {/* Hero Section */}
-               <ProductHeroSection productId={id} productName={name} />
+               <ProductHeroSection productId={id} />
 
                {/* Main Content Sections */}
                <View className="mt-6">

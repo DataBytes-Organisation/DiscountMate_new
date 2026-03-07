@@ -1,65 +1,98 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { View, Text, Image, Pressable, ActivityIndicator } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { API_URL } from "@/constants/Api";
 
 interface ProductHeroSectionProps {
-   productId?: string;
+   productId?: string | string[];
    productName?: string;
 }
 
 type ApiProduct = {
    _id: string;
-   product_id?: string | number | null;
    product_name?: string | null;
+   product_code?: string | null;
    link_image?: string | null;
+   image_link_back?: string | null;
+   image_link_side?: string | null;
    description?: string | null;
    brand?: string | null;
-   product_code?: string | null;
    current_price?: number | null;
-   item_price?: number | null;
-   unit_price?: number | null;
-   category?: string | null;
+   best_price?: number | null;
+   unit_price?: string | null;
+   best_unit_price?: string | null;
+   is_on_special?: boolean | null;
+   price_date?: string | null;
+   unit_per_prod?: number | null;
+   measurement?: string | null;
+   gtin?: string | null;
 };
 
 export default function ProductHeroSection({
    productId,
-   productName,
 }: ProductHeroSectionProps) {
    const [isFavorited, setIsFavorited] = useState(false);
    const [product, setProduct] = useState<ApiProduct | null>(null);
    const [loading, setLoading] = useState(true);
-   const [imageError, setImageError] = useState(false);
+   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
+   const [erroredImageUris, setErroredImageUris] = useState<Record<string, true>>({});
+
+   const resolvedProductId = Array.isArray(productId) ? productId[0] : productId;
+
+   const galleryImages = useMemo<
+      Array<{ key: "front" | "back" | "side"; label: string; uri: string }>
+   >(() => {
+      const candidates: Array<{
+         key: "front" | "back" | "side";
+         label: string;
+         uri: string | null | undefined;
+      }> = [
+         { key: "front", label: "Front", uri: product?.link_image },
+         { key: "back", label: "Back", uri: product?.image_link_back },
+         { key: "side", label: "Side", uri: product?.image_link_side },
+      ];
+
+      const seen = new Set<string>();
+      const out: Array<{ key: "front" | "back" | "side"; label: string; uri: string }> = [];
+
+      for (const img of candidates) {
+         if (!img.uri) continue;
+         if (seen.has(img.uri)) continue;
+         seen.add(img.uri);
+         out.push({ key: img.key, label: img.label, uri: img.uri });
+      }
+
+      return out;
+   }, [product?.link_image, product?.image_link_back, product?.image_link_side]);
+
+   const mainImageUri = selectedImageUri ?? galleryImages[0]?.uri ?? null;
 
    useEffect(() => {
       const fetchProduct = async () => {
-         if (!productId) {
+         if (!resolvedProductId) {
             setLoading(false);
             return;
          }
 
          try {
             setLoading(true);
-            // The API endpoint is POST /api/products/getproduct with productId in body
-            const response = await fetch(`${API_URL}/products/getproduct`, {
-               method: 'POST',
-               headers: {
-                  'Content-Type': 'application/json',
-               },
-               body: JSON.stringify({ productId: productId }),
-            });
+            // Backend route is GET /api/products/:id
+            const response = await fetch(
+               `${API_URL}/products/${encodeURIComponent(resolvedProductId)}`
+            );
 
             if (response.ok) {
                const data = await response.json();
-               console.log("Fetched product data:", data); // Debug log
-               console.log("link_image value:", data?.link_image); // Debug log
                setProduct(data);
-               // Reset image error when new product is loaded
-               setImageError(false);
+               // Reset gallery state when new product is loaded
+               const defaultUri =
+                  data?.link_image || data?.image_link_back || data?.image_link_side || null;
+               setSelectedImageUri(defaultUri);
+               setErroredImageUris({});
             } else {
                const errorText = await response.text();
                console.error("Failed to fetch product:", response.status, errorText);
-               console.error("ProductId used:", productId);
+               console.error("ProductId used:", resolvedProductId);
             }
          } catch (error) {
             console.error("Error fetching product:", error);
@@ -69,7 +102,15 @@ export default function ProductHeroSection({
       };
 
       fetchProduct();
-   }, [productId]);
+   }, [resolvedProductId]);
+
+   const currentPrice = typeof product?.current_price === "number" ? product.current_price : 0;
+   const oldPrice = typeof product?.best_price === "number" ? product.best_price : 0;
+   const savings = oldPrice > 0 && currentPrice > 0 ? oldPrice - currentPrice : 0;
+   const percent =
+      oldPrice > 0 && currentPrice > 0
+         ? Math.round(((oldPrice - currentPrice) / oldPrice) * 100)
+         : 0;
 
    const displayProduct = {
       name: product?.product_name || "Product",
@@ -79,20 +120,21 @@ export default function ProductHeroSection({
       rating: 4.5,
       reviews: 1247,
       link_image: product?.link_image || null,
-      price: product?.current_price || 0,
-      oldPrice: product?.item_price || product?.best_price || 0,
+      image_link_back: product?.image_link_back || null,
+      image_link_side: product?.image_link_side || null,
+      price: currentPrice,
+      oldPrice,
       retailer: "Coles",
-      savings: (product?.item_price || product?.best_price) && product?.current_price
-         ? (product.item_price || product.best_price) - product.current_price
-         : 0,
-      percent: (product?.item_price || product?.best_price) && product?.current_price
-         ? Math.round((((product.item_price || product.best_price) - product.current_price) / (product.item_price || product.best_price)) * 100)
-         : 0,
+      savings,
+      percent,
       trend: "down",
-      size: "Standard",
-      unitPrice: product?.unit_price || product?.best_unit_price || 0,
+      size:
+         product?.unit_per_prod && product?.measurement
+            ? `${product.unit_per_prod}${product.measurement}`
+            : "Standard",
+      unitPriceLabel: product?.unit_price || product?.best_unit_price || null,
       availability: "Available for delivery & pickup",
-      updated: "2 hours ago",
+      updated: product?.price_date ? String(product.price_date) : "recently",
    };
 
    if (loading) {
@@ -110,19 +152,63 @@ export default function ProductHeroSection({
          {/* Row: image left + info right */}
          <View className="flex-col lg:flex-row gap-6">
 
-            {/* LEFT SIDE: Single product image */}
+            {/* LEFT SIDE: Image gallery */}
             <View className="lg:w-1/2">
-               {displayProduct.link_image && !imageError ? (
+               {mainImageUri && !erroredImageUris[mainImageUri] ? (
                   <Image
-                     source={{ uri: displayProduct.link_image }}
+                     source={{ uri: mainImageUri }}
                      className="w-full h-72 rounded-2xl"
                      resizeMode="contain"
-                     onError={() => setImageError(true)}
+                     onError={() => {
+                        if (!mainImageUri) return;
+                        setErroredImageUris((prev) => ({ ...prev, [mainImageUri]: true }));
+                        const nextUri = galleryImages.find(
+                           (img) => img.uri !== mainImageUri && !erroredImageUris[img.uri]
+                        )?.uri;
+                        if (nextUri) setSelectedImageUri(nextUri);
+                     }}
                   />
                ) : (
                   <View className="w-full h-72 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 items-center justify-center">
                      <FontAwesome6 name="image" size={48} color="#9CA3AF" />
                      <Text className="text-gray-500 mt-2">No image available</Text>
+                  </View>
+               )}
+
+               {galleryImages.length > 1 && (
+                  <View className="flex-row gap-3 mt-4">
+                     {galleryImages.map((img) => {
+                        const isSelected = img.uri === mainImageUri;
+                        const isErrored = !!erroredImageUris[img.uri];
+
+                        return (
+                           <Pressable
+                              key={img.key}
+                              onPress={() => setSelectedImageUri(img.uri)}
+                              className={[
+                                 "w-16 h-16 rounded-xl border overflow-hidden items-center justify-center",
+                                 isSelected ? "border-primary_green" : "border-gray-200",
+                                 isErrored ? "bg-gray-100" : "bg-white",
+                              ].join(" ")}
+                           >
+                              {isErrored ? (
+                                 <FontAwesome6 name="image" size={18} color="#9CA3AF" />
+                              ) : (
+                                 <Image
+                                    source={{ uri: img.uri }}
+                                    className="w-full h-full"
+                                    resizeMode="contain"
+                                    onError={() =>
+                                       setErroredImageUris((prev) => ({
+                                          ...prev,
+                                          [img.uri]: true,
+                                       }))
+                                    }
+                                 />
+                              )}
+                           </Pressable>
+                        );
+                     })}
                   </View>
                )}
             </View>
@@ -224,11 +310,11 @@ export default function ProductHeroSection({
                      <Text className="text-gray-700">Size: {displayProduct.size}</Text>
                   </View>
 
-                  {displayProduct.unitPrice > 0 && (
+                  {!!displayProduct.unitPriceLabel && (
                      <View className="flex-row gap-2 items-center">
                         <FontAwesome6 name="money-bill" size={16} color="#4B5563" />
                         <Text className="text-gray-700">
-                           Unit Price: ${displayProduct.unitPrice.toFixed(2)}/unit
+                           Unit Price: {displayProduct.unitPriceLabel}
                         </Text>
                      </View>
                   )}

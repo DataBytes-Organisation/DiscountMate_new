@@ -1,0 +1,22 @@
+.features {
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+  width: 100%;
+}
+
+.featureSvg {
+  height: 200px;
+  width: 200px;
+}
+
+.featureTitle {
+  font-size: 1.98rem;
+  font-weight: 600;
+}
+
+.featureDescription {
+  font-size: 1.32rem;
+  line-height: 1.75;
+  margin-top: 0.75rem;
+}

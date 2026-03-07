@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, Text } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
-import { slugToCategoryLabel } from "../home/SidebarCategories";
+import { API_URL } from "@/constants/Api";
+
+function toTitleCase(input: string): string {
+   const s = input.trim();
+   if (!s) return s;
+   return s.toLowerCase().replace(/\b[a-z]/g, (m) => m.toUpperCase());
+}
 
 interface CategoryInsightsSectionProps {
    categoryId?: string | string[];
@@ -10,15 +16,39 @@ interface CategoryInsightsSectionProps {
 export default function CategoryInsightsSection({
    categoryId,
 }: CategoryInsightsSectionProps) {
-   // Convert category ID to label if it's a slug
-   const categoryLabel =
-      typeof categoryId === "string"
-         ? slugToCategoryLabel(categoryId) || categoryId
-         : "Category";
+   const categoryIdStr = useMemo(() => {
+      if (!categoryId) return null;
+      if (Array.isArray(categoryId)) return categoryId[0] || null;
+      return categoryId;
+   }, [categoryId]);
 
-   // Format category name for title (capitalize first letter)
-   const formattedCategoryName =
-      categoryLabel.charAt(0).toUpperCase() + categoryLabel.slice(1);
+   const [categoryName, setCategoryName] = useState<string>("Category");
+
+   useEffect(() => {
+      let cancelled = false;
+      async function loadCategory() {
+         if (!categoryIdStr) {
+            setCategoryName("Category");
+            return;
+         }
+         try {
+            const res = await fetch(`${API_URL}/categories/${encodeURIComponent(categoryIdStr)}`);
+            if (!res.ok) throw new Error(`Failed to fetch category (${res.status})`);
+            const data = await res.json();
+            const name = typeof data?.category_name === "string" ? data.category_name : "";
+            if (!cancelled) setCategoryName(name ? toTitleCase(name) : "Category");
+         } catch (e) {
+            console.error("Failed to load category:", e);
+            if (!cancelled) setCategoryName("Category");
+         }
+      }
+      loadCategory();
+      return () => {
+         cancelled = true;
+      };
+   }, [categoryIdStr]);
+
+   const formattedCategoryName = categoryName;
 
    return (
       <View className="bg-white border-t border-b border-gray-200">

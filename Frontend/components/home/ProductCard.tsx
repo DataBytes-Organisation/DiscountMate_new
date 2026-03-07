@@ -75,10 +75,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
    const handleOpenDetails = () => {
       // Navigate to the dedicated product detail route: app/(product)/product/[id].tsx
-      // Pass both the ID and name so the detail page can show the correct title
+      // Pass only the ID; product page fetches the rest from the API
       router.push({
          pathname: "/product/[id]",
-         params: { id, name },
+         params: { id },
       });
    };
 

@@ -1,27 +1,53 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
-import SidebarCategories, { slugToCategoryLabel } from "../home/SidebarCategories";
+import SidebarCategories from "../home/SidebarCategories";
 import ProductGrid from "../home/ProductGrid";
 import CategoryTitleSection from "../common/CategoryTitleSection";
+import { API_URL } from "@/constants/Api";
+
+function toTitleCase(input: string): string {
+   const s = input.trim();
+   if (!s) return s;
+   return s.toLowerCase().replace(/\b[a-z]/g, (m) => m.toUpperCase());
+}
 
 interface CategoryMainSectionProps {
    categoryId?: string | string[];
 }
 
 export default function CategoryMainSection({ categoryId }: CategoryMainSectionProps) {
-   // Convert URL slug to category label, using URL as source of truth
-   const activeCategory = useMemo(() => {
-      if (!categoryId || typeof categoryId !== "string") {
-         return "All";
-      }
-
-      // Try to convert slug back to category label
-      const categoryLabel = slugToCategoryLabel(categoryId);
-      return categoryLabel || categoryId; // Fallback to raw value if not found
+   const categoryIdStr = useMemo(() => {
+      if (!categoryId) return null;
+      if (Array.isArray(categoryId)) return categoryId[0] || null;
+      return categoryId;
    }, [categoryId]);
 
-   // Get category name for display (use the label)
-   const categoryName = activeCategory;
+   const activeCategory = categoryIdStr || "All";
+   const [categoryName, setCategoryName] = useState<string>("Category");
+
+   useEffect(() => {
+      let cancelled = false;
+      async function loadCategory() {
+         if (!categoryIdStr) {
+            setCategoryName("All");
+            return;
+         }
+         try {
+            const res = await fetch(`${API_URL}/categories/${encodeURIComponent(categoryIdStr)}`);
+            if (!res.ok) throw new Error(`Failed to fetch category (${res.status})`);
+            const data = await res.json();
+            const name = typeof data?.category_name === "string" ? data.category_name : "";
+            if (!cancelled) setCategoryName(name ? toTitleCase(name) : "Category");
+         } catch (e) {
+            console.error("Failed to load category:", e);
+            if (!cancelled) setCategoryName("Category");
+         }
+      }
+      loadCategory();
+      return () => {
+         cancelled = true;
+      };
+   }, [categoryIdStr]);
 
    return (
       <View className="bg-[#F9FAFB]">
@@ -38,7 +64,7 @@ export default function CategoryMainSection({ categoryId }: CategoryMainSectionP
                <CategoryTitleSection categoryName={categoryName} />
 
                {/* Product Grid */}
-               <ProductGrid activeCategory={activeCategory} />
+               <ProductGrid activeCategory={categoryIdStr || undefined} />
             </View>
          </View>
       </View>

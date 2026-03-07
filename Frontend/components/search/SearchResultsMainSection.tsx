@@ -67,6 +67,7 @@ export default function SearchResultsMainSection() {
                   activeCategory={undefined}
                   searchQuery={searchQuery}
                   priceRangeFilter={filters.priceRange}
+                  requireSearch
                />
             </View>
          </View>

@@ -1,5 +1,5 @@
 const express = require('express');
-const productController = require('../controllers/product.controller');
+const { getProducts, getProduct } = require("../controllers/product.controller");
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ const router = express.Router();
  *       200:
  *         description: Products retrieved successfully.
  */
-router.get('/', productController.getProducts);
+router.get('/', getProducts);
 
 /**
  * @swagger
@@ -24,6 +24,7 @@ router.get('/', productController.getProducts);
  *     summary: Get product details
  *     description: Fetch details of a specific product by ID.
  */
-router.post('/getproduct', productController.getProduct);
+// router.post('/getproduct', productController.getProduct);
+router.get("/:id", getProduct); // uses req.params.id
 
 module.exports = router;

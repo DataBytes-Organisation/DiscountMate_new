@@ -7,23 +7,20 @@ import { API_URL } from "@/constants/Api";
 
 type ApiProduct = {
    _id: string;
-   product_id?: string | number | null;
    product_name?: string | null;
+   product_code?: string | null;
    description?: string | null;
    link_image?: string | null;
    current_price?: number | null;
-   category?: string | null;
    best_price?: number | null;
-   best_unit_price?: number | null;
-   item_price?: number | null;
-   unit_price?: number | null;
-   link?: string | null;
+   unit_price?: string | null;
+   best_unit_price?: string | null;
 };
 
 function mapApiProductToCard(product: ApiProduct): Product {
    // Always use _id for consistency in URLs since it's guaranteed to exist for all MongoDB documents
    // The backend's getProduct endpoint can handle both _id (MongoDB ObjectId) and product_code
-   const rawId = product._id ?? product.product_id;
+   const rawId = product._id;
    const id = String(rawId ?? "");
 
    const name =
@@ -31,7 +28,7 @@ function mapApiProductToCard(product: ApiProduct): Product {
       (typeof rawId === "string" && rawId.trim().length > 0
          ? `Product ${rawId}`
          : "Unnamed product");
-   const category = product.category?.trim() || "";
+   const category = "";
 
    // Truncate description for grid display
    const truncateDescription = (text: string | null | undefined, maxWords: number = 20): string => {
@@ -63,9 +60,6 @@ function mapApiProductToCard(product: ApiProduct): Product {
          : 0;
 
    const baseOriginal =
-      (typeof product.item_price === "number" && !isNaN(product.item_price)
-         ? product.item_price
-         : undefined) ??
       (typeof product.best_price === "number" && !isNaN(product.best_price)
          ? product.best_price
          : undefined) ??
@@ -74,15 +68,7 @@ function mapApiProductToCard(product: ApiProduct): Product {
    const savings = Math.max(0, baseOriginal - basePrice);
 
    // Use unit price (or best_unit_price) for Coles unit price display
-   const unitPriceValue =
-      typeof product.unit_price === "number" && !isNaN(product.unit_price)
-         ? product.unit_price
-         : typeof product.best_unit_price === "number" && !isNaN(product.best_unit_price)
-            ? product.best_unit_price
-            : null;
-
-   const colesUnitPriceLabel =
-      unitPriceValue != null ? `$${unitPriceValue.toFixed(2)} / unit` : undefined;
+   const colesUnitPriceLabel = product.unit_price || product.best_unit_price || undefined;
 
    const badge = savings > 0 ? `Save $${savings.toFixed(2)}` : "Great value";
 
@@ -140,12 +126,14 @@ type ProductGridProps = {
    activeCategory?: string;
    searchQuery?: string;
    priceRangeFilter?: { min: number | null; max: number | null };
+   requireSearch?: boolean;
 };
 
 const ProductGrid: React.FC<ProductGridProps> = ({
    activeCategory,
    searchQuery,
    priceRangeFilter,
+   requireSearch = false,
 }) => {
    const [apiProducts, setApiProducts] = useState<ApiProduct[]>([]);
    const [loading, setLoading] = useState<boolean>(true);
@@ -157,6 +145,16 @@ const ProductGrid: React.FC<ProductGridProps> = ({
    const pageSize = 9; // cards per page
 
    useEffect(() => {
+      const hasSearch = typeof searchQuery === "string" && searchQuery.trim().length > 0;
+      if (requireSearch && !hasSearch) {
+         setApiProducts([]);
+         setTotalProducts(0);
+         setTotalPagesFromApi(0);
+         setError(null);
+         setLoading(false);
+         return;
+      }
+
       const fetchProducts = async (page: number, category?: string, search?: string) => {
          try {
             setLoading(true);
