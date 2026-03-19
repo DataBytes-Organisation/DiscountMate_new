@@ -1,6 +1,8 @@
 const express = require('express');
 const basketController = require('../controllers/basket.controller');
 
+const verifyToken = require('../middleware/auth.middleware'); //added middleware so basket requires auth
+
 const router = express.Router();
 
 /**
@@ -16,7 +18,7 @@ const router = express.Router();
  *       401:
  *         description: Unauthorized. Token missing or invalid.
  */
-router.post('/getbasket', basketController.getBasket);
+router.post('/getbasket',verifyToken ,basketController.getBasket); //added verify token before controller
 
 /**
  * @swagger
@@ -33,7 +35,7 @@ router.post('/getbasket', basketController.getBasket);
  *       401:
  *         description: Unauthorized. Token missing or invalid.
  */
-router.post('/addtobasket', basketController.addToBasket);
+router.post('/addtobasket',verifyToken, basketController.addToBasket); //added verify token before controller
 
 /**
  * @swagger
@@ -50,7 +52,7 @@ router.post('/addtobasket', basketController.addToBasket);
  *       401:
  *         description: Unauthorized. Token missing or invalid.
  */
-router.post('/updatequantity', basketController.updateQuantity);
+router.post('/updatequantity',verifyToken, basketController.updateQuantity); //added verify token before controller
 
 /**
  * @swagger
@@ -67,6 +69,6 @@ router.post('/updatequantity', basketController.updateQuantity);
  *       401:
  *         description: Unauthorized. Token missing or invalid.
  */
-router.delete('/deleteitemfrombasket', basketController.deleteFromBasket);
+router.delete('/deleteitemfrombasket',verifyToken, basketController.deleteFromBasket); //added verify token before controller
 
 module.exports = router;
