@@ -34,9 +34,6 @@ const signup = async (req, res) => {
 
         // Create the new user object to insert
         const user = {
-            // `account_user_name` is uniquely indexed in prod; if omitted, MongoDB
-            // indexes missing fields as null and will reject the 2nd insert.
-            // Use email as a stable unique username for now.
             account_user_name: normalizedEmail,
             email: normalizedEmail,
             encrypted_password: hashedPassword,
@@ -47,7 +44,7 @@ const signup = async (req, res) => {
             admin: admin || false,
         };
 
-        // Insert the user into the database (using native MongoDB method)
+        // Insert the user into the database
         const result = await db.collection('users').insertOne(user);
 
         // Send a success response
@@ -62,19 +59,12 @@ const signup = async (req, res) => {
 // Defining the limiter
 const { rateLimit } = require("express-rate-limit");
 
-// Only allows for one request every 5 minutes per IP
 const limiter = rateLimit({
-
-windowMs: 5 * 60 * 1000,
-
-limit: 1,
-
-message: "Too many requests. Please try again later.",
-
-standardHeaders: true,
-
-legacyHeaders: false,
-
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    limit: 1,
+    message: "Too many requests. Please try again later.",
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
 // Signin Controller
@@ -82,7 +72,6 @@ const signin = async (req, res) => {
     const { email, password } = req.body;
     try {
         const db = await connectToMongoDB();
-
 
         if (!db) {
             return res.status(500).json({ message: 'Database not initialized' });
@@ -107,34 +96,25 @@ const signin = async (req, res) => {
     }
 };
 
-
+// Get Profile Controller
 const getProfile = async (req, res) => {
-    // Extract token from Authorization header
     try {
-     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ message: 'No token provided, please log in' });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-        if (err) {
-            return res.status(401).json({ message: 'Invalid token, please log in again' });
-        }
-
-        const email = decoded.email;
+        // NEW: Access the email directly from req.user, which is populated by the verifyToken middleware
+        const email = req.user.email; // Access email directly from req.user (no need to decode token here)
 
         const db = await connectToMongoDB();
         if (!db) {
             return res.status(500).json({ message: 'Database connection failed' });
         }
-        // Fetch the user details from the database
+
+        // Fetch user details from the database using the email, excluding the password field
         const user = await db.collection('users').findOne({ email }, { projection: { encrypted_password: 0 } });
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Send back user profile details, including the admin field
+        // Send back user profile details (excluding password)
         return res.status(200).json({
             user_fname: user.user_fname,
             user_lname: user.user_lname,
@@ -144,13 +124,13 @@ const getProfile = async (req, res) => {
             admin: user.admin,
             profile_image: user.profile_image || null,
         });
-    });
-} catch (error) {
-    console.error('Error fetching profile:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
-}
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
 };
 
+// Update Profile Image Controller
 const updateProfileImage = async (req, res) => {
     try {
         const token = req.headers.authorization.split(' ')[1];
@@ -177,21 +157,20 @@ const updateProfileImage = async (req, res) => {
             return res.status(400).json({ message: 'No file uploaded' });
         }
         const mimeType = mime.lookup(file.originalname); // Get MIME type from the file
-         const imageData = fs.readFileSync(file.path); // Read file as binary data (Buffer)
+        const imageData = fs.readFileSync(file.path); // Read file as binary data (Buffer)
 
         // Update the user profile with mime and content (base64 encoded image)
         const updateResult = await db.collection('users').updateOne(
             { email },
             {
-              $set: {
-                profile_image: {
-                  mime: mimeType,
-                  content: imageData
-                }
-              },
+                $set: {
+                    profile_image: {
+                        mime: mimeType,
+                        content: imageData
+                    }
+                },
             }
-          );
-
+        );
 
         if (updateResult.modifiedCount === 1) {
             return res.status(200).json({ profile_image: 'Updated successfully' });
@@ -204,31 +183,31 @@ const updateProfileImage = async (req, res) => {
     }
 };
 
-// Get Profile Image
+// Get Profile Image Controller
 const getProfileImage = async (req, res) => {
     try {
-      const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-      if (!token) {
-        return res.status(401).json({ message: 'No token provided' });
-      }
+        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'No token provided' });
+        }
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const email = decoded.email;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const email = decoded.email;
 
-      const db = await connectToMongoDB();
-      const user = await db.collection('users').findOne({ email });
+        const db = await connectToMongoDB();
+        const user = await db.collection('users').findOne({ email });
 
-      if (!user || !user.profile_image) {
-        return res.status(404).json({ message: 'Profile image not found' });
-      }
+        if (!user || !user.profile_image) {
+            return res.status(404).json({ message: 'Profile image not found' });
+        }
 
-      const filePath = path.join(__dirname, '../..', user.profile_image);
-      res.sendFile(filePath);
+        const filePath = path.join(__dirname, '../..', user.profile_image);
+        res.sendFile(filePath);
     } catch (error) {
-      console.error('Error fetching profile image:', error);
-      return res.status(500).json({ message: 'Internal Server Error' });
+        console.error('Error fetching profile image:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
-  };
+};
 
 module.exports = {
     signup,
@@ -238,5 +217,4 @@ module.exports = {
     getProfileImage,
     signupLimiter: limiter
 };
-
 

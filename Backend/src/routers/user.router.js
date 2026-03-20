@@ -4,6 +4,9 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// Import the verifyToken middleware to protect routes
+const verifyToken = require('../middleware/auth.middleware');
+
 // Configure multer storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -116,7 +119,7 @@ router.post('/signin', userController.signin);
  *       401:
  *         description: Unauthorized - Invalid or missing token
  */
-router.get('/profile', userController.getProfile);
+router.get('/profile', verifyToken, userController.getProfile); // added Verify token
 
 // Upload profile image
 /**
@@ -146,7 +149,7 @@ router.get('/profile', userController.getProfile);
  *       401:
  *         description: Unauthorized - Invalid or missing token
  */
-router.post('/upload-profile-image', upload.single('image'), userController.updateProfileImage);
+router.post('/upload-profile-image', verifyToken, upload.single('image'), userController.updateProfileImage); // added verify token
 
 // Get Profile Image
 /**
@@ -166,6 +169,6 @@ router.post('/upload-profile-image', upload.single('image'), userController.upda
  *       401:
  *         description: Unauthorized - Invalid or missing token
  */
-router.get('/profile-image', userController.getProfileImage);
+router.get('/profile-image', verifyToken, userController.getProfileImage); // added verify token - not 100% needed but its there
 
 module.exports = router;
