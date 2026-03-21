@@ -24,6 +24,15 @@ const signup = async (req, res) => {
         // Establish MongoDB connection and get the db object
         const db = await connectToMongoDB(); // Await the connection to get the db object
 
+
+        //password strength validation - IA
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            return res.status(400).json({
+                message: 'Password must be at least 8 characters long and include uppercase letters, lowercase letters, numbers, and special characters.'
+            });
+        }
+
         // Check if the passwords match
         if (password !== verifyPassword) {
             return res.status(400).json({ message: 'Passwords do not match' });
