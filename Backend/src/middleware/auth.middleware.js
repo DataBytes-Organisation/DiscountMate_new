@@ -2,7 +2,7 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
-// Changed the logic for extracting the token from the Authorization header to explicitly check if it starts with 'Bearer '
+// new Changed the logic for extracting the token from the Authorization header to explicitly check if it starts with 'Bearer ' 
 const verifyToken = (req, res, next) => {
     const token = req.headers.authorization && req.headers.authorization.startsWith('Bearer ') 
         ? req.headers.authorization.split(' ')[1] // Extract the token part after "Bearer"

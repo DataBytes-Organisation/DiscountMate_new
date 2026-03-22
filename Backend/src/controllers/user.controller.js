@@ -6,6 +6,26 @@ const User = require('../schemas/models');
 const { connectToMongoDB } = require('../config/database');
 const fs = require('fs');
 const mime = require('mime-types');
+const rateLimit = require('express-rate-limit'); //import rate limiters
+
+//new define rate limiter for sign up 
+
+const signupLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes window
+    limit: 5,                // Limit 5 requests per IP within the window
+    message: 'Too many requests. Please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+//new Define rate limiter for signin
+const signinLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes window
+    limit: 5,                // Limit 5 requests per IP within the window
+    message: 'Too many requests. Please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 // Signup Controller
 const signup = async (req, res) => {
@@ -25,7 +45,7 @@ const signup = async (req, res) => {
         const db = await connectToMongoDB(); // Await the connection to get the db object
 
 
-        //password strength validation - IA
+        //new password strength validation
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         if (!passwordRegex.test(password)) {
             return res.status(400).json({
@@ -108,7 +128,7 @@ const signin = async (req, res) => {
 // Get Profile Controller
 const getProfile = async (req, res) => {
     try {
-        // NEW: Access the email directly from req.user, which is populated by the verifyToken middleware
+        // NEW: Access the email directly from req.user, which is populated by the verifyToken middleware - IS
         const email = req.user.email; // Access email directly from req.user (no need to decode token here)
 
         const db = await connectToMongoDB();

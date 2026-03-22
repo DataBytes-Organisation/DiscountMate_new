@@ -101,7 +101,7 @@ router.post('/signup', userController.signupLimiter, userController.signup); // 
  *       500:
  *         description: Internal server error
  */
-router.post('/signin', userController.signin);
+router.post('/signin', signinLimiter, userController.signin); //new Apply rate limiting to the signin route
 
 // Get profile route
 /**
