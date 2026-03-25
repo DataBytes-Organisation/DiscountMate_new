@@ -4,7 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Import the verifyToken middleware to protect routes
+// Import JWT middleware
 const verifyToken = require('../middleware/auth.middleware');
 
 // Configure multer storage
@@ -70,7 +70,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/signup', userController.signupLimiter, userController.signup); // Signup using limiter
+router.post('/signup', userController.signupLimiter, userController.signup); // NEW: Apply rate limiting to signup
 
 // Signin route
 /**
@@ -101,7 +101,8 @@ router.post('/signup', userController.signupLimiter, userController.signup); // 
  *       500:
  *         description: Internal server error
  */
-router.post('/signin', signinLimiter, userController.signin); //new Apply rate limiting to the signin route
+router.post('/signin', userController.signinLimiter, userController.signin); // NEW: Apply rate limiting to signin 
+
 
 // Get profile route
 /**
@@ -119,7 +120,7 @@ router.post('/signin', signinLimiter, userController.signin); //new Apply rate l
  *       401:
  *         description: Unauthorized - Invalid or missing token
  */
-router.get('/profile', verifyToken, userController.getProfile); // added Verify token
+router.get('/profile', verifyToken, userController.getProfile); //NEW: Protect route using JWT middleware
 
 // Upload profile image
 /**
@@ -149,7 +150,7 @@ router.get('/profile', verifyToken, userController.getProfile); // added Verify 
  *       401:
  *         description: Unauthorized - Invalid or missing token
  */
-router.post('/upload-profile-image', verifyToken, upload.single('image'), userController.updateProfileImage); // added verify token
+router.post('/upload-profile-image', verifyToken, upload.single('image'), userController.updateProfileImage); //NEW: Protected upload route
 
 // Get Profile Image
 /**
@@ -169,6 +170,6 @@ router.post('/upload-profile-image', verifyToken, upload.single('image'), userCo
  *       401:
  *         description: Unauthorized - Invalid or missing token
  */
-router.get('/profile-image', verifyToken, userController.getProfileImage); // added verify token - not 100% needed but its there
+router.get('/profile-image', verifyToken, userController.getProfileImage); //NEW: Protected profile image retrieva
 
 module.exports = router;

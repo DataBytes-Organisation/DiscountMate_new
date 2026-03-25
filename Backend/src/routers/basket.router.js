@@ -1,8 +1,7 @@
 const express = require('express');
 const basketController = require('../controllers/basket.controller');
 
-const verifyToken = require('../middleware/auth.middleware'); //added middleware so basket requires auth
-
+const verifyToken = require('../middleware/auth.middleware'); // NEW: Import JWT middleware to protect basket routes
 const router = express.Router();
 
 /**
@@ -18,7 +17,7 @@ const router = express.Router();
  *       401:
  *         description: Unauthorized. Token missing or invalid.
  */
-router.post('/getbasket',verifyToken ,basketController.getBasket); //added verify token before controller
+router.post('/getbasket',verifyToken ,basketController.getBasket);  // NEW: enforce authentication before accessing basket
 
 /**
  * @swagger
@@ -35,7 +34,7 @@ router.post('/getbasket',verifyToken ,basketController.getBasket); //added verif
  *       401:
  *         description: Unauthorized. Token missing or invalid.
  */
-router.post('/addtobasket',verifyToken, basketController.addToBasket); //added verify token before controller
+router.post('/addtobasket',verifyToken, basketController.addToBasket); //NEW: enforce authentication
 
 /**
  * @swagger
@@ -52,7 +51,7 @@ router.post('/addtobasket',verifyToken, basketController.addToBasket); //added v
  *       401:
  *         description: Unauthorized. Token missing or invalid.
  */
-router.post('/updatequantity',verifyToken, basketController.updateQuantity); //added verify token before controller
+router.post('/updatequantity',verifyToken, basketController.updateQuantity); //NEW: enforce authentication
 
 /**
  * @swagger
@@ -69,6 +68,6 @@ router.post('/updatequantity',verifyToken, basketController.updateQuantity); //a
  *       401:
  *         description: Unauthorized. Token missing or invalid.
  */
-router.delete('/deleteitemfrombasket',verifyToken, basketController.deleteFromBasket); //added verify token before controller
+router.delete('/deleteitemfrombasket',verifyToken, basketController.deleteFromBasket); //NEW: enforce authentication
 
 module.exports = router;

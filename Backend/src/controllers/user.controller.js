@@ -1,27 +1,26 @@
 
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken'); // used for signin token creation
 const User = require('../schemas/models');
 const { connectToMongoDB } = require('../config/database');
 const fs = require('fs');
 const mime = require('mime-types');
-const rateLimit = require('express-rate-limit'); //import rate limiters
+const rateLimit = require('express-rate-limit'); // NEW: imported for  rate limiting
 
-//new define rate limiter for sign up 
-
+// NEW: signup rate limiter (CS-02-T3)
 const signupLimiter = rateLimit({
-    windowMs: 5 * 60 * 1000, // 5 minutes window
-    limit: 5,                // Limit 5 requests per IP within the window
+    windowMs: 5 * 60 * 1000, // NEW: 5 minute rate limit window
+    limit: 5,                // NEW: max 5 requests per IP in window
     message: 'Too many requests. Please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
 });
 
-//new Define rate limiter for signin
+// NEW: signin rate limiter (CS-02-T3)
 const signinLimiter = rateLimit({
-    windowMs: 5 * 60 * 1000, // 5 minutes window
-    limit: 5,                // Limit 5 requests per IP within the window
+    windowMs: 5 * 60 * 1000, // NEW: 5 minute rate limit window
+    limit: 5,                // NEW: max 5 requests per IP in window
     message: 'Too many requests. Please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
@@ -45,7 +44,7 @@ const signup = async (req, res) => {
         const db = await connectToMongoDB(); // Await the connection to get the db object
 
 
-        //new password strength validation
+         // NEW: password strength validation
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         if (!passwordRegex.test(password)) {
             return res.status(400).json({
@@ -85,16 +84,7 @@ const signup = async (req, res) => {
     }
 };
 
-// Defining the limiter
-const { rateLimit } = require("express-rate-limit");
 
-const limiter = rateLimit({
-    windowMs: 5 * 60 * 1000, // 5 minutes
-    limit: 1,
-    message: "Too many requests. Please try again later.",
-    standardHeaders: true,
-    legacyHeaders: false,
-});
 
 // Signin Controller
 const signin = async (req, res) => {
@@ -162,13 +152,8 @@ const getProfile = async (req, res) => {
 // Update Profile Image Controller
 const updateProfileImage = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1];
-        if (!token) {
-            return res.status(401).json({ message: 'No token provided' });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const email = decoded.email;
+        // NEW: use req.user from auth middleware instead of jwt.verify in controller (CS-02-T2 / T5)
+        const email = req.user.email;
 
         const db = await connectToMongoDB();
         if (!db) {
@@ -181,14 +166,14 @@ const updateProfileImage = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const file = req.file; // Assuming the file is uploaded via form-data
+        const file = req.file;
         if (!file) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
-        const mimeType = mime.lookup(file.originalname); // Get MIME type from the file
-        const imageData = fs.readFileSync(file.path); // Read file as binary data (Buffer)
 
-        // Update the user profile with mime and content (base64 encoded image)
+        const mimeType = mime.lookup(file.originalname); // Existing file MIME lookup
+        const imageData = fs.readFileSync(file.path);    // Existing file read as Buffer
+
         const updateResult = await db.collection('users').updateOne(
             { email },
             {
@@ -197,7 +182,7 @@ const updateProfileImage = async (req, res) => {
                         mime: mimeType,
                         content: imageData
                     }
-                },
+                }
             }
         );
 
@@ -206,32 +191,35 @@ const updateProfileImage = async (req, res) => {
         } else {
             return res.status(500).json({ message: 'Failed to update profile image' });
         }
+
     } catch (error) {
         console.error('Error updating profile image:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
 
 // Get Profile Image Controller
 const getProfileImage = async (req, res) => {
     try {
-        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-        if (!token) {
-            return res.status(401).json({ message: 'No token provided' });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const email = decoded.email;
+        // NEW: use req.user from auth middleware instead of jwt.verify in controller (CS-02-T2 / T5)
+        const email = req.user.email;
 
         const db = await connectToMongoDB();
+        if (!db) {
+            return res.status(500).json({ message: 'Database connection failed' });
+        }
+
         const user = await db.collection('users').findOne({ email });
 
         if (!user || !user.profile_image) {
             return res.status(404).json({ message: 'Profile image not found' });
         }
 
-        const filePath = path.join(__dirname, '../..', user.profile_image);
-        res.sendFile(filePath);
+        // NEW: return stored profile image object from MongoDB
+        // This matches how updateProfileImage stores the image { mime, content }
+        return res.status(200).json(user.profile_image);
+
     } catch (error) {
         console.error('Error fetching profile image:', error);
         return res.status(500).json({ message: 'Internal Server Error' });
@@ -244,6 +232,7 @@ module.exports = {
     getProfile,
     updateProfileImage,
     getProfileImage,
-    signupLimiter: limiter
+    signupLimiter, // NEW: export signup limiter for router use
+    signinLimiter  // NEW: export signin limiter for router use
 };
 
