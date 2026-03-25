@@ -9,7 +9,7 @@ const verifyToken = (req, res, next) => {
         : null; // If no token is found, set it to null
 
     if (!token) {
-        return res.status(403).json({message: "A token is required for authentication"});
+        return res.status(401).json({message: "No token provided"});
     }
 
     try {

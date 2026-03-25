@@ -2,7 +2,7 @@
 const { connectToMongoDB } = require('../config/database');
 
 /**
- * NEW: CS-02-T2 / CS-02-T5
+ * 
  * Basket controller now relies on req.user from auth middleware
  * instead of decoding JWT tokens inside controller functions.
  */
