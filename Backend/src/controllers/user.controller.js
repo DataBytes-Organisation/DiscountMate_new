@@ -8,7 +8,7 @@ const fs = require('fs');
 const mime = require('mime-types');
 const rateLimit = require('express-rate-limit'); // NEW: imported for  rate limiting
 
-// NEW: signup rate limiter (CS-02-T3)
+// NEW: signup rate limiter 
 const signupLimiter = rateLimit({
     windowMs: 5 * 60 * 1000, // NEW: 5 minute rate limit window
     limit: 5,                // NEW: max 5 requests per IP in window
@@ -17,7 +17,7 @@ const signupLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-// NEW: signin rate limiter (CS-02-T3)
+// NEW: signin rate limiter 
 const signinLimiter = rateLimit({
     windowMs: 5 * 60 * 1000, // NEW: 5 minute rate limit window
     limit: 5,                // NEW: max 5 requests per IP in window
@@ -69,7 +69,7 @@ const signup = async (req, res) => {
             user_lname,
             address,
             phone_number,
-            admin: admin || false,
+            role: 'user', // NEW: standardised permission model 
         };
 
         // Insert the user into the database
@@ -86,9 +86,11 @@ const signup = async (req, res) => {
 
 
 
+
 // Signin Controller
 const signin = async (req, res) => {
     const { email, password } = req.body;
+
     try {
         const db = await connectToMongoDB();
 
@@ -96,22 +98,34 @@ const signin = async (req, res) => {
             return res.status(500).json({ message: 'Database not initialized' });
         }
 
-        const user = await db.collection('users').findOne({ email: email });
+        const user = await db.collection('users').findOne({ email });
+
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
         const isMatch = await bcrypt.compare(password, user.encrypted_password);
 
-        if (isMatch) {
-            const token = jwt.sign({ email, admin: user.admin }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            return res.status(200).json({ message: 'Signin successful', token, admin: user.admin });
-        } else {
+        if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
+
+        // NEW: include role in JWT instead of admin 
+        const token = jwt.sign(
+            { email, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        return res.status(200).json({
+            message: 'Signin successful',
+            token,
+            role: user.role, // NEW: return role instead of admin
+        });
+
     } catch (error) {
         console.error('Error signing in user:', error);
-        res.status(500).json({ message: 'Error signing in user' });
+        return res.status(500).json({ message: 'Error signing in user' });
     }
 };
 
