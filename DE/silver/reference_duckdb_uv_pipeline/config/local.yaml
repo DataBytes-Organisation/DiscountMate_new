@@ -1,0 +1,25 @@
+mode: local
+
+postgres:
+  host: 127.0.0.1
+  port: 5433
+  database: discountmate
+  user: postgres
+  password: postgres
+  schema: silver
+
+paths:
+  bronze_root: data/local_bronze
+
+sources:
+  coles:
+    products: "{bronze_root}/coles/coles_sample_{date_compact}.csv"
+
+  woolworths:
+    products: "{bronze_root}/woolworths/woolworths_sample_{date_compact}.csv"
+
+  iga:
+    products: "{bronze_root}/iga/iga_sample_{date_compact}.csv"
+
+  aldi:
+    products: "{bronze_root}/aldi/aldi_sample_{date_compact}.csv"

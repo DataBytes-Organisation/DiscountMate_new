@@ -1,0 +1,26 @@
+# Deployment template. Values are read from environment variables at runtime.
+mode: cloud
+
+postgres:
+  host: ${POSTGRES_HOST}
+  port: ${POSTGRES_PORT}
+  database: ${POSTGRES_DATABASE}
+  user: ${POSTGRES_USER}
+  password: ${POSTGRES_PASSWORD}
+  schema: silver
+
+paths:
+  bronze_root: ${BRONZE_ROOT}
+
+sources:
+  coles:
+    products: "{bronze_root}/coles/coles_sample_{date_compact}.csv"
+
+  woolworths:
+    products: "{bronze_root}/woolworths/woolworths_sample_{date_compact}.csv"
+
+  iga:
+    products: "{bronze_root}/iga/iga_sample_{date_compact}.csv"
+
+  aldi:
+    products: "{bronze_root}/aldi/aldi_sample_{date_compact}.csv"
