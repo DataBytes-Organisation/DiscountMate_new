@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Callable
+from collections.abc import Callable
+from datetime import UTC, datetime
 
 from config import (
     build_logger,
@@ -13,7 +12,6 @@ from config import (
     load_settings,
 )
 from config.telemetry import get_tracer
-from dotenv import load_dotenv
 from scraper.aldi.aldi_product_scraper import run as run_aldi
 from scraper.coles.coles_product_scraper import run as run_coles
 from scraper.example.example_scraper import run as run_example
@@ -22,13 +20,7 @@ from scraper.woolworths.ww_product_scraper import run as run_ww
 from storage import StorageManager
 from util import RunContext, RunResult, utc_timestamp
 
-
 Runner = Callable[[RunContext], RunResult]
-
-
-def load_env(path: Path) -> None:
-    if path.exists():
-        load_dotenv(path, override=True)
 
 
 def parse_args() -> argparse.Namespace:
@@ -63,12 +55,10 @@ def resolve_runner(source: str, runner: str) -> tuple[str, Runner]:
 
 def main() -> int:
     args = parse_args()
-    repo_root = Path(__file__).resolve().parent
-    load_env(repo_root / ".env")
 
-    settings = load_settings(repo_root)
+    settings = load_settings()
     source, runner_fn = resolve_runner(args.source, args.runner)
-    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     log_file_path = get_log_file_path(
         settings.app.output_dir, source, args.runner, run_id
     )
@@ -84,7 +74,6 @@ def main() -> int:
         source=source,
         runner=args.runner,
         run_id=run_id,
-        repo_root=repo_root,
         settings=settings,
         logger=logger,
         tracer=get_tracer(f"discount_mate.{source}.{args.runner}"),
@@ -108,7 +97,7 @@ def main() -> int:
     )
 
     logger.info("Run complete with %s records", len(result.records))
-    logger.info("Artifacts saved in %s", artifacts.run_dir.relative_to(repo_root))
+    logger.info("Artifacts saved in %s", artifacts.run_dir)
     if artifacts.uploaded_uris:
         logger.info("Uploaded artifacts: %s", ", ".join(artifacts.uploaded_uris))
     return 0

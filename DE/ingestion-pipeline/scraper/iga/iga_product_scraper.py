@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import httpx
 
@@ -24,6 +23,8 @@ from util import (
     sleep_if_needed,
 )
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
 AUTOSAVE_EVERY_N_BRANDS = 3
 AUTOSAVE_EVERY_N_PAGES = 10
@@ -95,16 +96,24 @@ def _extract_products(
             "Name": safe_str(item.get("name") or ""),
             "BrandName": safe_str(item.get("brand") or ""),
             "Barcode": safe_str(item.get("barcode") or ""),
-            "Available": item.get("available") if item.get("available") is not None else "",
+            "Available": item.get("available")
+            if item.get("available") is not None
+            else "",
             "SellBy": safe_str(item.get("sellBy") or ""),
             "PriceDisplay": safe_str(item.get("price") or ""),
-            "PriceNumeric": item.get("priceNumeric") if item.get("priceNumeric") is not None else "",
+            "PriceNumeric": item.get("priceNumeric")
+            if item.get("priceNumeric") is not None
+            else "",
             "WasPriceDisplay": safe_str(item.get("wasPrice") or ""),
-            "WasPriceNumeric": item.get("wasPriceNumeric") if item.get("wasPriceNumeric") is not None else "",
+            "WasPriceNumeric": item.get("wasPriceNumeric")
+            if item.get("wasPriceNumeric") is not None
+            else "",
             "PriceLabel": safe_str(item.get("priceLabel") or ""),
             "PriceSource": safe_str(item.get("priceSource") or ""),
             "PricePerUnit": safe_str(item.get("pricePerUnit") or ""),
-            "PrimaryImageUrl": safe_str(((item.get("image") or {}).get("default")) or ""),
+            "PrimaryImageUrl": safe_str(
+                ((item.get("image") or {}).get("default")) or ""
+            ),
             "ScrapedAt": legacy_timestamp(),
             "RunId": state_run_id,
             "BrandQuery": brand,
@@ -128,14 +137,16 @@ def _load_or_create_state_run_id(run_progress_path: Path, default_run_id: str) -
 
 def run(context: RunContext) -> RunResult:
     settings = context.settings.iga
-    state_dir = get_state_dir(context.settings.app.output_dir, context.source, context.runner)
+    state_dir = get_state_dir(
+        context.settings.app.output_dir, context.source, context.runner
+    )
     run_progress_path = state_dir / "run_progress.json"
     brand_progress_path = state_dir / "brand_progress.json"
     sku_index_path = state_dir / "sku_index.json"
     state_run_id = _load_or_create_state_run_id(run_progress_path, context.run_id)
     snapshot_jsonl_path = state_dir / f"iga_products_{state_run_id}.jsonl"
 
-    brands = load_brand_queries(settings.brands_csv_path)
+    brands = load_brand_queries(settings.brands_path)
     run_progress = load_json_file(
         run_progress_path,
         {
@@ -170,7 +181,9 @@ def run(context: RunContext) -> RunResult:
     with context.tracer.start_as_current_span("iga.products") as span:
         span.set_attribute("brand_count", len(brands))
 
-        with httpx.Client(timeout=settings.timeout_seconds, follow_redirects=True) as client:
+        with httpx.Client(
+            timeout=settings.timeout_seconds, follow_redirects=True
+        ) as client:
             current_brand_index = int(run_progress.get("last_brand_index", -1))
             try:
                 for brand_index, brand in enumerate(brands):

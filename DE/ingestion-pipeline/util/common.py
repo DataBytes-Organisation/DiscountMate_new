@@ -4,14 +4,20 @@ import csv
 import json
 import re
 import time
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any, Iterable
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any
 
-import httpx
+import yaml
+
+if TYPE_CHECKING:
+    import logging
+    from pathlib import Path
+
+    import httpx
+
 
 def utc_timestamp() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
 def legacy_timestamp() -> str:
@@ -23,7 +29,7 @@ def sleep_if_needed(delay_seconds: float) -> None:
         time.sleep(delay_seconds)
 
 
-def safe_str(value: Any) -> str:
+def safe_str(value: object) -> str:
     return "" if value is None else str(value)
 
 
@@ -42,31 +48,31 @@ def ensure_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
 
-def load_json_file(path: Path, default: Any) -> Any:
+def load_json_file[T](path: Path, default: T) -> T:
     if not path.exists():
         return default
     with path.open("r", encoding="utf-8") as handle:
         return json.load(handle)
 
 
-def save_json_file(path: Path, payload: Any) -> None:
+def save_json_file(path: Path, payload: object) -> None:
     ensure_dir(path.parent)
     with path.open("w", encoding="utf-8") as handle:
         json.dump(payload, handle, ensure_ascii=False, indent=2)
         handle.write("\n")
 
 
-def append_jsonl(path: Path, payload: dict[str, Any]) -> None:
+def append_jsonl(path: Path, payload: dict[str, object]) -> None:
     ensure_dir(path.parent)
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(payload, ensure_ascii=False))
         handle.write("\n")
 
 
-def read_jsonl(path: Path) -> list[dict[str, Any]]:
+def read_jsonl(path: Path) -> list[dict[str, object]]:
     if not path.exists():
         return []
-    rows: list[dict[str, Any]] = []
+    rows: list[dict[str, object]] = []
     with path.open("r", encoding="utf-8") as handle:
         for line in handle:
             raw = line.strip()
@@ -76,12 +82,12 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def write_csv_rows(path: Path, rows: list[dict[str, Any]]) -> None:
+def write_csv_rows(path: Path, rows: list[dict[str, object]]) -> None:
     ensure_dir(path.parent)
     fieldnames: list[str] = []
     seen: set[str] = set()
     for row in rows:
-        for key in row.keys():
+        for key in row:
             if key not in seen:
                 seen.add(key)
                 fieldnames.append(key)
@@ -93,7 +99,7 @@ def write_csv_rows(path: Path, rows: list[dict[str, Any]]) -> None:
             writer.writerow(row)
 
 
-def read_csv_rows(path: Path) -> list[dict[str, Any]]:
+def read_csv_rows(path: Path) -> list[dict[str, str]]:
     if not path.exists():
         return []
     with path.open("r", encoding="utf-8-sig", newline="") as handle:
@@ -111,7 +117,7 @@ def get_state_dir(output_dir: Path, source: str, runner: str) -> Path:
 
 
 def log_request_debug(
-    logger: Any,
+    logger: logging.LoggerAdapter,
     source: str,
     method: str,
     url: str,
@@ -136,12 +142,12 @@ def log_request_debug(
 
 def request_with_debug(
     client: httpx.Client,
-    logger: Any,
+    logger: logging.LoggerAdapter,
     source: str,
     method: str,
     url: str,
     request_context: str = "",
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401
 ) -> httpx.Response:
     log_request_debug(logger, source, method, url, request_context=request_context)
     started = time.perf_counter()
@@ -160,9 +166,9 @@ def request_with_debug(
 
 
 def flatten_json(
-    value: Any, prefix: str = "", keep_lists: bool = True
-) -> dict[str, Any]:
-    flattened: dict[str, Any] = {}
+    value: object, prefix: str = "", keep_lists: bool = True
+) -> dict[str, object]:
+    flattened: dict[str, object] = {}
     if isinstance(value, dict):
         for key, nested_value in value.items():
             nested_prefix = f"{prefix}.{key}" if prefix else str(key)
@@ -188,8 +194,8 @@ def to_snake_case(value: str) -> str:
     return value.lower()
 
 
-def normalize_record_keys(record: dict[str, Any]) -> dict[str, Any]:
-    normalized: dict[str, Any] = {}
+def normalize_record_keys(record: dict[str, object]) -> dict[str, object]:
+    normalized: dict[str, object] = {}
     seen: dict[str, int] = {}
     for key, value in record.items():
         normalized_key = to_snake_case(str(key))
@@ -200,30 +206,61 @@ def normalize_record_keys(record: dict[str, Any]) -> dict[str, Any]:
     return normalized
 
 
-def load_brand_queries(path: Path) -> list[str]:
-    if not path.exists():
-        raise FileNotFoundError(f"Brand list CSV not found: {path}")
+def _load_brand_rows_from_yaml(path: Path) -> list[dict[str, str | None]]:
+    with path.open("r", encoding="utf-8") as handle:
+        payload = yaml.safe_load(handle)
 
-    with path.open("r", encoding="utf-8-sig", newline="") as handle:
-        reader = csv.DictReader(handle)
-        if reader.fieldnames is None:
-            raise RuntimeError(f"CSV has no header row: {path}")
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"Brand YAML must contain a top-level mapping: {path}")
 
-        candidates = ("Brands", "brand", "BrandName", "brand_name", "name")
-        field_name = next(
-            (name for name in candidates if name in reader.fieldnames),
-            reader.fieldnames[0],
+    raw_rows = payload.get("brands")
+    if not isinstance(raw_rows, list):
+        raise RuntimeError(f"Brand YAML must contain a top-level 'brands' list: {path}")
+
+    rows: list[dict[str, str | None]] = []
+    for raw_row in raw_rows:
+        if not isinstance(raw_row, dict):
+            raise RuntimeError(f"Each brand entry must be a mapping: {path}")
+
+        name = raw_row.get("name")
+        retailer_specific = raw_row.get("retailer_specific")
+        if not isinstance(name, str):
+            raise RuntimeError(f"Each brand entry must include a string 'name': {path}")
+        if retailer_specific is not None and not isinstance(retailer_specific, str):
+            raise RuntimeError(
+                f"'retailer_specific' must be a string or null in {path}"
+            )
+
+        rows.append(
+            {
+                "name": name,
+                "retailer_specific": retailer_specific,
+            }
         )
 
-        brands: list[str] = []
-        seen: set[str] = set()
-        for row in reader:
-            value = safe_str(row.get(field_name)).strip()
-            if not value:
-                continue
-            dedupe_key = value.casefold()
-            if dedupe_key in seen:
-                continue
-            seen.add(dedupe_key)
-            brands.append(value)
+    return rows
+
+
+def load_brand_queries(path: Path) -> list[str]:
+    if not path.exists():
+        raise FileNotFoundError(f"Brand list file not found: {path}")
+
+    suffix = path.suffix.lower()
+    if suffix not in {".yml", ".yaml"}:
+        raise RuntimeError(f"Unsupported brand list format for {path}")
+
+    rows = _load_brand_rows_from_yaml(path)
+    field_name = "name"
+
+    brands: list[str] = []
+    seen: set[str] = set()
+    for row in rows:
+        value = safe_str(row.get(field_name)).strip()
+        if not value:
+            continue
+        dedupe_key = value.casefold()
+        if dedupe_key in seen:
+            continue
+        seen.add(dedupe_key)
+        brands.append(value)
     return brands

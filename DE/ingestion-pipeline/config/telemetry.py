@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import logging
-from typing import Any
+from typing import TYPE_CHECKING
 
 from opentelemetry import trace as otel_trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -12,7 +11,13 @@ from opentelemetry.sdk.trace.export import (
     ConsoleSpanExporter,
     SimpleSpanProcessor,
 )
-from .settings import TelemetrySettings
+
+if TYPE_CHECKING:
+    import logging
+
+    from opentelemetry.trace import Tracer
+
+    from .settings import TelemetrySettings
 
 
 def _parse_otlp_headers(raw_headers: str) -> dict[str, str] | None:
@@ -33,7 +38,9 @@ def _parse_otlp_headers(raw_headers: str) -> dict[str, str] | None:
     return headers or None
 
 
-def configure_telemetry(settings: TelemetrySettings, logger: Any) -> None:
+def configure_telemetry(
+    settings: TelemetrySettings, logger: logging.LoggerAdapter
+) -> None:
     if not settings.enabled:
         logger.info("OpenTelemetry disabled via env")
         return
@@ -59,5 +66,5 @@ def configure_telemetry(settings: TelemetrySettings, logger: Any) -> None:
     otel_trace.set_tracer_provider(provider)
 
 
-def get_tracer(name: str):
+def get_tracer(name: str) -> Tracer:
     return otel_trace.get_tracer(name)

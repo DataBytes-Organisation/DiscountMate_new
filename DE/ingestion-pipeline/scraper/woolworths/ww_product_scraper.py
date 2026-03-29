@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import json
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import httpx
 
@@ -16,12 +15,13 @@ from util import (
     read_csv_rows,
     remove_file_if_exists,
     request_with_debug,
-    safe_str,
     save_json_file,
     sleep_if_needed,
     write_csv_rows,
 )
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
 AUTOSAVE_EVERY_N_BRANDS = 5
 USER_AGENT = (
@@ -92,7 +92,9 @@ def _search_scraperapi(
     return response.json(), "SUCCESS_SCRAPERAPI"
 
 
-def _extract_product_data(product: dict[str, Any], brand_searched: str) -> dict[str, Any]:
+def _extract_product_data(
+    product: dict[str, Any], brand_searched: str
+) -> dict[str, Any]:
     additional_attrs = product.get("AdditionalAttributes", {}) or {}
     centre_tag = product.get("CentreTag", {}) or {}
 
@@ -103,7 +105,9 @@ def _extract_product_data(product: dict[str, Any], brand_searched: str) -> dict[
         "Name": product.get("Name", ""),
         "DisplayName": product.get("DisplayName", ""),
         "UrlFriendlyName": product.get("UrlFriendlyName", ""),
-        "Description": product.get("Description", "").replace("<br>", " ") if product.get("Description") else "",
+        "Description": product.get("Description", "").replace("<br>", " ")
+        if product.get("Description")
+        else "",
         "FullDescription": product.get("FullDescription", ""),
         "PackageSize": product.get("PackageSize", ""),
         "Price": product.get("Price", 0),
@@ -140,7 +144,9 @@ def _extract_product_data(product: dict[str, Any], brand_searched: str) -> dict[
         "CountryOfOrigin": additional_attrs.get("countryoforigin", ""),
         "Ingredients": additional_attrs.get("ingredients", ""),
         "AllergyStatement": additional_attrs.get("allergystatement", ""),
-        "LifestyleAndDietaryStatement": additional_attrs.get("lifestyleanddietarystatement", ""),
+        "LifestyleAndDietaryStatement": additional_attrs.get(
+            "lifestyleanddietarystatement", ""
+        ),
         "StorageInstructions": additional_attrs.get("storageinstructions", ""),
         "ContainsGluten": additional_attrs.get("containsgluten", ""),
         "ContainsNuts": additional_attrs.get("containsnuts", ""),
@@ -153,7 +159,7 @@ def _extract_product_data(product: dict[str, Any], brand_searched: str) -> dict[
     }
 
 
-def _load_progress(progress_path: Any) -> dict[str, Any]:
+def _load_progress(progress_path: Path) -> dict[str, Any]:
     progress = load_json_file(
         progress_path, {"last_brand_index": -1, "products_collected": 0}
     )
@@ -162,7 +168,7 @@ def _load_progress(progress_path: Any) -> dict[str, Any]:
     return progress
 
 
-def _save_progress(progress_path: Any, brand_index: int, products_count: int) -> None:
+def _save_progress(progress_path: Path, brand_index: int, products_count: int) -> None:
     save_json_file(
         progress_path,
         {
@@ -174,7 +180,10 @@ def _save_progress(progress_path: Any, brand_index: int, products_count: int) ->
 
 
 def _save_checkpoint(
-    checkpoint_path: Any, progress_path: Any, all_products: list[dict[str, Any]], brand_index: int
+    checkpoint_path: Path,
+    progress_path: Path,
+    all_products: list[dict[str, Any]],
+    brand_index: int,
 ) -> None:
     if all_products:
         write_csv_rows(checkpoint_path, all_products)
@@ -183,11 +192,13 @@ def _save_checkpoint(
 
 def run(context: RunContext) -> RunResult:
     settings = context.settings.ww
-    state_dir = get_state_dir(context.settings.app.output_dir, context.source, context.runner)
+    state_dir = get_state_dir(
+        context.settings.app.output_dir, context.source, context.runner
+    )
     checkpoint_path = state_dir / "woolworths_checkpoint.csv"
     progress_path = state_dir / "woolworths_progress.json"
 
-    brands = load_brand_queries(settings.brands_csv_path)
+    brands = load_brand_queries(settings.brands_path)
     progress = _load_progress(progress_path)
     all_products = read_csv_rows(checkpoint_path)
     start_index = int(progress.get("last_brand_index", -1)) + 1
@@ -197,7 +208,9 @@ def run(context: RunContext) -> RunResult:
     with context.tracer.start_as_current_span("ww.products") as span:
         span.set_attribute("brand_count", len(brands))
 
-        with httpx.Client(timeout=settings.timeout_seconds, follow_redirects=True) as client:
+        with httpx.Client(
+            timeout=settings.timeout_seconds, follow_redirects=True
+        ) as client:
             current_brand_index = max(start_index - 1, -1)
             try:
                 for brand_index in range(start_index, len(brands)):
@@ -238,7 +251,12 @@ def run(context: RunContext) -> RunResult:
                                 status,
                             )
                             if status == "SCRAPERAPI_CREDITS_EXHAUSTED":
-                                _save_checkpoint(checkpoint_path, progress_path, all_products, brand_index)
+                                _save_checkpoint(
+                                    checkpoint_path,
+                                    progress_path,
+                                    all_products,
+                                    brand_index,
+                                )
                                 raise RuntimeError("ScraperAPI credits exhausted")
                             break
 
@@ -249,14 +267,18 @@ def run(context: RunContext) -> RunResult:
                         extracted = 0
                         for wrapper in wrappers:
                             products = []
-                            if isinstance(wrapper, dict) and isinstance(wrapper.get("Products"), list):
+                            if isinstance(wrapper, dict) and isinstance(
+                                wrapper.get("Products"), list
+                            ):
                                 products = wrapper["Products"]
                             elif isinstance(wrapper, dict):
                                 products = [wrapper]
 
                             for product in products:
                                 if isinstance(product, dict) and "Stockcode" in product:
-                                    all_products.append(_extract_product_data(product, brand))
+                                    all_products.append(
+                                        _extract_product_data(product, brand)
+                                    )
                                     extracted += 1
 
                         context.logger.info(
@@ -269,14 +291,28 @@ def run(context: RunContext) -> RunResult:
                             break
                         sleep_if_needed(settings.delay_seconds)
 
-                    if ((brand_index + 1) % AUTOSAVE_EVERY_N_BRANDS == 0) or (brand_index == len(brands) - 1):
-                        _save_checkpoint(checkpoint_path, progress_path, all_products, brand_index)
+                    if ((brand_index + 1) % AUTOSAVE_EVERY_N_BRANDS == 0) or (
+                        brand_index == len(brands) - 1
+                    ):
+                        _save_checkpoint(
+                            checkpoint_path, progress_path, all_products, brand_index
+                        )
 
             except KeyboardInterrupt:
-                _save_checkpoint(checkpoint_path, progress_path, all_products, max(current_brand_index, 0))
+                _save_checkpoint(
+                    checkpoint_path,
+                    progress_path,
+                    all_products,
+                    max(current_brand_index, 0),
+                )
                 raise
             except Exception:
-                _save_checkpoint(checkpoint_path, progress_path, all_products, max(current_brand_index, 0))
+                _save_checkpoint(
+                    checkpoint_path,
+                    progress_path,
+                    all_products,
+                    max(current_brand_index, 0),
+                )
                 raise
 
     remove_file_if_exists(checkpoint_path)

@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import csv
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from storage.models import MaterializedArtifacts
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _fieldnames(records: list[dict[str, object]]) -> list[str]:

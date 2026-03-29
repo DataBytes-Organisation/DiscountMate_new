@@ -1,14 +1,18 @@
 from __future__ import annotations
 
 import json
+from typing import TYPE_CHECKING
 
 from storage.gcs import GCSStorage
 from storage.local import LocalStorage
-from storage.models import MaterializedArtifacts
+
+if TYPE_CHECKING:
+    from config.settings import Settings
+    from storage.models import MaterializedArtifacts
 
 
 class StorageManager:
-    def __init__(self, settings) -> None:
+    def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.local_storage = LocalStorage(settings.app.output_dir)
         self.gcs_storage = (
@@ -35,9 +39,7 @@ class StorageManager:
                 raise RuntimeError(
                     "GCS destination selected but GCS_BUCKET is not configured"
                 )
-            uploaded_uris = self.gcs_storage.upload(
-                artifacts, self.settings.app.output_dir
-            )
+            uploaded_uris = self.gcs_storage.upload(source, runner, artifacts)
 
         if uploaded_uris:
             artifacts.uploaded_uris.extend(uploaded_uris)

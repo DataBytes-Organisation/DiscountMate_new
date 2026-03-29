@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
-from typing import Any, MutableMapping
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import MutableMapping
+    from pathlib import Path
+    from typing import Any
 
 
 class ContextLogger(logging.LoggerAdapter):
@@ -15,7 +19,9 @@ class ContextLogger(logging.LoggerAdapter):
         self.run_id = run_id
 
     def process(
-        self, msg: Any, kwargs: MutableMapping[str, Any]
+        self,
+        msg: Any,  # noqa: ANN401
+        kwargs: MutableMapping[str, Any],  # noqa: ANN401
     ) -> tuple[Any, MutableMapping[str, Any]]:
         extra = kwargs.setdefault("extra", {})
         extra.setdefault("source", self.source)

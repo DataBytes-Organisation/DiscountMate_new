@@ -1,11 +1,25 @@
-# discount-mate-de
+# Discount Mate - Ingestion Pipeline
 
 Unified scraper entrypoint for ALDI, Coles, IGA, Woolworths, and an example template source.
 
-## Usage
+# Prerequisite
+- Python 3.12+
+- uv
+- docker
 
-Load env in `.env`, then run:
+## Getting started
 
+Install dependencies
+```bash
+uv sync
+```
+
+Load env in `.env`, 
+```bash
+cp .env.example .env
+```
+
+then run:
 ```bash
 uv run main.py --source aldi --runner products
 uv run main.py --source coles --runner products
@@ -29,7 +43,21 @@ Artifacts per run:
 - `<source>_manifest_<run_id>.json`
 - `<source>_run_<run_id>.log`
 
-When `APP_DESTINATIONS` includes `gcs`, the same artifacts are uploaded using the same relative path under `GCS_PREFIX`.
+When `APP_DESTINATIONS` includes `gcs`, only the CSV artifact is uploaded to `GCS_PREFIX/<source>/<runner>/<source>_products_<run_id>.csv`.
+
+## Container Build
+
+Build the image with `docker buildx`:
+
+```bash
+docker buildx build --platform linux/amd64 -t discount-mate-ingestion:latest .
+```
+
+Run the container locally:
+
+```bash
+docker run --rm --env-file .env discount-mate-ingestion:latest --source ww --runner products
+```
 
 ## Structure
 

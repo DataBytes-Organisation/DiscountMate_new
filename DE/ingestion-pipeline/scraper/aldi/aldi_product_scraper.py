@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import json
-import time
-import xml.etree.ElementTree as element_tree
-from typing import Any
+import xml.etree.ElementTree as ET
+from typing import Any, cast
 
 import httpx
 
@@ -17,7 +16,6 @@ from util import (
     sleep_if_needed,
     to_snake_case,
 )
-
 
 CORE_RENAME = {
     "Retailer": "retailer",
@@ -41,11 +39,19 @@ PREFERRED_ASSET_TYPES = ("FR01", "FR02", "NU01", "IN01")
 SITEMAP_NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+    "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15"
 )
 
+COMMON_HEADERS = {
+    "User-Agent": USER_AGENT,
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-AU,en;q=0.9",
+    "Origin": "https://www.aldi.com.au",
+    "Referer": "https://www.aldi.com.au/",
+}
 
-def _cents_to_dollars(cents: Any) -> float | str:
+
+def _cents_to_dollars(cents: object) -> float | str:
     if isinstance(cents, bool):
         return ""
     if isinstance(cents, (int, float)):
@@ -53,10 +59,16 @@ def _cents_to_dollars(cents: Any) -> float | str:
     return ""
 
 
-def _pick_asset(assets: Any) -> dict[str, Any]:
+def _pick_asset(assets: object) -> dict[str, Any]:
     if not isinstance(assets, list):
         return {}
-    typed = [asset for asset in assets if isinstance(asset, dict) and asset.get("assetType")]
+    typed: list[dict[str, Any]] = []
+    for asset in assets:
+        if not isinstance(asset, dict):
+            continue
+        typed_asset = cast("dict[str, Any]", asset)
+        if typed_asset.get("assetType"):
+            typed.append(typed_asset)
     for asset_type in PREFERRED_ASSET_TYPES:
         for asset in typed:
             if asset.get("assetType") == asset_type:
@@ -64,7 +76,9 @@ def _pick_asset(assets: Any) -> dict[str, Any]:
     return typed[0] if typed else {}
 
 
-def _category_urls(client: httpx.Client, context: RunContext, sitemap_url: str) -> list[str]:
+def _category_urls(
+    client: httpx.Client, context: RunContext, sitemap_url: str
+) -> list[str]:
     response = request_with_debug(
         client,
         context.logger,
@@ -75,7 +89,7 @@ def _category_urls(client: httpx.Client, context: RunContext, sitemap_url: str) 
         headers={"User-Agent": USER_AGENT, "Accept": "application/xml,text/xml,*/*"},
     )
     response.raise_for_status()
-    root = element_tree.fromstring(response.text)
+    root = ET.fromstring(response.text)
     urls: list[str] = []
     for node in root.findall("sm:url", SITEMAP_NS):
         location = node.find("sm:loc", SITEMAP_NS)
@@ -127,16 +141,22 @@ def _extract_records(
             "CategoryId_FromSitemap": category_id,
             "CategoryUrl_FromSitemap": category_url,
             "SKU": safe_str(item.get("sku") or item.get("id") or item.get("productId")),
-            "Name": safe_str(item.get("name") or item.get("title") or item.get("displayName")),
+            "Name": safe_str(
+                item.get("name") or item.get("title") or item.get("displayName")
+            ),
             "BrandName": safe_str(item.get("brandName") or item.get("brand")),
             "UrlSlugText": slug,
-            "ProductUrl": f"https://www.aldi.com.au/groceries/{slug.strip('/')}/" if slug else "",
+            "ProductUrl": f"https://www.aldi.com.au/groceries/{slug.strip('/')}/"
+            if slug
+            else "",
             "ImageUrl": image_url,
             "ImageLocalPath": "",
             "ImageWebPath": "",
             "PriceCents": pricing.get("amount", ""),
             "PriceDollars": _cents_to_dollars(pricing.get("amount")),
-            "PriceDisplay": safe_str(pricing.get("amountRelevantDisplay") or pricing.get("amountDisplay")),
+            "PriceDisplay": safe_str(
+                pricing.get("amountRelevantDisplay") or pricing.get("amountDisplay")
+            ),
             "Timestamp": legacy_timestamp(),
             "RawJson": json.dumps(item, ensure_ascii=False),
         }
@@ -146,12 +166,7 @@ def _extract_records(
 
 def run(context: RunContext) -> RunResult:
     settings = context.settings.aldi
-    headers = {
-        "User-Agent": USER_AGENT,
-        "Accept": "application/json, text/plain, */*",
-        "Origin": "https://www.aldi.com.au",
-        "Referer": "https://www.aldi.com.au/",
-    }
+    headers = COMMON_HEADERS
     all_records: list[dict[str, Any]] = []
     category_count = 0
 
@@ -159,7 +174,9 @@ def run(context: RunContext) -> RunResult:
         span.set_attribute("source", context.source)
         span.set_attribute("runner", context.runner)
 
-        with httpx.Client(timeout=settings.timeout_seconds, follow_redirects=True) as client:
+        with httpx.Client(
+            timeout=settings.timeout_seconds, follow_redirects=True
+        ) as client:
             for category_url in _category_urls(client, context, settings.sitemap_url):
                 category_id = _category_id(category_url)
                 if not category_id:
@@ -186,7 +203,9 @@ def run(context: RunContext) -> RunResult:
                     )
                     try:
                         response.raise_for_status()
-                        batch = _extract_records(category_id, category_url, response.json())
+                        batch = _extract_records(
+                            category_id, category_url, response.json()
+                        )
                         if not batch:
                             break
                         all_records.extend(batch)
@@ -202,7 +221,7 @@ def run(context: RunContext) -> RunResult:
                         sleep_if_needed(settings.delay_seconds)
                     except httpx.HTTPStatusError as e:
                         if e.response.status_code == 400:
-                            context.logger.warn(
+                            context.logger.warning(
                                 "Skipping url: %s, (limit=%s, offset=%s).\n Error: %s",
                                 category_url,
                                 settings.page_size,
@@ -210,8 +229,7 @@ def run(context: RunContext) -> RunResult:
                                 e.response.text,
                             )
                             break
-                        else:
-                            raise e
+                        raise e
 
     return RunResult(
         records=all_records,

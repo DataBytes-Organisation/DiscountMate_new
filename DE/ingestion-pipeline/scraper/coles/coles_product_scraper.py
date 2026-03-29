@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import json
+import random
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import httpx
 
@@ -17,15 +17,16 @@ from util import (
     read_csv_rows,
     remove_file_if_exists,
     request_with_debug,
-    safe_str,
     save_json_file,
     sleep_if_needed,
     write_csv_rows,
 )
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
 AUTOSAVE_EVERY_N_BRANDS = 5
-BUILD_ID_PATTERN = re.compile(r"/_next/data/([^/]+)/en/")
+BUILD_ID_PATTERN = re.compile(r"(?P<build_id>\d{8}\.\d+-[0-9a-fA-F]+)")
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
@@ -33,8 +34,15 @@ USER_AGENT = (
 
 
 def _detect_build_id(
-    client: httpx.Client, context: RunContext, homepage_url: str, fallback_build_id: str
+    client: httpx.Client,
+    context: RunContext,
+    homepage_url: str,
+    configured_build_id: str,
+    cookies: dict[str, str],
 ) -> str:
+    if configured_build_id:
+        return configured_build_id
+
     response = request_with_debug(
         client,
         context.logger,
@@ -42,15 +50,23 @@ def _detect_build_id(
         "GET",
         homepage_url,
         request_context="homepage build_id_probe",
-        headers={"User-Agent": USER_AGENT},
+        headers={
+            "User-Agent": USER_AGENT,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Referer": homepage_url,
+        },
+        cookies=cookies or None,
     )
     response.raise_for_status()
     match = BUILD_ID_PATTERN.search(response.text)
     if match:
-        return match.group(1)
-    if fallback_build_id:
-        return fallback_build_id
-    raise RuntimeError("Unable to detect Coles build id. Set COLES_BUILD_ID in .env.")
+        build_id = match.group("build_id")
+        context.logger.info("Detected Coles build id: %s", build_id)
+        return build_id
+    raise RuntimeError(
+        "Unable to detect Coles build id from homepage response. "
+        "Set COLES_BUILD_ID or ensure COLES_HOMEPAGE_URL returns a valid build id."
+    )
 
 
 def _search_direct(
@@ -115,6 +131,14 @@ def _search_scraperapi(
     return response.json(), "SUCCESS_SCRAPERAPI"
 
 
+def _sleep_random_delay(
+    context: RunContext, min_seconds: float, max_seconds: float
+) -> None:
+    delay_seconds = random.uniform(min_seconds, max_seconds)
+    context.logger.info("Sleeping for random Coles delay %.3fs", delay_seconds)
+    sleep_if_needed(delay_seconds)
+
+
 def _extract_coles_product_data(
     product: dict[str, Any], brand_searched: str
 ) -> dict[str, Any]:
@@ -169,7 +193,7 @@ def _extract_coles_product_data(
     }
 
 
-def _load_progress(progress_path: Any) -> dict[str, Any]:
+def _load_progress(progress_path: Path) -> dict[str, Any]:
     progress = load_json_file(
         progress_path, {"last_brand_index": -1, "products_collected": 0}
     )
@@ -178,7 +202,7 @@ def _load_progress(progress_path: Any) -> dict[str, Any]:
     return progress
 
 
-def _save_progress(progress_path: Any, brand_index: int, products_count: int) -> None:
+def _save_progress(progress_path: Path, brand_index: int, products_count: int) -> None:
     save_json_file(
         progress_path,
         {
@@ -190,7 +214,10 @@ def _save_progress(progress_path: Any, brand_index: int, products_count: int) ->
 
 
 def _save_checkpoint(
-    checkpoint_path: Any, progress_path: Any, all_products: list[dict[str, Any]], brand_index: int
+    checkpoint_path: Path,
+    progress_path: Path,
+    all_products: list[dict[str, Any]],
+    brand_index: int,
 ) -> None:
     if all_products:
         write_csv_rows(checkpoint_path, all_products)
@@ -199,11 +226,13 @@ def _save_checkpoint(
 
 def run(context: RunContext) -> RunResult:
     settings = context.settings.coles
-    state_dir = get_state_dir(context.settings.app.output_dir, context.source, context.runner)
+    state_dir = get_state_dir(
+        context.settings.app.output_dir, context.source, context.runner
+    )
     checkpoint_path = state_dir / "coles_checkpoint.csv"
     progress_path = state_dir / "coles_progress.json"
 
-    brands = load_brand_queries(settings.brands_csv_path)
+    brands = load_brand_queries(settings.brands_path)
     progress = _load_progress(progress_path)
     all_products = read_csv_rows(checkpoint_path)
     start_index = int(progress.get("last_brand_index", -1)) + 1
@@ -212,10 +241,18 @@ def run(context: RunContext) -> RunResult:
     with context.tracer.start_as_current_span("coles.products") as span:
         span.set_attribute("brand_count", len(brands))
 
-        with httpx.Client(timeout=settings.timeout_seconds, follow_redirects=True) as client:
-            build_id = _detect_build_id(client, context, settings.homepage_url, settings.fallback_build_id)
-            api_url = settings.api_base_template.format(build_id=build_id)
+        with httpx.Client(
+            timeout=settings.timeout_seconds, follow_redirects=True
+        ) as client:
             cookies = parse_cookie_string(settings.cookie_string)
+            build_id = _detect_build_id(
+                client,
+                context,
+                settings.homepage_url,
+                settings.fallback_build_id,
+                cookies,
+            )
+            api_url = settings.api_base_template.format(build_id=build_id)
             context.logger.info("Using Coles build id %s", build_id)
             current_brand_index = max(start_index - 1, -1)
 
@@ -227,7 +264,13 @@ def run(context: RunContext) -> RunResult:
 
                     for page in range(1, settings.max_pages + 1):
                         payload, status = _search_direct(
-                            client, context, api_url, brand, page, settings.page_size, cookies
+                            client,
+                            context,
+                            api_url,
+                            brand,
+                            page,
+                            settings.page_size,
+                            cookies,
                         )
                         if (
                             payload is None
@@ -253,15 +296,28 @@ def run(context: RunContext) -> RunResult:
                                 status,
                             )
                             if status == "SCRAPERAPI_CREDITS_EXHAUSTED":
-                                _save_checkpoint(checkpoint_path, progress_path, all_products, brand_index)
+                                _save_checkpoint(
+                                    checkpoint_path,
+                                    progress_path,
+                                    all_products,
+                                    brand_index,
+                                )
                                 raise RuntimeError("ScraperAPI credits exhausted")
                             break
 
-                        results = (((payload.get("pageProps") or {}).get("searchResults")) or {}).get("results") or []
+                        results = (
+                            ((payload.get("pageProps") or {}).get("searchResults"))
+                            or {}
+                        ).get("results") or []
                         extracted = 0
                         for item in results:
-                            if isinstance(item, dict) and item.get("_type") == "PRODUCT":
-                                all_products.append(_extract_coles_product_data(item, brand))
+                            if (
+                                isinstance(item, dict)
+                                and item.get("_type") == "PRODUCT"
+                            ):
+                                all_products.append(
+                                    _extract_coles_product_data(item, brand)
+                                )
                                 extracted += 1
 
                         brand_products += extracted
@@ -273,16 +329,34 @@ def run(context: RunContext) -> RunResult:
                         )
                         if extracted == 0 or extracted < settings.page_size:
                             break
-                        sleep_if_needed(settings.delay_seconds)
+                        _sleep_random_delay(
+                            context,
+                            settings.delay_seconds_min,
+                            settings.delay_seconds_max,
+                        )
 
-                    if ((brand_index + 1) % AUTOSAVE_EVERY_N_BRANDS == 0) or (brand_index == len(brands) - 1):
-                        _save_checkpoint(checkpoint_path, progress_path, all_products, brand_index)
+                    if ((brand_index + 1) % AUTOSAVE_EVERY_N_BRANDS == 0) or (
+                        brand_index == len(brands) - 1
+                    ):
+                        _save_checkpoint(
+                            checkpoint_path, progress_path, all_products, brand_index
+                        )
 
             except KeyboardInterrupt:
-                _save_checkpoint(checkpoint_path, progress_path, all_products, max(current_brand_index, 0))
+                _save_checkpoint(
+                    checkpoint_path,
+                    progress_path,
+                    all_products,
+                    max(current_brand_index, 0),
+                )
                 raise
             except Exception:
-                _save_checkpoint(checkpoint_path, progress_path, all_products, max(current_brand_index, 0))
+                _save_checkpoint(
+                    checkpoint_path,
+                    progress_path,
+                    all_products,
+                    max(current_brand_index, 0),
+                )
                 raise
 
     remove_file_if_exists(checkpoint_path)
