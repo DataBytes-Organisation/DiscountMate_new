@@ -2,7 +2,6 @@
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken'); // used for signin token creation
-const User = require('../schemas/models');
 const { connectToMongoDB } = require('../config/database');
 const fs = require('fs');
 const mime = require('mime-types');
@@ -69,7 +68,7 @@ const signup = async (req, res) => {
             user_lname,
             address,
             phone_number,
-            role: 'user', // NEW: standardised permission model 
+            role: admin ? 'admin' : 'user', // NEW: set role based on admin flag
         };
 
         // Insert the user into the database
@@ -135,6 +134,11 @@ const getProfile = async (req, res) => {
         // NEW: Access the email directly from req.user, which is populated by the verifyToken middleware - IS
         const email = req.user.email; // Access email directly from req.user (no need to decode token here)
 
+        // NEW: Role-based access check
+        if (req.user.role !== 'user' && req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Forbidden: Insufficient permissions' });
+        }
+
         const db = await connectToMongoDB();
         if (!db) {
             return res.status(500).json({ message: 'Database connection failed' });
@@ -154,7 +158,7 @@ const getProfile = async (req, res) => {
             email: user.email,
             address: user.address,
             phone_number: user.phone_number,
-            admin: user.admin,
+            role: user.role,
             profile_image: user.profile_image || null,
         });
     } catch (error) {
@@ -168,6 +172,11 @@ const updateProfileImage = async (req, res) => {
     try {
         // NEW: use req.user from auth middleware instead of jwt.verify in controller (CS-02-T2 / T5)
         const email = req.user.email;
+
+        // NEW: Role-based access check
+        if (req.user.role !== 'user' && req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Forbidden: Insufficient permissions' });
+        }
 
         const db = await connectToMongoDB();
         if (!db) {
@@ -218,6 +227,11 @@ const getProfileImage = async (req, res) => {
     try {
         // NEW: use req.user from auth middleware instead of jwt.verify in controller (CS-02-T2 / T5)
         const email = req.user.email;
+
+        // NEW: Role-based access check 
+        if (req.user.role !== 'user' && req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Forbidden: Insufficient permissions' });
+        }
 
         const db = await connectToMongoDB();
         if (!db) {
