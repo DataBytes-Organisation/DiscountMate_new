@@ -257,6 +257,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
    const [totalPagesFromApi, setTotalPagesFromApi] = useState<number | null>(null);
 
    const pageSize = 9; // cards per page
+   const pageJump = 10; // outer pagination buttons skip this many pages
 
    useEffect(() => {
       const hasSearch = typeof searchQuery === "string" && searchQuery.trim().length > 0;
@@ -425,17 +426,19 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                {/* Pagination - only show when there are products to display */}
                {productsToShow.length > 0 && totalPages > 1 && (
                   <View className="mt-8 flex-row items-center justify-center space-x-2">
-                     {/* First page */}
+                     {/* Skip back by pageJump pages (not first page) */}
                      <Pressable
-                        className={`px-3 py-2 rounded-xl border-2 ${safePage > 1
+                        className={`px-3 py-2 rounded-xl border-2 ${canGoPrev
                            ? "border-gray-200"
                            : "border-gray-100 bg-gray-50"
                            }`}
-                        disabled={safePage === 1}
-                        onPress={() => setCurrentPage(1)}
+                        disabled={!canGoPrev}
+                        onPress={() =>
+                           setCurrentPage((prev) => Math.max(1, prev - pageJump))
+                        }
                      >
                         <Text
-                           className={`text-sm ${safePage > 1 ? "text-emerald-500" : "text-gray-300"
+                           className={`text-sm ${canGoPrev ? "text-emerald-500" : "text-gray-300"
                               }`}
                         >
                            {"≪"}
@@ -527,17 +530,21 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                         </Text>
                      </Pressable>
 
-                     {/* Last page */}
+                     {/* Skip forward by pageJump pages (not last page) */}
                      <Pressable
-                        className={`px-3 py-2 rounded-xl border-2 ${safePage < totalPages
+                        className={`px-3 py-2 rounded-xl border-2 ${canGoNext
                            ? "border-gray-200"
                            : "border-gray-100 bg-gray-50"
                            }`}
-                        disabled={safePage === totalPages}
-                        onPress={() => setCurrentPage(totalPages)}
+                        disabled={!canGoNext}
+                        onPress={() =>
+                           setCurrentPage((prev) =>
+                              Math.min(totalPages, prev + pageJump)
+                           )
+                        }
                      >
                         <Text
-                           className={`text-sm ${safePage < totalPages ? "text-emerald-500" : "text-gray-300"
+                           className={`text-sm ${canGoNext ? "text-emerald-500" : "text-gray-300"
                               }`}
                         >
                            {"≫"}
