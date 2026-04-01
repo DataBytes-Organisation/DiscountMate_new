@@ -12,10 +12,137 @@ type ApiProduct = {
    description?: string | null;
    link_image?: string | null;
    current_price?: number | null;
-   best_price?: number | null;
    unit_price?: string | null;
-   best_unit_price?: string | null;
+   store_chain?: string | null;
+   /** Latest Coles shelf price from product_pricings (coles_generic) */
+   coles_price?: number | null;
+   coles_unit_price?: string | null;
+   /** Latest Woolworths shelf price from product_pricings (woolworths_generic) */
+   woolworths_price?: number | null;
+   woolworths_unit_price?: string | null;
 };
+
+function pickPositivePrice(value: unknown): number | null {
+   if (typeof value !== "number" || isNaN(value) || value <= 0) return null;
+   return value;
+}
+
+function formatShelfPrice(value: number | null): string {
+   if (value == null) return "-";
+   return `$${value.toFixed(2)}`;
+}
+
+function sanitizeUnitLabel(raw: string | null | undefined): string | undefined {
+   if (raw == null || !String(raw).trim()) return undefined;
+   const s = String(raw).trim();
+   if (/nan/i.test(s)) return undefined;
+   return s;
+}
+
+/** First numeric value in a unit_price string (e.g. "0.008 per g") for range filters only. */
+function parseUnitNumericFromProduct(product: ApiProduct): number | null {
+   const candidates = [
+      product.unit_price,
+      product.coles_unit_price,
+      product.woolworths_unit_price,
+   ];
+   for (const c of candidates) {
+      if (c == null || !String(c).trim()) continue;
+      const m = String(c).match(/[\d]+(?:\.[\d]+)?/);
+      if (m) {
+         const n = parseFloat(m[0]);
+         if (!isNaN(n)) return n;
+      }
+   }
+   return null;
+}
+
+/** Resolves Coles / Woolworths shelf prices (incl. legacy single-store current_price). Aldi has no API price here. */
+function resolveColesWoolworthsPrices(product: ApiProduct): {
+   colesPriceNum: number | null;
+   woolworthsPriceNum: number | null;
+} {
+   let colesPriceNum = pickPositivePrice(product.coles_price);
+   let woolworthsPriceNum = pickPositivePrice(product.woolworths_price);
+
+   if (colesPriceNum == null && woolworthsPriceNum == null) {
+      const legacy = pickPositivePrice(product.current_price);
+      if (legacy != null) {
+         if (product.store_chain === "woolworths_generic") {
+            woolworthsPriceNum = legacy;
+         } else {
+            colesPriceNum = legacy;
+         }
+      }
+   }
+
+   return { colesPriceNum, woolworthsPriceNum };
+}
+
+function apiProductHasShelfPrice(product: ApiProduct): boolean {
+   const { colesPriceNum, woolworthsPriceNum } = resolveColesWoolworthsPrices(product);
+   return colesPriceNum != null || woolworthsPriceNum != null;
+}
+
+function parseProductsPayload(
+   data: unknown,
+   limitForFallback: number
+): {
+   items: ApiProduct[];
+   total: number;
+   totalPages: number;
+} {
+   if (Array.isArray(data)) {
+      const items = data as ApiProduct[];
+      return {
+         items,
+         total: items.length,
+         totalPages: Math.max(1, Math.ceil(items.length / Math.max(1, limitForFallback))),
+      };
+   }
+   const d = data as { items?: ApiProduct[]; total?: number; totalPages?: number };
+   if (d && Array.isArray(d.items)) {
+      const total = typeof d.total === "number" ? d.total : d.items.length;
+      return {
+         items: d.items,
+         total,
+         totalPages:
+            typeof d.totalPages === "number"
+               ? d.totalPages
+               : Math.max(1, Math.ceil(total / Math.max(1, limitForFallback))),
+      };
+   }
+   throw new Error("Unexpected products response shape");
+}
+
+/** One API page per UI page: `GET /products?page=&limit=` (matches backend pagination). */
+async function fetchProductsPage(
+   page: number,
+   limit: number,
+   category: string | undefined,
+   search: string | undefined,
+   signal?: AbortSignal
+): Promise<{ items: ApiProduct[]; total: number; totalPages: number }> {
+   const params = new URLSearchParams();
+   params.set("page", String(page));
+   params.set("limit", String(limit));
+
+   if (category && category !== "All") {
+      params.set("category", category);
+   }
+   if (search && search.trim().length > 0) {
+      params.set("search", search.trim());
+   }
+
+   const response = await fetch(`${API_URL}/products?${params.toString()}`, {
+      signal,
+   });
+   if (!response.ok) {
+      throw new Error(`Products request failed: ${response.status}`);
+   }
+   const data = await response.json();
+   return parseProductsPayload(data, limit);
+}
 
 function mapApiProductToCard(product: ApiProduct): Product {
    // Always use _id for consistency in URLs since it's guaranteed to exist for all MongoDB documents
@@ -51,26 +178,12 @@ function mapApiProductToCard(product: ApiProduct): Product {
    // Use description from API, truncated for grid display
    const subtitle = truncateDescription(product.description);
 
-   console.log(subtitle);
+   const { colesPriceNum, woolworthsPriceNum } = resolveColesWoolworthsPrices(product);
 
-   // Use price from API, default to 0 if not available
-   const basePrice =
-      typeof product.current_price === "number" && !isNaN(product.current_price)
-         ? product.current_price
-         : 0;
+   const colesUnitPriceLabel = sanitizeUnitLabel(product.coles_unit_price);
+   const woolworthsUnitPriceLabel = sanitizeUnitLabel(product.woolworths_unit_price);
 
-   const baseOriginal =
-      (typeof product.best_price === "number" && !isNaN(product.best_price)
-         ? product.best_price
-         : undefined) ??
-      basePrice;
-
-   const savings = Math.max(0, baseOriginal - basePrice);
-
-   // Use unit price (or best_unit_price) for Coles unit price display
-   const colesUnitPriceLabel = product.unit_price || product.best_unit_price || undefined;
-
-   const badge = savings > 0 ? `Save $${savings.toFixed(2)}` : "Great value";
+   const badge = "Great value";
 
    // Use default icon
    const icon: Product["icon"] = "tag";
@@ -78,34 +191,35 @@ function mapApiProductToCard(product: ApiProduct): Product {
    // Use default trend
    const trend = { label: "Stable", tone: "neutral" as Product["trendTone"] };
 
-   // Only Coles has pricing data; other retailers set to 0 for now
-   const colesPrice = basePrice;
-   const woolworthsPrice = 0;
-   const aldiPrice = 0;
+   const prices: Array<{
+      storeKey: "coles" | "woolworths" | "aldi";
+      name: string;
+      price: number | null;
+   }> = [
+         { storeKey: "coles", name: "Coles", price: colesPriceNum },
+         { storeKey: "woolworths", name: "Woolworths", price: woolworthsPriceNum },
+         { storeKey: "aldi", name: "Aldi", price: null },
+      ];
 
-   const prices = [
-      { storeKey: "coles" as const, name: "Coles", price: colesPrice },
-      { storeKey: "woolworths" as const, name: "Woolworths", price: woolworthsPrice },
-      { storeKey: "aldi" as const, name: "Aldi", price: aldiPrice },
-   ];
-
-   // Coles is always the cheapest (and only one with pricing)
-   const cheapest = prices.find(p => p.storeKey === "coles") || prices[0];
-
-   const originalForRetailer =
-      baseOriginal > basePrice ? baseOriginal : basePrice * 1.15;
+   const pricedEntries = prices.filter(
+      (p): p is typeof p & { price: number } => p.price != null && p.price > 0
+   );
+   const cheapestEntry =
+      pricedEntries.length > 0
+         ? pricedEntries.reduce((a, b) => (a.price <= b.price ? a : b))
+         : null;
 
    const retailers = prices.map((p) => ({
       storeKey: p.storeKey,
       name: p.name,
-      price: p.price > 0 ? `$${p.price.toFixed(2)}` : "$0.00",
-      originalPrice:
-         p.storeKey === "coles" && originalForRetailer > p.price
-            ? `$${originalForRetailer.toFixed(2)}`
-            : undefined,
-      isCheapest: p === cheapest,
-      // Since all products are currently from Coles, surface the unit price specifically on the Coles retailer card.
-      unitPriceLabel: p.storeKey === "coles" ? colesUnitPriceLabel : undefined,
+      price: formatShelfPrice(p.price),
+      isCheapest: cheapestEntry != null && cheapestEntry.storeKey === p.storeKey,
+      unitPriceLabel:
+         p.storeKey === "coles"
+            ? colesUnitPriceLabel
+            : p.storeKey === "woolworths"
+               ? woolworthsUnitPriceLabel
+               : undefined,
    }));
 
    return {
@@ -155,90 +269,70 @@ const ProductGrid: React.FC<ProductGridProps> = ({
          return;
       }
 
-      const fetchProducts = async (page: number, category?: string, search?: string) => {
+      const ac = new AbortController();
+
+      const run = async () => {
          try {
             setLoading(true);
             setError(null);
 
-            const params = new URLSearchParams();
-            params.set("page", String(page));
-            params.set("limit", String(pageSize));
-
-            if (category && category !== "All") {
-               params.set("category", category);
-            }
-
-            if (search && search.trim().length > 0) {
-               params.set("search", search.trim());
-            }
-
-            const response = await fetch(
-               `${API_URL}/products?${params.toString()}`
+            const { items, total, totalPages } = await fetchProductsPage(
+               currentPage,
+               pageSize,
+               activeCategory,
+               searchQuery,
+               ac.signal
             );
-            const data = await response.json();
-
-            // Support both the new paginated shape and the legacy
-            // "array of products" shape so other callers that rely on products still work while the backend is evolving.
-            let items: ApiProduct[] = [];
-            let total = 0;
-            let totalPages = 1;
-
-            if (Array.isArray(data)) {
-               items = data;
-               total = data.length;
-               totalPages = Math.max(1, Math.ceil(total / pageSize));
-            } else if (data && Array.isArray(data.items)) {
-               items = data.items;
-               total =
-                  typeof data.total === "number" ? data.total : data.items.length;
-               totalPages =
-                  typeof data.totalPages === "number"
-                     ? data.totalPages
-                     : Math.max(1, Math.ceil(total / pageSize));
-            } else {
-               throw new Error("Unexpected products response shape");
-            }
 
             setApiProducts(items);
             setTotalProducts(total);
             setTotalPagesFromApi(totalPages);
-         } catch (err) {
+         } catch (err: unknown) {
+            if (err instanceof Error && err.name === "AbortError") {
+               return;
+            }
             console.error("Error fetching products for home grid:", err);
             setError(
                "We couldn't load products just now. Please refresh the page to try again."
             );
          } finally {
-            setLoading(false);
+            if (!ac.signal.aborted) {
+               setLoading(false);
+            }
          }
       };
 
-      fetchProducts(currentPage, activeCategory, searchQuery);
-   }, [currentPage, activeCategory, searchQuery]);
+      run();
+      return () => ac.abort();
+   }, [currentPage, activeCategory, searchQuery, requireSearch]);
 
    useEffect(() => {
       // Reset to first page when the category or search query changes
       setCurrentPage(1);
    }, [activeCategory, searchQuery]);
 
-   // Apply price range filter on unit price (or best_unit_price as fallback)
+   useEffect(() => {
+      if (totalPagesFromApi == null || totalPagesFromApi < 1) return;
+      setCurrentPage((p) => (p > totalPagesFromApi ? totalPagesFromApi : p));
+   }, [totalPagesFromApi]);
+
+   // Apply price range filter on parsed unit_price / coles_unit_price / woolworths_unit_price
    const hasPriceRangeFilter =
       !!priceRangeFilter &&
       (priceRangeFilter.min != null || priceRangeFilter.max != null);
 
    const filteredApiProducts: ApiProduct[] = apiProducts.filter((product) => {
+      if (!apiProductHasShelfPrice(product)) {
+         return false;
+      }
+
       if (!hasPriceRangeFilter) {
          return true;
       }
 
-      const unit =
-         typeof product.unit_price === "number" && !isNaN(product.unit_price)
-            ? product.unit_price
-            : typeof product.best_unit_price === "number" && !isNaN(product.best_unit_price)
-               ? product.best_unit_price
-               : null;
+      const unit = parseUnitNumericFromProduct(product);
 
       if (unit == null) {
-         // If we have no unit price information, keep the product
          return true;
       }
 
@@ -263,10 +357,13 @@ const ProductGrid: React.FC<ProductGridProps> = ({
       ? productsToShow.length
       : (totalProducts || productsToShow.length);
 
-   const totalPages =
-      totalPagesFromApi && totalPagesFromApi > 0
+   const totalPages = Math.max(
+      1,
+      totalPagesFromApi != null && totalPagesFromApi > 0
          ? totalPagesFromApi
-         : Math.max(1, Math.ceil((totalProducts || productsToShow.length) / pageSize));
+         : Math.max(1, Math.ceil((totalProducts || 0) / pageSize))
+   );
+
    const safePage = Math.min(Math.max(1, currentPage), totalPages);
    const pagedProducts = productsToShow;
 
@@ -303,7 +400,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
          ) : (
             <>
                {/* Empty state when there are no products to show (e.g. category has none or filters exclude all) */}
-               {overallProductCount === 0 && !error ? (
+               {!error && productsToShow.length === 0 ? (
                   <View className="border border-dashed border-gray-200 rounded-2xl p-8 items-center justify-center bg-white">
                      <Text className="text-base font-semibold text-gray-700 mb-1">
                         There are currently no products to show.
