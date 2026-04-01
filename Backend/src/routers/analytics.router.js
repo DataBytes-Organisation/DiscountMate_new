@@ -1,7 +1,19 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit'); // NEW
 const analyticsController = require('../controllers/analytics.controller');
 
 const router = express.Router();
+
+const analyticsLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // NEW: 1 minute
+  max: 20, // NEW: max 20 requests per IP
+  message: {
+    success: false,
+    message: 'Too many analytics requests. Please try again later.',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 /**
  * @swagger
@@ -30,7 +42,7 @@ const router = express.Router();
  *       503:
  *         description: Analytics service unavailable
  */
-router.post('/sales-summary', analyticsController.getSalesSummary);
+router.post('/sales-summary', analyticsLimiter, analyticsController.getSalesSummary);// NEW rate limited
 
 /**
  * @swagger
@@ -56,7 +68,7 @@ router.post('/sales-summary', analyticsController.getSalesSummary);
  *       200:
  *         description: Brand analysis retrieved successfully
  */
-router.post('/brand-analysis', analyticsController.getBrandAnalysis);
+router.post('/brand-analysis', analyticsLimiter, analyticsController.getBrandAnalysis);// NEW rate limited
 
 /**
  * @swagger
@@ -82,7 +94,7 @@ router.post('/brand-analysis', analyticsController.getBrandAnalysis);
  *       200:
  *         description: Price comparison retrieved successfully
  */
-router.post('/price-comparison', analyticsController.getPriceComparison);
+router.post('/price-comparison', analyticsLimiter, analyticsController.getPriceComparison); // NEW rate limited
 
 /**
  * @swagger
@@ -111,7 +123,7 @@ router.post('/price-comparison', analyticsController.getPriceComparison);
  *       200:
  *         description: Data cleaned successfully
  */
-router.post('/data-cleaning', analyticsController.cleanData);
+router.post('/data-cleaning', analyticsLimiter, analyticsController.cleanData); // NEW rate limited
 
 module.exports = router;
 
