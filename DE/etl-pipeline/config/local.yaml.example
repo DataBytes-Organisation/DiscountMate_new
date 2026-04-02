@@ -1,0 +1,18 @@
+# Local-only template. Copy to `config/local.yaml` and fill your machine-specific values.
+mode: local
+
+paths:
+  bronze_root: data/local_bronze
+
+sources:
+  coles:
+    products: "{bronze_root}/coles/coles_sample_{date_compact}.csv"
+
+  woolworths:
+    products: "{bronze_root}/woolworths/woolworths_sample_{date_compact}.csv"
+
+  iga:
+    products: "{bronze_root}/iga/iga_sample_{date_compact}.csv"
+
+  aldi:
+    products: "{bronze_root}/aldi/aldi_sample_{date_compact}.csv"

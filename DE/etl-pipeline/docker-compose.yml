@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: discount_mate_etl_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DATABASE:-discountmate}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - discount_mate_etl_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  discount_mate_etl_postgres_data:

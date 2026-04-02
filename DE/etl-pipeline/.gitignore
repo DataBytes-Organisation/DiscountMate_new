@@ -1,0 +1,24 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv/
+
+# Local-only runtime files
+.env
+config/local.yaml
+data/
+*.duckdb
+
+# Tooling caches
+.ruff_cache/
+.mypy_cache/
+
+# OS/editor
+.DS_Store
+.idea/

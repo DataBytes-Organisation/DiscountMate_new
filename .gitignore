@@ -11,8 +11,3 @@ Backend/ml-service/venv/
 .vscode/settings.json
 *.csv
 Document/*
-DE/silver/reference_duckdb_uv_pipeline/data/
-DE/silver/reference_duckdb_uv_pipeline/.env
-DE/silver/reference_duckdb_uv_pipeline/.venv/
-DE/silver/reference_duckdb_uv_pipeline/*.duckdb
-DE/silver/reference_duckdb_uv_pipeline/__pycache__/
