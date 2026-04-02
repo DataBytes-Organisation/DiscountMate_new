@@ -3,6 +3,7 @@ const { getDb } = require("../config/database");
 
 const COLES_STORE_CHAINS = ['coles_generic'];
 const WOOLWORTHS_STORE_CHAINS = ['woolworths_generic'];
+const IGA_STORE_CHAINS = ['iga_generic'];
 
 function escapeRegex(input) {
    return String(input).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -138,22 +139,30 @@ async function fetchLatestPricingForStoreChains(
 
 /**
  * @param {object} product - document from products collection
- * @param {{ coles?: object | null, woolworths?: object | null }} pricings - latest product_pricings per store_chain
+ * @param {{ coles?: object | null, woolworths?: object | null, iga?: object | null }} pricings - latest product_pricings per store_chain
  */
 function normaliseColesProduct(product, pricings = {}) {
   if (!product) return null;
 
   const colesPricing = pricings.coles ?? null;
   const woolworthsPricing = pricings.woolworths ?? null;
+  const igaPricing = pricings.iga ?? null;
 
   const colesPrice = pickValidPrice(colesPricing);
   const woolworthsPrice = pickValidPrice(woolworthsPricing);
+  const igaPrice = pickValidPrice(igaPricing);
 
-  // Prefer Coles for legacy single-field consumers; otherwise Woolworths; else 0
+  // Prefer Coles for legacy single-field consumers; otherwise Woolworths; otherwise IGA; else 0
   const currentPrice =
-    colesPrice != null ? colesPrice : woolworthsPrice != null ? woolworthsPrice : 0;
+    colesPrice != null
+      ? colesPrice
+      : woolworthsPrice != null
+      ? woolworthsPrice
+      : igaPrice != null
+      ? igaPrice
+      : 0;
 
-  const primaryPricing = colesPricing || woolworthsPricing;
+  const primaryPricing = colesPricing || woolworthsPricing || igaPricing;
 
   return {
     // Preserve Mongo _id so existing keyExtractor `_id` still works.
@@ -169,15 +178,15 @@ function normaliseColesProduct(product, pricings = {}) {
     // Stable join key for pricing + external references
     product_code: product.product_code ?? null,
 
-    // Brand / barcode (exists in your products collection)
+    // Brand / barcode
     brand: product.brand ?? null,
     gtin: product.gtin ?? null,
 
-    // Pack size (exists in your products collection)
+    // Pack size
     unit_per_prod: product.unit_per_prod ?? null,
     measurement: product.measurement ?? null,
 
-    // Category reference (exists in your products collection)
+    // Category reference
     category_id: product.category_id ?? null,
 
     // Description
@@ -199,14 +208,20 @@ function normaliseColesProduct(product, pricings = {}) {
     // Per-retailer prices (null when missing or invalid — frontend shows "-")
     coles_price: colesPrice,
     woolworths_price: woolworthsPrice,
+    iga_price: igaPrice,
 
     // Latest pricing metadata (exists in product_pricings collection)
     store_chain: primaryPricing?.store_chain ?? null,
     price_date: primaryPricing?.date ?? null,
     best_price: primaryPricing?.best_price ?? null,
-    unit_price: colesPricing?.unit_price ?? woolworthsPricing?.unit_price ?? null,
+    unit_price:
+      colesPricing?.unit_price ??
+      woolworthsPricing?.unit_price ??
+      igaPricing?.unit_price ??
+      null,
     coles_unit_price: colesPricing?.unit_price ?? null,
     woolworths_unit_price: woolworthsPricing?.unit_price ?? null,
+    iga_unit_price: igaPricing?.unit_price ?? null,
     best_unit_price: primaryPricing?.best_unit_price ?? null,
     is_on_special: primaryPricing?.is_on_special ?? null,
 
@@ -312,9 +327,18 @@ const getProducts = async (req, res) => {
             },
          },
          {
+            $lookup: {
+               from: 'product_pricings',
+               let: { code: '$product_code', pid: '$_id' },
+               pipeline: latestPricingSubpipeline(IGA_STORE_CHAINS),
+               as: 'latestIgaPricingArr',
+            },
+         },
+         {
             $addFields: {
                latestColesPricing: { $arrayElemAt: ['$latestColesPricingArr', 0] },
                latestWoolworthsPricing: { $arrayElemAt: ['$latestWoolworthsPricingArr', 0] },
+               latestIgaPricing: { $arrayElemAt: ['$latestIgaPricingArr', 0] },
             },
          },
       ];
@@ -323,6 +347,7 @@ const getProducts = async (req, res) => {
          $project: {
             latestColesPricingArr: 0,
             latestWoolworthsPricingArr: 0,
+            latestIgaPricingArr: 0,
             sortName: 0,
          },
       };
@@ -369,6 +394,7 @@ const getProducts = async (req, res) => {
             normaliseColesProduct(p, {
                coles: p.latestColesPricing || null,
                woolworths: p.latestWoolworthsPricing || null,
+               iga: p.latestIgaPricing || null,
             })
          )
          .filter(Boolean);
@@ -440,14 +466,16 @@ const getProduct = async (req, res) => {
       // Latest pricing: match by product_code (consistent with getProducts $lookup)
       const code = product.product_code;
 
-      const [colesPricing, woolworthsPricing] = await Promise.all([
+      const [colesPricing, woolworthsPricing, igaPricing] = await Promise.all([
          fetchLatestPricingForStoreChains(pricingsCol, code, COLES_STORE_CHAINS, product._id),
          fetchLatestPricingForStoreChains(pricingsCol, code, WOOLWORTHS_STORE_CHAINS, product._id),
+         fetchLatestPricingForStoreChains(pricingsCol, code, IGA_STORE_CHAINS, product._id),
       ]);
 
       const normalised = normaliseColesProduct(product, {
          coles: colesPricing || null,
          woolworths: woolworthsPricing || null,
+         iga: igaPricing || null,
       });
       return res.json(normalised);
    } catch (error) {

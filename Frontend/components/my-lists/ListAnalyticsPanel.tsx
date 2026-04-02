@@ -15,8 +15,7 @@ export default function ListAnalyticsPanel({ list }: ListAnalyticsPanelProps) {
          <View className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
             <Text className="text-lg font-bold text-gray-900 mb-1">List insights</Text>
             <Text className="text-sm text-gray-600">
-               Select a list to see savings breakdown and mix. Numbers are placeholders until your
-               backend supplies analytics.
+               Select a list to see savings breakdown and mix.
             </Text>
          </View>
       );
@@ -53,7 +52,7 @@ export default function ListAnalyticsPanel({ list }: ListAnalyticsPanelProps) {
             </View>
          </View>
 
-         <Text className="text-sm font-semibold text-gray-800 mb-3">Category mix (sample)</Text>
+         <Text className="text-sm font-semibold text-gray-800 mb-3">Product Categories</Text>
          <ScrollView className="max-h-48" nestedScrollEnabled>
             {a.categoryMix.map((row, i) => (
                <View key={i} className="mb-3">

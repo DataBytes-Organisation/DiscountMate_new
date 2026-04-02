@@ -20,6 +20,9 @@ type ApiProduct = {
    /** Latest Woolworths shelf price from product_pricings (woolworths_generic) */
    woolworths_price?: number | null;
    woolworths_unit_price?: string | null;
+   /** Latest IGA shelf price from product_pricings (iga_generic) */
+   iga_price?: number | null;
+   iga_unit_price?: string | null;
 };
 
 function pickPositivePrice(value: unknown): number | null {
@@ -45,6 +48,7 @@ function parseUnitNumericFromProduct(product: ApiProduct): number | null {
       product.unit_price,
       product.coles_unit_price,
       product.woolworths_unit_price,
+      product.iga_unit_price,
    ];
    for (const c of candidates) {
       if (c == null || !String(c).trim()) continue;
@@ -57,31 +61,37 @@ function parseUnitNumericFromProduct(product: ApiProduct): number | null {
    return null;
 }
 
-/** Resolves Coles / Woolworths shelf prices (incl. legacy single-store current_price). Aldi has no API price here. */
+/** Resolves Coles / Woolworths / IGA shelf prices (incl. legacy single-store current_price). */
 function resolveColesWoolworthsPrices(product: ApiProduct): {
    colesPriceNum: number | null;
    woolworthsPriceNum: number | null;
+   igaPriceNum: number | null;
 } {
    let colesPriceNum = pickPositivePrice(product.coles_price);
    let woolworthsPriceNum = pickPositivePrice(product.woolworths_price);
+   let igaPriceNum = pickPositivePrice(product.iga_price);
 
-   if (colesPriceNum == null && woolworthsPriceNum == null) {
+   if (colesPriceNum == null && woolworthsPriceNum == null && igaPriceNum == null) {
       const legacy = pickPositivePrice(product.current_price);
       if (legacy != null) {
          if (product.store_chain === "woolworths_generic") {
             woolworthsPriceNum = legacy;
+         } else if (product.store_chain === "iga_generic") {
+            igaPriceNum = legacy;
          } else {
             colesPriceNum = legacy;
          }
       }
    }
 
-   return { colesPriceNum, woolworthsPriceNum };
+   return { colesPriceNum, woolworthsPriceNum, igaPriceNum };
 }
 
 function apiProductHasShelfPrice(product: ApiProduct): boolean {
-   const { colesPriceNum, woolworthsPriceNum } = resolveColesWoolworthsPrices(product);
-   return colesPriceNum != null || woolworthsPriceNum != null;
+   const { colesPriceNum, woolworthsPriceNum, igaPriceNum } = resolveColesWoolworthsPrices(
+      product
+   );
+   return colesPriceNum != null || woolworthsPriceNum != null || igaPriceNum != null;
 }
 
 function parseProductsPayload(
@@ -178,10 +188,13 @@ function mapApiProductToCard(product: ApiProduct): Product {
    // Use description from API, truncated for grid display
    const subtitle = truncateDescription(product.description);
 
-   const { colesPriceNum, woolworthsPriceNum } = resolveColesWoolworthsPrices(product);
+   const { colesPriceNum, woolworthsPriceNum, igaPriceNum } = resolveColesWoolworthsPrices(
+      product
+   );
 
    const colesUnitPriceLabel = sanitizeUnitLabel(product.coles_unit_price);
    const woolworthsUnitPriceLabel = sanitizeUnitLabel(product.woolworths_unit_price);
+   const igaUnitPriceLabel = sanitizeUnitLabel(product.iga_unit_price);
 
    const badge = "Great value";
 
@@ -192,34 +205,34 @@ function mapApiProductToCard(product: ApiProduct): Product {
    const trend = { label: "Stable", tone: "neutral" as Product["trendTone"] };
 
    const prices: Array<{
-      storeKey: "coles" | "woolworths" | "aldi";
+      storeKey: "coles" | "woolworths" | "iga";
       name: string;
       price: number | null;
    }> = [
          { storeKey: "coles", name: "Coles", price: colesPriceNum },
          { storeKey: "woolworths", name: "Woolworths", price: woolworthsPriceNum },
-         { storeKey: "aldi", name: "Aldi", price: null },
+         { storeKey: "iga", name: "IGA", price: igaPriceNum },
       ];
 
    const pricedEntries = prices.filter(
       (p): p is typeof p & { price: number } => p.price != null && p.price > 0
    );
-   const cheapestEntry =
+   const lowestPrice =
       pricedEntries.length > 0
-         ? pricedEntries.reduce((a, b) => (a.price <= b.price ? a : b))
+         ? pricedEntries.reduce((min, entry) => Math.min(min, entry.price), Number.POSITIVE_INFINITY)
          : null;
 
    const retailers = prices.map((p) => ({
       storeKey: p.storeKey,
       name: p.name,
       price: formatShelfPrice(p.price),
-      isCheapest: cheapestEntry != null && cheapestEntry.storeKey === p.storeKey,
+      isCheapest: lowestPrice != null && p.price != null && p.price === lowestPrice,
       unitPriceLabel:
          p.storeKey === "coles"
             ? colesUnitPriceLabel
             : p.storeKey === "woolworths"
                ? woolworthsUnitPriceLabel
-               : undefined,
+               : igaUnitPriceLabel,
    }));
 
    return {

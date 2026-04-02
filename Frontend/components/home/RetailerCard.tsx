@@ -18,14 +18,16 @@ type Props = { retailer: Retailer };
 /** Solid fills — RN does not paint CSS linear-gradient (`bg-gradient-to-br` + from/to) on Views. */
 const cheapestBg: Record<StoreKey, string> = {
    coles: "bg-red-50",
-   woolworths: "bg-green-50",
+   woolworths: "bg-emerald-50",
    aldi: "bg-blue-50",
+   iga: "bg-gradient-to-br from-[#FFF0F1] to-[#FDE2E4]",
 };
 
 const cheapestAccent: Record<StoreKey, string> = {
-   coles: "border border-red-400/35 shadow-sm",
-   woolworths: "border border-emerald-400/40 shadow-sm",
-   aldi: "border border-blue-400/35 shadow-sm",
+   coles: "border border-red-400/50 shadow-sm ring-1 ring-red-300/30",
+   woolworths: "border border-emerald-400/55 shadow-sm ring-1 ring-emerald-300/30",
+   aldi: "border border-blue-400/50 shadow-sm ring-1 ring-blue-300/30",
+   iga: "bg-[#E31B23]/10 border border-neutral-800/70 shadow-md ring-1 ring-neutral-900/10",
 };
 
 export default function RetailerCard({ retailer }: Props) {
