@@ -1,7 +1,0 @@
-.venv
-__pycache__
-*.pyc
-data
-config/local.yaml
-*.duckdb
-.DS_Store
