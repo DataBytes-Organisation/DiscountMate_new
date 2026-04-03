@@ -158,7 +158,7 @@ export default function ShoppingListCard({
             </View>
          ) : null}
 
-         {!compact && (
+         {/* {!compact && (
             <>
                <View className="flex-row gap-2 mb-3 flex-wrap">
                   {list.items.slice(0, 6).map((item) => (
@@ -198,7 +198,7 @@ export default function ShoppingListCard({
                   </Pressable>
                </View>
             </>
-         )}
+         )} */}
       </Container>
    );
 }

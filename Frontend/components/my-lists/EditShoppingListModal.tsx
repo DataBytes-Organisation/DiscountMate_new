@@ -66,9 +66,6 @@ export default function EditShoppingListModal({
             <View className="w-full max-w-md bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden z-10">
                <View className="px-5 pt-5 pb-3 border-b border-gray-100">
                   <Text className="text-xl font-bold text-gray-900">{title}</Text>
-                  <Text className="text-sm text-gray-600 mt-1">
-                     Name and colour help you spot lists quickly. Sync will come with the API.
-                  </Text>
                </View>
                <ScrollView
                   className="max-h-[70vh] px-5 py-4"
@@ -102,17 +99,15 @@ export default function EditShoppingListModal({
                            <Pressable
                               key={a}
                               onPress={() => setAccent(a)}
-                              className={`flex-row items-center gap-2 px-3 py-2 rounded-xl border ${
-                                 selected
-                                    ? "border-primary_green bg-primary_green/10"
-                                    : "border-gray-200 bg-gray-50"
-                              }`}
+                              className={`flex-row items-center gap-2 px-3 py-2 rounded-xl border ${selected
+                                 ? "border-primary_green bg-primary_green/10"
+                                 : "border-gray-200 bg-gray-50"
+                                 }`}
                            >
                               <View className={`w-3 h-3 rounded-full ${accentDot[a]}`} />
                               <Text
-                                 className={`text-sm capitalize font-medium ${
-                                    selected ? "text-primary_green" : "text-gray-700"
-                                 }`}
+                                 className={`text-sm capitalize font-medium ${selected ? "text-primary_green" : "text-gray-700"
+                                    }`}
                               >
                                  {a}
                               </Text>
