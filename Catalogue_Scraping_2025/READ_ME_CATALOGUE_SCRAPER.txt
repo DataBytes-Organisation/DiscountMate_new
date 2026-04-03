@@ -236,3 +236,97 @@ Progress updates print every 5% completion
 Detailed logs written for every operation
 Random delays removed for faster downloads
 Existing files skipped automatically
+
+
+
+-------------------------------------------------------------------------------------------------------------
+FILE: catalogue_tile_detection.py
+-------------------------------------------------------------------------------------------------------------
+***************IMPORTANT NOTE**********************
+This module requires catalogue page images to already be downloaded via catalogue_scraper_main.py
+
+The YOLO weights file (catalogue_tile_scrapper_weight.pt) MUST be present in the project directory before execution
+
+
+Overview
+This script processes downloaded catalogue page images and extracts individual product tiles using a trained YOLO model. It converts full-page catalogue images into structured product-level image data for further analysis and OCR processing.
+
+Pipeline Position
+This module operates as Stage 2 of the catalogue digitisation pipeline:
+
+Stage 1: catalogue_scraper_main.py (download catalogue pages)
+Stage 2: catalogue_tile_detection.py (extract product tiles)
+Stage 3: OCR processing (future integration)
+
+Input Requirements
+Catalogue page images must exist in the following structure:
+
+catalogues/
+  <brand>/
+    <year>/
+      <catalogue_folder>/
+        page_001.jpg
+        page_002.jpg
+        ...
+
+Output Structure
+Extracted product tiles are saved within each catalogue folder:
+
+catalogues/
+  <brand>/
+    <year>/
+      <catalogue_folder>/
+        exported_tiles/
+          tile_001.jpg
+          tile_002.jpg
+          ...
+
+Detection metadata is saved as:
+
+catalogues/
+  <brand>/
+    <year>/
+      <catalogue_folder>/
+        detections.csv
+
+CSV Columns
+The detections CSV contains:
+
+image_name: Source page image
+tile_id: Unique tile identifier
+confidence: Detection confidence score
+bbox_x1, bbox_y1, bbox_x2, bbox_y2: Bounding box coordinates
+output_path: Path to saved tile image
+
+Usage
+Run the script using:
+
+python catalogue_tile_detection.py
+
+This will:
+
+Process all catalogue folders automatically
+Detect product tiles from each page image
+Export cropped tile images into exported_tiles/
+Generate detections.csv for each catalogue
+Require no user input
+
+Model Requirements
+The script requires a trained YOLO model:
+
+catalogue_tile_scrapper_weight.pt
+
+This file must be placed in the same directory as the script or configured within the code.
+
+Performance Notes
+Batch processing across all catalogues and retailers
+Efficient image processing using OpenCV and YOLO inference
+Supports scalable processing for large datasets (~100k+ images)
+Outputs structured for direct integration with OCR and ML pipelines
+
+Future Development
+- Improve detection accuracy across complex catalogue layouts
+- Support multiple detection classes (price tags, promotional labels)
+- Integrate with OCR pipeline for full product information extraction
+- Optimise inference speed for large-scale deployment
+-------------------------------------------------------------------------------------------------------------

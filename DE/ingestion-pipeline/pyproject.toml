@@ -1,0 +1,22 @@
+[project]
+name = "discount-mate-de"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "google-cloud-storage>=3.3.0",
+    "opentelemetry-api>=1.36.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.36.0",
+    "opentelemetry-sdk>=1.36.0",
+    "pydantic>=2.12.5",
+    "python-dotenv>=1.2.2",
+    "pydantic-settings>=2.13.1",
+    "pyyaml>=6.0.3",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.6",
+]
