@@ -17,6 +17,7 @@ class AppSettings(BaseSettings):
     )
 
     app_mode: str = Field(default="local", alias="APP_MODE")
+    app_config_path: str = Field(default="config/config.yaml", alias="APP_CONFIG_PATH")
     postgres_host: str = Field(default="127.0.0.1", alias="POSTGRES_HOST")
     postgres_port: int = Field(default=5433, alias="POSTGRES_PORT")
     postgres_database: str = Field(default="discountmate", alias="POSTGRES_DATABASE")
@@ -31,7 +32,7 @@ class AppSettings(BaseSettings):
         )
 
 
-class SourceRuntimeConfig(BaseModel):
+class ModelRuntimeConfig(BaseModel):
     products: str
 
 
@@ -42,10 +43,10 @@ class RuntimePaths(BaseModel):
 class RuntimeConfig(BaseModel):
     mode: str = "local"
     paths: RuntimePaths
-    sources: dict[str, SourceRuntimeConfig]
+    models: dict[str, ModelRuntimeConfig]
 
 
-def _expand_env_vars(value):
+def _expand_env_vars(value: object) -> object:
     if isinstance(value, dict):
         return {key: _expand_env_vars(item) for key, item in value.items()}
     if isinstance(value, list):
@@ -55,9 +56,10 @@ def _expand_env_vars(value):
     return value
 
 
-def load_runtime_config(config_path: str) -> RuntimeConfig:
+def load_runtime_config(config_path: str | None = None) -> RuntimeConfig:
     project_root = Path(__file__).resolve().parents[1]
-    candidate = Path(config_path)
+    resolved_config_path = config_path or load_settings().app_config_path
+    candidate = Path(resolved_config_path)
     resolved = candidate if candidate.is_absolute() else project_root / candidate
     with resolved.open("r", encoding="utf-8") as handle:
         raw_config = yaml.safe_load(handle)

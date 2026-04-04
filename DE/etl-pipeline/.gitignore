@@ -11,7 +11,7 @@ wheels/
 
 # Local-only runtime files
 .env
-config/local.yaml
+config/config.yaml
 data/
 *.duckdb
 

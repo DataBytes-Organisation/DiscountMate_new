@@ -1,19 +1,18 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
+
+# Install uv.
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Install dependencies and cache them.
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
 
-COPY pyproject.toml README.md ./
-COPY alembic.ini ./
-COPY config ./config
-COPY common ./common
-COPY features ./features
-COPY migrations ./migrations
-COPY main.py ./
+# Install the project into the virtual environment.
+COPY . .
+RUN uv sync --frozen --no-dev
 
-RUN pip install --no-cache-dir uv \
-    && uv sync
+ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["python", "main.py", "--help"]
+ENTRYPOINT ["python", "main.py"]

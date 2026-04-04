@@ -1,36 +1,25 @@
 # Discount Mate - ETL Pipeline
 
-Reusable ETL framework for the DE team to load retailer product data, transform it with DuckDB, and save a simple demo output into PostgreSQL.
+Reusable ETL starter framework for the DE team to copy when building later retailer workflows.
 
-This refactor is intentionally scoped to:
+This phase is intentionally scoped to:
 
 - `DE-03-T1`: initialize a clean DuckDB ETL workflow
 - `DE-03-T2`: initialize PostgreSQL and set up migration workflow
 
-It is **not** the final warehouse model yet. The current database target is one temporary demo table that proves the framework works. Future schema design will evolve into tables such as:
+It is **not** the final warehouse model yet. The current database target is one temporary demo summary table plus a seeded `dim_retailers` reference table. The later warehouse design will evolve into tables such as:
 
 - `fct_product_pricing`
 - `dim_products`
 - `dim_retailers`
 
-## Supported Sources
+# Prerequisite
 
-Phase 1 supports the `products` runner for:
+- Python 3.12+
+- uv
+- docker
 
-- `coles`
-- `woolworths`
-- `iga`
-- `aldi`
-
-## Project Structure
-
-- `main.py`: thin CLI entrypoint and runner dispatch
-- `config/`: typed settings and config templates
-- `common/`: reusable CLI, DB, path, and DuckDB helpers
-- `features/products/`: source normalization, ETL orchestration, and SQL assets
-- `migrations/`: Alembic migration files
-
-## Local Setup
+## Getting started
 
 Install dependencies:
 
@@ -38,11 +27,11 @@ Install dependencies:
 uv sync
 ```
 
-Create local config files:
+Load env and config templates:
 
 ```bash
 cp .env.example .env
-cp config/local.yaml.example config/local.yaml
+cp config/config.yaml.example config/config.yaml
 ```
 
 Start PostgreSQL:
@@ -57,41 +46,43 @@ Apply migrations:
 uv run alembic upgrade head
 ```
 
-## Run the Demo ETL
+## Run the example workflow
+
+The working example is exposed only through `--model example`. The retailer models remain scaffold placeholders for future implementation.
+
+The example stays generic on purpose:
+
+- it reads a Coles-shaped sample CSV from `config/config.yaml`
+- it writes output under `retailer='example'`
+- it is meant to demonstrate the starter framework, not the final retailer job layout
 
 ```bash
-uv run main.py --source coles --runner products --date 2026-03-21 --config config/local.yaml
-uv run main.py --source woolworths --runner products --date 2026-03-21 --config config/local.yaml
-uv run main.py --source iga --runner products --date 2026-03-21 --config config/local.yaml
-uv run main.py --source aldi --runner products --date 2026-01-31 --config config/local.yaml
+uv run main.py --model example --runner products --start-date 2026-03-21
 ```
 
-Each run:
+The run will process every available date from `--start-date` through today. Missing daily files are skipped with logging.
 
-- reads one retailer source file
-- normalizes the source into a common DuckDB shape
-- runs a simple grouped transform
-- loads one retailer/date slice into PostgreSQL
+## Output convention
 
-## Demo Output
-
-The temporary demo table is:
+Current PostgreSQL outputs:
 
 - `silver.demo_product_pricing_summary`
+- `silver.dim_retailers`
 
-It is grouped by:
+The demo summary is grouped by:
 
 - `retailer`
 - `run_date`
 - `category`
 
-and includes simple metrics like:
+and includes simple pricing and coverage metrics.
 
-- product count
-- priced product count
-- average current price
-- min/max current price
-- discounted product count
+`silver.dim_retailers` is seeded by Alembic with 4 retailer rows:
+
+- Coles
+- Woolworths
+- IGA
+- Aldi
 
 ## Verify in pgAdmin
 
@@ -102,16 +93,13 @@ ORDER BY run_date, retailer, category
 LIMIT 50;
 ```
 
-Check retailer coverage:
-
 ```sql
-SELECT retailer, run_date, count(*)
-FROM silver.demo_product_pricing_summary
-GROUP BY retailer, run_date
-ORDER BY run_date, retailer;
+SELECT store_chain, store_name
+FROM silver.dim_retailers
+ORDER BY store_chain;
 ```
 
-## Migration Workflow
+## Migration workflow
 
 Apply the current schema:
 
@@ -125,23 +113,54 @@ Create a new migration later:
 uv run alembic revision -m "describe change"
 ```
 
-## Config and Secrets
+## Structure
+
+- `main.py`: thin CLI entrypoint and workflow dispatch
+- `config/`: env-backed settings and runtime config templates
+- `common/`: shared CLI, path, DuckDB, normalization, and PostgreSQL helpers
+- `features/feature_examples/`: one working example workflow
+- `features/products/<retailer>/job.py`: scaffold jobs for teammates to imitate later
+- `migrations/`: Alembic migration files
+
+## Container build
+
+Build the image:
+
+```bash
+docker buildx build --platform linux/amd64 -t discount-mate-etl:latest .
+```
+
+Run the container locally:
+
+```bash
+docker run --rm \
+  --env-file .env \
+  -v "$(pwd)/config/config.yaml:/app/config/config.yaml:ro" \
+  -v "$(pwd)/data:/app/data:ro" \
+  discount-mate-etl:latest \
+  --model example --runner products --start-date 2026-03-21
+```
+
+The runtime config and local sample CSV files are mounted because they are kept out of the image on purpose.
+
+## Config and secrets
 
 Commit:
 
 - `.env.example`
-- `config/local.yaml.example`
-- `config/deploy.yaml`
+- `config/config.yaml.example`
+- `config/deploy.yaml.example`
 
 Do not commit:
 
 - `.env`
-- `config/local.yaml`
+- `config/config.yaml`
 - `data/`
 - `.venv/`
 
 ## Notes
 
-- `config/deploy.yaml` is a template only
+- Only the example workflow is implemented in this phase
+- retailer `job.py` files under `features/products/` are scaffolds only
 - local Bronze sample data is kept local
-- deployment, CI/CD, and final warehouse schema are out of scope for this refactor
+- deployment, CI/CD, and the final warehouse schema are out of scope for this refactor

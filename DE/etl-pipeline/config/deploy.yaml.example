@@ -1,10 +1,10 @@
-# Local-only template. Copy to `config/local.yaml` and fill your machine-specific values.
-mode: local
+# Deployment template. Values are read from environment variables at runtime.
+mode: cloud
 
 paths:
-  bronze_root: data/local_bronze
+  bronze_root: ${BRONZE_ROOT}
 
-sources:
+models:
   coles:
     products: "{bronze_root}/coles/coles_sample_{date_compact}.csv"
 
@@ -16,3 +16,6 @@ sources:
 
   aldi:
     products: "{bronze_root}/aldi/aldi_sample_{date_compact}.csv"
+
+  example:
+    products: "{bronze_root}/coles/coles_sample_{date_compact}.csv"

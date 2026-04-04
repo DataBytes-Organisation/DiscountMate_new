@@ -1,6 +1,6 @@
 -- Temporary demo transform for the reusable ETL framework.
--- This is intentionally simple and will be replaced later by warehouse tables
--- such as fct_product_pricing, dim_products, and dim_retailers.
+-- This example is intentionally simple and will later be replaced by
+-- fct_product_pricing, dim_products, and dim_retailers.
 
 CREATE OR REPLACE TABLE normalized_products_base AS
 WITH cleaned AS (

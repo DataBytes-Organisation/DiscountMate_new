@@ -3,14 +3,20 @@ services:
     image: postgres:16
     container_name: discount_mate_etl_postgres
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DATABASE:-discountmate}
     ports:
       - "${POSTGRES_PORT:-5433}:5432"
-    volumes:
-      - discount_mate_etl_postgres_data:/var/lib/postgresql/data
-
-volumes:
-  discount_mate_etl_postgres_data:
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DATABASE:-discountmate}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5

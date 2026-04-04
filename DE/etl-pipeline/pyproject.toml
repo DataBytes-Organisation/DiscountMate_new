@@ -3,7 +3,7 @@ name = "discount-mate-etl-pipeline"
 version = "0.1.0"
 description = "Reusable ETL framework using uv, DuckDB, PostgreSQL, and Alembic."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.16.5",
     "duckdb>=1.5.1",
