@@ -1,0 +1,56 @@
+This is just a backup for later transition to snowflake (in the future stage of the project).
+```
+-- Use an admin role
+USE ROLE ACCOUNTADMIN;
+ 
+-- Create the `transform` role
+CREATE ROLE IF NOT EXISTS transform;
+GRANT ROLE TRANSFORM TO ROLE ACCOUNTADMIN;
+ 
+-- Create the default warehouse if necessary
+CREATE WAREHOUSE IF NOT EXISTS COMPUTE_WH;
+GRANT OPERATE ON WAREHOUSE COMPUTE_WH TO ROLE TRANSFORM;
+ 
+-- Create our database and schemas
+CREATE DATABASE IF NOT EXISTS DistcountMate;
+CREATE SCHEMA IF NOT EXISTS DistcountMate.LANDING;
+CREATE SCHEMA IF NOT EXISTS DistcountMate.MARTS;
+ 
+-- Create the `dbt` user and assign to role
+CREATE USER IF NOT EXISTS dbt
+  PASSWORD='dbtPassword123'
+  LOGIN_NAME='dbt'
+  MUST_CHANGE_PASSWORD=FALSE
+  DEFAULT_WAREHOUSE='COMPUTE_WH'
+  DEFAULT_ROLE='transform'
+  DEFAULT_NAMESPACE='DistcountMate.LANDING'
+  COMMENT='DBT user used for data transformation';
+GRANT ROLE transform to USER dbt;
+ 
+-- Set up permissions to role `transform`
+GRANT ALL ON WAREHOUSE COMPUTE_WH TO ROLE transform; 
+GRANT ALL ON DATABASE DistcountMate to ROLE transform;
+GRANT ALL ON ALL SCHEMAS IN DATABASE DistcountMate to ROLE transform;
+GRANT ALL ON FUTURE SCHEMAS IN DATABASE DistcountMate to ROLE transform;
+GRANT ALL ON ALL TABLES IN SCHEMA DistcountMate.LANDING to ROLE transform;
+GRANT ALL ON FUTURE TABLES IN SCHEMA DistcountMate.LANDING to ROLE transform;
+ 
+ 
+-- Setup permissions for pbi user
+CREATE ROLE IF NOT EXISTS REPORTER;
+CREATE USER IF NOT EXISTS PBI
+    PASSWORD='pbiPassword123'
+    LOGIN_NAME='pbi'
+    MUST_CHANGE_PASSWORD=FALSE
+    DEFAULT_WAREHOUSE='COMPUTE_WH'
+    DEFAULT_ROLE='REPORTER'
+    DEFAULT_NAMESPACE='DistcountMate.MARTS'
+    COMMENT='PowerBI user for creating reports';
+GRANT ROLE REPORTER TO USER PBI;
+GRANT ROLE REPORTER TO ROLE ACCOUNTADMIN;
+GRANT ALL ON WAREHOUSE COMPUTE_WH TO ROLE REPORTER;
+GRANT USAGE ON DATABASE DistcountMate TO ROLE REPORTER;
+GRANT USAGE ON SCHEMA DistcountMate.MARTS TO ROLE REPORTER;
+GRANT SELECT ON ALL TABLES IN SCHEMA DistcountMate.MARTS TO ROLE REPORTER;
+GRANT SELECT ON FUTURE TABLES IN SCHEMA DistcountMate.MARTS TO ROLE REPORTER;
+```
