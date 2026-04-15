@@ -1,19 +1,9 @@
 const express = require('express');
-const rateLimit = require('express-rate-limit'); // NEW
 const analyticsController = require('../controllers/analytics.controller');
+const ipThrottle = require('../middleware/ipThrottle.middleware'); // NEW
+const { scraperSlowDown, suspiciousTrafficLogger } = require('../middleware/antiScraping.middleware'); // NEW
 
 const router = express.Router();
-
-const analyticsLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // NEW: 1 minute
-  max: 20, // NEW: max 20 requests per IP
-  message: {
-    success: false,
-    message: 'Too many analytics requests. Please try again later.',
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
 /**
  * @swagger
@@ -39,10 +29,18 @@ const analyticsLimiter = rateLimit({
  *     responses:
  *       200:
  *         description: Sales summary retrieved successfully
+ *       429: // NEW
+ *         description: Too many requests // NEW
  *       503:
  *         description: Analytics service unavailable
  */
-router.post('/sales-summary', analyticsLimiter, analyticsController.getSalesSummary);// NEW rate limited
+router.post(
+  '/sales-summary',
+  suspiciousTrafficLogger, // NEW
+  scraperSlowDown, // NEW
+  ipThrottle, // NEW
+  analyticsController.getSalesSummary
+);
 
 /**
  * @swagger
@@ -67,8 +65,16 @@ router.post('/sales-summary', analyticsLimiter, analyticsController.getSalesSumm
  *     responses:
  *       200:
  *         description: Brand analysis retrieved successfully
+ *       429: // NEW
+ *         description: Too many requests // NEW
  */
-router.post('/brand-analysis', analyticsLimiter, analyticsController.getBrandAnalysis);// NEW rate limited
+router.post(
+  '/brand-analysis',
+  suspiciousTrafficLogger, // NEW
+  scraperSlowDown, // NEW
+  ipThrottle, // NEW
+  analyticsController.getBrandAnalysis
+);
 
 /**
  * @swagger
@@ -93,8 +99,16 @@ router.post('/brand-analysis', analyticsLimiter, analyticsController.getBrandAna
  *     responses:
  *       200:
  *         description: Price comparison retrieved successfully
+ *       429: // NEW
+ *         description: Too many requests // NEW
  */
-router.post('/price-comparison', analyticsLimiter, analyticsController.getPriceComparison); // NEW rate limited
+router.post(
+  '/price-comparison',
+  suspiciousTrafficLogger, // NEW
+  scraperSlowDown, // NEW
+  ipThrottle, // NEW
+  analyticsController.getPriceComparison
+);
 
 /**
  * @swagger
@@ -122,8 +136,15 @@ router.post('/price-comparison', analyticsLimiter, analyticsController.getPriceC
  *     responses:
  *       200:
  *         description: Data cleaned successfully
+ *       429: // NEW
+ *         description: Too many requests // NEW
  */
-router.post('/data-cleaning', analyticsLimiter, analyticsController.cleanData); // NEW rate limited
+router.post(
+  '/data-cleaning',
+  suspiciousTrafficLogger, // NEW
+  scraperSlowDown, // NEW
+  ipThrottle, // NEW
+  analyticsController.cleanData
+);
 
 module.exports = router;
-
