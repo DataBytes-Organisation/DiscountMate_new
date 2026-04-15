@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { buildApiUrl } from '../../constants/Api';
 
 export default function Contact() {
   const [name, setName] = useState('');
@@ -8,7 +9,7 @@ export default function Contact() {
 
   const handleSubmit = () => {
     // API endpoint where the form data will be sent
-    const url = 'http://localhost:3000/api/contact';
+    const url = buildApiUrl('/contact');
 
     // Prepare the data to be sent in the POST request
     const data = {

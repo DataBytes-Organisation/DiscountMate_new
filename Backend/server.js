@@ -23,8 +23,24 @@ const setupSwagger = require('./src/config/swagger');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+const allowedOrigins = (process.env.CORS_ORIGIN || "")
+   .split(",")
+   .map((value) => value.trim())
+   .filter(Boolean);
 
-// App Engine / reverse proxy support:
+const corsOrigin =
+   allowedOrigins.length === 0
+      ? true
+      : (origin, callback) => {
+         if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+            return;
+         }
+
+         callback(new Error("Origin not allowed by CORS"));
+      };
+
+// Reverse proxy support for managed runtimes such as App Engine and Cloud Run.
 // express-rate-limit validates X-Forwarded-For usage and will throw if proxies are sending the header but Express isn't configured to trust them.
 if (process.env.NODE_ENV === 'production') {
     // Trust the first proxy hop (works for App Engine / common ingress setups)
@@ -52,7 +68,7 @@ app.use(helmet({
 
 // CORS Configuration
 app.use(cors({
-    origin: "*",
+    origin: corsOrigin,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));

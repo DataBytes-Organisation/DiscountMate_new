@@ -2,11 +2,9 @@
 const { connectToMongoDB } = require('../config/database'); 
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.BASE_URL || `http://127.0.0.1:${process.env.PORT || 8080}`;
 
 // basketController.js
-
-const fetch = require('node-fetch');
 
 
 const getUserFromToken = async (token) => {
@@ -184,7 +182,6 @@ module.exports = {
     updateQuantity,
     deleteFromBasket
 };
-
 
 
 

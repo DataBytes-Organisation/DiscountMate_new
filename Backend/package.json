@@ -4,7 +4,9 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "lint": "eslint ./src/"
+    "start": "node server.js",
+    "lint": "eslint ./src/",
+    "check:ci": "node --check server.js && node --check src/config/database.js && node --check src/config/swagger.js && node --check src/controllers/basket.controller.js"
   },
   "keywords": [],
   "author": "",

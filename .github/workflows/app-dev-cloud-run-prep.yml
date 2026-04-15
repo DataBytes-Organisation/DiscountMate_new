@@ -1,0 +1,159 @@
+name: App Dev Cloud Run Prep
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend-checks:
+    name: Frontend lint, test, and web build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Frontend
+    env:
+      CI: "true"
+      EXPO_NO_TELEMETRY: "1"
+      EXPO_PUBLIC_API_URL: "http://localhost:3000/api"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: Frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run frontend lint
+        run: npm run lint
+
+      - name: Run frontend tests
+        run: npm run test:ci
+
+      - name: Build frontend web export
+        run: npm run build:web
+
+  backend-checks:
+    name: Backend deploy readiness checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: Backend/package-lock.json
+
+      - name: Install backend dependencies
+        run: npm ci
+
+      - name: Run backend syntax checks
+        run: npm run check:ci
+
+  deploy-backend:
+    name: Deploy backend to Cloud Run
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_CLOUD_RUN_DEPLOY == 'true'
+    needs: [frontend-checks, backend-checks]
+    runs-on: ubuntu-latest
+    outputs:
+      service_url: ${{ steps.backend-url.outputs.service_url }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker "${{ vars.GCP_REGION }}-docker.pkg.dev" --quiet
+
+      - name: Build backend image
+        run: |
+          BACKEND_IMAGE_URI="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/${{ vars.BACKEND_IMAGE_NAME }}:${{ github.sha }}"
+          echo "BACKEND_IMAGE_URI=${BACKEND_IMAGE_URI}" >> "${GITHUB_ENV}"
+          docker build -t "${BACKEND_IMAGE_URI}" Backend
+
+      - name: Push backend image
+        run: docker push "${BACKEND_IMAGE_URI}"
+
+      - name: Deploy backend service
+        run: |
+          gcloud run deploy "${{ vars.BACKEND_CLOUD_RUN_SERVICE }}" \
+            --image "${BACKEND_IMAGE_URI}" \
+            --region "${{ vars.GCP_REGION }}" \
+            --platform managed \
+            --allow-unauthenticated \
+            --set-env-vars "NODE_ENV=production,PORT=8080,GOOGLE_CLOUD_PROJECT=${{ vars.GCP_PROJECT_ID }}"
+
+      - name: Capture backend URL
+        id: backend-url
+        run: |
+          SERVICE_URL="$(gcloud run services describe "${{ vars.BACKEND_CLOUD_RUN_SERVICE }}" --region "${{ vars.GCP_REGION }}" --format='value(status.url)')"
+          echo "service_url=${SERVICE_URL}" >> "${GITHUB_OUTPUT}"
+
+  deploy-frontend:
+    name: Deploy frontend to Cloud Run
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_CLOUD_RUN_DEPLOY == 'true'
+    needs: [frontend-checks, backend-checks, deploy-backend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker "${{ vars.GCP_REGION }}-docker.pkg.dev" --quiet
+
+      - name: Build frontend image
+        run: |
+          FRONTEND_IMAGE_URI="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/${{ vars.FRONTEND_IMAGE_NAME }}:${{ github.sha }}"
+          echo "FRONTEND_IMAGE_URI=${FRONTEND_IMAGE_URI}" >> "${GITHUB_ENV}"
+          docker build \
+            --build-arg EXPO_PUBLIC_API_URL="${{ needs.deploy-backend.outputs.service_url }}/api" \
+            -t "${FRONTEND_IMAGE_URI}" \
+            Frontend
+
+      - name: Push frontend image
+        run: docker push "${FRONTEND_IMAGE_URI}"
+
+      - name: Deploy frontend service
+        run: |
+          gcloud run deploy "${{ vars.FRONTEND_CLOUD_RUN_SERVICE }}" \
+            --image "${FRONTEND_IMAGE_URI}" \
+            --region "${{ vars.GCP_REGION }}" \
+            --platform managed \
+            --allow-unauthenticated \
+            --port 8080
