@@ -5,17 +5,17 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import React from 'react';
-import '../global.css';
+import '../../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { CartProvider } from './(tabs)/CartContext';
+import { CartProvider } from '../(tabs)/CartContext';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
    const colorScheme = useColorScheme();
    const [loaded] = useFonts({
-      SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+      SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
    });
 
    useEffect(() => {
@@ -35,7 +35,6 @@ export default function RootLayout() {
                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
                <Stack.Screen name="(product)" options={{ headerShown: false }} />
-               <Stack.Screen name="(specials)" options={{ headerShown: false }} />
                <Stack.Screen name="+not-found" />
             </Stack>
          </CartProvider>
