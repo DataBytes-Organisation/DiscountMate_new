@@ -1,180 +1,209 @@
 
-const { connectToMongoDB } = require('../config/database'); 
-const jwt = require('jsonwebtoken');
-require('dotenv').config()
-const BASE_URL = process.env.BASE_URL;
+const { connectToMongoDB } = require('../config/database');
 
-// basketController.js
+/**
+ * 
+ * Basket controller now relies on req.user from auth middleware
+ * instead of decoding JWT tokens inside controller functions.
+ */
 
-const fetch = require('node-fetch');
-
-
-const getUserFromToken = async (token) => {
-    let user;
-    await jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-        if (err) {
-            console.log("Error in token verification=", err);
-            return null;
-        }
-
-        const email = decoded.email;
-        const db = await connectToMongoDB()
-        user = await db.collection('users').findOne({ email: email }, { projection: { encrypted_password: 0 } });
-    });
-    return user;
-};
-
-// Function to get the basket for a user
+/**
+ * Get Basket
+ */
 const getBasket = async (req, res) => {
     try {
-      // Fetch the basket details from the database
-      const db = await connectToMongoDB()
-      const baskets = await db.collection('basket').find().toArray();
-      const getProductUrl = `${BASE_URL}/api/products/getproduct`;
-  
-      if (!baskets) {
-        return res.status(404).json({ message: 'Basket not found' });
-      }
-  
-      const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-      const user = await getUserFromToken(token);
-      const basket = await db.collection('basket').find({ user_id: user._id.toString() }).toArray();
-  
-      console.log('Basket for a particular user contains=', basket);
-  
-      const response = [];
-  
-      // Get product details for each product ID
-      for (let i = 0; i < basket.length; i++) {
-        const currentProductId = basket[i].product_id;
-        const getProductData = { productId: currentProductId };
-  
-        try {
-          const productResponse = await fetch(getProductUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(getProductData),
-          });
-  
-          const data = await productResponse.json();
-  
-          response.push({
-            productId: data.product_id,
-            name: data.product_name,
-            price: data.current_price,
-            image: data.link_image,
-            quantity: basket[i].quantity,
-          });
-        } catch (err) {
-          console.error('Error fetching product details:', err.message);
-        }
-      }
-  
-      res.json(response);
-    } catch (error) {
-      console.error('Error fetching basket items:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  };
-
-// Function to add an item to the basket
-const addToBasket = async (req, res) => {
-    try {
-        const token = req.headers.authorization?.split(' ')[1];
-        if (!token) {
-            return res.status(401).json({ message: 'Authorization token is required' });
-        }
-
-        const user = await getUserFromToken(token);
-        if (!user || !user._id) {
-            return res.status(401).json({ message: 'Invalid or missing user data' });
-        }
-
-        const basketItem = {
-            user_id: user._id.toString(),
-            quantity: req.body.quantity || 1,
-            product_id: req.body.product_id,
-        };
+        // NEW: use authenticated user from middleware
+        const email = req.user.email;
 
         const db = await connectToMongoDB();
         if (!db) {
             return res.status(500).json({ message: 'Database connection failed' });
         }
 
-        await db.collection('basket').insertOne(basketItem);
-        return res.status(201).json({ message: 'Item added to basket successfully' });
-    } catch (error) {
-        console.error('Error adding item to basket:', error.message);
-        res.status(500).json({ message: 'Internal Server Error', error: error.message });
-    }
-};
-
-
-// Function to update the quantity of an item in the basket
-const updateQuantity = async (req, res, db) => {
-    try {
-        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-        const user = await getUserFromToken(token);
-
-        const query = { "user_id": user._id.toString(), "product_id": req.body.productId };
-        const db = await connectToMongoDB();
-        const updateResult = await db.collection('basket').updateOne(
-            query,
-            { $set: { quantity: req.body.quantity } }
+        // NEW: get full user record using email from req.user
+        const user = await db.collection('users').findOne(
+            { email },
+            { projection: { encrypted_password: 0 } }
         );
 
-        if (updateResult.modifiedCount === 0) {
-            console.log('No documents were updated.');
-        } else {
-            console.log('Document updated successfully.');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
 
-        const getBasketUrl = `${BASE_URL}/api/baskets/getbasket`;
-        
-        await fetch(getBasketUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-          })
-            .then(res1 => res1.json())
-            .then(data => res.json(data))
-            .catch(err => console.error(err.message));
+        // Existing basket lookup, now tied to authenticated user
+        const basket = await db.collection('basket')
+            .find({ user_id: user._id.toString() })
+            .toArray();
 
+        return res.status(200).json(basket);
     } catch (error) {
-        console.log("Error updating quantity in basket =", error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error('Error fetching basket:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
-// Function to delete an item from the basket
-const deleteFromBasket = async (req, res, db) => {
+/**
+ * Add Item to Basket Controller (Secured with JWT)
+ */
+const addToBasket = async (req, res) => {
     try {
-        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-        const user = await getUserFromToken(token);
+        // NEW: use authenticated user from middleware
+        const email = req.user.email;
 
-        const query = { "user_id": user._id.toString(), "product_id": req.body.productId };
+        const { product_id, quantity } = req.body;
+
+        if (!product_id) {
+            return res.status(400).json({ message: 'product_id is required' });
+        }
+
         const db = await connectToMongoDB();
-        const deleteResult = await db.collection('basket').deleteOne(query);
-        console.log(`Deleted ${deleteResult.deletedCount} document(s)`);
+        if (!db) {
+            return res.status(500).json({ message: 'Database connection failed' });
+        }
 
-        const getBasketUrl = `${BASE_URL}/api/baskets/getbasket`;
-        
-        await fetch(getBasketUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-          })
-            .then(res1 => res1.json())
-            .then(data => res.json(data))
-            .catch(err => console.error(err.message));
+        // NEW: get full user record using email from req.user
+        const user = await db.collection('users').findOne(
+            { email },
+            { projection: { encrypted_password: 0 } }
+        );
 
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const existingItem = await db.collection('basket').findOne({
+            user_id: user._id.toString(),
+            product_id
+        });
+
+        if (existingItem) {
+            // Existing/improved logic: increase quantity if item already exists
+            await db.collection('basket').updateOne(
+                {
+                    user_id: user._id.toString(),
+                    product_id
+                },
+                {
+                    $set: {
+                        quantity: (existingItem.quantity || 0) + (quantity || 1)
+                    }
+                }
+            );
+
+            return res.status(200).json({ message: 'Basket item quantity updated successfully' });
+        }
+
+        const basketItem = {
+            user_id: user._id.toString(),
+            product_id,
+            quantity: quantity || 1
+        };
+
+        await db.collection('basket').insertOne(basketItem);
+
+        return res.status(201).json({ message: 'Item added to basket successfully' });
     } catch (error) {
-        console.log("Error deleting item from basket =", error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error('Error adding item to basket:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+/**
+ * Update Quantity Controller 
+ */
+const updateQuantity = async (req, res) => {
+    try {
+        // NEW: use authenticated user from middleware
+        const email = req.user.email;
+
+        const { productId, quantity } = req.body;
+
+        if (!productId) {
+            return res.status(400).json({ message: 'productId is required' });
+        }
+
+        if (quantity === undefined || quantity === null) {
+            return res.status(400).json({ message: 'quantity is required' });
+        }
+
+        const db = await connectToMongoDB();
+        if (!db) {
+            return res.status(500).json({ message: 'Database connection failed' });
+        }
+
+        // NEW: get full user record using email from req.user
+        const user = await db.collection('users').findOne(
+            { email },
+            { projection: { encrypted_password: 0 } }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const result = await db.collection('basket').updateOne(
+            {
+                user_id: user._id.toString(),
+                product_id: productId
+            },
+            {
+                $set: { quantity }
+            }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({ message: 'Basket item not found or quantity unchanged' });
+        }
+
+        return res.status(200).json({ message: 'Quantity updated successfully' });
+    } catch (error) {
+        console.error('Error updating basket quantity:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+/**
+ * Delete Item from Basket Controller 
+ */
+const deleteFromBasket = async (req, res) => {
+    try {
+        // NEW: use authenticated user from middleware
+        const email = req.user.email;
+
+        const { productId } = req.body;
+
+        if (!productId) {
+            return res.status(400).json({ message: 'productId is required' });
+        }
+
+        const db = await connectToMongoDB();
+        if (!db) {
+            return res.status(500).json({ message: 'Database connection failed' });
+        }
+
+        // NEW: get full user record using email from req.user
+        const user = await db.collection('users').findOne(
+            { email },
+            { projection: { encrypted_password: 0 } }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const result = await db.collection('basket').deleteOne({
+            user_id: user._id.toString(),
+            product_id: productId
+        });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'Product not found in the basket' });
+        }
+
+        return res.status(200).json({ message: 'Item deleted from basket successfully' });
+    } catch (error) {
+        console.error('Error deleting basket item:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
@@ -184,7 +213,5 @@ module.exports = {
     updateQuantity,
     deleteFromBasket
 };
-
-
 
 

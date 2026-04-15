@@ -4,6 +4,9 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// Import JWT middleware
+const verifyToken = require('../middleware/auth.middleware');
+
 // Configure multer storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -67,7 +70,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/signup', userController.signupLimiter, userController.signup); // Signup using limiter
+router.post('/signup', userController.signupLimiter, userController.signup); // NEW: Apply rate limiting to signup
 
 // Signin route
 /**
@@ -98,7 +101,8 @@ router.post('/signup', userController.signupLimiter, userController.signup); // 
  *       500:
  *         description: Internal server error
  */
-router.post('/signin', userController.signin);
+router.post('/signin', userController.signinLimiter, userController.signin); // NEW: Apply rate limiting to signin 
+
 
 // Get profile route
 /**
@@ -116,7 +120,7 @@ router.post('/signin', userController.signin);
  *       401:
  *         description: Unauthorized - Invalid or missing token
  */
-router.get('/profile', userController.getProfile);
+router.get('/profile', verifyToken, userController.getProfile); //NEW: Protect route using JWT middleware
 
 // Upload profile image
 /**
@@ -146,7 +150,7 @@ router.get('/profile', userController.getProfile);
  *       401:
  *         description: Unauthorized - Invalid or missing token
  */
-router.post('/upload-profile-image', upload.single('image'), userController.updateProfileImage);
+router.post('/upload-profile-image', verifyToken, upload.single('image'), userController.updateProfileImage); //NEW: Protected upload route
 
 // Get Profile Image
 /**
@@ -166,6 +170,6 @@ router.post('/upload-profile-image', upload.single('image'), userController.upda
  *       401:
  *         description: Unauthorized - Invalid or missing token
  */
-router.get('/profile-image', userController.getProfileImage);
+router.get('/profile-image', verifyToken, userController.getProfileImage); //NEW: Protected profile image retrieva
 
 module.exports = router;

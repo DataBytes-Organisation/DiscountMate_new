@@ -1,5 +1,7 @@
 const express = require('express');
 const analyticsController = require('../controllers/analytics.controller');
+const ipThrottle = require('../middleware/ipThrottle.middleware'); // NEW
+const { scraperSlowDown, suspiciousTrafficLogger } = require('../middleware/antiScraping.middleware'); // NEW
 
 const router = express.Router();
 
@@ -27,10 +29,18 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Sales summary retrieved successfully
+ *       429: // NEW
+ *         description: Too many requests // NEW
  *       503:
  *         description: Analytics service unavailable
  */
-router.post('/sales-summary', analyticsController.getSalesSummary);
+router.post(
+  '/sales-summary',
+  suspiciousTrafficLogger, // NEW
+  scraperSlowDown, // NEW
+  ipThrottle, // NEW
+  analyticsController.getSalesSummary
+);
 
 /**
  * @swagger
@@ -55,8 +65,16 @@ router.post('/sales-summary', analyticsController.getSalesSummary);
  *     responses:
  *       200:
  *         description: Brand analysis retrieved successfully
+ *       429: // NEW
+ *         description: Too many requests // NEW
  */
-router.post('/brand-analysis', analyticsController.getBrandAnalysis);
+router.post(
+  '/brand-analysis',
+  suspiciousTrafficLogger, // NEW
+  scraperSlowDown, // NEW
+  ipThrottle, // NEW
+  analyticsController.getBrandAnalysis
+);
 
 /**
  * @swagger
@@ -81,8 +99,16 @@ router.post('/brand-analysis', analyticsController.getBrandAnalysis);
  *     responses:
  *       200:
  *         description: Price comparison retrieved successfully
+ *       429: // NEW
+ *         description: Too many requests // NEW
  */
-router.post('/price-comparison', analyticsController.getPriceComparison);
+router.post(
+  '/price-comparison',
+  suspiciousTrafficLogger, // NEW
+  scraperSlowDown, // NEW
+  ipThrottle, // NEW
+  analyticsController.getPriceComparison
+);
 
 /**
  * @swagger
@@ -110,8 +136,15 @@ router.post('/price-comparison', analyticsController.getPriceComparison);
  *     responses:
  *       200:
  *         description: Data cleaned successfully
+ *       429: // NEW
+ *         description: Too many requests // NEW
  */
-router.post('/data-cleaning', analyticsController.cleanData);
+router.post(
+  '/data-cleaning',
+  suspiciousTrafficLogger, // NEW
+  scraperSlowDown, // NEW
+  ipThrottle, // NEW
+  analyticsController.cleanData
+);
 
 module.exports = router;
-

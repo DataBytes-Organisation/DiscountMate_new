@@ -25,10 +25,9 @@ const UserSchema = new Schema({
     match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address'],
     unique: true,
   },
-  password: {
+  encrypted_password: { // NEW: renamed to match controller
     type: String,
     required: [true, 'Password is required'],
-    minlength: [8, 'Password must be at least 8 characters long'],
   },
   address: {
     type: String,
@@ -41,19 +40,20 @@ const UserSchema = new Schema({
     required: false, // Optional field
     match: [/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number'],
   },
-  role: {
+  role: {  // NEW: standardised permission model
     type: String,
     enum: ['admin', 'user'],
+    default: 'user', //NEW; auto assigns user
     required: [true, 'Role is required'],
   },
   profileID: {
     type: String,
     required: false,
   },
-  admin: {
-    type: Boolean,
-    default: false, // Default is false for regular users
-  },
+  //admin: { removed admin boolen- replaced by role
+    //type: Boolean,
+   // default: false, // Default is false for regular users
+ // },
 }, getSchemaOptions());
 
 UserSchema.virtual('profile', {
