@@ -25,3 +25,21 @@ variable "default_labels" {
   type        = map(string)
   default     = {}
 }
+
+variable "artifact_registry_repository_id" {
+  description = "Artifact Registry repository ID for production container images."
+  type        = string
+  default     = "discount-mate-images"
+}
+
+variable "artifact_registry_cleanup_delete_untagged_older_than" {
+  description = "Delete untagged production images older than this duration."
+  type        = string
+  default     = "30d"
+}
+
+variable "artifact_registry_cleanup_dry_run" {
+  description = "Whether the production Artifact Registry cleanup policy runs in dry-run mode."
+  type        = bool
+  default     = false
+}

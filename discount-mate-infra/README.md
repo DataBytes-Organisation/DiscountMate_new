@@ -7,6 +7,7 @@ This repository currently manages:
 - Remote state stored in Google Cloud Storage
 - One data bucket for `test`
 - One data bucket for `prod`
+- One Docker Artifact Registry repository for `prod`
 
 The layout is intentionally split by environment and uses shared modules so Cloud Run and PostgreSQL can be added later without restructuring the repo.
 
@@ -18,6 +19,7 @@ The layout is intentionally split by environment and uses shared modules so Clou
 │   ├── prod
 │   └── test
 └── modules
+    ├── artifact_registry
     ├── cloud_run
     ├── gcs_bucket
     └── postgresql
@@ -68,6 +70,7 @@ tofu apply
 
 - `environments/test`: bucket `test-discount-mate-data`
 - `environments/prod`: bucket `discount-mate-data`
+- `environments/prod`: Docker repository `australia-southeast1-docker.pkg.dev/<project>/discount-mate-images`
 
 ## Scaling later
 
@@ -78,6 +81,14 @@ The repository is prepared for future expansion through shared modules and envir
 - Each environment already owns its provider, backend, variables, and outputs
 
 When Cloud Run or PostgreSQL is introduced later, each environment can adopt those modules independently without changing the current state layout.
+
+The production Artifact Registry output can be used directly as the base path for container image tags, for example:
+
+```text
+australia-southeast1-docker.pkg.dev/<project>/discount-mate-images/app:<tag>
+```
+
+This repository does not manage repo-specific push permissions. Any principal that already has sufficient Artifact Registry permissions through inherited GCP IAM can push images to it.
 
 ## OpenTofu notes
 
