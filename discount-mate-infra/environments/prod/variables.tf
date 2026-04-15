@@ -43,3 +43,9 @@ variable "artifact_registry_cleanup_dry_run" {
   type        = bool
   default     = false
 }
+
+variable "github_actions_service_account_id" {
+  description = "Account ID for the production GitHub Actions CI/CD service account."
+  type        = string
+  default     = "github-actions-prod"
+}

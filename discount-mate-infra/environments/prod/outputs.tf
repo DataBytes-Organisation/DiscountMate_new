@@ -17,3 +17,14 @@ output "artifact_registry_docker_repository" {
   description = "The production Docker repository path."
   value       = module.artifact_registry.docker_repository
 }
+
+output "github_actions_service_account_email" {
+  description = "The production GitHub Actions CI/CD service account email."
+  value       = module.github_actions_identity.github_actions_service_account_email
+}
+
+output "github_actions_service_account_private_key" {
+  description = "The production GitHub Actions CI/CD service account key JSON."
+  value       = module.github_actions_identity.github_actions_service_account_private_key
+  sensitive   = true
+}

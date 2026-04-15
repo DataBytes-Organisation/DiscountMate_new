@@ -8,6 +8,7 @@ This repository currently manages:
 - One data bucket for `test`
 - One data bucket for `prod`
 - One Docker Artifact Registry repository for `prod`
+- One GitHub Actions service account and key for `prod`
 
 The layout is intentionally split by environment and uses shared modules so Cloud Run and PostgreSQL can be added later without restructuring the repo.
 
@@ -22,6 +23,7 @@ The layout is intentionally split by environment and uses shared modules so Clou
     ├── artifact_registry
     ├── cloud_run
     ├── gcs_bucket
+    ├── github_actions_identity
     └── postgresql
 ```
 
@@ -71,6 +73,7 @@ tofu apply
 - `environments/test`: bucket `test-discount-mate-data`
 - `environments/prod`: bucket `discount-mate-data`
 - `environments/prod`: Docker repository `australia-southeast1-docker.pkg.dev/<project>/discount-mate-images`
+- `environments/prod`: GitHub Actions CI/CD service account and service account key
 
 ## Scaling later
 
@@ -88,7 +91,73 @@ The production Artifact Registry output can be used directly as the base path fo
 australia-southeast1-docker.pkg.dev/<project>/discount-mate-images/app:<tag>
 ```
 
-This repository does not manage repo-specific push permissions. Any principal that already has sufficient Artifact Registry permissions through inherited GCP IAM can push images to it.
+The production GitHub Actions CI/CD service account is granted Artifact Registry write access on the prod repository so GitHub can push images.
+
+## GitHub Actions Key Auth
+
+This repository now provisions a single production service account for GitHub Actions and generates a JSON credentials key for it.
+
+The same service account is used for both CI/CD actions and Cloud Run runtime identity.
+
+Set the following values from `environments/prod` outputs as GitHub Actions variables or secrets in `DataBytes-Organisation/DiscountMate_new`:
+
+- `GCP_SERVICE_ACCOUNT_EMAIL`
+- `GCP_SERVICE_ACCOUNT_KEY`
+- `GCP_PROJECT_ID`
+- `GCP_REGION`
+- `GCP_ARTIFACT_REGISTRY_REPOSITORY`
+- `GCP_CLOUD_RUN_SERVICE`
+
+`GCP_SERVICE_ACCOUNT_KEY` should contain the sensitive Terraform output `github_actions_service_account_private_key`.
+
+This approach is less secure than workload identity federation and the generated key will exist in Terraform state.
+
+Example workflow:
+
+```yaml
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker auth
+        run: gcloud auth configure-docker "${{ vars.GCP_REGION }}-docker.pkg.dev" --quiet
+
+      - name: Build image
+        run: |
+          docker build -t "${{ vars.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/app:${{ github.sha }}" .
+
+      - name: Push image
+        run: |
+          docker push "${{ vars.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/app:${{ github.sha }}"
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: ${{ vars.GCP_CLOUD_RUN_SERVICE }}
+          region: ${{ vars.GCP_REGION }}
+          image: "${{ vars.GCP_ARTIFACT_REGISTRY_REPOSITORY }}/app:${{ github.sha }}"
+          flags: >-
+            --service-account=${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+```
 
 ## OpenTofu notes
 
