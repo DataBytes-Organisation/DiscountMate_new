@@ -1,0 +1,69 @@
+name: Trigger Catalogue Scraper
+
+# Runs every Wednesday at midnight UTC = 11am AEDT
+# Matches the original cronjob schedule.
+# Can also be triggered manually from the GitHub Actions tab.
+on:
+  schedule:
+    - cron: '0 0 * * 3'
+  workflow_dispatch:
+    inputs:
+      stores:
+        description: 'Comma-separated store slugs (leave blank for all)'
+        required: false
+        default: ''
+      years:
+        description: 'Comma-separated years (leave blank for current)'
+        required: false
+        default: ''
+
+jobs:
+  trigger-pipeline:
+    name: Trigger Cloud Run pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 75   # pipeline timeout (Cloud Run caps at 60 min) + buffer
+
+    steps:
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Get identity token for Cloud Run invocation
+        id: token
+        run: |
+          TOKEN=$(gcloud auth print-identity-token \
+            --audiences="${{ secrets.SCRAPER_URL }}")
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger pipeline via POST /run
+        id: trigger
+        run: |
+          HTTP_STATUS=$(curl -sf \
+            --max-time 3660 \
+            -o /tmp/pipeline_response.json \
+            -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer ${{ steps.token.outputs.token }}" \
+            -H "Content-Type: application/json" \
+            "${{ secrets.SCRAPER_URL }}/run")
+
+          echo "HTTP status: $HTTP_STATUS"
+          echo "Response:"
+          cat /tmp/pipeline_response.json || true
+
+          if [[ "$HTTP_STATUS" != "200" ]]; then
+            echo "Pipeline returned HTTP $HTTP_STATUS — marking run as failed."
+            exit 1
+          fi
+
+      - name: Upload pipeline response as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-response-${{ github.run_id }}
+          path: /tmp/pipeline_response.json
+          retention-days: 30

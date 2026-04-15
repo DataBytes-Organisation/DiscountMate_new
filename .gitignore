@@ -10,3 +10,5 @@ venv/
 Backend/ml-service/venv/
 .vscode/settings.json
 *.csv
+Catalogue_Scraping_2025/catalogue_data
+Catalogue_Scraping_2025/catalogues
