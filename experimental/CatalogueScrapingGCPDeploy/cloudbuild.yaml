@@ -1,0 +1,62 @@
+substitutions:
+  _AR_HOSTNAME: australia-southeast1-docker.pkg.dev
+  _REPOSITORY: discountmate
+  _IMAGE_NAME: catalogue-pipeline
+  _ENV: prod
+  _JOB_NAME: catalogue-pipeline-job
+  _REGION: australia-southeast1
+  _CPU: "4"
+  _MEMORY: 16Gi
+  _TIMEOUT: 7200s
+  _GCS_BUCKET: ""
+  _SERVICE_ACCOUNT: ""
+
+steps:
+  - id: validate
+    name: python:3.10
+    entrypoint: bash
+    args:
+      - -lc
+      - |
+        pip install --no-cache-dir -r requirements.txt
+        PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK=True python -m py_compile \
+          catalogue_pipeline_common.py \
+          catalogue_tile_detection.py \
+          catalogue_zone_detection.py \
+          catalogue_ocr.py \
+          catalogue_scraper_main.py
+
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_AR_HOSTNAME}/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${SHORT_SHA}
+      - -t
+      - ${_AR_HOSTNAME}/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${_ENV}
+      - .
+
+  - id: deploy-cloud-run-job
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -lc
+      - |
+        IMAGE_URI="${_AR_HOSTNAME}/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${SHORT_SHA}"
+        EXTRA_ARGS=""
+        if [ -n "${_SERVICE_ACCOUNT}" ]; then
+          EXTRA_ARGS="${EXTRA_ARGS} --service-account=${_SERVICE_ACCOUNT}"
+        fi
+
+        gcloud run jobs deploy "${_JOB_NAME}" \
+          --image="${IMAGE_URI}" \
+          --region="${_REGION}" \
+          --cpu="${_CPU}" \
+          --memory="${_MEMORY}" \
+          --task-timeout="${_TIMEOUT}" \
+          --set-env-vars="CATALOGUE_PIPELINE_MODE=pipeline,PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK=True,GCS_BUCKET=${_GCS_BUCKET}" \
+          ${EXTRA_ARGS}
+
+images:
+  - ${_AR_HOSTNAME}/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${SHORT_SHA}
+  - ${_AR_HOSTNAME}/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${_ENV}

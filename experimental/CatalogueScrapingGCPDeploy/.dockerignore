@@ -1,0 +1,27 @@
+# Exclude large data directories — catalogue images and outputs are stored in GCS,
+# not baked into the Docker image.
+catalogues/
+catalogue_data/
+
+# Model weights — downloaded at runtime from GCS via TILE_MODEL_BLOB / ZONE_MODEL_BLOB.
+# Keep them out of the image to avoid bloating the layer.
+Models/
+*.pt
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Notebooks and scratch files
+*.ipynb
+YOLOv8*/
+
+# Git and OS noise
+.git/
+.gitignore
+.DS_Store
+
+# Local log output
+catalogue_data/logs/
