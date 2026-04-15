@@ -1,0 +1,91 @@
+Status: Experimental / Not deployed
+
+Purpose:
+Automated weekly scraping and digitisation of Australian supermarket catalogues
+(Woolworths, Coles, Aldi, IGA) into structured product and price data, delivered
+through a four-stage ML pipeline designed for deployment on Google Cloud Platform
+(Cloud Run + Cloud Storage). The pipeline addresses the need for a scalable,
+repeatable mechanism to collect catalogue price data for the DiscountMate platform
+without manual intervention.
+
+Pipeline stages:
+  Stage 1 — catalogue_scraper_main.py   : Download catalogue page images from catalogueau.com
+  Stage 2 — catalogue_tile_detection.py : YOLO-based product tile detection and cropping
+  Stage 3 — catalogue_zone_detection.py : YOLO-based OCR sub-region detection within tiles
+  Stage 4 — catalogue_ocr.py            : PaddleOCR + Tesseract price and product name extraction
+
+Orchestration runs all four stages in sequence from a single command.
+Incremental logic skips catalogues already fully processed and resumes partial ones.
+
+Current limitations:
+- Not integrated with the main DiscountMate production pipeline or database.
+- MongoDB storage mode is a placeholder — the pipeline defaults to CSV output only.
+- Cloud Run has a hard 60-minute timeout; full-archive reprocessing (~97k images)
+  must be batched across multiple runs using STAGE2_LIMIT_CATALOGUES /
+  STAGE3_LIMIT_CATALOGUES env vars.
+- No GPU available on Cloud Run — YOLO and PaddleOCR run CPU-only, which is
+  sufficient for weekly incremental runs but slow for bulk reprocessing.
+- YOLO model weights (.pt files) are not included in the repository; they must be
+  uploaded separately to GCS via upload-model.sh before deployment.
+- catalogue_tracking.csv must be present in catalogue_data/ and must persist
+  between runs (via GCS sync); without it the script re-downloads all catalogues.
+- SSL verification is disabled on the catalogue CDN downloader — acceptable for the
+  known CDN endpoint but should be revisited if the endpoint changes.
+- Cloud Run Jobs and Cloud Scheduler are not available on the target GCP account;
+  Cloud Run Service + GitHub Actions cron is used as the workaround.
+- Model cold-start adds ~10–15 seconds per run as weights are re-downloaded from
+  GCS on each new container instance.
+
+Inputs / assumptions:
+- Two trained YOLO model weight files:
+    Models/catalogue_tile_detection_weight.pt
+    Models/catalogue_zone_detection_weight.pt
+  (uploaded to GCS via upload-model.sh before the first run)
+- A GCP project with Cloud Run, Cloud Storage, and Artifact Registry enabled.
+- A GCS bucket for storing model weights, catalogue outputs, and run manifests.
+- catalogue_data/catalogue_tracking.csv present and persisted between runs.
+- Python 3.11 environment with dependencies from requirements.txt installed,
+  plus paddlepaddle==2.6.2, paddleocr==2.8.1, and system packages tesseract-ocr
+  and libgl1-mesa-glx (see Dockerfile).
+- Three GitHub repository secrets set: GCP_SA_KEY, GCP_PROJECT_ID, SCRAPER_URL.
+
+How to run:
+  # Local — interactive mode
+  python catalogue_scraper_main.py
+
+  # Local — automated / non-interactive (update-only, all four stores)
+  python catalogue_scraper_main.py --automated
+
+  # GCP — first-time deployment
+  export GCP_PROJECT_ID=your-project-id
+  export GCS_BUCKET=your-bucket-name
+  bash upload-model.sh --stage tile --file Models/catalogue_tile_detection_weight.pt
+  bash upload-model.sh --stage zone --file Models/catalogue_zone_detection_weight.pt
+  bash deploy-gcp.sh
+
+  # GCP — manual pipeline trigger after deployment
+  TOKEN=$(gcloud auth print-identity-token)
+  curl -sf -X POST -H "Authorization: Bearer $TOKEN" <SERVICE_URL>/run
+
+  Weekly runs are scheduled automatically via GitHub Actions
+  (.github/workflows/trigger-scraper.yml) — Wednesdays midnight UTC / 11am AEDT.
+
+Next steps:
+- Implement MongoDB integration to replace the CSV-only tracking mechanism and
+  support multi-instance access to shared scraping history.
+- Integrate OCR output (ocr_results.csv) with the main DiscountMate database
+  ingestion pipeline so extracted product/price data flows into production.
+- Retrain YOLO models on a broader catalogue layout dataset to improve detection
+  accuracy across complex, multi-column, and promotional catalogue pages.
+- Investigate GPU-enabled Cloud Run (currently unavailable on this account) or
+  Vertex AI batch prediction to reduce inference time for bulk reprocessing.
+- Add support for additional Australian retailers beyond the current four
+  (Woolworths, Coles, Aldi, IGA).
+- Resolve SSL verification on the catalogue CDN — investigate whether a valid
+  certificate path can be supplied instead of disabling verification.
+
+Owner / contributors:
+- Nguyen Chuong (Steven) Le
+- Developed with AI assistance: Claude Sonnet 4.5 via GitHub Copilot Pro
+  (Education License) for code scaffolding, refactoring, and productionisation.
+  See READ_ME_CATALOGUE_SCRAPER.txt for full attribution details.

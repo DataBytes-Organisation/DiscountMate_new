@@ -1,0 +1,13 @@
+# Pinned versions for reproducible builds.
+# paddlepaddle is intentionally excluded here — it must be installed
+# before paddleocr in the Dockerfile to satisfy paddleocr's runtime check.
+
+requests==2.32.3
+urllib3==2.2.3
+pandas==2.2.3
+numpy==1.26.4
+opencv-python==4.10.0.84
+ultralytics==8.3.0
+paddleocr==2.8.1
+pytesseract==0.3.13
+google-cloud-storage==2.18.2
