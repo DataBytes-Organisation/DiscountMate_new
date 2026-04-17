@@ -50,6 +50,8 @@ uv run alembic upgrade head
 
 The working example is exposed only through `--model example`. The retailer models remain scaffold placeholders for future implementation.
 
+Retailer selectors now use the composite format `products_<retailer>`, for example `products_aldi`.
+
 The example stays generic on purpose:
 
 - it reads a Coles-shaped sample CSV from `config/config.yaml`
@@ -57,10 +59,10 @@ The example stays generic on purpose:
 - it is meant to demonstrate the starter framework, not the final retailer job layout
 
 ```bash
-uv run main.py --model example --runner products --start-date 2026-03-21
+uv run main.py --model example --start-date 2026-03-21 --end-date 2026-03-25
 ```
 
-The run will process every available date from `--start-date` through today. Missing daily files are skipped with logging.
+The run will process every available date from `--start-date` through the inclusive `--end-date`. If `--end-date` is omitted, the range runs through today. Missing daily files are skipped with logging.
 
 ## Output convention
 
@@ -118,7 +120,7 @@ uv run alembic revision -m "describe change"
 - `main.py`: thin CLI entrypoint and workflow dispatch
 - `config/`: env-backed settings and runtime config templates
 - `common/`: shared CLI, path, DuckDB, normalization, and PostgreSQL helpers
-- `features/feature_examples/`: one working example workflow
+- `features/example/`: one working example workflow
 - `features/products/<retailer>/job.py`: scaffold jobs for teammates to imitate later
 - `migrations/`: Alembic migration files
 
@@ -138,7 +140,7 @@ docker run --rm \
   -v "$(pwd)/config/config.yaml:/app/config/config.yaml:ro" \
   -v "$(pwd)/data:/app/data:ro" \
   discount-mate-etl:latest \
-  --model example --runner products --start-date 2026-03-21
+  --model example --start-date 2026-03-21 --end-date 2026-03-25
 ```
 
 The runtime config and local sample CSV files are mounted because they are kept out of the image on purpose.

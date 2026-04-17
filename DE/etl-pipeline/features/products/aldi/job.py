@@ -9,12 +9,12 @@ if TYPE_CHECKING:
 
 def run(
     model: str,
-    runner: str,
     start_date: str,
+    end_date: str | None,
     runtime_config: RuntimeConfig,
     settings: AppSettings,
 ) -> JobSummary:
-    del model, runner, start_date, runtime_config, settings
+    del model, start_date, end_date, runtime_config, settings
     raise NotImplementedError(
         "The Aldi products job is scaffold-only for now. Use `--model example` to run the working demo workflow."
     )

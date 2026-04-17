@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:18
     container_name: discount_mate_etl_postgres
     restart: unless-stopped
     env_file:

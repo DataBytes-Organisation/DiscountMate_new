@@ -5,16 +5,16 @@ paths:
   bronze_root: ${BRONZE_ROOT}
 
 models:
-  coles:
+  products_coles:
     products: "{bronze_root}/coles/coles_sample_{date_compact}.csv"
 
-  woolworths:
+  products_woolworths:
     products: "{bronze_root}/woolworths/woolworths_sample_{date_compact}.csv"
 
-  iga:
+  products_iga:
     products: "{bronze_root}/iga/iga_sample_{date_compact}.csv"
 
-  aldi:
+  products_aldi:
     products: "{bronze_root}/aldi/aldi_sample_{date_compact}.csv"
 
   example:
