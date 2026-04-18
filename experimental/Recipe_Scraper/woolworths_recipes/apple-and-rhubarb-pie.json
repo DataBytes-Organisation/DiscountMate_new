@@ -1,0 +1,57 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Recipe",
+  "@id": "https://www.woolworths.com.au/shop/recipes/apple-and-rhubarb-pie",
+  "url": "https://www.woolworths.com.au/shop/recipes/apple-and-rhubarb-pie",
+  "name": "Apple & Rhubarb Pie Recipe | Woolworths",
+  "image": "https://foodhub.scene7.com/is/image/woolworthsltdprod/1207_rhubarbappliepie:Square-1300x1300",
+  "author": {
+    "name": "Fresh Ideas",
+    "@type": "Person"
+  },
+  "datePublished": "2025-05-30",
+  "description": "Try our easy to follow Apple & Rhubarb Pie recipe. Absolutely delicious with the best ingredients from Woolworths.",
+  "prepTime": "PT50M",
+  "cookTime": "PT40M",
+  "totalTime": "PT90M",
+  "keywords": "Apple pie & tart,Seafood free,Soy free,Apple,Sesame free,Rhubarb",
+  "recipeId": "777",
+  "recipeNameId": "apple-and-rhubarb-pie",
+  "recipeYield": "6",
+  "recipeCategory": "Desserts",
+  "recipeCuisine": "British",
+  "recipeIngredient": [
+    "1.5 cup plain flour",
+    "1 tbs cornflour",
+    "125g butter, chopped",
+    "2 tbs eggs",
+    "1 bunch rhubarb, trimed, cut into 2 cm pieces (to serve)",
+    "1 tbs white sugar",
+    "2 tbs almond meal",
+    "2 granny smith apples, peeled, cored, thinly sliced",
+    "6 scoop vanilla ice cream (to serve)"
+  ],
+  "recipeInstructions": [
+    {
+      "text": "Process flours in a food processor for 30 seconds until combined. Add butter and process until mix forms into fine breadcrumbs. Add 1 egg and process until mixture comes together. Turn onto a lightly floured surface and knead until smooth. Press dough together to form a 3cm-thick round disc. Cover in plastic wrap and refrigerate for 30 minutes.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    },
+    {
+      "text": "Meanwhile, preheat oven to 200°C. Spread rhubarb onto a baking tray lined with baking paper. Sprinkle with sugar. Bake for 10 minutes or until tender. Cool.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    },
+    {
+      "text": "Place a large baking tray into the oven. Roll out dough between 2 sheets of baking paper until 3mm thick and about 35cm round. Leave pastry on baking paper. Sprinkle over almond meal leaving a 5cm border. Combine apple and rhubarb in a bowl. Pile onto almond meal. Fold pastry over filling towards centre. Whisk remaining egg and brush over pastry. Sprinkle with sugar. Transfer pie to baking tray.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    },
+    {
+      "text": "Bake for 30 minutes or until pastry is golden and cooked through. Cut into wedges and serve with ice cream.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    }
+  ],
+  "headline": "Apple & Rhubarb Pie Recipe | Woolworths"
+}

@@ -1,0 +1,63 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Recipe",
+  "@id": "https://www.woolworths.com.au/shop/recipes/apple-and-walnut-coffee-cake",
+  "url": "https://www.woolworths.com.au/shop/recipes/apple-and-walnut-coffee-cake",
+  "name": "Apple & Walnut Coffee Cake Recipe | Woolworths",
+  "image": "https://foodhub.scene7.com/is/image/woolworthsltdprod/1102_applewalnutcoffeecake:Square-1300x1300",
+  "datePublished": "2025-06-04",
+  "description": "Try our easy to follow Apple & Walnut Coffee Cake recipe. Absolutely delicious with the best ingredients from Woolworths.",
+  "prepTime": "PT15M",
+  "cookTime": "PT45M",
+  "totalTime": "PT60M",
+  "keywords": "Coffee cake,Pescatarian,Seafood free,Vegetarian,Apple,Baking,Peanut free",
+  "recipeId": "565",
+  "recipeNameId": "apple-and-walnut-coffee-cake",
+  "recipeYield": "8-10",
+  "recipeCategory": "Desserts",
+  "recipeCuisine": "North American",
+  "nutrition": {
+    "calories": "525 calories",
+    "sodiumContent": "347 milligrams",
+    "sugarContent": "34.6 grams",
+    "carbohydrateContent": "58.3 grams",
+    "fatContent": "29.9 grams",
+    "saturatedFatContent": "16.7 grams",
+    "fiberContent": "1.6 grams",
+    "proteinContent": "6.5 grams",
+    "transFatContent": "1.2 grams",
+    "@type": "NutritionInformation"
+  },
+  "recipeIngredient": [
+    "3 tsp instant coffee powder",
+    "0.5 cup plain flour",
+    "2 cup self-raising flour",
+    "155g unsalted butter",
+    "1 tsp vanilla extract",
+    "300ml sour cream",
+    "2 Royal gala apples",
+    "1 tsp ground cinnamon (and 1/2 tsp ground cinnamon, extra)",
+    "1.5 cup brown sugar",
+    "2 eggs",
+    "0.5 cup walnuts, chopped",
+    "0.5 tsp salt"
+  ],
+  "recipeInstructions": [
+    {
+      "text": "Preheat oven to 180°C/160°C fan-forced. Lightly grease a 24cm-round springform cake tin.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    },
+    {
+      "text": "In a large bowl, beat butter and brown sugar together until light and fluffy. Add eggs, one at a time, beating well after each one. Stir in coffee powder and vanilla. Sift flour, cinnamon and salt together. Add flour mixture in batches, alternating with the sour cream. Spoon into cake tin and smooth top.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    },
+    {
+      "text": "Peel, core and slice the apples and arrange on top of cake mixture. To make crumble topping: combine extra brown sugar, cinnamon and butter together with flour and rub together until crumbled. Stir in walnuts. Sprinkle topping over apple. Bake for 45 minutes or until cooked when tested with a skewer. Cool on a wire rack.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    }
+  ],
+  "headline": "Apple & Walnut Coffee Cake Recipe | Woolworths"
+}

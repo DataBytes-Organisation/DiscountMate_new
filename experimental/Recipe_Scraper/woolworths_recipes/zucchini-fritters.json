@@ -1,0 +1,58 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Recipe",
+  "@id": "https://www.woolworths.com.au/shop/recipes/zucchini-fritters",
+  "url": "https://www.woolworths.com.au/shop/recipes/zucchini-fritters",
+  "name": "Zucchini fritters Recipe | Woolworths",
+  "image": "https://foodhub.scene7.com/is/image/woolworthsltdprod/fi-2501-zucchini-fritters:Square-1300x1300",
+  "author": {
+    "name": "Fresh Ideas",
+    "@type": "Person"
+  },
+  "datePublished": "2025-06-01",
+  "description": "Try our easy to follow Zucchini fritters recipe. Absolutely delicious with the best ingredients from Woolworths.",
+  "prepTime": "PT10M",
+  "cookTime": "PT20M",
+  "totalTime": "PT30M",
+  "keywords": "Fritters,Zucchini,Lemon,Quick & easy,Summer,Jan Feb 2025",
+  "recipeId": "FIM-2502-44",
+  "recipeNameId": "zucchini-fritters",
+  "recipeYield": "20",
+  "recipeCategory": "Side dishes",
+  "recipeCuisine": "Italian",
+  "recipeIngredient": [
+    "4 large zucchini, finely chopped",
+    "1.5 cups plain flour, sifted",
+    "1.5 tsp baking powder",
+    "1 egg, lightly beaten",
+    "0.5 bunch continental parsley, leaves picked",
+    "1 clove garlic, crushed",
+    "0.5 punnet dill, finely chopped",
+    "80g parmesan, grated",
+    "0.5 cup extra virgin olive oil",
+    "2 lemons, cut into wedges"
+  ],
+  "recipeInstructions": [
+    {
+      "text": "Place zucchini in a colander. Add 1 tsp salt and toss to combine. Set aside for 10 minutes, then place zucchini in a clean tea towel and squeeze out excess juice.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    },
+    {
+      "text": "Sift flour and baking powder into a large bowl. Make a well at centre. Add egg and 1 1/2 cups water, whisking until a smooth batter forms.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    },
+    {
+      "text": "Finely chop three-quarters of the parsley. Add chopped parsley, garlic, dill, parmesan and zucchini to the batter and gently mix to combine. Season with freshly  cracked black pepper.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    },
+    {
+      "text": "Heat 1/4 cup oil in a large frying pan over medium-high heat. To cook 5 fritters at a time, spoon heaped 1 tbs quantities of batter around the edges of the pan, allowing room for spreading. Flatten slightly. Shallow-fry for 2 minutes each side or until golden brown and cooked. Drain on paper towel. Repeat with remaining zucchini mixture to make 20 fritters in total, topping up and reheating oil between batches if necessary. Sprinkle with remaining parsley. Serve with lemon.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    }
+  ],
+  "headline": "Zucchini fritters Recipe | Woolworths"
+}
