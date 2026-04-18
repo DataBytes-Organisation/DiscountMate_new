@@ -18,7 +18,18 @@ const storage = multer.diskStorage({
     },
 });
 
-const upload = multer({ storage: storage });
+// IA -> only allow image files when uploading profile images (CS-06-T1)
+const upload = multer({  
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        // allows images only (jpg, jpeg, png, gif)
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Error: that file type is not accepted :('), false);
+        }
+    }
+});
 
 // Define routes
 const router = express.Router();
