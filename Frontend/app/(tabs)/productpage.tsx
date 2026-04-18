@@ -7,8 +7,6 @@ interface Product {
    name: string;
    description: string;
    price: number;
-   bestPrice: number;
-   bestUnitPrice: number;
    unitPrice: number;
    originalPrice: number;
    discountPrice: number;
@@ -59,13 +57,6 @@ const ProductPage = () => {
                                     : "Woolworths Pricing",
                               price:
                                  parseFloat(item["item_price"] || item["Item Price"]) || 0,
-                              bestPrice:
-                                 parseFloat(item["best_price"] || item["Best Price"]) ||
-                                 0,
-                              bestUnitPrice:
-                                 parseFloat(
-                                    item["best_unit_price"] || item["Best Unit Price"]
-                                 ) || 0,
                               unitPrice:
                                  parseFloat(item["unit_price"] || item["Unit Price"]) ||
                                  0,
@@ -115,14 +106,10 @@ const ProductPage = () => {
             return a.price - b.price;
          case "price-desc":
             return b.price - a.price;
-         case "bestPrice-asc":
-            return a.bestPrice - b.bestPrice;
-         case "bestPrice-desc":
-            return b.bestPrice - a.bestPrice;
-         case "bestUnitPrice-asc":
-            return a.bestUnitPrice - b.bestUnitPrice;
-         case "bestUnitPrice-desc":
-            return b.bestUnitPrice - a.bestUnitPrice;
+         case "unitPrice-asc":
+            return a.unitPrice - b.unitPrice;
+         case "unitPrice-desc":
+            return b.unitPrice - a.unitPrice;
          case "discountPrice-asc":
             return a.discountPrice - b.discountPrice;
          case "discountPrice-desc":
@@ -175,16 +162,8 @@ const ProductPage = () => {
             >
                <Picker.Item label="Price: High to Low" value="price-desc" />
                <Picker.Item label="Price: Low to High" value="price-asc" />
-               <Picker.Item label="Best Price: High to Low" value="bestPrice-desc" />
-               <Picker.Item label="Best Price: Low to High" value="bestPrice-asc" />
-               <Picker.Item
-                  label="Best Unit Price: High to Low"
-                  value="bestUnitPrice-desc"
-               />
-               <Picker.Item
-                  label="Best Unit Price: Low to High"
-                  value="bestUnitPrice-asc"
-               />
+               <Picker.Item label="Unit Price: High to Low" value="unitPrice-desc" />
+               <Picker.Item label="Unit Price: Low to High" value="unitPrice-asc" />
                <Picker.Item
                   label="Discount Price: High to Low"
                   value="discountPrice-desc"
@@ -244,12 +223,6 @@ const ProductPage = () => {
                      <View style={styles.detailsBox}>
                         <Text style={styles.productDetail}>
                            Item Price: ${product.price.toFixed(2)}
-                        </Text>
-                        <Text style={styles.productDetail}>
-                           Best Price: ${product.bestPrice.toFixed(2)}
-                        </Text>
-                        <Text style={styles.productDetail}>
-                           Best Unit Price: ${product.bestUnitPrice.toFixed(2)}
                         </Text>
                         <Text style={styles.productDetail}>
                            Unit Price: ${product.unitPrice.toFixed(2)}

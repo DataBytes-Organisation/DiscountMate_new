@@ -31,4 +31,13 @@ export const STORE_THEMES = {
       badgeFrom: "from-red-500",
       badgeTo: "to-red-600",
    },
+
+   iga: {
+      text: "text-[#C8102E]",
+      border: "border-[#C8102E]/50",
+      from: "from-[#FFF4F4]",
+      to: "to-[#FCE8E8]",
+      badgeFrom: "from-[#E31B23]",
+      badgeTo: "to-[#8F1015]",
+   }
 };

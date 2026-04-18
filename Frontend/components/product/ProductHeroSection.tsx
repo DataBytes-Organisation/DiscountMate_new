@@ -18,9 +18,7 @@ type ApiProduct = {
    description?: string | null;
    brand?: string | null;
    current_price?: number | null;
-   best_price?: number | null;
    unit_price?: string | null;
-   best_unit_price?: string | null;
    is_on_special?: boolean | null;
    price_date?: string | null;
    unit_per_prod?: number | null;
@@ -105,8 +103,8 @@ export default function ProductHeroSection({
    }, [resolvedProductId]);
 
    const currentPrice = typeof product?.current_price === "number" ? product.current_price : 0;
-   const oldPrice = typeof product?.best_price === "number" ? product.best_price : 0;
-   const savings = oldPrice > 0 && currentPrice > 0 ? oldPrice - currentPrice : 0;
+   const oldPrice = 0;
+   const savings = 0;
    const percent =
       oldPrice > 0 && currentPrice > 0
          ? Math.round(((oldPrice - currentPrice) / oldPrice) * 100)
@@ -132,7 +130,12 @@ export default function ProductHeroSection({
          product?.unit_per_prod && product?.measurement
             ? `${product.unit_per_prod}${product.measurement}`
             : "Standard",
-      unitPriceLabel: product?.unit_price || product?.best_unit_price || null,
+      unitPriceLabel: (() => {
+         const u = product?.unit_price;
+         if (u == null) return null;
+         const s = String(u).trim();
+         return s.length ? s : null;
+      })(),
       availability: "Available for delivery & pickup",
       updated: product?.price_date ? String(product.price_date) : "recently",
    };
