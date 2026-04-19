@@ -28,3 +28,23 @@ output "github_actions_service_account_private_key" {
   value       = module.github_actions_identity.github_actions_service_account_private_key
   sensitive   = true
 }
+
+output "backend_service_name" {
+  description = "The production backend Cloud Run service name."
+  value       = module.backend_service.name
+}
+
+output "backend_service_url" {
+  description = "The production backend Cloud Run service URL."
+  value       = module.backend_service.url
+}
+
+output "backend_mongo_secret_name" {
+  description = "The Secret Manager secret name for the production backend Mongo URI."
+  value       = google_secret_manager_secret.backend_mongo_uri.secret_id
+}
+
+output "backend_jwt_secret_name" {
+  description = "The Secret Manager secret name for the production backend JWT secret."
+  value       = google_secret_manager_secret.backend_jwt_secret.secret_id
+}

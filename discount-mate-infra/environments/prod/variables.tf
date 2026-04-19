@@ -49,3 +49,57 @@ variable "github_actions_service_account_id" {
   type        = string
   default     = "github-actions-prod"
 }
+
+variable "backend_service_name" {
+  description = "Cloud Run service name for the production backend."
+  type        = string
+  default     = "webdev-backend"
+}
+
+variable "backend_container_image" {
+  description = "Container image deployed to the production backend Cloud Run service."
+  type        = string
+  default     = "australia-southeast1-docker.pkg.dev/sit-26t1-discountmate-935cb94/discount-mate-images/webdev-backend:latest"
+}
+
+variable "backend_min_instance_count" {
+  description = "Minimum number of production backend Cloud Run instances."
+  type        = number
+  default     = 0
+}
+
+variable "backend_max_instance_count" {
+  description = "Maximum number of production backend Cloud Run instances."
+  type        = number
+  default     = 2
+}
+
+variable "backend_mongo_secret_name" {
+  description = "Secret Manager secret name for the backend Mongo connection string."
+  type        = string
+  default     = "webdev-backend-mongo-uri"
+}
+
+variable "backend_jwt_secret_name" {
+  description = "Secret Manager secret name for the backend JWT signing secret."
+  type        = string
+  default     = "webdev-backend-jwt-secret"
+}
+
+variable "mongo_uri" {
+  description = "Initial Mongo URI stored in Secret Manager for the production backend."
+  type        = string
+  sensitive   = true
+}
+
+variable "jwt_secret" {
+  description = "Initial JWT secret stored in Secret Manager for the production backend."
+  type        = string
+  sensitive   = true
+}
+
+variable "base_url" {
+  description = "Optional BASE_URL env var populated in a second apply using the created Cloud Run service URL."
+  type        = string
+  default     = null
+}

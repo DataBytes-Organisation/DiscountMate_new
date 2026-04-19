@@ -9,6 +9,7 @@ This repository currently manages:
 - One data bucket for `prod`
 - One Docker Artifact Registry repository for `prod`
 - One GitHub Actions service account and key for `prod`
+- One Cloud Run backend service and Secret Manager secrets for `prod`
 
 The layout is intentionally split by environment and uses shared modules so Cloud Run and PostgreSQL can be added later without restructuring the repo.
 
@@ -74,6 +75,8 @@ tofu apply
 - `environments/prod`: bucket `discount-mate-data`
 - `environments/prod`: Docker repository `australia-southeast1-docker.pkg.dev/<project>/discount-mate-images`
 - `environments/prod`: GitHub Actions CI/CD service account and service account key
+- `environments/prod`: Cloud Run service `webdev-backend`
+- `environments/prod`: Secret Manager secrets for backend Mongo URI and JWT secret
 
 ## Scaling later
 
@@ -91,7 +94,38 @@ The production Artifact Registry output can be used directly as the base path fo
 australia-southeast1-docker.pkg.dev/<project>/discount-mate-images/app:<tag>
 ```
 
-The production GitHub Actions CI/CD service account is granted Artifact Registry write access on the prod repository so GitHub can push images.
+The production GitHub Actions CI/CD service account is managed in this repository and reused as the Cloud Run runtime identity for the backend service.
+
+## Prod Backend Cloud Run
+
+The production backend service is deployed to Cloud Run using:
+
+- service name `webdev-backend`
+- image `australia-southeast1-docker.pkg.dev/sit-26t1-discountmate-935cb94/discount-mate-images/webdev-backend:latest`
+- public unauthenticated HTTPS access
+- runtime service account equal to the existing GitHub Actions service account
+
+The backend receives these environment variables:
+
+- `PORT=8080`
+- `GOOGLE_CLOUD_PROJECT=<project_id>`
+- `MONGO_URI` from Secret Manager
+- `JWT_SECRET` from Secret Manager
+
+Terraform creates the following secrets and initial secret versions:
+
+- `webdev-backend-mongo-uri`
+- `webdev-backend-jwt-secret`
+
+These are standard Secret Manager secrets with user-managed replication pinned to the prod region.
+
+The initial secret values are supplied via Terraform inputs, which means they are stored in Terraform state.
+
+If the application needs `BASE_URL` to equal the generated Cloud Run URL, use a two-step apply:
+
+1. Apply with `base_url = null`.
+2. Read the output `backend_service_url`.
+3. Set `base_url` to that URL and apply again.
 
 ## GitHub Actions Key Auth
 
