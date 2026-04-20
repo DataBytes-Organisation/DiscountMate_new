@@ -6,6 +6,12 @@ export type ShoppingListLineItem = {
    price: number;
    quantity: number;
    store?: string;
+   image?: string;
+   retailerPrices?: {
+      coles?: number;
+      woolworths?: number;
+      iga?: number;
+   };
 };
 
 export type ShoppingList = {

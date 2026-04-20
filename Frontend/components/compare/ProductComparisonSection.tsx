@@ -265,6 +265,12 @@ export default function ProductComparisonSection() {
                                           name: row.name,
                                           price: best.bestPrice,
                                           store: storeLabel(best.bestStore),
+                                          image: row.imageUrl,
+                                          retailerPrices: {
+                                             coles: row.stores.coles.price,
+                                             woolworths: row.stores.woolworths.price,
+                                             iga: row.stores.aldi.price,
+                                          },
                                        });
                                     }}
                                  >

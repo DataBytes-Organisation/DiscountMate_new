@@ -1,8 +1,8 @@
-import React, { useMemo } from "react";
-import { View, Text, Pressable, Alert, Platform } from "react-native";
+import React, { useMemo, useState } from "react";
+import { View, Text, Pressable, Alert, Platform, Image, Modal } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { listAnalytics, type ShoppingList } from "../../types/ShoppingList";
+import { listAnalytics, type ShoppingList, type ShoppingListLineItem } from "../../types/ShoppingList";
 import { accentBar, accentDot } from "./accentStyles";
 
 type Props = {
@@ -20,6 +20,8 @@ export default function MyListsSelectedListDetailsSection({
    onDelete,
    onSetActive,
 }: Props) {
+   const [previewItem, setPreviewItem] = useState<ShoppingListLineItem | null>(null);
+
    const itemCount = useMemo(
       () => (list ? list.items.reduce((total, item) => total + item.quantity, 0) : 0),
       [list]
@@ -28,6 +30,60 @@ export default function MyListsSelectedListDetailsSection({
    const categoryRows = useMemo(() => {
       if (!list) return [];
       return listAnalytics(list).categoryMix;
+   }, [list]);
+   const previewRetailers = useMemo(() => {
+      if (!previewItem) return null;
+
+      const retailerRows: Array<{
+         key: "coles" | "woolworths" | "iga";
+         name: string;
+         price: number | null;
+      }> = [
+         {
+            key: "coles",
+            name: "Coles",
+            price:
+               typeof previewItem.retailerPrices?.coles === "number" ? previewItem.retailerPrices.coles : null,
+         },
+         {
+            key: "woolworths",
+            name: "Woolworths",
+            price:
+               typeof previewItem.retailerPrices?.woolworths === "number"
+                  ? previewItem.retailerPrices.woolworths
+                  : null,
+         },
+         {
+            key: "iga",
+            name: "IGA",
+            price: typeof previewItem.retailerPrices?.iga === "number" ? previewItem.retailerPrices.iga : null,
+         },
+      ];
+
+      const availablePrices = retailerRows
+         .map((row) => row.price)
+         .filter((price): price is number => typeof price === "number" && price > 0);
+      const lowestPrice = availablePrices.length > 0 ? Math.min(...availablePrices) : null;
+
+      return retailerRows.map((row) => ({
+         ...row,
+         isCheapest: lowestPrice != null && row.price === lowestPrice,
+      }));
+   }, [previewItem]);
+   const savingsSummary = useMemo(() => {
+      if (!list) return null;
+      const optimizedTotal = list.total;
+      const totalSavings = Math.max(0, list.savings);
+      const originalTotal = optimizedTotal + totalSavings;
+      const savingsFromDiscounts = totalSavings * 0.6;
+      const savingsFromBestPrices = totalSavings * 0.4;
+      return {
+         originalTotal,
+         optimizedTotal,
+         totalSavings,
+         savingsFromDiscounts,
+         savingsFromBestPrices,
+      };
    }, [list]);
 
    if (!list) {
@@ -54,7 +110,8 @@ export default function MyListsSelectedListDetailsSection({
    };
 
    return (
-      <View className="bg-white rounded-3xl border border-gray-200 px-6 py-8 shadow-sm mt-8 mb-2">
+      <>
+         <View className="bg-white rounded-3xl border border-gray-200 px-6 py-8 shadow-sm mt-8 mb-2">
          <View className="flex-row items-start justify-between mb-5 gap-4">
             <View className="flex-row items-center gap-2 flex-1">
                <View className={`w-3 h-3 rounded-full ${accentDot[list.accent]}`} />
@@ -126,6 +183,53 @@ export default function MyListsSelectedListDetailsSection({
                   </View>
                </View>
 
+               <View className="mb-4">
+                  <Text className="text-xs text-gray-500 font-semibold uppercase mb-2">
+                     Items in this list
+                  </Text>
+                  {list.items.length === 0 ? (
+                     <Text className="text-sm text-gray-500">No items yet.</Text>
+                  ) : (
+                     <View className="gap-2">
+                        {list.items.slice(0, 6).map((item) => (
+                           <Pressable
+                              key={item.id}
+                              onPress={() => setPreviewItem(item)}
+                              className="flex-row items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2"
+                           >
+                              <View className="flex-row items-center gap-3 flex-1 min-w-0">
+                                 <View className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 items-center justify-center">
+                                    {item.image ? (
+                                       <Image
+                                          source={{ uri: item.image }}
+                                          style={{ width: "100%", height: "100%" }}
+                                          resizeMode="cover"
+                                       />
+                                    ) : (
+                                       <FontAwesome6 name="bag-shopping" size={14} color="#9CA3AF" />
+                                    )}
+                                 </View>
+                                 <View className="flex-1 min-w-0">
+                                    <Text className="text-sm font-semibold text-gray-900" numberOfLines={1}>
+                                       {item.name}
+                                    </Text>
+                                    <Text className="text-xs text-gray-500">
+                                       {item.store ? `${item.store} • ` : ""}${item.price.toFixed(2)} each
+                                    </Text>
+                                 </View>
+                              </View>
+                              <Text className="text-sm font-semibold text-gray-700">x{item.quantity}</Text>
+                           </Pressable>
+                        ))}
+                        {list.items.length > 6 ? (
+                           <Text className="text-xs text-gray-500">
+                              +{list.items.length - 6} more items
+                           </Text>
+                        ) : null}
+                     </View>
+                  )}
+               </View>
+
                <View className="pt-3 border-t border-gray-100">
                   <View className="flex-row items-center">
                      <Text className="text-xs text-gray-500">Created {list.createdLabel}</Text>
@@ -157,9 +261,131 @@ export default function MyListsSelectedListDetailsSection({
                      ))}
                   </View>
                )}
+
+               <View className="mt-6 rounded-2xl bg-gradient-to-b from-emerald-50/70 to-white p-4 shadow-sm">
+                  <Text className="text-xl font-bold text-gray-900 mb-4">Savings Summary</Text>
+
+                  <SummaryRow
+                     label="Original total"
+                     value={`$${savingsSummary?.originalTotal.toFixed(2) ?? "0.00"}`}
+                     showDivider={false}
+                  />
+                  <SummaryRow
+                     label="Optimized total"
+                     value={`$${savingsSummary?.optimizedTotal.toFixed(2) ?? "0.00"}`}
+                     showDivider={false}
+                  />
+
+                  <View className="h-px bg-emerald-100 my-3" />
+
+                  <View className="flex-row items-center justify-between mb-3">
+                     <Text className="text-base font-semibold text-gray-900">Total savings</Text>
+                     <Text className="text-3xl font-bold text-primary_green">
+                        ${savingsSummary?.totalSavings.toFixed(2) ?? "0.00"}
+                     </Text>
+                  </View>
+
+                  <View className="bg-white/80 rounded-xl px-3 py-3">
+                     <Text className="text-xs font-semibold text-gray-500 uppercase mb-2 tracking-wide">
+                        Savings breakdown
+                     </Text>
+                     <View className="flex-row items-center justify-between mb-1.5">
+                        <Text className="text-sm text-gray-600">Discount offers</Text>
+                        <Text className="text-sm font-semibold text-gray-800">
+                           ${savingsSummary?.savingsFromDiscounts.toFixed(2) ?? "0.00"}
+                        </Text>
+                     </View>
+                     <View className="flex-row items-center justify-between">
+                        <Text className="text-sm text-gray-600">Best retailer price</Text>
+                        <Text className="text-sm font-semibold text-gray-800">
+                           ${savingsSummary?.savingsFromBestPrices.toFixed(2) ?? "0.00"}
+                        </Text>
+                     </View>
+                  </View>
+               </View>
             </View>
          </View>
-      </View>
+         </View>
+
+         <Modal
+            visible={previewItem != null}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setPreviewItem(null)}
+         >
+            <Pressable
+               className="flex-1 bg-black/45 items-center justify-center px-4"
+               onPress={() => setPreviewItem(null)}
+            >
+               <Pressable
+                  className="w-full max-w-[700px]"
+                  onPress={(e) => e.stopPropagation()}
+               >
+                  <View className="mb-3 flex-row justify-end">
+                     <Pressable
+                        onPress={() => setPreviewItem(null)}
+                        className="w-9 h-9 rounded-full bg-white/95 border border-gray-200 items-center justify-center"
+                     >
+                        <Ionicons name="close" size={20} color="#111827" />
+                     </Pressable>
+                  </View>
+                  {previewItem ? (
+                     <View className="rounded-2xl border border-gray-200 bg-white p-4">
+                        <View className="flex-row items-start gap-4">
+                           <View className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 items-center justify-center">
+                              {previewItem.image ? (
+                                 <Image
+                                    source={{ uri: previewItem.image }}
+                                    style={{ width: "100%", height: "100%" }}
+                                    resizeMode="cover"
+                                 />
+                              ) : (
+                                 <FontAwesome6 name="bag-shopping" size={18} color="#9CA3AF" />
+                              )}
+                           </View>
+                           <View className="flex-1 min-w-0">
+                              <Text className="text-xl font-bold text-gray-900" numberOfLines={2}>
+                                 {previewItem.name}
+                              </Text>
+                              <Text className="text-sm text-gray-500 mt-1">
+                                 {previewItem.store ? `Selected retailer: ${previewItem.store}` : "No retailer selected"}
+                              </Text>
+                              <Text className="text-sm text-gray-500">
+                                 Quantity: {previewItem.quantity}
+                              </Text>
+                           </View>
+                        </View>
+
+                        <View className="mt-4 border-t border-gray-100 pt-3">
+                           <Text className="text-xs font-semibold uppercase text-gray-500 mb-2">Retailer prices</Text>
+                           <View className="flex-row gap-2">
+                              {previewRetailers?.map((retailer) => (
+                                 <View
+                                    key={retailer.key}
+                                    className={`flex-1 rounded-lg px-3 py-2 border ${
+                                       retailer.isCheapest
+                                          ? "border-amber-300 bg-amber-50"
+                                          : "border-gray-200 bg-gray-50"
+                                    }`}
+                                 >
+                                    <Text className="text-xs text-gray-500">{retailer.name}</Text>
+                                    <Text
+                                       className={`text-base font-bold ${
+                                          retailer.isCheapest ? "text-amber-700" : "text-gray-900"
+                                       }`}
+                                    >
+                                       {typeof retailer.price === "number" ? `$${retailer.price.toFixed(2)}` : "-"}
+                                    </Text>
+                                 </View>
+                              ))}
+                           </View>
+                        </View>
+                     </View>
+                  ) : null}
+               </Pressable>
+            </Pressable>
+         </Modal>
+      </>
    );
 }
 
@@ -193,6 +419,25 @@ function StorePill({ label }: { label: string }) {
    return (
       <View className="px-3 py-1.5 rounded-full border border-gray-200 bg-gray-50">
          <Text className="text-xs font-semibold text-gray-700">{label}</Text>
+      </View>
+   );
+}
+
+function SummaryRow({
+   label,
+   value,
+   showDivider = true,
+}: {
+   label: string;
+   value: string;
+   showDivider?: boolean;
+}) {
+   return (
+      <View
+         className={`flex-row items-center justify-between py-2.5 ${showDivider ? "border-b border-gray-100" : ""}`}
+      >
+         <Text className="text-sm text-gray-700">{label}</Text>
+         <Text className="text-sm font-semibold text-gray-900">{value}</Text>
       </View>
    );
 }

@@ -7,6 +7,12 @@ type CartItem = {
    price: number;
    store?: string;
    quantity?: number;
+   image?: string;
+   retailerPrices?: {
+      coles?: number;
+      woolworths?: number;
+      iga?: number;
+   };
 };
 
 type CartContextType = {
@@ -40,6 +46,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             price: item.price,
             store: item.store,
             quantity: item.quantity,
+            image: item.image,
+            retailerPrices: item.retailerPrices,
          })),
       [activeList]
    );

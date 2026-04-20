@@ -96,6 +96,12 @@ type ActiveListItemInput = {
    price: number;
    quantity?: number;
    store?: string;
+   image?: string;
+   retailerPrices?: {
+      coles?: number;
+      woolworths?: number;
+      iga?: number;
+   };
 };
 
 function computeListTotal(items: ShoppingListLineItem[]) {
@@ -118,6 +124,11 @@ type ShoppingListsContextValue = {
    replaceActiveListItems: (items: ActiveListItemInput[]) => void;
    removeItemFromList: (listId: string, itemId: string) => void;
    updateListItemQuantity: (listId: string, itemId: string, quantity: number) => void;
+   updateListItemRetailer: (
+      listId: string,
+      itemId: string,
+      retailer: "coles" | "woolworths" | "iga"
+   ) => void;
 };
 
 const ShoppingListsContext = createContext<ShoppingListsContextValue | undefined>(undefined);
@@ -273,6 +284,42 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
       );
    }, []);
 
+   const updateListItemRetailer = useCallback(
+      (listId: string, itemId: string, retailer: "coles" | "woolworths" | "iga") => {
+         setLists((prev) =>
+            prev.map((list) => {
+               if (list.id !== listId) return list;
+
+               const nextItems = list.items.map((item) => {
+                  if (item.id !== itemId) return item;
+
+                  const selectedPrice = item.retailerPrices?.[retailer];
+                  if (typeof selectedPrice !== "number" || selectedPrice <= 0) {
+                     return item;
+                  }
+
+                  const storeName =
+                     retailer === "iga" ? "IGA" : retailer === "coles" ? "Coles" : "Woolworths";
+
+                  return {
+                     ...item,
+                     store: storeName,
+                     price: selectedPrice,
+                  };
+               });
+
+               return {
+                  ...list,
+                  items: nextItems,
+                  total: computeListTotal(nextItems),
+                  updatedLabel: "Just now",
+               };
+            })
+         );
+      },
+      []
+   );
+
    const addItemToActiveList = useCallback((item: ActiveListItemInput) => {
       setLists((prev) =>
          prev.map((list) => {
@@ -290,6 +337,8 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
                   quantity: existing.quantity + qtyToAdd,
                   price: item.price,
                   store: item.store ?? existing.store,
+                  image: item.image ?? existing.image,
+                  retailerPrices: item.retailerPrices ?? existing.retailerPrices,
                };
             } else {
                nextItems = [
@@ -300,6 +349,8 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
                      price: item.price,
                      quantity: qtyToAdd,
                      store: item.store,
+                     image: item.image,
+                     retailerPrices: item.retailerPrices,
                   },
                ];
             }
@@ -348,6 +399,8 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
                price: item.price,
                quantity: Math.max(1, item.quantity ?? 1),
                store: item.store,
+               image: item.image,
+               retailerPrices: item.retailerPrices,
             }));
             return {
                ...list,
@@ -386,6 +439,7 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
          replaceActiveListItems,
          removeItemFromList,
          updateListItemQuantity,
+         updateListItemRetailer,
       }),
       [
          lists,
@@ -403,6 +457,7 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
          replaceActiveListItems,
          removeItemFromList,
          updateListItemQuantity,
+         updateListItemRetailer,
       ]
    );
 

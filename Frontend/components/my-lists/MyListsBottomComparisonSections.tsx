@@ -14,7 +14,7 @@ export default function MyListsBottomComparisonSections({
    return (
       <>
          <View className="mt-4">
-            <BasketComparisonSection selectedList={selectedList} useStaticStoreTotals />
+            <BasketComparisonSection selectedList={selectedList} />
          </View>
          <View className="mt-12">
             <MultiStoreShoppingStrategySection selectedList={selectedList} />
