@@ -5,6 +5,7 @@ export type ShoppingListLineItem = {
    name: string;
    price: number;
    quantity: number;
+   store?: string;
 };
 
 export type ShoppingList = {
@@ -12,6 +13,8 @@ export type ShoppingList = {
    name: string;
    description: string;
    accent: ShoppingListAccent;
+   /** Display string until real timestamps come from the API */
+   createdLabel: string;
    /** Display string until real timestamps come from the API */
    updatedLabel: string;
    items: ShoppingListLineItem[];

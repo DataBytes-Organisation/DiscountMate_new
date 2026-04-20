@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Dime
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from './AuthContext';
 import { Picker } from '@react-native-picker/picker';
-import { API_URL } from '../../constants/Api';
+import { API_BASE_URL, API_URL } from '../../constants/Api';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -98,7 +98,7 @@ export default function Login() {
       }
 
       try {
-         const response = await fetch('http://localhost:3000/verify-2fa', {
+         const response = await fetch(`${API_BASE_URL}/verify-2fa`, {
             method: 'POST',
             headers: {
                'Content-Type': 'application/json',

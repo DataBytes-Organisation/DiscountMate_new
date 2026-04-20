@@ -3,6 +3,8 @@ import { View, Text, Pressable, ScrollView } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useCart } from "../../app/(tabs)/CartContext";
+import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
+import type { ShoppingList } from "../../types/ShoppingList";
 
 type StoreKey = "aldi" | "coles" | "woolworths";
 
@@ -12,7 +14,13 @@ type BasketItem = {
    subtitle: string;
    qty: number;
    icon: string;
+   lineTotal: number;
    prices: Record<StoreKey, number>; // per-item total for that qty (like the table)
+};
+
+type BasketComparisonSectionProps = {
+   selectedList?: ShoppingList | null;
+   useStaticStoreTotals?: boolean;
 };
 
 // Helper function to generate store prices based on base price
@@ -42,13 +50,33 @@ const getIconForProduct = (name: string): string => {
    return "bag-shopping";
 };
 
-export default function BasketComparisonSection() {
+export default function BasketComparisonSection({
+   selectedList,
+   useStaticStoreTotals = false,
+}: BasketComparisonSectionProps) {
    const router = useRouter();
    const { cartItems, removeFromCart, updateQuantity } = useCart();
+   const {
+      getActiveList,
+      updateListItemQuantity,
+      removeItemFromList,
+   } = useShoppingLists();
+   const activeList = getActiveList();
+   const activeListName = activeList?.name ?? "Your Grocery List";
+   const displayedListName = selectedList?.name ?? activeListName;
+   const sourceItems =
+      selectedList?.items ??
+      cartItems.map((item) => ({
+         id: item.id,
+         name: item.name,
+         price: item.price,
+         quantity: item.quantity || 1,
+         store: item.store,
+      }));
 
    // Convert cart items to basket items format with store prices
    const basketItems: BasketItem[] = useMemo(() => {
-      return cartItems.map((item) => {
+      return sourceItems.map((item) => {
          const quantity = item.quantity || 1;
          const prices = generateStorePrices(item.price, quantity);
 
@@ -58,10 +86,13 @@ export default function BasketComparisonSection() {
             subtitle: item.store || "Available at all stores",
             qty: quantity,
             icon: getIconForProduct(item.name),
+            lineTotal: item.price * quantity,
             prices,
          };
       });
-   }, [cartItems]);
+   }, [sourceItems]);
+
+   const targetListId = selectedList?.id ?? activeList?.id ?? null;
 
    const bestStoreForItem = (item: BasketItem) => {
       const entries = Object.entries(item.prices) as [StoreKey, number][];
@@ -74,6 +105,14 @@ export default function BasketComparisonSection() {
 
    // Calculate store totals from basket items
    const storeTotals = useMemo(() => {
+      if (useStaticStoreTotals) {
+         return {
+            aldi: 123.0,
+            coles: 131.03,
+            woolworths: 133.7,
+         };
+      }
+
       const totals: Record<StoreKey, number> = {
          aldi: 0,
          coles: 0,
@@ -87,7 +126,7 @@ export default function BasketComparisonSection() {
       });
 
       return totals;
-   }, [basketItems]);
+   }, [basketItems, useStaticStoreTotals]);
 
    // Find cheapest store
    const cheapestStore: StoreKey = useMemo(() => {
@@ -104,6 +143,14 @@ export default function BasketComparisonSection() {
 
    // Calculate wins per store
    const wins = useMemo(() => {
+      if (useStaticStoreTotals) {
+         return {
+            aldi: 6,
+            coles: 0,
+            woolworths: 0,
+         } satisfies Record<StoreKey, number>;
+      }
+
       const winCounts: Record<StoreKey, number> = {
          aldi: 0,
          coles: 0,
@@ -116,10 +163,14 @@ export default function BasketComparisonSection() {
       });
 
       return winCounts;
-   }, [basketItems]);
+   }, [basketItems, useStaticStoreTotals]);
 
    // For the progress bars in store totals card
    const winPercent = (store: StoreKey) => {
+      if (useStaticStoreTotals) {
+         return store === "aldi" ? 100 : 0;
+      }
+
       const totalItems = basketItems.length;
       if (totalItems === 0) return 0;
       return Math.round((wins[store] / totalItems) * 100);
@@ -162,7 +213,7 @@ export default function BasketComparisonSection() {
                <View className="flex-[2] bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
                   <View className="flex-row items-center justify-between mb-4">
                      <Text className="text-lg font-bold text-gray-900">
-                        Your Grocery List{" "}
+                        {displayedListName}{" "}
                         <Text className="text-primary_green font-bold">
                            ({basketItems.length} items)
                         </Text>
@@ -201,10 +252,19 @@ export default function BasketComparisonSection() {
                               </View>
 
                               <View className="flex-row items-center gap-3">
+                                 <Text className="text-sm font-semibold text-gray-900 min-w-[72px] text-right">
+                                    ${item.lineTotal.toFixed(2)}
+                                 </Text>
                                  {/* Quantity controls */}
                                  <View className="flex-row items-center gap-2 border border-gray-200 rounded-lg">
                                     <Pressable
-                                       onPress={() => updateQuantity(item.id, item.qty - 1)}
+                                       onPress={() => {
+                                          if (targetListId) {
+                                             updateListItemQuantity(targetListId, item.id, item.qty - 1);
+                                          } else {
+                                             updateQuantity(item.id, item.qty - 1);
+                                          }
+                                       }}
                                        className="px-2 py-1"
                                     >
                                        <FontAwesome6 name="minus" size={12} color="#6B7280" />
@@ -213,7 +273,13 @@ export default function BasketComparisonSection() {
                                        {item.qty}
                                     </Text>
                                     <Pressable
-                                       onPress={() => updateQuantity(item.id, item.qty + 1)}
+                                       onPress={() => {
+                                          if (targetListId) {
+                                             updateListItemQuantity(targetListId, item.id, item.qty + 1);
+                                          } else {
+                                             updateQuantity(item.id, item.qty + 1);
+                                          }
+                                       }}
                                        className="px-2 py-1"
                                     >
                                        <FontAwesome6 name="plus" size={12} color="#6B7280" />
@@ -222,7 +288,13 @@ export default function BasketComparisonSection() {
 
                                  {/* Delete button */}
                                  <Pressable
-                                    onPress={() => removeFromCart(item.id)}
+                                    onPress={() => {
+                                       if (targetListId) {
+                                          removeItemFromList(targetListId, item.id);
+                                       } else {
+                                          removeFromCart(item.id);
+                                       }
+                                    }}
                                     className="p-2"
                                  >
                                     <FontAwesome6 name="trash" size={14} color="#EF4444" />
@@ -335,7 +407,13 @@ export default function BasketComparisonSection() {
                                        <View className="w-[90px] px-4 py-4">
                                           <View className="flex-row items-center gap-2 border border-gray-200 rounded-lg justify-center">
                                              <Pressable
-                                                onPress={() => updateQuantity(item.id, item.qty - 1)}
+                                                onPress={() => {
+                                                   if (targetListId) {
+                                                      updateListItemQuantity(targetListId, item.id, item.qty - 1);
+                                                   } else {
+                                                      updateQuantity(item.id, item.qty - 1);
+                                                   }
+                                                }}
                                                 className="px-1.5 py-1"
                                              >
                                                 <FontAwesome6 name="minus" size={10} color="#6B7280" />
@@ -344,7 +422,13 @@ export default function BasketComparisonSection() {
                                                 {item.qty}
                                              </Text>
                                              <Pressable
-                                                onPress={() => updateQuantity(item.id, item.qty + 1)}
+                                                onPress={() => {
+                                                   if (targetListId) {
+                                                      updateListItemQuantity(targetListId, item.id, item.qty + 1);
+                                                   } else {
+                                                      updateQuantity(item.id, item.qty + 1);
+                                                   }
+                                                }}
                                                 className="px-1.5 py-1"
                                              >
                                                 <FontAwesome6 name="plus" size={10} color="#6B7280" />

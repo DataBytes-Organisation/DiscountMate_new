@@ -8,7 +8,7 @@ import React, {
    type ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { ShoppingList, ShoppingListAccent } from "../../types/ShoppingList";
+import type { ShoppingList, ShoppingListAccent, ShoppingListLineItem } from "../../types/ShoppingList";
 
 const STORAGE_KEY = "@discountmate_shopping_lists_v1";
 
@@ -17,6 +17,18 @@ type PersistedShape = {
    activeListId: string | null;
 };
 
+function normalizeList(raw: ShoppingList): ShoppingList {
+   return {
+      ...raw,
+      description: raw.description ?? "",
+      createdLabel: raw.createdLabel ?? raw.updatedLabel ?? "Just now",
+      updatedLabel: raw.updatedLabel ?? "Just now",
+      items: Array.isArray(raw.items) ? raw.items : [],
+      total: typeof raw.total === "number" ? raw.total : 0,
+      savings: typeof raw.savings === "number" ? raw.savings : 0,
+   };
+}
+
 function seedLists(): ShoppingList[] {
    return [
       {
@@ -24,6 +36,7 @@ function seedLists(): ShoppingList[] {
          name: "Weekly Essentials",
          description: "Regular top-up shop",
          accent: "emerald",
+         createdLabel: "3 weeks ago",
          updatedLabel: "2 days ago",
          total: 90.0,
          savings: 8.9,
@@ -40,6 +53,7 @@ function seedLists(): ShoppingList[] {
          name: "Monthly Stock-up",
          description: "Pantry and household refill",
          accent: "amber",
+         createdLabel: "1 month ago",
          updatedLabel: "1 week ago",
          total: 150.0,
          savings: 17.2,
@@ -54,6 +68,7 @@ function seedLists(): ShoppingList[] {
          name: "Healthy Snacks",
          description: "Workweek grab-and-go",
          accent: "sky",
+         createdLabel: "2 weeks ago",
          updatedLabel: "2 days ago",
          total: 50.0,
          savings: 6.9,
@@ -75,6 +90,18 @@ type CreateListInput = {
    accent: ShoppingListAccent;
 };
 
+type ActiveListItemInput = {
+   id: string;
+   name: string;
+   price: number;
+   quantity?: number;
+   store?: string;
+};
+
+function computeListTotal(items: ShoppingListLineItem[]) {
+   return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+}
+
 type ShoppingListsContextValue = {
    lists: ShoppingList[];
    activeListId: string | null;
@@ -84,6 +111,13 @@ type ShoppingListsContextValue = {
    deleteList: (id: string) => void;
    getActiveList: () => ShoppingList | null;
    getListById: (id: string) => ShoppingList | undefined;
+   addItemToActiveList: (item: ActiveListItemInput) => void;
+   removeItemFromActiveList: (itemId: string) => void;
+   updateActiveListItemQuantity: (itemId: string, quantity: number) => void;
+   clearActiveListItems: () => void;
+   replaceActiveListItems: (items: ActiveListItemInput[]) => void;
+   removeItemFromList: (listId: string, itemId: string) => void;
+   updateListItemQuantity: (listId: string, itemId: string, quantity: number) => void;
 };
 
 const ShoppingListsContext = createContext<ShoppingListsContextValue | undefined>(undefined);
@@ -102,8 +136,9 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
             if (raw) {
                const parsed = JSON.parse(raw) as PersistedShape;
                if (Array.isArray(parsed.lists) && parsed.lists.length > 0) {
-                  setLists(parsed.lists);
-                  setActiveListIdState(parsed.activeListId ?? parsed.lists[0].id);
+                  const hydratedLists = parsed.lists.map(normalizeList);
+                  setLists(hydratedLists);
+                  setActiveListIdState(parsed.activeListId ?? hydratedLists[0].id);
                } else {
                   const seed = seedLists();
                   setLists(seed);
@@ -143,13 +178,14 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
          name: input.name.trim() || "Untitled list",
          description: input.description.trim(),
          accent: input.accent,
+         createdLabel: "Just now",
          updatedLabel: "Just now",
          total: 0,
          savings: 0,
          items: [],
       };
       setLists((prev) => [...prev, list]);
-      setActiveListIdState(list.id);
+      setActiveListIdState((current) => current ?? list.id);
       return list;
    }, []);
 
@@ -174,13 +210,154 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
 
    const deleteList = useCallback((id: string) => {
       setLists((prev) => {
+         const deletedIndex = prev.findIndex((l) => l.id === id);
          const next = prev.filter((l) => l.id !== id);
+
+         const fallbackActiveId =
+            deletedIndex >= 0
+               ? next[Math.min(deletedIndex, next.length - 1)]?.id ?? null
+               : next[0]?.id ?? null;
+
          setActiveListIdState((current) =>
-            current === id ? next[0]?.id ?? null : current
+            current === id ? fallbackActiveId : current
          );
          return next;
       });
    }, []);
+
+   const updateListItemQuantity = useCallback((listId: string, itemId: string, quantity: number) => {
+      if (quantity <= 0) {
+         setLists((prev) =>
+            prev.map((list) => {
+               if (list.id !== listId) return list;
+               const nextItems = list.items.filter((item) => item.id !== itemId);
+               return {
+                  ...list,
+                  items: nextItems,
+                  total: computeListTotal(nextItems),
+                  updatedLabel: "Just now",
+               };
+            })
+         );
+         return;
+      }
+
+      setLists((prev) =>
+         prev.map((list) => {
+            if (list.id !== listId) return list;
+            const nextItems = list.items.map((item) =>
+               item.id === itemId ? { ...item, quantity } : item
+            );
+            return {
+               ...list,
+               items: nextItems,
+               total: computeListTotal(nextItems),
+               updatedLabel: "Just now",
+            };
+         })
+      );
+   }, []);
+
+   const removeItemFromList = useCallback((listId: string, itemId: string) => {
+      setLists((prev) =>
+         prev.map((list) => {
+            if (list.id !== listId) return list;
+            const nextItems = list.items.filter((item) => item.id !== itemId);
+            return {
+               ...list,
+               items: nextItems,
+               total: computeListTotal(nextItems),
+               updatedLabel: "Just now",
+            };
+         })
+      );
+   }, []);
+
+   const addItemToActiveList = useCallback((item: ActiveListItemInput) => {
+      setLists((prev) =>
+         prev.map((list) => {
+            if (list.id !== activeListId) return list;
+
+            const qtyToAdd = Math.max(1, item.quantity ?? 1);
+            const existingIndex = list.items.findIndex((existing) => existing.id === item.id);
+            let nextItems: ShoppingListLineItem[];
+
+            if (existingIndex >= 0) {
+               nextItems = [...list.items];
+               const existing = nextItems[existingIndex];
+               nextItems[existingIndex] = {
+                  ...existing,
+                  quantity: existing.quantity + qtyToAdd,
+                  price: item.price,
+                  store: item.store ?? existing.store,
+               };
+            } else {
+               nextItems = [
+                  ...list.items,
+                  {
+                     id: item.id,
+                     name: item.name,
+                     price: item.price,
+                     quantity: qtyToAdd,
+                     store: item.store,
+                  },
+               ];
+            }
+
+            return {
+               ...list,
+               items: nextItems,
+               total: computeListTotal(nextItems),
+               updatedLabel: "Just now",
+            };
+         })
+      );
+   }, [activeListId]);
+
+   const removeItemFromActiveList = useCallback((itemId: string) => {
+      if (!activeListId) return;
+      removeItemFromList(activeListId, itemId);
+   }, [activeListId, removeItemFromList]);
+
+   const updateActiveListItemQuantity = useCallback((itemId: string, quantity: number) => {
+      if (!activeListId) return;
+      updateListItemQuantity(activeListId, itemId, quantity);
+   }, [activeListId, updateListItemQuantity]);
+
+   const clearActiveListItems = useCallback(() => {
+      setLists((prev) =>
+         prev.map((list) => {
+            if (list.id !== activeListId) return list;
+            return {
+               ...list,
+               items: [],
+               total: 0,
+               updatedLabel: "Just now",
+            };
+         })
+      );
+   }, [activeListId]);
+
+   const replaceActiveListItems = useCallback((items: ActiveListItemInput[]) => {
+      setLists((prev) =>
+         prev.map((list) => {
+            if (list.id !== activeListId) return list;
+            const nextItems: ShoppingListLineItem[] = items.map((item) => ({
+               id: item.id,
+               name: item.name,
+               price: item.price,
+               quantity: Math.max(1, item.quantity ?? 1),
+               store: item.store,
+            }));
+            return {
+               ...list,
+               items: nextItems,
+               total: computeListTotal(nextItems),
+               updatedLabel: "Just now",
+            };
+         })
+      );
+   }, [activeListId]);
 
    const getActiveList = useCallback((): ShoppingList | null => {
       if (!activeListId) return null;
@@ -202,6 +379,13 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
          deleteList,
          getActiveList,
          getListById,
+         addItemToActiveList,
+         removeItemFromActiveList,
+         updateActiveListItemQuantity,
+         clearActiveListItems,
+         replaceActiveListItems,
+         removeItemFromList,
+         updateListItemQuantity,
       }),
       [
          lists,
@@ -212,6 +396,13 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
          deleteList,
          getActiveList,
          getListById,
+         addItemToActiveList,
+         removeItemFromActiveList,
+         updateActiveListItemQuantity,
+         clearActiveListItems,
+         replaceActiveListItems,
+         removeItemFromList,
+         updateListItemQuantity,
       ]
    );
 

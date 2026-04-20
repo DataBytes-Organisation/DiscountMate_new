@@ -34,8 +34,12 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
    const router = useRouter();
    const [showMenu, setShowMenu] = useState(false);
    const [showCartPopover, setShowCartPopover] = useState(false);
-   const { getTotalItems } = useCart();
+   const { cartItems, getTotalItems } = useCart();
    const cartItemCount = getTotalItems();
+   const cartTotal = cartItems.reduce(
+      (sum, item) => sum + item.price * (item.quantity || 1),
+      0
+   );
 
    const handleLogout = async () => {
       await AsyncStorage.removeItem("authToken");
@@ -129,8 +133,8 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
                   <Text className="text-sm font-semibold text-[#111827]">
                      {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'}
                   </Text>
-                  <Text className="text-sm font-bold text-primary_green">
-                     $12.40 saved
+                  <Text className="text-sm font-bold text-gray-900">
+                     ${cartTotal.toFixed(2)}
                   </Text>
                </View>
             </Pressable>

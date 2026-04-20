@@ -3,6 +3,7 @@ import { View, Text, Pressable, Modal, ScrollView } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useCart } from "../../app/(tabs)/CartContext";
+import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 
 type CartPopoverProps = {
    visible: boolean;
@@ -12,6 +13,8 @@ type CartPopoverProps = {
 export default function CartPopover({ visible, onClose }: CartPopoverProps) {
    const router = useRouter();
    const { cartItems, getTotalItems } = useCart();
+   const { getActiveList } = useShoppingLists();
+   const activeListName = getActiveList()?.name ?? "Your Grocery List";
 
    const totalItems = getTotalItems();
    const totalPrice = cartItems.reduce(
@@ -21,7 +24,7 @@ export default function CartPopover({ visible, onClose }: CartPopoverProps) {
 
    const handleGoToCompare = () => {
       onClose();
-      router.push("/(tabs)/compare");
+      router.push("/(tabs)/my-lists");
    };
 
    return (
@@ -43,7 +46,7 @@ export default function CartPopover({ visible, onClose }: CartPopoverProps) {
                <View className="px-6 py-5 border-b border-gray-200 flex-row items-center justify-between">
                   <View>
                      <Text className="text-2xl font-bold text-gray-900">
-                        Your Grocery List
+                        {activeListName}
                      </Text>
                      <Text className="text-sm text-gray-600 mt-1">
                         {totalItems} {totalItems === 1 ? "item" : "items"}
@@ -150,7 +153,7 @@ export default function CartPopover({ visible, onClose }: CartPopoverProps) {
                            onPress={handleGoToCompare}
                         >
                            <Text className="text-white text-lg font-semibold">
-                              View Grocery List Comparison
+                              View List
                            </Text>
                         </Pressable>
                      </View>

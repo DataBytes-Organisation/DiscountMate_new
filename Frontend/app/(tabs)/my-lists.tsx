@@ -1,20 +1,13 @@
 import React, { useMemo, useState } from "react";
-import {
-   View,
-   Text,
-   ScrollView,
-   Pressable,
-   useWindowDimensions,
-} from "react-native";
-import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { View, ScrollView, useWindowDimensions } from "react-native";
 import { useShoppingLists } from "./ShoppingListsContext";
-import ShoppingListCard from "../../components/my-lists/ShoppingListCard";
-import ListAnalyticsPanel from "../../components/my-lists/ListAnalyticsPanel";
 import EditShoppingListModal from "../../components/my-lists/EditShoppingListModal";
+import MyListsHeroSection from "../../components/my-lists/MyListsHeroSection";
+import MyListsListsSection from "../../components/my-lists/MyListsListsSection";
+import MyListsBottomComparisonSections from "../../components/my-lists/MyListsBottomComparisonSections";
+import MyListsSelectedListDetailsSection from "../../components/my-lists/MyListsSelectedListDetailsSection";
 import FooterSection from "../../components/home/FooterSection";
 import type { ShoppingList } from "../../types/ShoppingList";
-
-type MobileTab = "lists" | "insights";
 
 export default function MyListsScreen() {
    const { width } = useWindowDimensions();
@@ -27,25 +20,31 @@ export default function MyListsScreen() {
       createList,
       updateList,
       deleteList,
-      getListById,
    } = useShoppingLists();
 
    const [selectedListId, setSelectedListId] = useState<string | null>(null);
-   const [mobileTab, setMobileTab] = useState<MobileTab>("lists");
+   const [recentCreatedListId, setRecentCreatedListId] = useState<string | null>(null);
    const [modalOpen, setModalOpen] = useState(false);
    const [editingList, setEditingList] = useState<ShoppingList | null>(null);
 
    const effectiveSelectedId = selectedListId ?? activeListId;
-   const selectedList = effectiveSelectedId ? getListById(effectiveSelectedId) ?? null : null;
+   const selectedList = useMemo(
+      () => lists.find((list) => list.id === effectiveSelectedId) ?? null,
+      [lists, effectiveSelectedId]
+   );
 
    const sortedLists = useMemo(
       () =>
          [...lists].sort((a, b) => {
             if (a.id === activeListId) return -1;
             if (b.id === activeListId) return 1;
+            if (recentCreatedListId) {
+               if (a.id === recentCreatedListId) return -1;
+               if (b.id === recentCreatedListId) return 1;
+            }
             return a.name.localeCompare(b.name);
          }),
-      [lists, activeListId]
+      [lists, activeListId, recentCreatedListId]
    );
    const listColumnCount = useMemo(() => {
       if (width >= 1500) return 3;
@@ -87,9 +86,19 @@ export default function MyListsScreen() {
    }) => {
       if (editingList) {
          updateList(editingList.id, payload);
+         setRecentCreatedListId(null);
       } else {
-         createList(payload);
+         const createdList = createList(payload);
+         setRecentCreatedListId(createdList.id);
+         setSelectedListId(createdList.id);
       }
+   };
+
+   const handleDeleteList = (id: string) => {
+      deleteList(id);
+      setSelectedListId((current) => (current === id ? null : current));
+      setRecentCreatedListId((current) => (current === id ? null : current));
+      setEditingList((current) => (current?.id === id ? null : current));
    };
 
    return (
@@ -99,121 +108,74 @@ export default function MyListsScreen() {
             contentContainerStyle={{ paddingBottom: 0 }}
             nestedScrollEnabled
          >
-            <View className="px-4 md:px-8 py-10 bg-white border-b border-gray-100">
-               <View className="mb-6 items-center">
-                  <Text className="text-4xl font-bold text-gray-900 mb-2 text-center">My Lists</Text>
-                  <Text className="text-lg text-gray-600 text-center max-w-2xl">
-                     Create and organise lists, preview
-                     savings analytics.
-                  </Text>
-               </View>
-               <View className="flex-row flex-wrap items-center justify-center gap-3">
-                  <Pressable
-                     onPress={openCreate}
-                     className="flex-row items-center gap-2 px-6 py-3 rounded-2xl bg-primary_green"
-                  >
-                     <FontAwesome6 name="plus" size={14} color="#FFFFFF" />
-                     <Text className="text-base font-semibold text-white">New list</Text>
-                  </Pressable>
-               </View>
-            </View>
+            <MyListsHeroSection onCreate={openCreate} />
 
-            <View className="px-4 md:px-8 pt-6">
-               {!wide && (
-                  <View className="flex-row rounded-2xl border border-gray-200 bg-white p-1 mb-5">
-                     <Pressable
-                        onPress={() => setMobileTab("lists")}
-                        className={`flex-1 py-2.5 rounded-xl items-center ${mobileTab === "lists" ? "bg-primary_green" : ""
-                           }`}
-                     >
-                        <Text
-                           className={`text-sm font-semibold ${mobileTab === "lists" ? "text-white" : "text-gray-700"
-                              }`}
-                        >
-                           Lists
-                        </Text>
-                     </Pressable>
-                     <Pressable
-                        onPress={() => setMobileTab("insights")}
-                        className={`flex-1 py-2.5 rounded-xl items-center ${mobileTab === "insights" ? "bg-primary_green" : ""
-                           }`}
-                     >
-                        <Text
-                           className={`text-sm font-semibold ${mobileTab === "insights" ? "text-white" : "text-gray-700"
-                              }`}
-                        >
-                           Insights
-                        </Text>
-                     </Pressable>
-                  </View>
-               )}
-
-               <View className={`${wide ? "flex-row gap-6 items-start" : ""}`}>
-                  <View
-                     className={`${wide ? "flex-1 min-w-0" : ""} ${!wide && mobileTab === "insights" ? "hidden" : ""
-                        }`}
-                  >
-                     <Text className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                        Your lists ({lists.length})
-                     </Text>
-                     {listColumnCount === 1 ? (
-                        <View className="gap-4">
-                           {sortedLists.map((list) => (
-                              <ShoppingListCard
-                                 key={list.id}
-                                 list={list}
-                                 variant="full"
-                                 isActive={list.id === activeListId}
-                                 isSelected={list.id === effectiveSelectedId}
-                                 onPressCard={() => {
-                                    setSelectedListId(list.id);
-                                    if (!wide) setMobileTab("insights");
-                                 }}
-                                 onSetActive={() => setActiveList(list.id)}
-                                 onEdit={() => openEdit(list)}
-                                 onDelete={() => deleteList(list.id)}
-                              />
-                           ))}
-                        </View>
-                     ) : (
-                        <View className="flex-row items-start gap-4">
-                           {masonryColumns.map((column, columnIndex) => (
-                              <View key={`column-${columnIndex}`} className="flex-1 gap-4">
-                                 {column.map((list) => (
-                                    <ShoppingListCard
-                                       key={list.id}
-                                       list={list}
-                                       variant="full"
-                                       isActive={list.id === activeListId}
-                                       isSelected={list.id === effectiveSelectedId}
-                                       onPressCard={() => {
-                                          setSelectedListId(list.id);
-                                          if (!wide) setMobileTab("insights");
-                                       }}
-                                       onSetActive={() => setActiveList(list.id)}
-                                       onEdit={() => openEdit(list)}
-                                       onDelete={() => deleteList(list.id)}
-                                    />
-                                 ))}
-                              </View>
-                           ))}
-                        </View>
-                     )}
-                  </View>
-
+            <View className={wide ? "md:pr-8" : "px-4 md:px-8 pt-6"}>
+               <View className={`${wide ? "flex-row items-stretch gap-6" : ""}`}>
+                  <MyListsListsSection
+                     lists={sortedLists}
+                     masonryColumns={masonryColumns}
+                     listColumnCount={listColumnCount}
+                     activeListId={activeListId}
+                     effectiveSelectedId={effectiveSelectedId}
+                     wide={wide}
+                     show
+                     forceSingleColumn={wide}
+                     containerClassName={
+                        wide
+                           ? "w-[260px] shrink-0 bg-white border-r border-gray-100 shadow-sm p-4"
+                           : ""
+                     }
+                     cardVariant={wide ? "compact" : "full"}
+                     hideManageActions={wide}
+                     onSelectList={setSelectedListId}
+                     onSetActiveList={setActiveList}
+                     onEditList={openEdit}
+                     onDeleteList={handleDeleteList}
+                  />
                   {wide ? (
-                     <View className="w-[300px] shrink-0">
-                        <ListAnalyticsPanel list={selectedList} />
-                     </View>
-                  ) : (
-                     mobileTab === "insights" && (
-                        <View className="mt-2">
-                           <ListAnalyticsPanel list={selectedList} />
+                     <View className="flex-1 min-w-0">
+                        <View className="px-4 md:px-8">
+                           <MyListsSelectedListDetailsSection
+                              list={selectedList}
+                              isActive={selectedList?.id === activeListId}
+                              onEdit={() => {
+                                 if (selectedList) openEdit(selectedList);
+                              }}
+                              onDelete={() => {
+                                 if (selectedList) handleDeleteList(selectedList.id);
+                              }}
+                              onSetActive={() => {
+                                 if (selectedList) setActiveList(selectedList.id);
+                              }}
+                           />
                         </View>
-                     )
-                  )}
+                        <MyListsBottomComparisonSections selectedList={selectedList} />
+                     </View>
+                  ) : null}
                </View>
             </View>
+
+            {!wide ? (
+               <>
+                  <View className="px-4 md:px-8 pt-6">
+                     <MyListsSelectedListDetailsSection
+                        list={selectedList}
+                        isActive={selectedList?.id === activeListId}
+                        onEdit={() => {
+                           if (selectedList) openEdit(selectedList);
+                        }}
+                        onDelete={() => {
+                           if (selectedList) handleDeleteList(selectedList.id);
+                        }}
+                        onSetActive={() => {
+                           if (selectedList) setActiveList(selectedList.id);
+                        }}
+                     />
+                  </View>
+                  <MyListsBottomComparisonSections selectedList={selectedList} />
+               </>
+            ) : null}
 
             <View className="mt-12">
                <FooterSection disableEdgeOffset />

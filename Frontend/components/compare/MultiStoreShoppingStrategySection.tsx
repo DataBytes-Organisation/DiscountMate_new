@@ -1,19 +1,30 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import type { ShoppingList } from "../../types/ShoppingList";
 
-export default function MultiStoreShoppingStrategySection() {
+type MultiStoreShoppingStrategySectionProps = {
+   selectedList?: ShoppingList | null;
+};
+
+export default function MultiStoreShoppingStrategySection({
+   selectedList,
+}: MultiStoreShoppingStrategySectionProps) {
+   const baseTotal = selectedList?.total ?? 38.48;
+   const selectedItemCount =
+      selectedList?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 8;
+
    const singleStore = {
-      totalCost: 38.48,
-      savings: 11.32,
+      totalCost: baseTotal,
+      savings: baseTotal * 0.24,
       storesToVisit: 1,
       storeName: "Aldi",
    };
 
    const multiStore = {
-      totalCost: 36.1,
-      savings: 13.7,
-      storesToVisit: 2,
+      totalCost: baseTotal * 0.94,
+      savings: baseTotal * 0.3,
+      storesToVisit: selectedItemCount > 0 ? 2 : 1,
    };
 
    const extraSavings = (singleStore.totalCost - multiStore.totalCost).toFixed(2);
@@ -110,7 +121,7 @@ export default function MultiStoreShoppingStrategySection() {
                         Extra savings with multi-store: ${extraSavings}
                      </Text>
                      <Text className="text-white/90 text-sm">
-                        Shop 4 items at Aldi, 4 items at Coles
+                        Shop smarter across stores for your selected list
                      </Text>
                   </View>
 
