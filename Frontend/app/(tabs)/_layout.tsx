@@ -2,10 +2,7 @@ import React from "react";
 import { View, ScrollView } from "react-native";
 import { Slot, useSegments } from "expo-router";
 import AppHeader from "../../components/layout/Header";
-import CategoryTabs from "../../components/layout/CategoryTabs";
 import SearchBar from "../../components/layout/SearchBar";
-import { UserProfileProvider } from "../../context/UserProfileContext";
-import { NotificationCenterProvider } from "../../context/NotificationCenterContext";
 
 export default function TabsLayout() {
    const segments = useSegments();
@@ -20,14 +17,7 @@ export default function TabsLayout() {
    const isMyListsPage = segments.includes("my-lists");
    const isProductDashboardPage = segments.includes("product-dashboard");
 
-   let activeRoute:
-      | "Home"
-      | "Compare"
-      | "Specials"
-      | "Grocery Lists"
-      | "Profile"
-      | "Dashboard" = "Home";
-
+   let activeRoute: "Home" | "Compare" | "Specials" | "Grocery Lists" | "Profile" | "Dashboard" = "Home";
    if (
       isProfilePage ||
       isNotificationsPage ||
@@ -46,45 +36,33 @@ export default function TabsLayout() {
    }
 
    return (
-      <UserProfileProvider>
-         <NotificationCenterProvider>
-            <View className="flex-1 bg-[#F3F4F6]">
-               <AppHeader activeRoute={activeRoute} />
-               {!isDashboardPage &&
-                  !isProductDashboardPage &&
-                  !isProfilePage &&
-                  !isNotificationsPage &&
-                  !isAlertSegmentsPage &&
-                  !isSubscriptionPage &&
-                  !isSupportPage &&
-                  !isPrivacyTermsPage && <CategoryTabs />}
-               {!isProfilePage &&
-                  !isNotificationsPage &&
-                  !isAlertSegmentsPage &&
-                  !isSubscriptionPage &&
-                  !isSupportPage &&
-                  !isPrivacyTermsPage &&
-                  !isComparePage &&
-                  !isMyListsPage &&
-                  !isDashboardPage &&
-                  !isProductDashboardPage && (
-                  <View className="mb-1">
-                     <SearchBar />
-                  </View>
-               )}
-
-               {isComparePage || isMyListsPage ? (
-                  <Slot />
-               ) : (
-                  <ScrollView
-                     className="flex-1"
-                     contentContainerStyle={{ paddingBottom: 24 }}
-                  >
-                     <Slot />
-                  </ScrollView>
-               )}
+      <View className="flex-1 bg-[#F3F4F6]">
+         <AppHeader activeRoute={activeRoute} />
+         {!isProfilePage &&
+            !isNotificationsPage &&
+            !isAlertSegmentsPage &&
+            !isSubscriptionPage &&
+            !isSupportPage &&
+            !isPrivacyTermsPage &&
+            !isComparePage &&
+            !isMyListsPage &&
+            !isDashboardPage &&
+            !isProductDashboardPage && (
+            <View className="mb-1">
+               <SearchBar />
             </View>
-         </NotificationCenterProvider>
-      </UserProfileProvider>
+         )}
+
+         {isComparePage || isMyListsPage ? (
+            <Slot />
+         ) : (
+            <ScrollView
+               className="flex-1"
+               contentContainerStyle={{ paddingBottom: 24 }}
+            >
+               <Slot />
+            </ScrollView>
+         )}
+      </View>
    );
 }
