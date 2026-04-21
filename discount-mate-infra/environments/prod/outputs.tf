@@ -48,3 +48,23 @@ output "backend_jwt_secret_name" {
   description = "The Secret Manager secret name for the production backend JWT secret."
   value       = google_secret_manager_secret.backend_jwt_secret.secret_id
 }
+
+output "postgres_instance_connection_name" {
+  description = "The production Cloud SQL PostgreSQL instance connection name."
+  value       = module.postgresql.connection_name
+}
+
+output "postgres_public_ip_address" {
+  description = "The public IP address of the production Cloud SQL PostgreSQL instance."
+  value       = module.postgresql.public_ip_address
+}
+
+output "postgres_database_name" {
+  description = "The production PostgreSQL database name."
+  value       = module.postgresql.database_name
+}
+
+output "postgres_user_name" {
+  description = "The production PostgreSQL application user name."
+  value       = module.postgresql.user_name
+}

@@ -1,8 +1,8 @@
 resource "google_cloud_run_v2_service" "this" {
-  project  = var.project_id
-  name     = var.service_name
-  location = var.region
-  ingress  = var.ingress
+  project             = var.project_id
+  name                = var.service_name
+  location            = var.region
+  ingress             = var.ingress
   deletion_protection = false
 
   template {

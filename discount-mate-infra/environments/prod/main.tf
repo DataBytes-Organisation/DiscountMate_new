@@ -7,6 +7,7 @@ locals {
     "iam.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
+    "sqladmin.googleapis.com",
   ])
 
   common_labels = merge(var.default_labels, {
@@ -121,13 +122,13 @@ module "backend_service" {
   container_port        = 8080
   env_vars = {
     GOOGLE_CLOUD_PROJECT = var.project_id
-    MONGO_URI = var.mongo_uri
-    JWT_SECRET = var.jwt_secret
+    MONGO_URI            = var.mongo_uri
+    JWT_SECRET           = var.jwt_secret
   }
-  base_url = var.base_url
-  min_instance_count    = var.backend_min_instance_count
-  max_instance_count    = var.backend_max_instance_count
-  ingress               = "INGRESS_TRAFFIC_ALL"
+  base_url           = var.base_url
+  min_instance_count = var.backend_min_instance_count
+  max_instance_count = var.backend_max_instance_count
+  ingress            = "INGRESS_TRAFFIC_ALL"
 
   depends_on = [
     google_project_service.enabled_apis,
@@ -136,4 +137,23 @@ module "backend_service" {
     # google_secret_manager_secret_iam_member.backend_mongo_uri_accessor,
     # google_secret_manager_secret_iam_member.backend_jwt_secret_accessor,
   ]
+}
+
+module "postgresql" {
+  source = "${local.repo_root}/modules/postgresql"
+
+  project_id          = var.project_id
+  region              = var.region
+  instance_name       = var.postgres_instance_name
+  database_version    = var.postgres_database_version
+  tier                = var.postgres_tier
+  disk_size_gb        = var.postgres_disk_size_gb
+  deletion_protection = false
+  ipv4_enabled        = true
+  authorized_networks = var.postgres_authorized_networks
+  database_name       = var.postgres_database_name
+  user_name           = var.postgres_user_name
+  user_password       = var.postgres_user_password
+
+  depends_on = [google_project_service.enabled_apis]
 }

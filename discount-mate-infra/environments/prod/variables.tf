@@ -103,3 +103,54 @@ variable "base_url" {
   type        = string
   default     = null
 }
+
+variable "postgres_instance_name" {
+  description = "Cloud SQL instance name for the production PostgreSQL database."
+  type        = string
+  default     = "discount-mate-prod-postgres"
+}
+
+variable "postgres_database_version" {
+  description = "Cloud SQL PostgreSQL engine version for production."
+  type        = string
+  default     = "POSTGRES_16"
+}
+
+variable "postgres_tier" {
+  description = "Cloud SQL machine tier for production PostgreSQL."
+  type        = string
+  default     = "db-f1-micro"
+}
+
+variable "postgres_disk_size_gb" {
+  description = "Initial disk size in GB for the production PostgreSQL instance."
+  type        = number
+  default     = 10
+}
+
+variable "postgres_database_name" {
+  description = "Logical PostgreSQL database name for production."
+  type        = string
+  default     = "discount_mate"
+}
+
+variable "postgres_user_name" {
+  description = "Application PostgreSQL user name for production."
+  type        = string
+  default     = "discount_mate_app"
+}
+
+variable "postgres_user_password" {
+  description = "Application PostgreSQL user password for production."
+  type        = string
+  sensitive   = true
+}
+
+variable "postgres_authorized_networks" {
+  description = "Named CIDR ranges allowed to connect to the public production PostgreSQL instance."
+  type = list(object({
+    name       = string
+    cidr_block = string
+  }))
+  default = []
+}

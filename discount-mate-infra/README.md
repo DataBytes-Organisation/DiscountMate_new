@@ -10,6 +10,7 @@ This repository currently manages:
 - One Docker Artifact Registry repository for `prod`
 - One GitHub Actions service account and key for `prod`
 - One Cloud Run backend service and Secret Manager secrets for `prod`
+- One Cloud SQL PostgreSQL instance for `prod`
 
 The layout is intentionally split by environment and uses shared modules so Cloud Run and PostgreSQL can be added later without restructuring the repo.
 
@@ -77,6 +78,7 @@ tofu apply
 - `environments/prod`: GitHub Actions CI/CD service account and service account key
 - `environments/prod`: Cloud Run service `webdev-backend`
 - `environments/prod`: Secret Manager secrets for backend Mongo URI and JWT secret
+- `environments/prod`: Cloud SQL PostgreSQL instance, one database, and one application user
 
 ## Scaling later
 
@@ -126,6 +128,20 @@ If the application needs `BASE_URL` to equal the generated Cloud Run URL, use a 
 1. Apply with `base_url = null`.
 2. Read the output `backend_service_url`.
 3. Set `base_url` to that URL and apply again.
+
+## Prod PostgreSQL
+
+The production PostgreSQL database is provisioned with Cloud SQL using:
+
+- instance name `discount-mate-prod-postgres`
+- PostgreSQL `POSTGRES_16`
+- public IPv4 enabled
+- one logical database `discount_mate`
+- one application user `discount_mate_app`
+
+Public access is limited with Cloud SQL authorized networks. Cloud SQL does not support native country-based allow rules, so the Australian restriction is implemented as a manually maintained CIDR allowlist in `postgres_authorized_networks`.
+
+The first rollout uses a small single-zone baseline and keeps backups and deletion protection disabled.
 
 ## GitHub Actions Key Auth
 
