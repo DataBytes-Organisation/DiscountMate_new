@@ -1,21 +1,14 @@
 const express = require('express');
 const userController = require('../controllers/user.controller');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
-// Configure multer storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadDir = path.join(__dirname, '../../uploads'); // or another directory
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // Ensure unique filenames
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024,
     },
 });
-
-const upload = multer({ storage: storage });
 
 // Define routes
 const router = express.Router();
@@ -117,6 +110,10 @@ router.post('/signin', userController.signin);
  *         description: Unauthorized - Invalid or missing token
  */
 router.get('/profile', userController.getProfile);
+router.put('/profile', userController.updateProfile);
+router.put('/change-password', userController.changePassword);
+router.get('/address-suggestions', userController.getAddressSuggestions);
+router.delete('/account', userController.deleteAccount);
 
 // Upload profile image
 /**
