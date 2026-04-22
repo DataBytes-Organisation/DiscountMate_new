@@ -1,4 +1,6 @@
 const rateLimit = require('express-rate-limit');
+const { logSecurityEvent } = require('../utils/securityLogger'); // security log helper
+
 
 const ipThrottle = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
