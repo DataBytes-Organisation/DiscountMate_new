@@ -2,6 +2,7 @@ const express = require('express');
 const { getProducts, getProduct } = require("../controllers/product.controller");
 const ipThrottle = require('../middleware/ipThrottle.middleware'); // NEW
 const { scraperSlowDown, suspiciousTrafficLogger } = require('../middleware/antiScraping.middleware'); // NEW
+const { logSecurityEvent } = require('../utils/securityLogger'); // NEW
 
 const router = express.Router();
 
@@ -25,6 +26,29 @@ router.get(
   ipThrottle, // NEW
   getProducts
 );
+/**
+ * Honeypot endpoint for bot detection
+ */
+router.get( // NEW
+  '/export-all', // NEW
+  suspiciousTrafficLogger, // NEW
+  scraperSlowDown, // NEW
+  ipThrottle, // NEW
+  (req, res) => { // NEW
+    logSecurityEvent({ // NEW
+      event: 'honeypot_triggered', // NEW
+      ip: req.ip, // NEW
+      method: req.method, // NEW
+      route: req.originalUrl, // NEW
+      details: ['decoy-endpoint-accessed'], // NEW
+    }); // NEW
+
+    return res.status(403).json({ // NEW
+      success: false, // NEW
+      message: 'Access denied.', // NEW
+    }); // NEW
+  } // NEW
+); // NEW
 
 /**
  * @swagger

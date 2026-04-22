@@ -1,4 +1,6 @@
 const slowDown = require('express-slow-down'); // imports request slow-down middleware
+const { logSecurityEvent } = require('../utils/securityLogger'); // security log helper
+
 
 const scraperSlowDown = slowDown({ // creates slow-down protection
   windowMs: 1 * 60 * 1000, // 1 minute window
