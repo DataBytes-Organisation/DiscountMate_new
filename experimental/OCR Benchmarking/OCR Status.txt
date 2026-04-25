@@ -1,0 +1,15 @@
+Status: Experimental / Near deployment.
+
+Model Yolo B chosen, OCR usses zone parsing and paddle OCR combined, some basic data cleaning will be utilised to find the final price. 
+
+Purpose:
+phase 3 of the catalogue pipelne requires digitizaton of the information into record format
+
+Current limitations:
+- OCR processing sometimes gets it wrong
+- in zome cases raw paddle or zoned tesseract is better able to recognisze the price
+- due to this all price ocr atempts will be recorded to serveral column fields
+
+
+Next steps:
+- combine all three methods to extract real data over the catagloue history. 
