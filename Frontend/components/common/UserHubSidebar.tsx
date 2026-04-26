@@ -46,7 +46,7 @@ const NAV_ITEMS: Array<{
    { key: "profile", label: "Profile Management", icon: "pen-to-square", route: "/(tabs)/profile" },
    { key: "subscription", label: "Subscription", icon: "star", route: "/(tabs)/subscription" },
    { key: "nearby", label: "Location & Nearby", icon: "location-dot" },
-   { key: "support", label: "Support", icon: "headset", route: "/(tabs)/contact" },
+   { key: "support", label: "Support", icon: "headset", route: "/contact" },
    { key: "privacy", label: "Privacy & Terms", icon: "shield-halved" },
 ];
 

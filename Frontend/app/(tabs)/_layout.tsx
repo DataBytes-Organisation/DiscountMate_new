@@ -15,11 +15,18 @@ export default function TabsLayout() {
    const isNotificationsPage = segments.includes("notifications");
    const isAlertSegmentsPage = segments.includes("alert-segments");
    const isSubscriptionPage = segments.includes("subscription");
+   const isSupportPage = segments.includes("contact");
    const isComparePage = segments.includes("compare");
    const isProductDashboardPage = segments.includes("product-dashboard");
 
    let activeRoute: "Home" | "Compare" | "Specials" | "My Lists" | "Profile" | undefined = "Home";
-   if (isProfilePage || isNotificationsPage || isAlertSegmentsPage || isSubscriptionPage) {
+   if (
+      isProfilePage ||
+      isNotificationsPage ||
+      isAlertSegmentsPage ||
+      isSubscriptionPage ||
+      isSupportPage
+   ) {
       activeRoute = "Profile";
    } else if (isComparePage) {
       activeRoute = "Compare";
@@ -33,8 +40,21 @@ export default function TabsLayout() {
             <NotificationCenterProvider>
                <View className="flex-1 bg-[#F3F4F6]">
                   <AppHeader activeRoute={activeRoute} />
-                  {!isDashboardPage && !isProductDashboardPage && !isProfilePage && !isNotificationsPage && !isAlertSegmentsPage && !isSubscriptionPage && <CategoryTabs />}
-                  {!isProfilePage && !isNotificationsPage && !isAlertSegmentsPage && !isSubscriptionPage && !isComparePage && !isDashboardPage && !isProductDashboardPage && (
+                  {!isDashboardPage &&
+                     !isProductDashboardPage &&
+                     !isProfilePage &&
+                     !isNotificationsPage &&
+                     !isAlertSegmentsPage &&
+                     !isSubscriptionPage &&
+                     !isSupportPage && <CategoryTabs />}
+                  {!isProfilePage &&
+                     !isNotificationsPage &&
+                     !isAlertSegmentsPage &&
+                     !isSubscriptionPage &&
+                     !isSupportPage &&
+                     !isComparePage &&
+                     !isDashboardPage &&
+                     !isProductDashboardPage && (
                      <View className="mb-1">
                         <SearchBar />
                      </View>
