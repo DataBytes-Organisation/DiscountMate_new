@@ -16,6 +16,7 @@ export default function TabsLayout() {
    const isAlertSegmentsPage = segments.includes("alert-segments");
    const isSubscriptionPage = segments.includes("subscription");
    const isSupportPage = segments.includes("contact");
+   const isPrivacyTermsPage = segments.includes("privacy-terms");
    const isComparePage = segments.includes("compare");
    const isProductDashboardPage = segments.includes("product-dashboard");
 
@@ -25,7 +26,8 @@ export default function TabsLayout() {
       isNotificationsPage ||
       isAlertSegmentsPage ||
       isSubscriptionPage ||
-      isSupportPage
+      isSupportPage ||
+      isPrivacyTermsPage
    ) {
       activeRoute = "Profile";
    } else if (isComparePage) {
@@ -46,12 +48,14 @@ export default function TabsLayout() {
                      !isNotificationsPage &&
                      !isAlertSegmentsPage &&
                      !isSubscriptionPage &&
-                     !isSupportPage && <CategoryTabs />}
+                     !isSupportPage &&
+                     !isPrivacyTermsPage && <CategoryTabs />}
                   {!isProfilePage &&
                      !isNotificationsPage &&
                      !isAlertSegmentsPage &&
                      !isSubscriptionPage &&
                      !isSupportPage &&
+                     !isPrivacyTermsPage &&
                      !isComparePage &&
                      !isDashboardPage &&
                      !isProductDashboardPage && (
