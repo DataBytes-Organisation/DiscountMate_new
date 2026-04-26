@@ -115,6 +115,8 @@ router.put('/change-password', userController.changePassword);
 router.get('/address-suggestions', userController.getAddressSuggestions);
 router.get('/notification-preferences', userController.getNotificationPreferences);
 router.put('/notification-preferences', userController.updateNotificationPreferences);
+router.get('/subscription', userController.getSubscription);
+router.put('/subscription', userController.updateSubscription);
 router.delete('/account', userController.deleteAccount);
 
 // Upload profile image

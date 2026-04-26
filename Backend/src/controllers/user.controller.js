@@ -249,6 +249,107 @@ function getDefaultNotificationPreferences() {
     };
 }
 
+const SUBSCRIPTION_PLAN_CONFIG = {
+    free: {
+        key: 'free',
+        label: 'Free',
+        price_label: '$0',
+        price_suffix: 'forever',
+        badge: null,
+        features: [
+            'Up to 5 active price and category alerts',
+            'Basic savings summary',
+            'Up to 3 saved lists',
+            'Basic nearby store access',
+        ],
+        limits: {
+            price_alerts: 5,
+            saved_lists: 3,
+        },
+    },
+    premium: {
+        key: 'premium',
+        label: 'Premium',
+        price_label: '$4.99',
+        price_suffix: '/ month',
+        badge: 'Most Popular',
+        features: [
+            'Unlimited price and category alerts',
+            'Expanded dashboard insights and history',
+            'Priority deal notifications',
+            'Extended nearby coverage',
+            'Early access to new features',
+        ],
+        limits: {
+            price_alerts: null,
+            saved_lists: null,
+        },
+    },
+    family: {
+        key: 'family',
+        label: 'Family',
+        price_label: '$9.99',
+        price_suffix: '/ month',
+        badge: null,
+        features: [
+            'Everything in Premium',
+            'Household-friendly plan management',
+            'Shared planning tools as they roll out',
+            'Family-focused savings visibility',
+            'Priority support access',
+        ],
+        limits: {
+            price_alerts: null,
+            saved_lists: null,
+        },
+    },
+};
+
+function normalizeSubscriptionPlan(plan) {
+    const normalized = String(plan || '').trim().toLowerCase();
+    if (normalized === 'premium' || normalized === 'family') {
+        return normalized;
+    }
+
+    return 'free';
+}
+
+function getSubscriptionPlanConfig(plan) {
+    return SUBSCRIPTION_PLAN_CONFIG[normalizeSubscriptionPlan(plan)];
+}
+
+function buildSubscriptionPlansResponse(currentPlan) {
+    const activePlan = normalizeSubscriptionPlan(currentPlan);
+
+    return Object.values(SUBSCRIPTION_PLAN_CONFIG).map((plan) => ({
+        key: plan.key,
+        label: plan.label,
+        price_label: plan.price_label,
+        price_suffix: plan.price_suffix,
+        badge: plan.badge,
+        current: plan.key === activePlan,
+        features: plan.features,
+        limits: plan.limits,
+    }));
+}
+
+function buildSubscriptionUsage(plan, usageCounts) {
+    const config = getSubscriptionPlanConfig(plan);
+
+    return {
+        price_alerts: {
+            label: 'Price Alerts',
+            used: Number(usageCounts?.price_alerts || 0),
+            limit: config.limits.price_alerts,
+        },
+        saved_lists: {
+            label: 'Saved Lists',
+            used: Number(usageCounts?.saved_lists || 0),
+            limit: config.limits.saved_lists,
+        },
+    };
+}
+
 function normalizeNotificationPreferences(preferences) {
     const defaults = getDefaultNotificationPreferences();
     const alertTypes = preferences?.alert_types || preferences?.alertTypes || {};
@@ -722,6 +823,112 @@ const updateNotificationPreferences = async (req, res) => {
     }
 };
 
+const getSubscription = async (req, res) => {
+    try {
+        const email = getAuthEmail(req);
+        const db = await connectToMongoDB();
+        if (!db) {
+            return res.status(500).json({ message: 'Database connection failed' });
+        }
+
+        const user = await db.collection('users').findOne(
+            { email },
+            {
+                projection: {
+                    subscription: 1,
+                    subscriptionPlan: 1,
+                    shoppingLists: 1,
+                },
+            }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const currentPlan = normalizeSubscriptionPlan(
+            user?.subscription?.plan || user?.subscriptionPlan || 'free'
+        );
+        const currentConfig = getSubscriptionPlanConfig(currentPlan);
+        const activeAlerts = await getActiveAlertsCount(db, user, email);
+        const shoppingLists = Number(user?.shoppingLists || 0);
+
+        return res.status(200).json({
+            current_plan: currentPlan,
+            current_plan_label: currentConfig.label,
+            current_price_label: currentConfig.price_label,
+            current_price_suffix: currentConfig.price_suffix,
+            plans: buildSubscriptionPlansResponse(currentPlan),
+            usage: buildSubscriptionUsage(currentPlan, {
+                price_alerts: activeAlerts,
+                saved_lists: shoppingLists,
+            }),
+        });
+    } catch (error) {
+        return handleControllerError(
+            res,
+            error,
+            'Failed to load subscription',
+            'Error fetching subscription:'
+        );
+    }
+};
+
+const updateSubscription = async (req, res) => {
+    try {
+        const email = getAuthEmail(req);
+        const db = await connectToMongoDB();
+        if (!db) {
+            return res.status(500).json({ message: 'Database connection failed' });
+        }
+
+        const user = await db.collection('users').findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const nextPlan = normalizeSubscriptionPlan(req.body?.plan);
+        const nextConfig = getSubscriptionPlanConfig(nextPlan);
+
+        await db.collection('users').updateOne(
+            { email },
+            {
+                $set: {
+                    subscription: {
+                        plan: nextPlan,
+                        updatedAt: new Date(),
+                    },
+                    subscriptionPlan: nextPlan,
+                    updatedAt: new Date(),
+                },
+            }
+        );
+
+        const activeAlerts = await getActiveAlertsCount(db, user, email);
+        const shoppingLists = Number(user?.shoppingLists || 0);
+
+        return res.status(200).json({
+            message: 'Subscription updated successfully',
+            current_plan: nextPlan,
+            current_plan_label: nextConfig.label,
+            current_price_label: nextConfig.price_label,
+            current_price_suffix: nextConfig.price_suffix,
+            plans: buildSubscriptionPlansResponse(nextPlan),
+            usage: buildSubscriptionUsage(nextPlan, {
+                price_alerts: activeAlerts,
+                saved_lists: shoppingLists,
+            }),
+        });
+    } catch (error) {
+        return handleControllerError(
+            res,
+            error,
+            'Failed to update subscription',
+            'Error updating subscription:'
+        );
+    }
+};
+
 const deleteAccount = async (req, res) => {
     try {
         const email = getAuthEmail(req);
@@ -874,6 +1081,8 @@ module.exports = {
     getAddressSuggestions,
     getNotificationPreferences,
     updateNotificationPreferences,
+    getSubscription,
+    updateSubscription,
     deleteAccount,
     updateProfileImage,
     getProfileImage,

@@ -14,11 +14,12 @@ export default function TabsLayout() {
    const isProfilePage = segments.includes("profile");
    const isNotificationsPage = segments.includes("notifications");
    const isAlertSegmentsPage = segments.includes("alert-segments");
+   const isSubscriptionPage = segments.includes("subscription");
    const isComparePage = segments.includes("compare");
    const isProductDashboardPage = segments.includes("product-dashboard");
 
    let activeRoute: "Home" | "Compare" | "Specials" | "My Lists" | "Profile" | undefined = "Home";
-   if (isProfilePage || isNotificationsPage || isAlertSegmentsPage) {
+   if (isProfilePage || isNotificationsPage || isAlertSegmentsPage || isSubscriptionPage) {
       activeRoute = "Profile";
    } else if (isComparePage) {
       activeRoute = "Compare";
@@ -32,8 +33,8 @@ export default function TabsLayout() {
             <NotificationCenterProvider>
                <View className="flex-1 bg-[#F3F4F6]">
                   <AppHeader activeRoute={activeRoute} />
-                  {!isDashboardPage && !isProductDashboardPage && !isProfilePage && !isNotificationsPage && !isAlertSegmentsPage && <CategoryTabs />}
-                  {!isProfilePage && !isNotificationsPage && !isAlertSegmentsPage && !isComparePage && !isDashboardPage && !isProductDashboardPage && (
+                  {!isDashboardPage && !isProductDashboardPage && !isProfilePage && !isNotificationsPage && !isAlertSegmentsPage && !isSubscriptionPage && <CategoryTabs />}
+                  {!isProfilePage && !isNotificationsPage && !isAlertSegmentsPage && !isSubscriptionPage && !isComparePage && !isDashboardPage && !isProductDashboardPage && (
                      <View className="mb-1">
                         <SearchBar />
                      </View>
