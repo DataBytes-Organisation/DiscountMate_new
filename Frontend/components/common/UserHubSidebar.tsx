@@ -17,11 +17,9 @@ import { useUserProfile } from "../../context/UserProfileContext";
 type HubSectionKey =
    | "dashboard"
    | "notifications"
-   | "dietary"
    | "alerts"
    | "profile"
    | "subscription"
-   | "expiry"
    | "nearby"
    | "support"
    | "privacy";
@@ -43,12 +41,10 @@ const NAV_ITEMS: Array<{
    route?: string;
 }> = [
    { key: "dashboard", label: "Dashboard", icon: "chart-column", route: "/(tabs)/dashboard" },
-   { key: "notifications", label: "Notifications", icon: "bell" },
-   { key: "dietary", label: "Dietary Settings", icon: "bowl-food" },
-   { key: "alerts", label: "Manage Alert Segments", icon: "tags" },
+   { key: "notifications", label: "Notifications", icon: "bell", route: "/(tabs)/notifications" },
+   { key: "alerts", label: "Manage Alert Segments", icon: "tags", route: "/(tabs)/alert-segments" },
    { key: "profile", label: "Profile Management", icon: "pen-to-square", route: "/(tabs)/profile" },
    { key: "subscription", label: "Subscription", icon: "star" },
-   { key: "expiry", label: "Expiry Tracker", icon: "calendar-day" },
    { key: "nearby", label: "Location & Nearby", icon: "location-dot" },
    { key: "support", label: "Support", icon: "headset", route: "/(tabs)/contact" },
    { key: "privacy", label: "Privacy & Terms", icon: "shield-halved" },
