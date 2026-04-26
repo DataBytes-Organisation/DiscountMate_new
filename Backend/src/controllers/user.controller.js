@@ -239,6 +239,46 @@ function buildProfileResponse(user, activeAlerts = 0) {
     };
 }
 
+function getDefaultNotificationPreferences() {
+    return {
+        alert_types: {
+            price_alerts: true,
+            weekly_summary: true,
+            in_browser_notifications: true,
+        },
+    };
+}
+
+function normalizeNotificationPreferences(preferences) {
+    const defaults = getDefaultNotificationPreferences();
+    const alertTypes = preferences?.alert_types || preferences?.alertTypes || {};
+
+    return {
+        alert_types: {
+            price_alerts:
+                typeof alertTypes.price_alerts === 'boolean'
+                    ? alertTypes.price_alerts
+                    : typeof alertTypes.priceAlerts === 'boolean'
+                        ? alertTypes.priceAlerts
+                        : defaults.alert_types.price_alerts,
+            weekly_summary:
+                typeof alertTypes.weekly_summary === 'boolean'
+                    ? alertTypes.weekly_summary
+                    : typeof alertTypes.weeklySummary === 'boolean'
+                        ? alertTypes.weeklySummary
+                        : defaults.alert_types.weekly_summary,
+            in_browser_notifications:
+                typeof alertTypes.in_browser_notifications === 'boolean'
+                    ? alertTypes.in_browser_notifications
+                    : typeof alertTypes.inBrowserNotifications === 'boolean'
+                        ? alertTypes.inBrowserNotifications
+                        : typeof alertTypes.browserNotifications === 'boolean'
+                            ? alertTypes.browserNotifications
+                            : defaults.alert_types.in_browser_notifications,
+        },
+    };
+}
+
 // Signup Controller
 const signup = async (req, res) => {
     const { email, password, verifyPassword, user_fname, user_lname, address, phone_number, admin } = req.body;
@@ -613,6 +653,75 @@ const getAddressSuggestions = async (req, res) => {
     }
 };
 
+const getNotificationPreferences = async (req, res) => {
+    try {
+        const email = getAuthEmail(req);
+        const db = await connectToMongoDB();
+        if (!db) {
+            return res.status(500).json({ message: 'Database connection failed' });
+        }
+
+        const user = await db.collection('users').findOne(
+            { email },
+            { projection: { notification_preferences: 1 } }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        return res.status(200).json({
+            notification_preferences: normalizeNotificationPreferences(user.notification_preferences),
+        });
+    } catch (error) {
+        return handleControllerError(
+            res,
+            error,
+            'Failed to load notification preferences',
+            'Error fetching notification preferences:'
+        );
+    }
+};
+
+const updateNotificationPreferences = async (req, res) => {
+    try {
+        const email = getAuthEmail(req);
+        const db = await connectToMongoDB();
+        if (!db) {
+            return res.status(500).json({ message: 'Database connection failed' });
+        }
+
+        const user = await db.collection('users').findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const nextPreferences = normalizeNotificationPreferences(req.body?.notification_preferences);
+
+        await db.collection('users').updateOne(
+            { email },
+            {
+                $set: {
+                    notification_preferences: nextPreferences,
+                    updatedAt: new Date(),
+                },
+            }
+        );
+
+        return res.status(200).json({
+            message: 'Notification preferences updated successfully',
+            notification_preferences: nextPreferences,
+        });
+    } catch (error) {
+        return handleControllerError(
+            res,
+            error,
+            'Failed to update notification preferences',
+            'Error updating notification preferences:'
+        );
+    }
+};
+
 const deleteAccount = async (req, res) => {
     try {
         const email = getAuthEmail(req);
@@ -763,6 +872,8 @@ module.exports = {
     updateProfile,
     changePassword,
     getAddressSuggestions,
+    getNotificationPreferences,
+    updateNotificationPreferences,
     deleteAccount,
     updateProfileImage,
     getProfileImage,

@@ -113,6 +113,8 @@ router.get('/profile', userController.getProfile);
 router.put('/profile', userController.updateProfile);
 router.put('/change-password', userController.changePassword);
 router.get('/address-suggestions', userController.getAddressSuggestions);
+router.get('/notification-preferences', userController.getNotificationPreferences);
+router.put('/notification-preferences', userController.updateNotificationPreferences);
 router.delete('/account', userController.deleteAccount);
 
 // Upload profile image

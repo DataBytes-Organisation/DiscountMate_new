@@ -6,6 +6,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCart } from "../../app/(tabs)/CartContext";
 import CartPopover from "./CartPopover";
 import { useUserProfile } from "../../context/UserProfileContext";
+import { useNotificationCenter } from "../../context/NotificationCenterContext";
+import NotificationsPanel from "./NotificationsPanel";
 
 type HeaderProps = {
    activeRoute?: "Home" | "Compare" | "Specials" | "My Lists" | "Profile";
@@ -50,6 +52,12 @@ export default function Header({ activeRoute }: HeaderProps) {
    const { getTotalItems } = useCart();
    const { width } = useWindowDimensions();
    const { profile } = useUserProfile();
+   const {
+      unreadCount,
+      panelOpen,
+      openPanel,
+      closePanel,
+   } = useNotificationCenter();
    const cartItemCount = getTotalItems();
    const compactHeader = width < 980;
    const displayName =
@@ -131,13 +139,19 @@ export default function Header({ activeRoute }: HeaderProps) {
          {/* Right: bell + list + avatar */}
          <View className="flex-row items-center gap-2 md:gap-4">
             {/* Notifications */}
-            <Pressable className="relative">
+            <Pressable className="relative" onPress={openPanel}>
                <FontAwesome6
                   name="bell"
                   size={20}
                   className="text-gray-600"
                />
-               <View className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500" />
+               {unreadCount > 0 && (
+                  <View className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 items-center justify-center">
+                     <Text className="text-[10px] font-bold text-white">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                     </Text>
+                  </View>
+               )}
             </Pressable>
 
             {/* List summary */}
@@ -202,6 +216,10 @@ export default function Header({ activeRoute }: HeaderProps) {
          <CartPopover
             visible={showCartPopover}
             onClose={() => setShowCartPopover(false)}
+         />
+         <NotificationsPanel
+            visible={panelOpen}
+            onClose={closePanel}
          />
       </View>
    );
