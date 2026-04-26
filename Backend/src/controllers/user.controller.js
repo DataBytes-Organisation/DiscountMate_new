@@ -1085,6 +1085,5 @@ module.exports = {
     updateSubscription,
     deleteAccount,
     updateProfileImage,
-    getProfileImage,
-    signupLimiter: limiter
+    getProfileImage
 };

@@ -18,7 +18,7 @@ const DashboardEmbed = () => {
       </div>
       <div className="w-full h-[200px]"> 
         <iframe
-          src="https://lookerstudio.google.com/embed/reporting/6de39ec0-e2d9-45a9-8891-1b818076bf4e/page/TzOYE" 
+          src="https://app.powerbi.com/reportEmbed?reportId=d02c333d-d402-47e9-9808-46410cd73498&autoAuth=true&ctid=d02378ec-1688-46d5-8540-1c28b5f470f6"
           style={{ border: 0, width: '100%', height: '1000px' }}
           allowFullScreen
           sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
