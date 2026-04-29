@@ -117,7 +117,7 @@ function LegalAccordionRow({
          >
             <View className="flex-row items-center gap-3 flex-1">
                <View className="w-2 h-2 rounded-full bg-primary_green" />
-               <Text className="flex-1 text-base font-bold text-gray-900">
+               <Text className="flex-1 text-sm font-bold text-gray-900">
                   {section.title}
                </Text>
             </View>
@@ -130,7 +130,7 @@ function LegalAccordionRow({
 
          {expanded && (
             <View className="border-t border-gray-100 px-4 md:px-5 py-4">
-               <Text className="text-base leading-7 text-gray-600">
+               <Text className="text-sm leading-6 text-gray-600">
                   {section.body}
                </Text>
             </View>
@@ -210,7 +210,7 @@ export default function PrivacyTermsScreen() {
                               color={activeTab === "privacy" ? "#10B981" : "#9CA3AF"}
                            />
                            <Text
-                              className={`text-sm md:text-base font-bold ${
+                              className={`text-sm font-bold ${
                                  activeTab === "privacy"
                                     ? "text-primary_green"
                                     : "text-gray-500"
@@ -236,7 +236,7 @@ export default function PrivacyTermsScreen() {
                               color={activeTab === "terms" ? "#10B981" : "#9CA3AF"}
                            />
                            <Text
-                              className={`text-sm md:text-base font-bold ${
+                              className={`text-sm font-bold ${
                                  activeTab === "terms"
                                     ? "text-primary_green"
                                     : "text-gray-500"
@@ -254,7 +254,7 @@ export default function PrivacyTermsScreen() {
                            <FontAwesome6 name={titleIcon} size={16} color="#10B981" />
                         </View>
                         <View>
-                           <Text className="text-xl font-bold text-gray-900">
+                           <Text className="text-lg font-bold text-gray-900">
                               {pageTitle}
                            </Text>
                            <Text className="mt-1 text-sm text-gray-400">

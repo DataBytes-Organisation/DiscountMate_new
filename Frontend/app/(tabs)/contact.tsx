@@ -318,10 +318,10 @@ export default function SupportScreen() {
                            <Text className="flex-row items-center text-xs font-bold tracking-[0.18em] uppercase text-white/80">
                               Help Centre
                            </Text>
-                           <Text className="mt-2 text-3xl font-bold text-white">
+                           <Text className="mt-2 text-2xl font-bold text-white">
                               How can we help?
                            </Text>
-                           <Text className="mt-2 text-base text-white/85">
+                           <Text className="mt-2 text-sm text-white/85">
                               Find our knowledge base or get in touch directly.
                            </Text>
                         </View>
@@ -334,14 +334,14 @@ export default function SupportScreen() {
                            onChangeText={setSearchTerm}
                            placeholder="Search articles & FAQs..."
                            placeholderTextColor="#9CA3AF"
-                           className="h-12 flex-1 text-base text-gray-900"
+                           className="h-12 flex-1 text-sm text-gray-900"
                         />
                      </View>
                   </View>
 
                   <View className="flex-col xl:flex-row gap-4">
                      <View className="xl:w-[300px] rounded-[28px] border border-gray-200 bg-white p-5 shadow-sm">
-                        <Text className="text-2xl font-bold text-gray-900">
+                        <Text className="text-xl font-bold text-gray-900">
                            Before you send
                         </Text>
 
@@ -349,10 +349,10 @@ export default function SupportScreen() {
                            <View className="flex-row gap-4 py-4 border-b border-gray-200">
                               <Ionicons name="time-outline" size={24} color="#111827" />
                               <View className="flex-1">
-                                 <Text className="text-lg font-semibold text-gray-900">
+                                 <Text className="text-base font-semibold text-gray-900">
                                     Typical reply time
                                  </Text>
-                                 <Text className="mt-1 text-base text-gray-600">
+                                 <Text className="mt-1 text-sm text-gray-600">
                                     1–2 business days
                                  </Text>
                               </View>
@@ -361,10 +361,10 @@ export default function SupportScreen() {
                            <View className="flex-row gap-4 py-4 border-b border-gray-200">
                               <Ionicons name="mail-outline" size={24} color="#111827" />
                               <View className="flex-1">
-                                 <Text className="text-lg font-semibold text-gray-900">
+                                 <Text className="text-base font-semibold text-gray-900">
                                     Support email
                                  </Text>
-                                 <Text className="mt-1 text-base text-gray-600">
+                                 <Text className="mt-1 text-sm text-gray-600">
                                     {SUPPORT_EMAIL}
                                  </Text>
                               </View>
@@ -373,10 +373,10 @@ export default function SupportScreen() {
                            <View className="flex-row gap-4 py-4 border-b border-gray-200">
                               <Ionicons name="image-outline" size={24} color="#111827" />
                               <View className="flex-1">
-                                 <Text className="text-lg font-semibold text-gray-900">
+                                 <Text className="text-base font-semibold text-gray-900">
                                     Include screenshots
                                  </Text>
-                                 <Text className="mt-1 text-base text-gray-600">
+                                 <Text className="mt-1 text-sm text-gray-600">
                                     For faster help with bug reports
                                  </Text>
                               </View>
@@ -385,10 +385,10 @@ export default function SupportScreen() {
                            <View className="flex-row gap-4 py-4">
                               <Ionicons name="book-outline" size={24} color="#111827" />
                               <View className="flex-1">
-                                 <Text className="text-lg font-semibold text-gray-900">
+                                 <Text className="text-base font-semibold text-gray-900">
                                     Check FAQs first
                                  </Text>
-                                 <Text className="mt-1 text-base text-gray-600">
+                                 <Text className="mt-1 text-sm text-gray-600">
                                     You might find an answer right away.
                                  </Text>
                               </View>
@@ -399,7 +399,7 @@ export default function SupportScreen() {
                            <Text className="text-sm font-semibold text-gray-800">
                               Expected response time
                            </Text>
-                           <Text className="mt-1 text-base text-gray-600">
+                           <Text className="mt-1 text-sm text-gray-600">
                               {RESPONSE_TIME}
                            </Text>
                         </View>
@@ -411,7 +411,7 @@ export default function SupportScreen() {
                            }}
                            className="mt-6 h-12 rounded-2xl border border-gray-300 bg-white px-4 flex-row items-center justify-between"
                         >
-                           <Text className="text-base font-semibold text-gray-900">
+                           <Text className="text-sm font-semibold text-gray-900">
                               Browse FAQs
                            </Text>
                            <Ionicons name="chevron-forward" size={18} color="#111827" />
@@ -424,10 +424,10 @@ export default function SupportScreen() {
                               <Text className="text-xs font-bold tracking-[0.18em] uppercase text-gray-500">
                                  Contact Support
                               </Text>
-                              <Text className="mt-2 text-2xl font-bold text-gray-900">
+                              <Text className="mt-2 text-xl font-bold text-gray-900">
                                  Send us a message
                               </Text>
-                              <Text className="mt-2 text-base text-gray-600">
+                              <Text className="mt-2 text-sm text-gray-600">
                                  The more details you provide, the faster we can help.
                               </Text>
 
@@ -474,7 +474,7 @@ export default function SupportScreen() {
                                        onChangeText={(value) => updateField("subject", value)}
                                        placeholder="Subject"
                                        placeholderTextColor="#9CA3AF"
-                                       className="h-12 rounded-2xl border border-gray-300 bg-white px-4 text-base text-gray-900"
+                                       className="h-12 rounded-2xl border border-gray-300 bg-white px-4 text-sm text-gray-900"
                                     />
                                  </View>
 
@@ -489,7 +489,7 @@ export default function SupportScreen() {
                                        placeholderTextColor="#9CA3AF"
                                        multiline
                                        textAlignVertical="top"
-                                       className="min-h-[160px] rounded-3xl border border-gray-300 bg-white px-4 py-4 text-base text-gray-900"
+                                       className="min-h-[160px] rounded-3xl border border-gray-300 bg-white px-4 py-4 text-sm text-gray-900"
                                     />
                                  </View>
 
@@ -509,7 +509,7 @@ export default function SupportScreen() {
                                           color="#111827"
                                        />
                                        <View>
-                                          <Text className="text-lg font-semibold text-gray-900">
+                                          <Text className="text-base font-semibold text-gray-900">
                                              Attach screenshot or file
                                           </Text>
                                           <Text className="mt-1 text-sm text-gray-500">
@@ -554,7 +554,7 @@ export default function SupportScreen() {
                                           onPress={handleChooseAttachment}
                                           className="h-11 rounded-2xl border border-gray-300 bg-white px-4 items-center justify-center"
                                        >
-                                          <Text className="text-base font-semibold text-gray-900">
+                                          <Text className="text-sm font-semibold text-gray-900">
                                              {form.attachment ? "Replace file" : "Choose file"}
                                           </Text>
                                        </Pressable>
@@ -571,7 +571,7 @@ export default function SupportScreen() {
                                           onChangeText={(value) => updateField("name", value)}
                                           placeholder="Your name"
                                           placeholderTextColor="#9CA3AF"
-                                          className="h-12 rounded-2xl border border-gray-300 bg-white px-4 text-base text-gray-900"
+                                          className="h-12 rounded-2xl border border-gray-300 bg-white px-4 text-sm text-gray-900"
                                        />
                                     </View>
                                     <View className="flex-1">
@@ -585,7 +585,7 @@ export default function SupportScreen() {
                                           placeholderTextColor="#9CA3AF"
                                           keyboardType="email-address"
                                           autoCapitalize="none"
-                                          className="h-12 rounded-2xl border border-gray-300 bg-white px-4 text-base text-gray-900"
+                                          className="h-12 rounded-2xl border border-gray-300 bg-white px-4 text-sm text-gray-900"
                                        />
                                     </View>
                                  </View>
@@ -600,7 +600,7 @@ export default function SupportScreen() {
                                     {submitting ? (
                                        <ActivityIndicator color="#FFFFFF" />
                                     ) : (
-                                       <Text className="text-base font-semibold text-white">
+                                       <Text className="text-sm font-semibold text-white">
                                           Send support request
                                        </Text>
                                     )}
@@ -612,10 +612,10 @@ export default function SupportScreen() {
                               <View className="w-14 h-14 rounded-2xl bg-emerald-50 items-center justify-center">
                                  <Ionicons name="checkmark-circle-outline" size={28} color="#10B981" />
                               </View>
-                              <Text className="mt-5 text-3xl font-bold text-gray-900">
+                              <Text className="mt-5 text-2xl font-bold text-gray-900">
                                  Your support request was sent.
                               </Text>
-                              <Text className="mt-3 text-base leading-7 text-gray-600">
+                              <Text className="mt-3 text-sm leading-6 text-gray-600">
                                  We’ll reply to{" "}
                                  <Text className="font-semibold text-gray-900">
                                     {submissionResult.replyToEmail}
@@ -627,7 +627,7 @@ export default function SupportScreen() {
                                  <Text className="text-sm font-semibold text-gray-500">
                                     Reference number
                                  </Text>
-                                 <Text className="mt-2 text-xl font-bold text-gray-900">
+                                 <Text className="mt-2 text-lg font-bold text-gray-900">
                                     {submissionResult.referenceNumber}
                                  </Text>
                               </View>
@@ -637,7 +637,7 @@ export default function SupportScreen() {
                                     onPress={handleSendAnother}
                                     className="h-12 rounded-2xl border border-gray-300 bg-white px-5 items-center justify-center"
                                  >
-                                    <Text className="text-base font-semibold text-gray-900">
+                                    <Text className="text-sm font-semibold text-gray-900">
                                        Send another message
                                     </Text>
                                  </Pressable>
@@ -645,7 +645,7 @@ export default function SupportScreen() {
                                     onPress={() => router.push("/dashboard")}
                                     className="h-12 rounded-2xl bg-primary_green px-5 items-center justify-center"
                                  >
-                                    <Text className="text-base font-semibold text-white">
+                                    <Text className="text-sm font-semibold text-white">
                                        Back to dashboard
                                     </Text>
                                  </Pressable>
@@ -661,7 +661,7 @@ export default function SupportScreen() {
                            <Text className="text-xs font-bold tracking-[0.18em] uppercase text-gray-400">
                               Frequently Asked Questions
                            </Text>
-                           <Text className="mt-2 text-2xl font-bold text-gray-900">
+                           <Text className="mt-2 text-xl font-bold text-gray-900">
                               Quick answers
                            </Text>
                         </View>
@@ -688,7 +688,7 @@ export default function SupportScreen() {
                                        }
                                        className="flex-row items-center justify-between px-4 md:px-5 py-4"
                                     >
-                                       <Text className="flex-1 pr-4 text-base font-semibold text-gray-900">
+                                       <Text className="flex-1 pr-4 text-sm font-semibold text-gray-900">
                                           {item.question}
                                        </Text>
                                        <Ionicons
@@ -700,7 +700,7 @@ export default function SupportScreen() {
 
                                     {expanded && (
                                        <View className="px-4 md:px-5 pb-4">
-                                          <Text className="text-sm leading-6 text-gray-600">
+                                          <Text className="text-sm leading-5 text-gray-600">
                                              {item.answer}
                                           </Text>
                                        </View>
@@ -710,10 +710,10 @@ export default function SupportScreen() {
                            })
                         ) : (
                            <View className="rounded-3xl border border-dashed border-gray-200 bg-[#FCFCFA] px-5 py-8">
-                              <Text className="text-base font-semibold text-gray-900">
+                              <Text className="text-sm font-semibold text-gray-900">
                                  No matching FAQs
                               </Text>
-                              <Text className="mt-2 text-sm leading-6 text-gray-500">
+                              <Text className="mt-2 text-sm leading-5 text-gray-500">
                                  Try a different search term, or send us a support request by
                                  email above.
                               </Text>

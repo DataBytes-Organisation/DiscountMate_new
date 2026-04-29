@@ -170,7 +170,7 @@ export default function NotificationsScreen() {
                      <View className="rounded-[28px] border border-gray-100 bg-white p-6 shadow-sm">
                         <View className="flex-col md:flex-row md:items-start md:justify-between gap-4">
                            <View className="flex-1">
-                              <Text className="text-2xl font-bold text-gray-900">
+                              <Text className="text-xl font-bold text-gray-900">
                                  Notification Settings
                               </Text>
                            </View>
@@ -178,7 +178,7 @@ export default function NotificationsScreen() {
                      </View>
 
                      <View className="rounded-[28px] border border-gray-100 bg-white p-6 shadow-sm">
-                        <Text className="text-lg font-bold text-gray-900">
+                        <Text className="text-base font-bold text-gray-900">
                            Alert Types
                         </Text>
                         <Text className="text-sm text-gray-500 mt-2">
@@ -204,10 +204,10 @@ export default function NotificationsScreen() {
                                           />
                                        </View>
                                        <View className="flex-1 pr-3">
-                                          <Text className="text-base font-semibold text-gray-900">
+                                          <Text className="text-sm font-semibold text-gray-900">
                                              {item.title}
                                           </Text>
-                                          <Text className="text-sm text-gray-500 mt-1 leading-5">
+                                          <Text className="text-xs text-gray-500 mt-1 leading-4">
                                              {item.subtitle}
                                           </Text>
                                        </View>

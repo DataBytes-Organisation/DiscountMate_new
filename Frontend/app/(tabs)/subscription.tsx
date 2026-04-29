@@ -222,12 +222,12 @@ export default function SubscriptionScreen() {
                               <Text className="text-xs font-bold tracking-[0.18em] uppercase text-gray-400">
                                  Current Plan
                               </Text>
-                              <Text className="mt-2 text-3xl font-bold text-gray-900">
+                              <Text className="mt-2 text-2xl font-bold text-gray-900">
                                  {subscription.currentPlanLabel}
                               </Text>
-                              <Text className="mt-2 text-base text-gray-500">
+                              <Text className="mt-2 text-sm text-gray-500">
                                  {subscription.currentPriceLabel}
-                                 <Text className="text-sm"> {subscription.currentPriceSuffix}</Text>
+                                 <Text className="text-xs"> {subscription.currentPriceSuffix}</Text>
                               </Text>
                            </View>
                            <View className="w-12 h-12 rounded-2xl bg-[#F8FAFC] items-center justify-center">
@@ -290,7 +290,7 @@ export default function SubscriptionScreen() {
                                  >
                                     <View className="min-h-[340px]">
                                        <View className="flex-row items-center justify-between">
-                                          <Text className="text-2xl font-bold text-gray-900">
+                                          <Text className="text-xl font-bold text-gray-900">
                                              {plan.label}
                                           </Text>
                                           {plan.badge ? (
@@ -311,7 +311,7 @@ export default function SubscriptionScreen() {
                                        </View>
 
                                        <View className="mt-4 flex-row items-end gap-2">
-                                          <Text className={`text-4xl font-bold ${accent.price}`}>
+                                          <Text className={`text-3xl font-bold ${accent.price}`}>
                                              {plan.priceLabel}
                                           </Text>
                                           <Text className="text-sm text-gray-400 mb-1">
@@ -343,7 +343,7 @@ export default function SubscriptionScreen() {
                                                    }
                                                    style={{ marginTop: 4 }}
                                                 />
-                                                <Text className="flex-1 text-sm leading-6 text-gray-500">
+                                                <Text className="flex-1 text-sm leading-5 text-gray-500">
                                                    {feature}
                                                 </Text>
                                              </View>
@@ -361,7 +361,7 @@ export default function SubscriptionScreen() {
                                        }`}
                                     >
                                        <Text
-                                          className={`text-base font-semibold ${
+                                          className={`text-sm font-semibold ${
                                              isCurrent ? "text-gray-500" : "text-white"
                                           }`}
                                        >
