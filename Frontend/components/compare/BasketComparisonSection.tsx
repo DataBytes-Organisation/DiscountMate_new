@@ -165,32 +165,6 @@ export default function BasketComparisonSection({
       return rows;
    }, [previewItem]);
 
-   // Calculate each retailer's total if the full list were bought there.
-   const fullStoreTotals = useMemo(() => {
-      if (useStaticStoreTotals) {
-         return {
-            iga: 123.0,
-            coles: 131.03,
-            woolworths: 133.7,
-         };
-      }
-
-      const totals: Record<StoreKey, number> = {
-         iga: 0,
-         coles: 0,
-         woolworths: 0,
-      };
-
-      basketItems.forEach((item) => {
-         (Object.entries(item.prices) as [StoreKey, number | null][]).forEach(([store, price]) => {
-            if (typeof price !== "number" || isNaN(price)) return;
-            totals[store] += price;
-         });
-      });
-
-      return totals;
-   }, [basketItems, useStaticStoreTotals]);
-
    // Calculate each retailer's actual total based on the current list allocation.
    const storeTotals = useMemo(() => {
       const totals: Record<StoreKey, number> = {
@@ -208,37 +182,8 @@ export default function BasketComparisonSection({
       return totals;
    }, [basketItems]);
 
-   // Compute savings per retailer as:
-   // sum(highest competitor price - retailer price) across all items.
-   const savingsByStore = useMemo(() => {
-      const savings: Record<StoreKey, number> = {
-         iga: 0,
-         coles: 0,
-         woolworths: 0,
-      };
-
-      basketItems.forEach((item) => {
-         const stores: StoreKey[] = ["iga", "coles", "woolworths"];
-         stores.forEach((store) => {
-            const currentPrice = item.prices[store];
-            if (typeof currentPrice !== "number" || isNaN(currentPrice)) return;
-
-            const competitorPrices = stores
-               .filter((competitor) => competitor !== store)
-               .map((competitor) => item.prices[competitor])
-               .filter((price): price is number => typeof price === "number" && !isNaN(price));
-
-            if (competitorPrices.length === 0) return;
-            const highestCompetitorPrice = Math.max(...competitorPrices);
-            savings[store] += Math.max(0, highestCompetitorPrice - currentPrice);
-         });
-      });
-
-      return savings;
-   }, [basketItems]);
-
-   const allocationSavingsByStore = useMemo(() => {
-      const savings: Record<StoreKey, number> = {
+   const allocationResultByStore = useMemo(() => {
+      const result: Record<StoreKey, number> = {
          iga: 0,
          coles: 0,
          woolworths: 0,
@@ -256,25 +201,16 @@ export default function BasketComparisonSection({
          );
          if (availablePrices.length === 0) return;
 
-         savings[selectedStore] += Math.max(0, Math.max(...availablePrices) - selectedPrice);
+         const cheapestPrice = Math.min(...availablePrices);
+         const highestPrice = Math.max(...availablePrices);
+         const isCheapestSelection = Math.abs(selectedPrice - cheapestPrice) < 0.005;
+         result[selectedStore] += isCheapestSelection
+            ? Math.max(0, highestPrice - selectedPrice)
+            : -(selectedPrice - cheapestPrice);
       });
 
-      return savings;
+      return result;
    }, [basketItems]);
-
-   // Tag "Cheapest" as the retailer with the lowest full-list total.
-   const cheapestStore: StoreKey = useMemo(() => {
-      const entries = Object.entries(fullStoreTotals) as [StoreKey, number][];
-      entries.sort((a, b) => a[1] - b[1]);
-      return entries[0][0];
-   }, [fullStoreTotals]);
-
-   const cheapestTotal = fullStoreTotals[cheapestStore];
-   const deltas = {
-      iga: fullStoreTotals.iga - cheapestTotal,
-      coles: fullStoreTotals.coles - cheapestTotal,
-      woolworths: fullStoreTotals.woolworths - cheapestTotal,
-   };
 
    // Calculate selected item counts per store for the current list allocation.
    const selectedCounts = useMemo(() => {
@@ -301,6 +237,14 @@ export default function BasketComparisonSection({
       return winCounts;
    }, [basketItems, useStaticStoreTotals]);
 
+   const bestSavingsStore = useMemo<StoreKey | null>(() => {
+      const entries = (Object.entries(allocationResultByStore) as [StoreKey, number][])
+         .filter(([store, value]) => selectedCounts[store] > 0 && value > 0.005);
+      if (entries.length === 0) return null;
+      entries.sort((a, b) => b[1] - a[1]);
+      return entries[0][0];
+   }, [allocationResultByStore, selectedCounts]);
+
    // For the progress bars in store totals card
    const winPercent = (store: StoreKey) => {
       if (useStaticStoreTotals) {
@@ -311,15 +255,6 @@ export default function BasketComparisonSection({
       if (totalItems === 0) return 0;
       return Math.round((selectedCounts[store] / totalItems) * 100);
    };
-
-   // Calculate savings summary
-   const originalTotal = useMemo(() => {
-      // Use highest store total as "original"
-      return Math.max(storeTotals.coles, storeTotals.woolworths, storeTotals.iga);
-   }, [storeTotals]);
-
-   const optimizedTotal = cheapestTotal;
-   const totalSavings = savingsByStore[cheapestStore];
 
    const optimizeGroceryList = () => {
       if (!targetListId || basketItems.length === 0) return;
@@ -482,9 +417,8 @@ export default function BasketComparisonSection({
                   <StoreTotalCard
                      store="IGA"
                      total={storeTotals.iga}
-                     savings={allocationSavingsByStore.iga}
-                     delta={cheapestStore !== "iga" ? `+${deltas.iga.toFixed(2)}` : undefined}
-                     isCheapest={cheapestStore === "iga"}
+                     savings={allocationResultByStore.iga}
+                     isCheapest={bestSavingsStore === "iga"}
                      winsText={`Selected for ${selectedCounts.iga} items`}
                      winPercent={winPercent("iga")}
                   />
@@ -493,9 +427,8 @@ export default function BasketComparisonSection({
                   <StoreTotalCard
                      store="Coles"
                      total={storeTotals.coles}
-                     savings={allocationSavingsByStore.coles}
-                     delta={cheapestStore !== "coles" ? `+${deltas.coles.toFixed(2)}` : undefined}
-                     isCheapest={cheapestStore === "coles"}
+                     savings={allocationResultByStore.coles}
+                     isCheapest={bestSavingsStore === "coles"}
                      winsText={`Selected for ${selectedCounts.coles} items`}
                      winPercent={winPercent("coles")}
                   />
@@ -504,9 +437,8 @@ export default function BasketComparisonSection({
                   <StoreTotalCard
                      store="Woolworths"
                      total={storeTotals.woolworths}
-                     savings={allocationSavingsByStore.woolworths}
-                     delta={cheapestStore !== "woolworths" ? `+${deltas.woolworths.toFixed(2)}` : undefined}
-                     isCheapest={cheapestStore === "woolworths"}
+                     savings={allocationResultByStore.woolworths}
+                     isCheapest={bestSavingsStore === "woolworths"}
                      winsText={`Selected for ${selectedCounts.woolworths} items`}
                      winPercent={winPercent("woolworths")}
                   />
@@ -727,7 +659,6 @@ function StoreTotalCard({
    store,
    total,
    savings,
-   delta,
    isCheapest,
    winsText,
    winPercent,
@@ -735,11 +666,13 @@ function StoreTotalCard({
    store: string;
    total: number;
    savings?: number;
-   delta?: string;
    isCheapest?: boolean;
    winsText: string;
    winPercent: number;
 }) {
+   const hasLoss = typeof savings === "number" && savings < -0.005;
+   const hasSavings = typeof savings === "number" && savings > 0.005;
+
    return (
       <View
          className={[
@@ -759,8 +692,6 @@ function StoreTotalCard({
                <View className="px-3 py-1 rounded-full bg-amber-600">
                   <Text className="text-white text-xs font-semibold">Cheapest</Text>
                </View>
-            ) : delta ? (
-               <Text className="text-xs font-semibold text-red-500">{delta}</Text>
             ) : null}
          </View>
 
@@ -768,12 +699,14 @@ function StoreTotalCard({
             ${total.toFixed(2)}
          </Text>
 
-         {typeof savings === "number" ? (
-            <Text className="text-sm font-semibold text-primary_green mb-4">
-               You save ${savings.toFixed(2)}
+         {hasSavings || hasLoss ? (
+            <Text className={`text-sm font-semibold mb-4 ${hasLoss ? "text-red-500" : "text-primary_green"}`}>
+               {hasLoss
+                  ? `Loss $${Math.abs(savings ?? 0).toFixed(2)}`
+                  : `You save $${(savings ?? 0).toFixed(2)}`}
             </Text>
          ) : (
-            <Text className="text-sm text-gray-600 mb-4"> </Text>
+            <Text className="text-sm text-gray-500 mb-4">No savings/loss</Text>
          )}
 
          <View className="h-px bg-gray-100 mb-3" />

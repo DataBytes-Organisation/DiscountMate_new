@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { View, ScrollView, useWindowDimensions } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import { useShoppingLists } from "./ShoppingListsContext";
 import EditShoppingListModal from "../../components/my-lists/EditShoppingListModal";
 import MyListsHeroSection from "../../components/my-lists/MyListsHeroSection";
@@ -11,6 +12,7 @@ import type { ShoppingList } from "../../types/ShoppingList";
 
 export default function MyListsScreen() {
    const { width } = useWindowDimensions();
+   const { listId, create } = useLocalSearchParams<{ listId?: string; create?: string }>();
    const wide = width >= 900;
 
    const {
@@ -86,6 +88,20 @@ export default function MyListsScreen() {
       refreshLists();
    }, [refreshLists]);
 
+   useEffect(() => {
+      if (!listId) return;
+      const requestedListId = Array.isArray(listId) ? listId[0] : listId;
+      if (!requestedListId) return;
+      if (!lists.some((list) => list.id === requestedListId)) return;
+      setSelectedListId(requestedListId);
+   }, [listId, lists]);
+
+   useEffect(() => {
+      if (create !== "1") return;
+      setEditingList(null);
+      setModalOpen(true);
+   }, [create]);
+
    const handleSaveModal = async (payload: {
       name: string;
       description: string;
@@ -122,7 +138,7 @@ export default function MyListsScreen() {
             <MyListsHeroSection onCreate={openCreate} />
 
             <View className={wide ? "md:pr-8" : "px-4 md:px-8 pt-6"}>
-               <View className={`${wide ? "flex-row items-stretch gap-6" : ""}`}>
+               <View className={`${wide ? "flex-row items-start gap-6" : ""}`}>
                   <MyListsListsSection
                      lists={sortedLists}
                      masonryColumns={masonryColumns}
@@ -134,7 +150,7 @@ export default function MyListsScreen() {
                      forceSingleColumn={wide}
                      containerClassName={
                         wide
-                           ? "w-[260px] shrink-0 bg-white border-r border-gray-100 shadow-sm p-4"
+                           ? "w-[260px] shrink-0 bg-white border-r border-gray-100 shadow-sm p-4 sticky top-0 h-[calc(100vh-64px)] overflow-y-auto"
                            : ""
                      }
                      cardVariant={wide ? "compact" : "full"}
@@ -197,7 +213,7 @@ export default function MyListsScreen() {
                </>
             ) : null}
 
-            <View className="mt-12">
+            <View>
                <FooterSection disableEdgeOffset />
             </View>
          </ScrollView>

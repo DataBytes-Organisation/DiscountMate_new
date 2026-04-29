@@ -31,6 +31,19 @@ export default function MyListsSelectedListDetailsSection({
       if (!list) return [];
       return listAnalytics(list).categoryMix;
    }, [list]);
+   const retailStores = useMemo(() => {
+      if (!list || list.items.length === 0) return [];
+
+      const stores = new Set<string>();
+      list.items.forEach((item) => {
+         if (item.store?.trim()) stores.add(item.store.trim());
+         if (typeof item.retailerPrices?.coles === "number") stores.add("Coles");
+         if (typeof item.retailerPrices?.woolworths === "number") stores.add("Woolworths");
+         if (typeof item.retailerPrices?.iga === "number") stores.add("IGA");
+      });
+
+      return Array.from(stores).sort((a, b) => a.localeCompare(b));
+   }, [list]);
    const previewRetailers = useMemo(() => {
       if (!previewItem) return null;
 
@@ -212,16 +225,18 @@ export default function MyListsSelectedListDetailsSection({
                   />
                </View>
 
-               <View className="mb-4">
-                  <Text className="text-xs text-gray-500 font-semibold uppercase mb-2">
-                     Retail stores in this list
-                  </Text>
-                  <View className="flex-row flex-wrap gap-2">
-                     <StorePill label="Aldi" />
-                     <StorePill label="Coles" />
-                     <StorePill label="Woolworths" />
+               {retailStores.length > 0 ? (
+                  <View className="mb-4">
+                     <Text className="text-xs text-gray-500 font-semibold uppercase mb-2">
+                        Retail stores in this list
+                     </Text>
+                     <View className="flex-row flex-wrap gap-2">
+                        {retailStores.map((store) => (
+                           <StorePill key={store} label={store} />
+                        ))}
+                     </View>
                   </View>
-               </View>
+               ) : null}
 
                <View className="mb-4">
                   <Text className="text-xs text-gray-500 font-semibold uppercase mb-2">

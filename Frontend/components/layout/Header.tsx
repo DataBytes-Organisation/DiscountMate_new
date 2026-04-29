@@ -8,7 +8,7 @@ import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 import CartPopover from "./CartPopover";
 
 type HeaderProps = {
-   activeRoute?: "Home" | "Compare" | "Specials" | "My Lists" | "Profile" | "Dashboard";
+   activeRoute?: "Home" | "Compare" | "Specials" | "Grocery Lists" | "Profile" | "Dashboard";
 };
 
 type RouteKey = NonNullable<HeaderProps["activeRoute"]>;
@@ -17,7 +17,7 @@ const navItems: RouteKey[] = [
    "Home",
    "Compare",
    "Specials",
-   "My Lists",
+   "Grocery Lists",
    "Dashboard",
    "Profile",
 ];
@@ -26,7 +26,7 @@ const navRoutes: Record<RouteKey, string> = {
    Home: "/",
    Compare: "/(tabs)/compare",
    Specials: "/specials",
-   "My Lists": "/(tabs)/my-lists",
+   "Grocery Lists": "/(tabs)/my-lists",
    Dashboard: "/(tabs)/product-dashboard",
    Profile: "/(tabs)/profile",
 };
@@ -135,7 +135,7 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
                <Pressable onPress={() => setShowCartPopover(true)}>
                   <View className="flex-row items-center gap-3 px-4 md:px-5 py-2.5 bg-gradient-to-r from-primary_green/10 to-secondary_green/10 rounded-xl border border-primary_green/20">
                      <FontAwesome6
-                        name="list"
+                        name="basket-shopping"
                         size={16}
                         className="text-primary_green"
                      />

@@ -11,13 +11,13 @@ export default function TabsLayout() {
    const isMyListsPage = segments.includes("my-lists");
    const isProductDashboardPage = segments.includes("product-dashboard");
 
-   let activeRoute: "Home" | "Compare" | "Specials" | "My Lists" | "Profile" | "Dashboard" = "Home";
+   let activeRoute: "Home" | "Compare" | "Specials" | "Grocery Lists" | "Profile" | "Dashboard" = "Home";
    if (isProfilePage) {
       activeRoute = "Profile";
    } else if (isComparePage) {
       activeRoute = "Compare";
    } else if (isMyListsPage) {
-      activeRoute = "My Lists";
+      activeRoute = "Grocery Lists";
    } else if (isProductDashboardPage) {
       activeRoute = "Dashboard";
    }

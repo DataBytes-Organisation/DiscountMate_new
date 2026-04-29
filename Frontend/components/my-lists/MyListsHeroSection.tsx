@@ -10,7 +10,7 @@ export default function MyListsHeroSection({ onCreate }: MyListsHeroSectionProps
    return (
       <View className="px-4 md:px-8 py-10 bg-white border-b border-gray-100">
          <View className="mb-6 items-center">
-            <Text className="text-4xl font-bold text-gray-900 mb-2 text-center">My Lists</Text>
+            <Text className="text-4xl font-bold text-gray-900 mb-2 text-center">My Grocery Lists</Text>
             <Text className="text-lg text-gray-600 text-center max-w-2xl">
                Create and organise lists, preview savings analytics.
             </Text>

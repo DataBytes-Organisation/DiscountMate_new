@@ -21,6 +21,8 @@ export default function MultiStoreShoppingStrategySection({
    selectedList,
 }: MultiStoreShoppingStrategySectionProps) {
    const [splitPlanOpen, setSplitPlanOpen] = useState(false);
+   const [singleStoreMenuOpen, setSingleStoreMenuOpen] = useState(false);
+   const [selectedSingleStore, setSelectedSingleStore] = useState<StoreKey | null>(null);
    const items = selectedList?.items ?? [];
 
    const storeTotals = STORES.reduce<Record<StoreKey, number | null>>((totals, store) => {
@@ -44,8 +46,16 @@ export default function MultiStoreShoppingStrategySection({
       .map((store) => ({ store, total: storeTotals[store] }))
       .filter((entry): entry is { store: StoreKey; total: number } => typeof entry.total === "number")
       .sort((a, b) => a.total - b.total);
+   const singleStoreOptions = STORES.map((store) => ({
+      store,
+      total: storeTotals[store],
+      isAvailable: typeof storeTotals[store] === "number",
+   }));
 
    const cheapestSingleStore = singleStoreEntries[0] ?? null;
+   const selectedSingleStoreEntry =
+      singleStoreEntries.find((entry) => entry.store === selectedSingleStore) ??
+      cheapestSingleStore;
 
    const multiStorePlan = items.flatMap((item) => {
       const options = STORES
@@ -80,15 +90,15 @@ export default function MultiStoreShoppingStrategySection({
       if (prices.length === 0) return sum;
       return sum + Math.max(...prices) * item.quantity;
    }, 0);
-   const singleStoreExtraCost = cheapestSingleStore
-      ? Math.max(0, cheapestSingleStore.total - multiStoreTotal)
+   const singleStoreExtraCost = selectedSingleStoreEntry
+      ? Math.max(0, selectedSingleStoreEntry.total - multiStoreTotal)
       : 0;
 
    const singleStore = {
-      totalCost: cheapestSingleStore?.total ?? 0,
+      totalCost: selectedSingleStoreEntry?.total ?? 0,
       extraCost: singleStoreExtraCost,
-      storesToVisit: cheapestSingleStore ? 1 : 0,
-      storeName: cheapestSingleStore ? storeLabel(cheapestSingleStore.store) : "N/A",
+      storesToVisit: selectedSingleStoreEntry ? 1 : 0,
+      storeName: selectedSingleStoreEntry ? storeLabel(selectedSingleStoreEntry.store) : "N/A",
    };
 
    const multiStore = {
@@ -121,11 +131,18 @@ export default function MultiStoreShoppingStrategySection({
             </View>
 
             {/* Main card container */}
-            <View className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
-               <View className="flex-row gap-6">
+            <View className="relative bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
+               {singleStoreMenuOpen ? (
+                  <Pressable
+                     onPress={() => setSingleStoreMenuOpen(false)}
+                     className="absolute inset-0 z-10"
+                     style={{ zIndex: 10, elevation: 10 }}
+                  />
+               ) : null}
+               <View className="relative z-20 flex-row gap-6" style={{ zIndex: 20, elevation: 20 }}>
                   {/* Single store column */}
                   <View className="flex-1">
-                     <View className="flex-row items-center gap-4 mb-6">
+                     <View className="flex-row items-center gap-4 mb-6 z-50" style={{ zIndex: 100, elevation: 100 }}>
                         <View className="w-12 h-12 rounded-2xl bg-gray-100 items-center justify-center shadow-sm">
                            <FontAwesome6 name="store" size={18} color="#6B7280" />
                         </View>
@@ -133,9 +150,56 @@ export default function MultiStoreShoppingStrategySection({
                            <Text className="text-lg font-bold text-gray-900">
                               Single Store Shopping
                            </Text>
-                           <Text className="text-sm text-gray-600">
-                              Shop everything at {singleStore.storeName}
-                           </Text>
+                           <View className="relative z-50" style={{ zIndex: 100, elevation: 100 }}>
+                              <Pressable
+                                 onPress={() => setSingleStoreMenuOpen((open) => !open)}
+                                 className="mt-1 flex-row items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2"
+                              >
+                                 <Text className="text-sm text-gray-700">
+                                    Shop everything at{" "}
+                                    <Text className="font-bold text-gray-900">{singleStore.storeName}</Text>
+                                 </Text>
+                                 <FontAwesome6 name="chevron-down" size={10} color="#6B7280" />
+                              </Pressable>
+
+                              {singleStoreMenuOpen ? (
+                                 <View className="absolute left-0 top-11 z-50 w-56 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden" style={{ zIndex: 100, elevation: 100 }}>
+                                    {singleStoreEntries.length === 0 ? (
+                                       <View className="px-3 py-3">
+                                          <Text className="text-xs text-gray-500">No complete single-store option</Text>
+                                       </View>
+                                    ) : (
+                                       singleStoreOptions.map((entry) => (
+                                          <Pressable
+                                             key={entry.store}
+                                             onPress={() => {
+                                                if (!entry.isAvailable) return;
+                                                setSelectedSingleStore(entry.store);
+                                                setSingleStoreMenuOpen(false);
+                                             }}
+                                             disabled={!entry.isAvailable}
+                                             className={`px-3 py-3 ${
+                                                entry.store === selectedSingleStoreEntry?.store
+                                                   ? "bg-emerald-50"
+                                                   : "bg-white"
+                                             } ${entry.isAvailable ? "" : "opacity-50"}`}
+                                          >
+                                             <View className="flex-row items-center justify-between">
+                                                <Text className="text-sm font-semibold text-gray-900">
+                                                   {storeLabel(entry.store)}
+                                                </Text>
+                                                <Text className="text-xs font-bold text-gray-600">
+                                                   {typeof entry.total === "number"
+                                                      ? `$${entry.total.toFixed(2)}`
+                                                      : "Unavailable"}
+                                                </Text>
+                                             </View>
+                                          </Pressable>
+                                       ))
+                                    )}
+                                 </View>
+                              ) : null}
+                           </View>
                         </View>
                      </View>
 
@@ -180,7 +244,7 @@ export default function MultiStoreShoppingStrategySection({
                      <MetricRow
                         label="Total cost"
                         value={`$${multiStore.totalCost.toFixed(2)}`}
-                        variant="highlight"
+                        variant="gold"
                      />
                      <MetricRow
                         label="Savings"
@@ -190,7 +254,7 @@ export default function MultiStoreShoppingStrategySection({
                      <MetricRow
                         label="Stores to visit"
                         value={`${multiStore.storesToVisit}`}
-                        variant="highlightBold"
+                        variant="neutral"
                         noMargin
                      />
                   </View>
@@ -351,12 +415,14 @@ function MetricRow({
 }: {
    label: string;
    value: string;
-   variant: "neutral" | "neutralGreenValue" | "highlight" | "highlightBold" | "danger";
+   variant: "neutral" | "neutralGreenValue" | "highlight" | "highlightBold" | "gold" | "goldBold" | "danger";
    noMargin?: boolean;
 }) {
    const container =
       variant === "highlight" || variant === "highlightBold"
          ? "bg-emerald-50 border-emerald-100"
+         : variant === "gold" || variant === "goldBold"
+            ? "bg-amber-50 border-amber-100"
          : variant === "danger"
             ? "bg-red-50 border-red-100"
          : "bg-white border-gray-200";
@@ -364,11 +430,13 @@ function MetricRow({
    const valueColor =
       variant === "highlight" || variant === "highlightBold" || variant === "neutralGreenValue"
          ? "text-primary_green"
+         : variant === "gold" || variant === "goldBold"
+            ? "text-amber-700"
          : variant === "danger"
             ? "text-red-500"
          : "text-gray-900";
 
-   const valueSize = variant === "highlightBold" ? "text-xl" : "text-lg";
+   const valueSize = variant === "highlightBold" || variant === "goldBold" ? "text-xl" : "text-lg";
 
    return (
       <View
