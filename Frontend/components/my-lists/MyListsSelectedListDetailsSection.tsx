@@ -72,17 +72,56 @@ export default function MyListsSelectedListDetailsSection({
    }, [previewItem]);
    const savingsSummary = useMemo(() => {
       if (!list) return null;
-      const optimizedTotal = list.total;
-      const totalSavings = Math.max(0, list.savings);
-      const originalTotal = optimizedTotal + totalSavings;
-      const savingsFromDiscounts = totalSavings * 0.6;
-      const savingsFromBestPrices = totalSavings * 0.4;
+
+      const optimalTotal = list.items.reduce((total, item) => {
+         const retailerPrices = item.retailerPrices
+            ? Object.values(item.retailerPrices).filter(
+                 (price): price is number => typeof price === "number" && price > 0
+              )
+            : [];
+
+         if (retailerPrices.length === 0) {
+            return total + item.price * item.quantity;
+         }
+
+         return total + Math.min(...retailerPrices) * item.quantity;
+      }, 0);
+      const highestAvailableTotal = list.items.reduce((total, item) => {
+         const retailerPrices = item.retailerPrices
+            ? Object.values(item.retailerPrices).filter(
+                 (price): price is number => typeof price === "number" && price > 0
+              )
+            : [];
+
+         if (retailerPrices.length === 0) {
+            return total + item.price * item.quantity;
+         }
+
+         return total + Math.max(...retailerPrices) * item.quantity;
+      }, 0);
+      const currentTotal = list.items.reduce(
+         (total, item) => total + item.price * item.quantity,
+         0
+      );
+
+      const priceOptimizationDelta = currentTotal - optimalTotal;
+      const isExtraCost = priceOptimizationDelta > 0.005;
+      const savingsFromBestPrices = isExtraCost
+         ? 0
+         : Math.max(0, highestAvailableTotal - currentTotal);
+      const extraCostFromBestPrices = Math.max(0, priceOptimizationDelta);
+      const savedListSavings = Math.max(0, list.savings);
+      const savingsFromDiscounts = Math.max(0, savedListSavings - savingsFromBestPrices);
+      const totalSavings = isExtraCost
+         ? extraCostFromBestPrices
+         : savingsFromBestPrices + savingsFromDiscounts;
+
       return {
-         originalTotal,
-         optimizedTotal,
+         isExtraCost,
          totalSavings,
          savingsFromDiscounts,
          savingsFromBestPrices,
+         extraCostFromBestPrices,
       };
    }, [list]);
 
@@ -166,9 +205,10 @@ export default function MyListsSelectedListDetailsSection({
                   <PrimaryMetricCard label="No. of items" value={`${itemCount}`} icon="cube-outline" />
                   <PrimaryMetricCard label="Total" value={`$${list.total.toFixed(2)}`} icon="dollar-sign" isFA />
                   <PrimaryMetricCard
-                     label="Est. savings"
-                     value={`$${list.savings.toFixed(2)}`}
+                     label={savingsSummary?.isExtraCost ? "Extra cost" : "Est. savings"}
+                     value={`${savingsSummary?.isExtraCost ? "+" : ""}$${savingsSummary?.totalSavings.toFixed(2) ?? "0.00"}`}
                      icon="trending-down-outline"
+                     tone={savingsSummary?.isExtraCost ? "danger" : "success"}
                   />
                </View>
 
@@ -262,26 +302,21 @@ export default function MyListsSelectedListDetailsSection({
                   </View>
                )}
 
-               <View className="mt-6 rounded-2xl bg-gradient-to-b from-emerald-50/70 to-white p-4 shadow-sm">
-                  <Text className="text-xl font-bold text-gray-900 mb-4">Savings Summary</Text>
-
-                  <SummaryRow
-                     label="Original total"
-                     value={`$${savingsSummary?.originalTotal.toFixed(2) ?? "0.00"}`}
-                     showDivider={false}
-                  />
-                  <SummaryRow
-                     label="Optimized total"
-                     value={`$${savingsSummary?.optimizedTotal.toFixed(2) ?? "0.00"}`}
-                     showDivider={false}
-                  />
-
-                  <View className="h-px bg-emerald-100 my-3" />
+               <View className={`mt-6 rounded-2xl bg-gradient-to-b ${
+                  savingsSummary?.isExtraCost ? "from-red-50/70" : "from-emerald-50/70"
+               } to-white p-4 shadow-sm`}>
+                  <Text className="text-xl font-bold text-gray-900 mb-4">
+                     {savingsSummary?.isExtraCost ? "Cost Summary" : "Savings Summary"}
+                  </Text>
 
                   <View className="flex-row items-center justify-between mb-3">
-                     <Text className="text-base font-semibold text-gray-900">Total savings</Text>
-                     <Text className="text-3xl font-bold text-primary_green">
-                        ${savingsSummary?.totalSavings.toFixed(2) ?? "0.00"}
+                     <Text className="text-base font-semibold text-gray-900">
+                        {savingsSummary?.isExtraCost ? "Extra cost" : "Total savings"}
+                     </Text>
+                     <Text className={`text-3xl font-bold ${
+                        savingsSummary?.isExtraCost ? "text-red-500" : "text-primary_green"
+                     }`}>
+                        {savingsSummary?.isExtraCost ? "+" : ""}${savingsSummary?.totalSavings.toFixed(2) ?? "0.00"}
                      </Text>
                   </View>
 
@@ -296,9 +331,17 @@ export default function MyListsSelectedListDetailsSection({
                         </Text>
                      </View>
                      <View className="flex-row items-center justify-between">
-                        <Text className="text-sm text-gray-600">Best retailer price</Text>
-                        <Text className="text-sm font-semibold text-gray-800">
-                           ${savingsSummary?.savingsFromBestPrices.toFixed(2) ?? "0.00"}
+                        <Text className="text-sm text-gray-600">
+                           {savingsSummary?.isExtraCost ? "Extra cost vs best retailer" : "Best retailer price"}
+                        </Text>
+                        <Text className={`text-sm font-semibold ${
+                           savingsSummary?.isExtraCost ? "text-red-500" : "text-gray-800"
+                        }`}>
+                           {savingsSummary?.isExtraCost ? "+" : ""}${(
+                              savingsSummary?.isExtraCost
+                                 ? savingsSummary.extraCostFromBestPrices
+                                 : savingsSummary?.savingsFromBestPrices ?? 0
+                           ).toFixed(2)}
                         </Text>
                      </View>
                   </View>
@@ -394,23 +437,32 @@ function PrimaryMetricCard({
    value,
    icon,
    isFA = false,
+   tone = "success",
 }: {
    label: string;
    value: string;
    icon: string;
    isFA?: boolean;
+   tone?: "success" | "danger";
 }) {
+   const iconColor = tone === "danger" ? "#EF4444" : "#059669";
+   const containerClass =
+      tone === "danger"
+         ? "border-red-200 bg-red-50"
+         : "border-primary_green/20 bg-primary_green/5";
+   const valueClass = tone === "danger" ? "text-red-500" : "text-gray-900";
+
    return (
-      <View className="min-w-[170px] flex-1 rounded-2xl border border-primary_green/20 bg-primary_green/5 px-4 py-3">
+      <View className={`min-w-[170px] flex-1 rounded-2xl border ${containerClass} px-4 py-3`}>
          <View className="flex-row items-center gap-2 mb-1">
             {isFA ? (
-               <FontAwesome6 name={icon as any} size={12} color="#059669" />
+               <FontAwesome6 name={icon as any} size={12} color={iconColor} />
             ) : (
-               <Ionicons name={icon as any} size={14} color="#059669" />
+               <Ionicons name={icon as any} size={14} color={iconColor} />
             )}
             <Text className="text-xs text-gray-600 font-semibold uppercase">{label}</Text>
          </View>
-         <Text className="text-xl font-bold text-gray-900">{value}</Text>
+         <Text className={`text-xl font-bold ${valueClass}`}>{value}</Text>
       </View>
    );
 }

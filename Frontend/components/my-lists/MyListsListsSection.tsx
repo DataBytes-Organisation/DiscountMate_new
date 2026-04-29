@@ -16,6 +16,7 @@ type MyListsListsSectionProps = {
    containerClassName?: string;
    cardVariant?: ShoppingListCardVariant;
    hideManageActions?: boolean;
+   isLoading?: boolean;
    onSelectList: (id: string) => void;
    onSetActiveList: (id: string) => void;
    onEditList: (list: ShoppingList) => void;
@@ -34,6 +35,7 @@ export default function MyListsListsSection({
    containerClassName,
    cardVariant = "full",
    hideManageActions = false,
+   isLoading = false,
    onSelectList,
    onSetActiveList,
    onEditList,
@@ -65,7 +67,16 @@ export default function MyListsListsSection({
          <Text className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 pl-2">
             All lists ({lists.length})
          </Text>
-         {useSingleColumn ? (
+         {isLoading ? (
+            <View className={cardVariant === "compact" ? "gap-0 -mx-4" : "gap-4"}>
+               {[0, 1, 2].map((index) => (
+                  <ShoppingListCardSkeleton
+                     key={`shopping-list-skeleton-${index}`}
+                     compact={cardVariant === "compact"}
+                  />
+               ))}
+            </View>
+         ) : useSingleColumn ? (
             <View className={cardVariant === "compact" ? "gap-0 -mx-4" : "gap-4"}>
                {lists.map((list, index) => renderCard(list, index))}
             </View>
@@ -78,6 +89,33 @@ export default function MyListsListsSection({
                ))}
             </View>
          )}
+      </View>
+   );
+}
+
+function ShoppingListCardSkeleton({ compact }: { compact: boolean }) {
+   return (
+      <View
+         className={
+            compact
+               ? "py-3 pr-4 pl-6 border-t border-gray-200 bg-white"
+               : "rounded-2xl p-4 bg-white border border-gray-200"
+         }
+      >
+         <View className="flex-row items-center gap-2 mb-3">
+            <View className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+            <View className="h-4 rounded-full bg-gray-200 w-3/5" />
+         </View>
+         {!compact ? (
+            <>
+               <View className="h-3 rounded-full bg-gray-100 w-4/5 mb-3" />
+               <View className="flex-row gap-2 mb-3">
+                  <View className="h-7 rounded-xl bg-gray-100 flex-1" />
+                  <View className="h-7 rounded-xl bg-gray-100 flex-1" />
+               </View>
+            </>
+         ) : null}
+         <View className="h-3 rounded-full bg-gray-100 w-1/2" />
       </View>
    );
 }

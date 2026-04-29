@@ -7,6 +7,8 @@ export type ShoppingListLineItem = {
    quantity: number;
    store?: string;
    image?: string;
+   category?: string;
+   categoryId?: string;
    retailerPrices?: {
       coles?: number;
       woolworths?: number;
@@ -33,7 +35,6 @@ export type ShoppingListAnalytics = {
    total: number;
    savings: number;
    savingsPercent: number;
-   /** Placeholder category split for UI — replace with API aggregates later */
    categoryMix: { label: string; percent: number }[];
 };
 
@@ -48,11 +49,24 @@ export function listAnalytics(list: ShoppingList): ShoppingListAnalytics {
       total,
       savings,
       savingsPercent,
-      categoryMix: [
-         { label: "Pantry & dry goods", percent: 38 },
-         { label: "Fresh", percent: 27 },
-         { label: "Dairy & fridge", percent: 21 },
-         { label: "Other", percent: 14 },
-      ],
+      categoryMix: getCategoryMix(list.items),
    };
+}
+
+function getCategoryMix(items: ShoppingListLineItem[]) {
+   const counts = items.reduce<Record<string, number>>((acc, item) => {
+      const label = item.category?.trim() || "Uncategorised";
+      acc[label] = (acc[label] ?? 0) + item.quantity;
+      return acc;
+   }, {});
+
+   const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+   if (total <= 0) return [];
+
+   return Object.entries(counts)
+      .map(([label, count]) => ({
+         label,
+         percent: Math.round((count / total) * 100),
+      }))
+      .sort((a, b) => b.percent - a.percent || a.label.localeCompare(b.label));
 }

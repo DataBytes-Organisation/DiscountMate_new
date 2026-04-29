@@ -42,7 +42,7 @@ function getTrendColorClass(tone: TrendTone): string {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const router = useRouter();
    const { addToCart } = useCart();
-   const { id, name, subtitle, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
+   const { id, name, subtitle, category, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
    const [imageError, setImageError] = React.useState(false);
 
    // Use retailers as-is for display
@@ -107,6 +107,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
          price: cheapestRetailer?.price ?? 0,
          store: cheapestRetailer?.retailer.name || "Unknown retailer",
          image: link_image ?? undefined,
+         category,
          retailerPrices: retailerPriceMap,
       });
    };

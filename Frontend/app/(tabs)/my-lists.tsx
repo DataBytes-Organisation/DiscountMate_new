@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, ScrollView, useWindowDimensions } from "react-native";
 import { useShoppingLists } from "./ShoppingListsContext";
 import EditShoppingListModal from "../../components/my-lists/EditShoppingListModal";
@@ -16,10 +16,12 @@ export default function MyListsScreen() {
    const {
       lists,
       activeListId,
+      isLoading,
       setActiveList,
       createList,
       updateList,
       deleteList,
+      refreshLists,
    } = useShoppingLists();
 
    const [selectedListId, setSelectedListId] = useState<string | null>(null);
@@ -32,6 +34,7 @@ export default function MyListsScreen() {
       () => lists.find((list) => list.id === effectiveSelectedId) ?? null,
       [lists, effectiveSelectedId]
    );
+   const showInitialLoading = isLoading && lists.length === 0;
 
    const sortedLists = useMemo(
       () =>
@@ -79,7 +82,11 @@ export default function MyListsScreen() {
       setModalOpen(true);
    };
 
-   const handleSaveModal = (payload: {
+   useEffect(() => {
+      refreshLists();
+   }, [refreshLists]);
+
+   const handleSaveModal = async (payload: {
       name: string;
       description: string;
       accent: ShoppingList["accent"];
@@ -88,9 +95,13 @@ export default function MyListsScreen() {
          updateList(editingList.id, payload);
          setRecentCreatedListId(null);
       } else {
-         const createdList = createList(payload);
-         setRecentCreatedListId(createdList.id);
-         setSelectedListId(createdList.id);
+         try {
+            const createdList = await createList(payload);
+            setRecentCreatedListId(createdList.id);
+            setSelectedListId(createdList.id);
+         } catch (error) {
+            console.error("Failed to create shopping list:", error);
+         }
       }
    };
 
@@ -128,6 +139,7 @@ export default function MyListsScreen() {
                      }
                      cardVariant={wide ? "compact" : "full"}
                      hideManageActions={wide}
+                     isLoading={showInitialLoading}
                      onSelectList={setSelectedListId}
                      onSetActiveList={setActiveList}
                      onEditList={openEdit}
@@ -136,21 +148,25 @@ export default function MyListsScreen() {
                   {wide ? (
                      <View className="flex-1 min-w-0">
                         <View className="px-4 md:px-8">
-                           <MyListsSelectedListDetailsSection
-                              list={selectedList}
-                              isActive={selectedList?.id === activeListId}
-                              onEdit={() => {
-                                 if (selectedList) openEdit(selectedList);
-                              }}
-                              onDelete={() => {
-                                 if (selectedList) handleDeleteList(selectedList.id);
-                              }}
-                              onSetActive={() => {
-                                 if (selectedList) setActiveList(selectedList.id);
-                              }}
-                           />
+                           {showInitialLoading ? (
+                              <ListDetailsSkeleton />
+                           ) : (
+                              <MyListsSelectedListDetailsSection
+                                 list={selectedList}
+                                 isActive={selectedList?.id === activeListId}
+                                 onEdit={() => {
+                                    if (selectedList) openEdit(selectedList);
+                                 }}
+                                 onDelete={() => {
+                                    if (selectedList) handleDeleteList(selectedList.id);
+                                 }}
+                                 onSetActive={() => {
+                                    if (selectedList) setActiveList(selectedList.id);
+                                 }}
+                              />
+                           )}
                         </View>
-                        <MyListsBottomComparisonSections selectedList={selectedList} />
+                        {showInitialLoading ? <ComparisonSkeleton /> : <MyListsBottomComparisonSections selectedList={selectedList} />}
                      </View>
                   ) : null}
                </View>
@@ -159,21 +175,25 @@ export default function MyListsScreen() {
             {!wide ? (
                <>
                   <View className="px-4 md:px-8 pt-6">
-                     <MyListsSelectedListDetailsSection
-                        list={selectedList}
-                        isActive={selectedList?.id === activeListId}
-                        onEdit={() => {
-                           if (selectedList) openEdit(selectedList);
-                        }}
-                        onDelete={() => {
-                           if (selectedList) handleDeleteList(selectedList.id);
-                        }}
-                        onSetActive={() => {
-                           if (selectedList) setActiveList(selectedList.id);
-                        }}
-                     />
+                     {showInitialLoading ? (
+                        <ListDetailsSkeleton />
+                     ) : (
+                        <MyListsSelectedListDetailsSection
+                           list={selectedList}
+                           isActive={selectedList?.id === activeListId}
+                           onEdit={() => {
+                              if (selectedList) openEdit(selectedList);
+                           }}
+                           onDelete={() => {
+                              if (selectedList) handleDeleteList(selectedList.id);
+                           }}
+                           onSetActive={() => {
+                              if (selectedList) setActiveList(selectedList.id);
+                           }}
+                        />
+                     )}
                   </View>
-                  <MyListsBottomComparisonSections selectedList={selectedList} />
+                  {showInitialLoading ? <ComparisonSkeleton /> : <MyListsBottomComparisonSections selectedList={selectedList} />}
                </>
             ) : null}
 
@@ -188,6 +208,70 @@ export default function MyListsScreen() {
             editingList={editingList}
             onSave={handleSaveModal}
          />
+      </View>
+   );
+}
+
+function ListDetailsSkeleton() {
+   return (
+      <View className="bg-white rounded-3xl border border-gray-200 px-6 py-8 shadow-sm mt-8 mb-2">
+         <View className="flex-row items-start justify-between mb-6">
+            <View className="h-8 rounded-full bg-gray-200 w-1/3" />
+            <View className="h-10 rounded-xl bg-gray-100 w-32" />
+         </View>
+         <View className="h-4 rounded-full bg-gray-100 w-2/3 mb-6" />
+         <View className="flex-row flex-wrap gap-3 mb-6">
+            {[0, 1, 2].map((index) => (
+               <View
+                  key={`metric-skeleton-${index}`}
+                  className="min-w-[170px] flex-1 h-20 rounded-2xl bg-gray-100"
+               />
+            ))}
+         </View>
+         <View className="flex-row gap-10">
+            <View className="flex-1 gap-3">
+               {[0, 1, 2, 3].map((index) => (
+                  <View key={`item-skeleton-${index}`} className="h-14 rounded-xl bg-gray-100" />
+               ))}
+            </View>
+            <View className="w-[320px] gap-3">
+               <View className="h-7 rounded-full bg-gray-200 w-3/4" />
+               {[0, 1, 2].map((index) => (
+                  <View key={`category-skeleton-${index}`}>
+                     <View className="h-4 rounded-full bg-gray-100 w-2/3 mb-2" />
+                     <View className="h-3 rounded-full bg-gray-100 w-full" />
+                  </View>
+               ))}
+               <View className="h-40 rounded-2xl bg-gray-100 mt-4" />
+            </View>
+         </View>
+      </View>
+   );
+}
+
+function ComparisonSkeleton() {
+   return (
+      <View className="px-4 md:px-8 py-10 bg-[#F9FAFB]">
+         <View className="h-8 rounded-full bg-gray-200 w-1/3 mb-3" />
+         <View className="h-4 rounded-full bg-gray-100 w-1/2 mb-8" />
+         <View className="flex-row gap-6">
+            <View className="flex-[2] h-80 rounded-3xl bg-white border border-gray-200 p-6">
+               <View className="h-6 rounded-full bg-gray-200 w-1/3 mb-6" />
+               <View className="gap-4">
+                  {[0, 1, 2, 3].map((index) => (
+                     <View key={`comparison-list-skeleton-${index}`} className="h-14 rounded-xl bg-gray-100" />
+                  ))}
+               </View>
+            </View>
+            <View className="flex-1 h-80 rounded-3xl bg-white border border-gray-200 p-6">
+               <View className="h-6 rounded-full bg-gray-200 w-1/2 mb-6" />
+               <View className="gap-4">
+                  {[0, 1, 2].map((index) => (
+                     <View key={`store-total-skeleton-${index}`} className="h-20 rounded-2xl bg-gray-100" />
+                  ))}
+               </View>
+            </View>
+         </View>
       </View>
    );
 }
