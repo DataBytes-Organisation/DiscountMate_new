@@ -138,7 +138,7 @@ const ShoppingListsContext = createContext<ShoppingListsContextValue | undefined
 export function ShoppingListsProvider({ children }: { children: ReactNode }) {
    const [lists, setLists] = useState<ShoppingList[]>([]);
    const [activeListId, setActiveListIdState] = useState<string | null>(null);
-   const [isLoading, setIsLoading] = useState(false);
+   const [isLoading, setIsLoading] = useState(true);
 
    const refreshLists = useCallback(async () => {
       setIsLoading(true);

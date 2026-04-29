@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, ScrollView, useWindowDimensions } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useShoppingLists } from "./ShoppingListsContext";
@@ -30,6 +30,7 @@ export default function MyListsScreen() {
    const [recentCreatedListId, setRecentCreatedListId] = useState<string | null>(null);
    const [modalOpen, setModalOpen] = useState(false);
    const [editingList, setEditingList] = useState<ShoppingList | null>(null);
+   const consumedListIdRef = useRef<string | null>(null);
 
    const effectiveSelectedId = selectedListId ?? activeListId;
    const selectedList = useMemo(
@@ -92,7 +93,9 @@ export default function MyListsScreen() {
       if (!listId) return;
       const requestedListId = Array.isArray(listId) ? listId[0] : listId;
       if (!requestedListId) return;
+      if (consumedListIdRef.current === requestedListId) return;
       if (!lists.some((list) => list.id === requestedListId)) return;
+      consumedListIdRef.current = requestedListId;
       setSelectedListId(requestedListId);
    }, [listId, lists]);
 

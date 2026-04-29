@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { View, Text, Pressable, Image, ScrollView } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 import type { ShoppingList } from "../../types/ShoppingList";
 import { accentDot, accentRing } from "../my-lists/accentStyles";
@@ -33,8 +33,14 @@ const accentSoftBg: Record<ShoppingList["accent"], string> = {
 
 export default function SmartListsSection() {
    const router = useRouter();
-   const { lists, isLoading, createList } = useShoppingLists();
+   const { lists, isLoading, createList, refreshLists } = useShoppingLists();
    const [createModalOpen, setCreateModalOpen] = useState(false);
+
+   useFocusEffect(
+      useCallback(() => {
+         void refreshLists();
+      }, [refreshLists])
+   );
 
    const openCreateList = () => {
       setCreateModalOpen(true);

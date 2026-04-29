@@ -13,6 +13,14 @@ export default function ComparisonToolsSection() {
    const [optimizationMessage, setOptimizationMessage] = useState<string | null>(null);
    const activeList = getActiveList();
    const optimizerStats = calculateOptimizerStats(activeList);
+   const canOptimize = Boolean(
+      activeList && activeList.items.length > 0 && !optimizerStats.isAlreadyOptimized
+   );
+   const optimizeButtonLabel = getOptimizeButtonLabel(
+      activeList,
+      canOptimize,
+      optimizerStats.isAlreadyOptimized
+   );
 
    useEffect(() => {
       if (!optimizationMessage) return;
@@ -30,16 +38,20 @@ export default function ComparisonToolsSection() {
          return;
       }
 
-      if (activeList) {
-         const retailersByItemId = getOptimalRetailersByItemId(activeList);
-         updateListItemsRetailers(activeList.id, retailersByItemId);
+      if (activeList.items.length === 0) {
+         setOptimizationMessage(`Add items to "${activeList.name}" before optimizing.`);
+         return;
       }
 
-      setOptimizationMessage(
-         optimizerStats.isAlreadyOptimized
-            ? `"${activeList.name}" is already optimized.`
-            : `"${activeList.name}" has been optimized successfully.`
-      );
+      if (optimizerStats.isAlreadyOptimized) {
+         setOptimizationMessage(`"${activeList.name}" is already optimized.`);
+         return;
+      }
+
+      const retailersByItemId = getOptimalRetailersByItemId(activeList);
+      updateListItemsRetailers(activeList.id, retailersByItemId);
+
+      setOptimizationMessage(`"${activeList.name}" has been optimized successfully.`);
    };
 
    return (
@@ -134,69 +146,94 @@ export default function ComparisonToolsSection() {
                      </View>
 
                      <View className="space-y-4">
-                        {/* Current grocery list */}
-                        <View className="p-5 bg-white border border-gray-200 rounded-xl">
-                           <View className="flex-row items-center justify-between mb-3">
-                              <View className="flex-1 pr-3">
-                                 <Text className="text-sm text-[#111827] font-semibold">
-                                    Current grocery list
+                        {optimizerStats.isAlreadyOptimized ? (
+                           <View className="p-5 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl">
+                              <View className="flex-row items-start justify-between gap-3 mb-4">
+                                 <View className="flex-1 min-w-0">
+                                    <Text className="text-sm text-[#111827] font-semibold">
+                                       Current grocery list
+                                    </Text>
+                                    <View className="flex-row items-center gap-2 mt-0.5">
+                                       {activeList ? (
+                                          <View className={`w-2 h-2 rounded-full ${accentDot[activeList.accent]}`} />
+                                       ) : null}
+                                       <Text className="text-xs text-amber-800" numberOfLines={1}>
+                                          {activeList?.name ?? "Selected list"}
+                                       </Text>
+                                    </View>
+                                 </View>
+                                 <Text className="text-sm text-amber-700 font-bold">
+                                    ${optimizerStats.optimizedTotal.toFixed(2)}
                                  </Text>
-                                 <View className="flex-row items-center gap-2 mt-0.5">
-                                    {activeList ? (
-                                       <View className={`w-2 h-2 rounded-full ${accentDot[activeList.accent]}`} />
-                                    ) : null}
-                                    <Text className="text-xs text-gray-500" numberOfLines={1}>
-                                       {activeList?.name ?? "Select or create a list"}
+                              </View>
+
+                              <View className="flex-row items-center gap-3 rounded-xl bg-amber-100/80 border border-amber-300 px-4 py-3">
+                                 <View className="w-9 h-9 rounded-full bg-amber-500 items-center justify-center">
+                                    <FontAwesome6 name="trophy" size={15} color="#FFFFFF" />
+                                 </View>
+                                 <View className="flex-1">
+                                    <Text className="text-sm text-amber-900 font-bold">
+                                       Best split across {optimizerStats.storesToVisit}{" "}
+                                       {optimizerStats.storesToVisit === 1 ? "store" : "stores"}
+                                    </Text>
+                                    <Text className="text-xs text-amber-700 mt-0.5">
+                                       This list is already using the lowest available retailer prices.
                                     </Text>
                                  </View>
                               </View>
-                              <Text className="text-sm text-gray-600 font-semibold">
-                                 ${optimizerStats.currentTotal.toFixed(2)}
-                              </Text>
                            </View>
-                           <View className="w-full bg-gray-200 rounded-full h-3">
-                              <View
-                                 className="bg-gray-400 h-3 rounded-full"
-                                 style={{ width: `${optimizerStats.currentBarPercent}%` }}
-                              />
-                           </View>
-                        </View>
-
-                        {/* Optimized split */}
-                        <View className="p-5 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl">
-                           <View className="flex-row items-center justify-between mb-3 gap-3">
-                              <View className="flex-row items-center gap-2 flex-1 min-w-0">
-                                 <Text className="text-sm text-[#111827] font-semibold">
-                                    Optimized split
-                                 </Text>
-                                 {optimizerStats.isAlreadyOptimized ? (
-                                    <Text className="text-xs text-amber-700 font-semibold" numberOfLines={1}>
-                                       · Current list is already optimized
+                        ) : (
+                           <View className="p-5 bg-white border border-gray-200 rounded-xl">
+                              <View className="flex-row items-center justify-between mb-4">
+                                 <View className="flex-1 pr-3">
+                                    <Text className="text-sm text-[#111827] font-semibold">
+                                       Current grocery list
                                     </Text>
-                                 ) : null}
+                                    <View className="flex-row items-center gap-2 mt-0.5">
+                                       {activeList ? (
+                                          <View className={`w-2 h-2 rounded-full ${accentDot[activeList.accent]}`} />
+                                       ) : null}
+                                       <Text className="text-xs text-gray-500" numberOfLines={1}>
+                                          {activeList?.name ?? "Select or create a list"}
+                                       </Text>
+                                    </View>
+                                 </View>
+                                 <Text className="text-sm text-gray-600 font-semibold">
+                                    ${optimizerStats.currentTotal.toFixed(2)}
+                                 </Text>
                               </View>
-                              <Text className="text-sm text-amber-700 font-bold">
-                                 ${optimizerStats.optimizedTotal.toFixed(2)}
-                              </Text>
-                           </View>
 
-                           <View className="w-full bg-gray-200 rounded-full h-3 mb-3">
-                              <View
-                                 className="bg-gradient-to-r from-amber-400 to-amber-600 h-3 rounded-full"
-                                 style={{ width: `${optimizerStats.optimizedBarPercent}%` }}
-                              />
+                              {canOptimize ? (
+                                 <View className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3">
+                                    <View className="flex-row items-center justify-between gap-3">
+                                       <Text className="text-xs text-emerald-700 font-semibold">
+                                          Potential savings
+                                       </Text>
+                                       <Text className="text-lg text-emerald-700 font-bold">
+                                          ${optimizerStats.savings.toFixed(2)}
+                                       </Text>
+                                    </View>
+                                    <Text className="text-xs text-emerald-700 mt-1">
+                                       Optimize to bring this list to ${optimizerStats.optimizedTotal.toFixed(2)}
+                                       {optimizerStats.storesToVisit > 0
+                                          ? ` across ${optimizerStats.storesToVisit} ${
+                                               optimizerStats.storesToVisit === 1 ? "store" : "stores"
+                                            }`
+                                          : ""}
+                                       .
+                                    </Text>
+                                 </View>
+                              ) : (
+                                 <View className="rounded-xl bg-gray-50 border border-gray-200 px-4 py-3">
+                                    <Text className="text-xs text-gray-500 font-semibold">
+                                       {activeList
+                                          ? "Add items to this list to preview optimization savings."
+                                          : "Select or create a grocery list to preview optimization savings."}
+                                    </Text>
+                                 </View>
+                              )}
                            </View>
-
-                           <Text className="text-xs text-amber-700 font-semibold">
-                              {optimizerStats.isAlreadyOptimized
-                                 ? `Already at the best split across ${optimizerStats.storesToVisit} ${
-                                      optimizerStats.storesToVisit === 1 ? "store" : "stores"
-                                   }`
-                                 : `Save ${optimizerStats.savings.toFixed(2)} by shopping at ${
-                                      optimizerStats.storesToVisit
-                                   } ${optimizerStats.storesToVisit === 1 ? "store" : "stores"}`}
-                           </Text>
-                        </View>
+                        )}
                      </View>
 
                      {optimizationMessage ? (
@@ -210,10 +247,15 @@ export default function ComparisonToolsSection() {
                      {/* CTA */}
                      <Pressable
                         onPress={openOptimizer}
-                        className="w-full mt-8 py-4 bg-gradient-to-r from-primary_green to-secondary_green rounded-xl items-center justify-center hover:shadow-lg transition-all"
+                        disabled={!canOptimize}
+                        className={`w-full mt-8 py-4 rounded-xl items-center justify-center transition-all ${
+                           canOptimize
+                              ? "bg-gradient-to-r from-primary_green to-secondary_green hover:shadow-lg"
+                              : "bg-gray-200"
+                        }`}
                      >
-                        <Text className="text-white font-semibold">
-                           Optimize My Grocery List
+                        <Text className={`font-semibold ${canOptimize ? "text-white" : "text-gray-500"}`}>
+                           {optimizeButtonLabel}
                         </Text>
                      </Pressable>
                   </View>
@@ -231,8 +273,6 @@ function calculateOptimizerStats(list: ReturnType<typeof useShoppingLists>["list
          optimizedTotal: 0,
          savings: 0,
          storesToVisit: 0,
-         currentBarPercent: 0,
-         optimizedBarPercent: 0,
          isAlreadyOptimized: false,
       };
    }
@@ -262,26 +302,26 @@ function calculateOptimizerStats(list: ReturnType<typeof useShoppingLists>["list
 
    const optimizedTotal = plan.reduce((sum, item) => sum + item.lineTotal, 0);
    const storesToVisit = new Set(plan.map((item) => item.store)).size;
-   const highestAvailableTotal = list.items.reduce((sum, item) => {
-      const prices = STORES
-         .map((store) => item.retailerPrices?.[store])
-         .filter((price): price is number => typeof price === "number" && price > 0);
-
-      if (prices.length === 0) return sum + item.price * item.quantity;
-      return sum + Math.max(...prices) * item.quantity;
-   }, 0);
-   const scaleTotal = Math.max(currentTotal, optimizedTotal, highestAvailableTotal, 1);
    const isAlreadyOptimized = Math.abs(currentTotal - optimizedTotal) < 0.005;
 
    return {
       currentTotal,
       optimizedTotal,
-      savings: Math.max(0, highestAvailableTotal - optimizedTotal),
+      savings: Math.max(0, currentTotal - optimizedTotal),
       storesToVisit,
-      currentBarPercent: Math.max(8, Math.min(100, (currentTotal / scaleTotal) * 100)),
-      optimizedBarPercent: Math.max(8, Math.min(100, (optimizedTotal / scaleTotal) * 100)),
       isAlreadyOptimized,
    };
+}
+
+function getOptimizeButtonLabel(
+   list: ReturnType<typeof useShoppingLists>["lists"][number] | null,
+   canOptimize: boolean,
+   isAlreadyOptimized: boolean
+) {
+   if (isAlreadyOptimized) return "Already Optimized";
+   if (canOptimize) return "Optimize My Grocery List";
+   if (list) return "Add Items to Optimize";
+   return "Select a List First";
 }
 
 function getOptimalRetailersByItemId(
