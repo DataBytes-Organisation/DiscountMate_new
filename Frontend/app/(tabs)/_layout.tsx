@@ -2,6 +2,7 @@ import React from "react";
 import { View, ScrollView } from "react-native";
 import { Slot, useSegments } from "expo-router";
 import AppHeader from "../../components/layout/Header";
+import CategoryTabs from "../../components/layout/CategoryTabs";
 import SearchBar from "../../components/layout/SearchBar";
 import { CartProvider } from "./CartContext";
 import { UserProfileProvider } from "../../context/UserProfileContext";
