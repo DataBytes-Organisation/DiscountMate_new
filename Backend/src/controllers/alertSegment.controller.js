@@ -49,7 +49,11 @@ async function getAlertSegments(req, res) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        await syncCategoryAlertNotifications(db, user, email);
+        try {
+            await syncCategoryAlertNotifications(db, user, email);
+        } catch (syncError) {
+            console.warn("Alert segment notification sync skipped:", syncError?.message || syncError);
+        }
 
         const ownershipFilter = buildOwnershipFilter(user, email);
         const savedSegments = await db
@@ -141,7 +145,11 @@ async function updateAlertSegment(req, res) {
         );
 
         if (active) {
-            await syncCategoryAlertNotifications(db, user, email);
+            try {
+                await syncCategoryAlertNotifications(db, user, email);
+            } catch (syncError) {
+                console.warn("Alert segment notification sync skipped:", syncError?.message || syncError);
+            }
         }
 
         const triggeredCounts = await getTriggeredCountsByCategory(db, user, email);

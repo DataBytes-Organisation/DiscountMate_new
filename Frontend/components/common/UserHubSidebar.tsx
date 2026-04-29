@@ -20,7 +20,6 @@ type HubSectionKey =
    | "alerts"
    | "profile"
    | "subscription"
-   | "nearby"
    | "support"
    | "privacy";
 
@@ -45,7 +44,6 @@ const NAV_ITEMS: Array<{
    { key: "alerts", label: "Manage Alert Segments", icon: "tags", route: "/(tabs)/alert-segments" },
    { key: "profile", label: "Profile Management", icon: "pen-to-square", route: "/(tabs)/profile" },
    { key: "subscription", label: "Subscription", icon: "star", route: "/(tabs)/subscription" },
-   { key: "nearby", label: "Location & Nearby", icon: "location-dot" },
    { key: "support", label: "Support", icon: "headset", route: "/contact" },
    { key: "privacy", label: "Privacy & Terms", icon: "shield-halved", route: "/privacy-terms" },
 ];

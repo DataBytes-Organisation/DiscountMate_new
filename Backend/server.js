@@ -17,6 +17,7 @@ const analyticsRoutes = require('./src/routers/analytics.router');
 const dashboardRoutes = require('./src/routers/dashboard.router');
 const notificationRoutes = require('./src/routers/notification.router');
 const alertSegmentRoutes = require('./src/routers/alertSegment.router');
+const listRoutes = require('./src/routers/list.router');
 
 if (process.env.NODE_ENV !== 'production') {
    require('dotenv').config();
@@ -159,6 +160,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/alert-segments', alertSegmentRoutes);
+app.use('/api/lists', listRoutes);
 
 // Root route
 app.get('/', (req, res) => {

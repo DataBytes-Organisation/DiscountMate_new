@@ -272,7 +272,7 @@ async function fetchPricingCandidates(db) {
             {
                 $limit: 120,
             },
-        ])
+        ], { allowDiskUse: true })
         .toArray();
 
     if (pricingRows.length === 0) {

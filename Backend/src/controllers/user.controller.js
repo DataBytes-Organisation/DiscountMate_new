@@ -6,6 +6,10 @@ const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
 const User = require('../schemas/models');
 const { connectToMongoDB } = require('../config/database');
+const {
+    getSavedListById,
+    normalizeDashboardRetailer,
+} = require('../utils/savedLists');
 
 const PASSWORD_SPECIAL_CHARACTER_REGEX = /[^A-Za-z0-9\s]/;
 const AU_POSTCODE_REGEX = /^\d{4}$/;
@@ -249,6 +253,13 @@ function getDefaultNotificationPreferences() {
     };
 }
 
+function getDefaultDashboardPreferences() {
+    return {
+        selected_dashboard_list_id: '',
+        selected_dashboard_retailer: 'coles',
+    };
+}
+
 const SUBSCRIPTION_PLAN_CONFIG = {
     free: {
         key: 'free',
@@ -260,7 +271,6 @@ const SUBSCRIPTION_PLAN_CONFIG = {
             'Up to 5 active price and category alerts',
             'Basic savings summary',
             'Up to 3 saved lists',
-            'Basic nearby store access',
         ],
         limits: {
             price_alerts: 5,
@@ -277,7 +287,6 @@ const SUBSCRIPTION_PLAN_CONFIG = {
             'Unlimited price and category alerts',
             'Expanded dashboard insights and history',
             'Priority deal notifications',
-            'Extended nearby coverage',
             'Early access to new features',
         ],
         limits: {
@@ -929,6 +938,95 @@ const updateSubscription = async (req, res) => {
     }
 };
 
+const getDashboardPreferences = async (req, res) => {
+    try {
+        const email = getAuthEmail(req);
+        const db = await connectToMongoDB();
+        if (!db) {
+            return res.status(500).json({ message: 'Database connection failed' });
+        }
+
+        const user = await db.collection('users').findOne(
+            { email },
+            { projection: { dashboard_preferences: 1 } }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const preferences = user?.dashboard_preferences || getDefaultDashboardPreferences();
+
+        return res.status(200).json({
+            selected_dashboard_list_id: preferences.selected_dashboard_list_id || '',
+            selected_dashboard_retailer:
+                normalizeDashboardRetailer(preferences.selected_dashboard_retailer) || 'coles',
+        });
+    } catch (error) {
+        return handleControllerError(
+            res,
+            error,
+            'Failed to load dashboard preferences',
+            'Error fetching dashboard preferences:'
+        );
+    }
+};
+
+const updateDashboardPreferences = async (req, res) => {
+    try {
+        const email = getAuthEmail(req);
+        const db = await connectToMongoDB();
+        if (!db) {
+            return res.status(500).json({ message: 'Database connection failed' });
+        }
+
+        const user = await db.collection('users').findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const selectedDashboardListId = String(
+            req.body?.selected_dashboard_list_id || ''
+        ).trim();
+        const selectedDashboardRetailer =
+            normalizeDashboardRetailer(req.body?.selected_dashboard_retailer) || 'coles';
+
+        if (selectedDashboardListId) {
+            const savedList = await getSavedListById(db, user, email, selectedDashboardListId);
+            if (!savedList) {
+                return res.status(404).json({ message: 'Saved list not found' });
+            }
+        }
+
+        await db.collection('users').updateOne(
+            { email },
+            {
+                $set: {
+                    dashboard_preferences: {
+                        selected_dashboard_list_id: selectedDashboardListId,
+                        selected_dashboard_retailer: selectedDashboardRetailer,
+                        updatedAt: new Date(),
+                    },
+                    updatedAt: new Date(),
+                },
+            }
+        );
+
+        return res.status(200).json({
+            message: 'Dashboard preferences updated successfully',
+            selected_dashboard_list_id: selectedDashboardListId,
+            selected_dashboard_retailer: selectedDashboardRetailer,
+        });
+    } catch (error) {
+        return handleControllerError(
+            res,
+            error,
+            'Failed to update dashboard preferences',
+            'Error updating dashboard preferences:'
+        );
+    }
+};
+
 const deleteAccount = async (req, res) => {
     try {
         const email = getAuthEmail(req);
@@ -957,6 +1055,8 @@ const deleteAccount = async (req, res) => {
             'expiry_items',
             'shopping_trips',
             'shopping_lists',
+            'saved_lists',
+            'list_pricing_snapshots',
         ];
 
         await Promise.all(
@@ -1081,6 +1181,8 @@ module.exports = {
     getAddressSuggestions,
     getNotificationPreferences,
     updateNotificationPreferences,
+    getDashboardPreferences,
+    updateDashboardPreferences,
     getSubscription,
     updateSubscription,
     deleteAccount,

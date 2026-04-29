@@ -95,7 +95,11 @@ async function getNotifications(req, res) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        await syncCategoryAlertNotifications(db, user, email);
+        try {
+            await syncCategoryAlertNotifications(db, user, email);
+        } catch (syncError) {
+            console.warn('Notification category sync skipped:', syncError?.message || syncError);
+        }
 
         const notificationsCollection = await getCollection(db, 'notifications');
         if (!notificationsCollection) {
