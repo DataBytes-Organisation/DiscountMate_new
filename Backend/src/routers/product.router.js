@@ -3,6 +3,8 @@ const { getProducts, getProduct } = require("../controllers/product.controller")
 const ipThrottle = require('../middleware/ipThrottle.middleware'); // NEW
 const { scraperSlowDown, suspiciousTrafficLogger } = require('../middleware/antiScraping.middleware'); // NEW
 const { logSecurityEvent } = require('../utils/securityLogger'); // NEW
+const validateRequest = require('../middleware/validateRequest.middleware'); // NEW
+const { getProductsValidation, getProductValidation } = require('../validators/product.validators'); // NEW
 
 const router = express.Router();
 
@@ -24,6 +26,8 @@ router.get(
   suspiciousTrafficLogger, // NEW
   scraperSlowDown, // NEW
   ipThrottle, // NEW
+  getProductsValidation, // NEW
+  validateRequest, // NEW
   getProducts
 );
 /**
@@ -75,6 +79,8 @@ router.get(
   suspiciousTrafficLogger, // NEW
   scraperSlowDown, // NEW
   ipThrottle, // NEW
+  getProductValidation, // NEW
+  validateRequest, // NEW
   getProduct
 );
 

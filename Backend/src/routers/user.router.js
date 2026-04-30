@@ -6,6 +6,8 @@ const fs = require('fs');
 
 // Import JWT middleware
 const verifyToken = require('../middleware/auth.middleware');
+const validateRequest = require('../middleware/validateRequest.middleware'); // NEW
+const { signupValidation, signinValidation } = require('../validators/user.validators'); // NEW
 
 // Configure multer storage
 const storage = multer.diskStorage({
@@ -85,7 +87,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/signup', userController.signupLimiter, userController.signup); // NEW: Apply rate limiting to signup
+router.post('/signup', userController.signupLimiter, validateRequest, userController.signup); // NEW: Apply rate limiting to signup
 
 // Signin route
 /**
@@ -116,7 +118,7 @@ router.post('/signup', userController.signupLimiter, userController.signup); // 
  *       500:
  *         description: Internal server error
  */
-router.post('/signin', userController.signinLimiter, userController.signin); // NEW: Apply rate limiting to signin 
+router.post('/signin', userController.signinLimiter, validateRequest, userController.signin); // NEW: Apply rate limiting to signin 
 
 
 // Get profile route

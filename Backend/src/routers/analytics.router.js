@@ -2,7 +2,13 @@ const express = require('express');
 const analyticsController = require('../controllers/analytics.controller');
 const ipThrottle = require('../middleware/ipThrottle.middleware'); // NEW
 const { scraperSlowDown, suspiciousTrafficLogger } = require('../middleware/antiScraping.middleware'); // NEW
-
+const validateRequest = require('../middleware/validateRequest.middleware'); // NEW
+const {
+  salesSummaryValidation,
+  brandAnalysisValidation,
+  priceComparisonValidation,
+  dataCleaningValidation,
+} = require('../validators/analytics.validators'); // NEW
 const router = express.Router();
 
 /**
@@ -39,6 +45,8 @@ router.post(
   suspiciousTrafficLogger, // NEW
   scraperSlowDown, // NEW
   ipThrottle, // NEW
+  salesSummaryValidation, // NEW
+  validateRequest, // NEW
   analyticsController.getSalesSummary
 );
 
@@ -73,6 +81,8 @@ router.post(
   suspiciousTrafficLogger, // NEW
   scraperSlowDown, // NEW
   ipThrottle, // NEW
+  brandAnalysisValidation, // NEW
+  validateRequest, // NEW
   analyticsController.getBrandAnalysis
 );
 
@@ -107,6 +117,8 @@ router.post(
   suspiciousTrafficLogger, // NEW
   scraperSlowDown, // NEW
   ipThrottle, // NEW
+  priceComparisonValidation, // NEW
+  validateRequest, // NE
   analyticsController.getPriceComparison
 );
 
@@ -144,6 +156,8 @@ router.post(
   suspiciousTrafficLogger, // NEW
   scraperSlowDown, // NEW
   ipThrottle, // NEW
+  dataCleaningValidation, // NEW
+  validateRequest, // NEW
   analyticsController.cleanData
 );
 
