@@ -138,11 +138,13 @@ jobs:
         run: gcloud auth configure-docker "${{ vars.GCP_REGION }}-docker.pkg.dev" --quiet
 
       - name: Build frontend image
+        env:
+          FRONTEND_API_URL: ${{ vars.BACKEND_PUBLIC_API_URL != '' && vars.BACKEND_PUBLIC_API_URL || format('{0}/api', needs.deploy-backend.outputs.service_url) }}
         run: |
           FRONTEND_IMAGE_URI="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/${{ vars.FRONTEND_IMAGE_NAME }}:${{ github.sha }}"
           echo "FRONTEND_IMAGE_URI=${FRONTEND_IMAGE_URI}" >> "${GITHUB_ENV}"
           docker build \
-            --build-arg EXPO_PUBLIC_API_URL="${{ needs.deploy-backend.outputs.service_url }}/api" \
+            --build-arg EXPO_PUBLIC_API_URL="${FRONTEND_API_URL}" \
             -t "${FRONTEND_IMAGE_URI}" \
             Frontend
 
