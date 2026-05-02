@@ -56,7 +56,9 @@ class AppSettings(BaseSettings):
 
 
 class ModelRuntimeConfig(BaseModel):
-    products: str
+    products: str | None = None
+    products_glob: str | None = None
+    coles_master: str | None = None
 
 
 class RuntimePaths(BaseModel):
