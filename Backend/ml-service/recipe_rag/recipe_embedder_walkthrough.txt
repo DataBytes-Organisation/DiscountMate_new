@@ -1,0 +1,27 @@
+how to run Backend\ml-service\build_recipe_index.py
+
+# First time only — install deps
+pip install sentence-transformers numpy
+
+# Build everything (recipes + ingredients)
+python build_recipe_index.py
+python recipe_rag\preprocess.py: Expected output: a count of files found, a sample recipe text chunk, and the first 5 unique ingredients. Takes a few seconds.
+
+Run the full index build
+python build_recipe_index.py
+What will happen:
+
+Loads & preprocesses recipes from ..\..\Recipe Scraper\woolworths_recipes (the default path)
+Downloads all-mpnet-base-v2 (~420MB) on first run — cached afterward in huggingface
+Embeds all 13k recipes (progress bar shown)
+Embeds all unique ingredients (progress bar shown)
+Saves 4 files to Backend\ml-service\recipe_rag\index\
+Time estimate on CPU: ~10–20 min for 13k recipes. First run is slower because of the model download.
+
+# Verify it works
+python build_recipe_index.py --test
+
+General:
+rag_pipeline.py will np.load("recipe_index.npz")["embeddings"] and the recipe metadata JSON at startup — no re-embedding ever.
+Product embedder will load ingredient_index.npz so it can match products to ingredients in the same vector space.
+GCP later: these 4 files (~50–100MB total for 13k recipes) just sit in a Cloud Storage bucket; the App Engine / Cloud Run container downloads them on cold start.
