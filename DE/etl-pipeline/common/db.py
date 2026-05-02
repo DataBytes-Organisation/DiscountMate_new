@@ -7,6 +7,8 @@ import psycopg
 from psycopg import sql
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     import duckdb
 
     from config.settings import AppSettings
@@ -19,6 +21,60 @@ def fetch_table_payload(
     rows = conn.execute(f"SELECT * FROM {duck_table}").fetchall()
     columns = [desc[0] for desc in conn.description]
     return rows, columns
+
+
+def connect_postgres(settings: AppSettings) -> psycopg.Connection:
+    return psycopg.connect(
+        host=settings.postgres_host,
+        port=settings.postgres_port,
+        dbname=settings.postgres_database,
+        user=settings.postgres_user,
+        password=settings.postgres_password,
+    )
+
+
+def load_duckdb_table_to_temp_table(
+    cursor: psycopg.Cursor,
+    conn: duckdb.DuckDBPyConnection,
+    duck_table: str,
+    temp_table: str,
+    column_types: dict[str, str],
+) -> int:
+    rows, columns = fetch_table_payload(conn, duck_table)
+    missing_columns = set(column_types) - set(columns)
+    if missing_columns:
+        raise RuntimeError(
+            f"DuckDB table '{duck_table}' is missing columns: "
+            f"{', '.join(sorted(missing_columns))}"
+        )
+
+    column_defs = sql.SQL(", ").join(
+        sql.SQL("{} {}").format(sql.Identifier(column), sql.SQL(column_type))
+        for column, column_type in column_types.items()
+    )
+    cursor.execute(
+        sql.SQL("CREATE TEMP TABLE {} ({}) ON COMMIT DROP").format(
+            sql.Identifier(temp_table),
+            column_defs,
+        )
+    )
+
+    if rows:
+        insert_columns = sql.SQL(", ").join(sql.Identifier(column) for column in columns)
+        placeholders = sql.SQL(", ").join(sql.Placeholder() for _ in columns)
+        cursor.executemany(
+            sql.SQL("INSERT INTO {} ({}) VALUES ({})").format(
+                sql.Identifier(temp_table),
+                insert_columns,
+                placeholders,
+            ),
+            rows,
+        )
+    return len(rows)
+
+
+def load_pg_sql(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
 
 
 def load_demo_slice(

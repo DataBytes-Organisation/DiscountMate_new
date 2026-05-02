@@ -15,7 +15,9 @@ models:
     products: "{bronze_root}/iga/iga_sample_{date_compact}.csv"
 
   products_aldi:
-    products: "{bronze_root}/aldi/aldi_sample_{date_compact}.csv"
+    products: "{bronze_root}/aldi/aldi_all_products_{date_compact}.csv"
+    products_glob: "{bronze_root}/aldi/aldi_all_products_{date_compact}*.csv"
+    coles_master: "{bronze_root}/coles/Master_Coles_Scrape.csv"
 
   example:
     products: "{bronze_root}/coles/coles_sample_{date_compact}.csv"
