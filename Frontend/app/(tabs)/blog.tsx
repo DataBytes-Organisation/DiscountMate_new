@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal,
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from './AuthContext'; // Reintroduce useAuth
+import { API_URL } from '../../constants/Api';
 
 // Define the type for blog and news items
 interface ContentItem {
@@ -26,8 +27,8 @@ export default function BlogNews() {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const blogsResponse = await axios.get('http://localhost:3000/api/blogs');
-        const newsResponse = await axios.get('http://localhost:3000/api/news');
+        const blogsResponse = await axios.get(`${API_URL}/blogs`);
+        const newsResponse = await axios.get(`${API_URL}/news`);
         
         setBlogs(blogsResponse.data);
         setNews(newsResponse.data);
@@ -46,7 +47,7 @@ export default function BlogNews() {
         const token = await AsyncStorage.getItem('authToken');
         if (!token) return;
 
-        const response = await axios.get('http://localhost:3000/api/users/profile', {
+        const response = await axios.get(`${API_URL}/users/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -76,7 +77,7 @@ export default function BlogNews() {
   const handleSubmit = async () => {
     try {
       const currentDate = new Date().toISOString();
-      const apiUrl = modalType === 'Blog' ? 'http://localhost:3000/api/blogs/submit-blog' : 'http://localhost:3000/api/news/submit-news';
+      const apiUrl = modalType === 'Blog' ? `${API_URL}/blogs/submit-blog` : `${API_URL}/news/submit-news`;
 
       const data = {
         heading,
