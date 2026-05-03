@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../schemas/models');
 const { connectToMongoDB } = require('../config/database');
 const fs = require('fs');
-const mime = require('mime-types');
+const mime = require('mime-types'); 
 
 // Signup Controller
 const signup = async (req, res) => {
@@ -235,8 +235,7 @@ module.exports = {
     signin,
     getProfile,
     updateProfileImage,
-    getProfileImage,
-    signupLimiter: limiter
+    getProfileImage
 };
 
 
