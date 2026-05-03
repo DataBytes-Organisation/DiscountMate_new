@@ -10,6 +10,7 @@ export type ShoppingListCardVariant = "full" | "compact";
 type ShoppingListCardProps = {
    list: ShoppingList;
    variant?: ShoppingListCardVariant;
+   isLastInList?: boolean;
    isActive?: boolean;
    isSelected?: boolean;
    onPressCard?: () => void;
@@ -22,6 +23,7 @@ type ShoppingListCardProps = {
 export default function ShoppingListCard({
    list,
    variant = "full",
+   isLastInList = false,
    isActive = false,
    isSelected = false,
    onPressCard,
@@ -40,23 +42,27 @@ export default function ShoppingListCard({
       ]);
    };
 
-   const ringStyle = isSelected
-      ? "border-2 border-primary_green shadow-sm"
-      : "border border-gray-200";
-
    const compact = variant === "compact";
 
-   const Container = compact ? View : Pressable;
-   const containerPressProps = compact
-      ? {}
-      : { onPress: onPressCard };
+   const ringStyle = compact
+      ? isSelected
+         ? isActive
+            ? "border-t border-b border-x-0 border-amber-400 bg-amber-50"
+            : "border-t border-b border-x-0 border-primary_green bg-[#E5F7F0]"
+         : "border-t border-x-0 border-gray-200 bg-white"
+      : isSelected
+         ? "border-2 border-primary_green shadow-sm"
+         : "border border-gray-200";
+
+   const Container = Pressable;
+   const containerPressProps = { onPress: onPressCard };
 
    return (
       <Container
          {...containerPressProps}
-         className={`rounded-2xl p-4 ${compact ? "bg-gray-50" : "bg-white"} ${ringStyle} ${isSelected && !compact ? "bg-primary_green/5" : ""}`}
+         className={`${compact ? "rounded-none py-3 pr-4 pl-6" : "rounded-2xl p-4 bg-white"} ${ringStyle} ${compact && isLastInList ? "border-b border-gray-200" : ""} ${isSelected && !compact ? "bg-primary_green/5" : ""}`}
       >
-         <View className="flex-row items-start justify-between mb-2">
+         <View className={`flex-row items-start justify-between ${compact ? "mb-1" : "mb-2"}`}>
             <View className="flex-row items-center gap-2 flex-1 pr-2">
                <View className={`w-2.5 h-2.5 rounded-full ${accentDot[list.accent]}`} />
                <View className="flex-1">
@@ -68,8 +74,20 @@ export default function ShoppingListCard({
                         {list.name}
                      </Text>
                      {isActive ? (
-                        <View className="px-2 py-0.5 rounded-md bg-primary_green/15">
-                           <Text className="text-[10px] font-bold text-primary_green uppercase">
+                        <View
+                           className={
+                              compact
+                                 ? "px-2 py-0.5 rounded-md border border-amber-300 bg-amber-100/80"
+                                 : "px-2 py-0.5 rounded-md bg-primary_green/15"
+                           }
+                        >
+                           <Text
+                              className={
+                                 compact
+                                    ? "text-[10px] font-bold text-amber-800 uppercase tracking-wide"
+                                    : "text-[10px] font-bold text-primary_green uppercase"
+                              }
+                           >
                               Active
                            </Text>
                         </View>
@@ -80,13 +98,10 @@ export default function ShoppingListCard({
                         {list.description}
                      </Text>
                   ) : null}
-                  <Text className="text-xs text-gray-500 mt-1">
-                     Updated {list.updatedLabel}
-                  </Text>
                </View>
             </View>
 
-            {!hideManageActions && (onEdit || onDelete) ? (
+            {!compact && !hideManageActions && (onEdit || onDelete) ? (
                <View className="flex-row gap-2">
                   {onEdit ? (
                      <Pressable
@@ -114,48 +129,45 @@ export default function ShoppingListCard({
             ) : null}
          </View>
 
-         <View
-            className={`flex-row items-center flex-wrap gap-x-4 gap-y-1 ${compact ? "mb-2" : "mb-3"}`}
-         >
-            <View className="flex-row items-center gap-1">
-               <Ionicons name="cube-outline" size={16} color="#6B7280" />
-               <Text className="text-sm text-gray-700">
-                  {itemCount} {itemCount === 1 ? "item" : "items"}
-               </Text>
+         {compact ? (
+            <View className="mb-1 flex-row items-center gap-x-4">
+               <View className="flex-row items-center gap-1">
+                  <Ionicons name="cube-outline" size={16} color="#6B7280" />
+                  <Text className="text-sm text-gray-700">
+                     {itemCount} {itemCount === 1 ? "item" : "items"}
+                  </Text>
+               </View>
+               <View className="flex-row items-center">
+                  <Text className="text-sm font-semibold text-gray-900">
+                     ${list.total.toFixed(2)} total
+                  </Text>
+               </View>
             </View>
-            <View className="flex-row items-center gap-1">
-               <FontAwesome6 name="dollar-sign" size={14} color="#6B7280" />
-               <Text className="text-sm font-semibold text-gray-900">
-                  ${list.total.toFixed(2)} total
-               </Text>
+         ) : (
+            <View className="flex-row items-center flex-wrap gap-x-4 gap-y-1 mb-3">
+               <View className="flex-row items-center gap-1">
+                  <Ionicons name="cube-outline" size={16} color="#6B7280" />
+                  <Text className="text-sm text-gray-700">
+                     {itemCount} {itemCount === 1 ? "item" : "items"}
+                  </Text>
+               </View>
+               <View className="flex-row items-center gap-1">
+                  <FontAwesome6 name="dollar-sign" size={14} color="#6B7280" />
+                  <Text className="text-sm font-semibold text-gray-900">
+                     ${list.total.toFixed(2)} total
+                  </Text>
+               </View>
+               <View className="flex-row items-center gap-1">
+                  <Ionicons name="trending-down" size={16} color="#10B981" />
+                  <Text className="text-sm font-semibold text-primary_green">
+                     Save ${list.savings.toFixed(2)}
+                  </Text>
+               </View>
             </View>
-            <View className="flex-row items-center gap-1">
-               <Ionicons name="trending-down" size={16} color="#10B981" />
-               <Text className="text-sm font-semibold text-primary_green">
-                  Save ${list.savings.toFixed(2)}
-               </Text>
-            </View>
-         </View>
+         )}
 
          {compact ? (
-            <View className="flex-row flex-wrap gap-2 mt-1">
-               {onSetActive && !isActive ? (
-                  <Pressable
-                     onPress={onSetActive}
-                     className="px-3 py-2 rounded-xl bg-white border border-gray-300"
-                  >
-                     <Text className="text-xs font-semibold text-gray-700">Set active</Text>
-                  </Pressable>
-               ) : null}
-               {onPressCard ? (
-                  <Pressable
-                     onPress={onPressCard}
-                     className="px-3 py-2 rounded-xl bg-primary_green"
-                  >
-                     <Text className="text-xs font-semibold text-white">Open in My Lists</Text>
-                  </Pressable>
-               ) : null}
-            </View>
+            <Text className="text-xs text-gray-500 mt-1">Updated {list.updatedLabel}</Text>
          ) : null}
 
          {/* {!compact && (

@@ -188,6 +188,11 @@ function normaliseColesProduct(product, pricings = {}) {
 
     // Category reference
     category_id: product.category_id ?? null,
+    category_name:
+      product.category_name ??
+      product.category ??
+      product.cat?.category_name ??
+      null,
 
     // Description
     description: product.description ?? null,
@@ -277,24 +282,27 @@ const getProducts = async (req, res) => {
          ? new RegExp(`^${escapedCategoryName}$`, "i")
          : null;
 
-      const categoryNameStages = wantsCategoryName
-         ? [
-            {
-               $lookup: {
-                  from: "categories",
-                  localField: "category_id",
-                  foreignField: "_id",
-                  as: "cat",
-               },
+      const categoryLookupStages = [
+         {
+            $lookup: {
+               from: "categories",
+               localField: "category_id",
+               foreignField: "_id",
+               as: "cat",
             },
-            { $unwind: { path: "$cat", preserveNullAndEmptyArrays: false } },
-            {
+         },
+         { $unwind: { path: "$cat", preserveNullAndEmptyArrays: !wantsCategoryName } },
+         ...(wantsCategoryName
+            ? [{
                $match: {
                   "cat.category_name": categoryNameRegex,
                },
-            },
-         ]
-         : [];
+            }]
+            : []),
+         { $addFields: { category_name: "$cat.category_name" } },
+      ];
+
+      const categoryNameFilterStages = wantsCategoryName ? categoryLookupStages : [];
 
       const sortNameStage = {
          $addFields: {
@@ -349,6 +357,7 @@ const getProducts = async (req, res) => {
             latestWoolworthsPricingArr: 0,
             latestIgaPricingArr: 0,
             sortName: 0,
+            cat: 0,
          },
       };
 
@@ -360,7 +369,7 @@ const getProducts = async (req, res) => {
       const basePipeline = [
          { $match: match },
 
-         ...categoryNameStages,
+         ...categoryLookupStages,
 
          sortNameStage,
 
@@ -377,7 +386,7 @@ const getProducts = async (req, res) => {
       /** Count products matching filters only (no product_pricings join — keeps this query fast). */
       const countPipeline = [
          { $match: match },
-         ...categoryNameStages,
+         ...categoryNameFilterStages,
          { $count: 'total' },
       ];
 
@@ -461,6 +470,16 @@ const getProduct = async (req, res) => {
 
       if (!product) {
          return res.status(404).json({ message: "Product not found" });
+      }
+
+      if (product.category_id) {
+         const category = await db.collection("categories").findOne(
+            { _id: product.category_id },
+            { projection: { category_name: 1 } }
+         );
+         if (category?.category_name) {
+            product.category_name = category.category_name;
+         }
       }
 
       // Latest pricing: match by product_code (consistent with getProducts $lookup)

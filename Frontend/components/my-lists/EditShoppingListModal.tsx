@@ -19,7 +19,7 @@ type EditShoppingListModalProps = {
    onClose: () => void;
    /** When null, modal is in “create” mode */
    editingList: ShoppingList | null;
-   onSave: (payload: { name: string; description: string; accent: ShoppingListAccent }) => void;
+   onSave: (payload: { name: string; description: string; accent: ShoppingListAccent }) => void | Promise<void>;
 };
 
 export default function EditShoppingListModal({
