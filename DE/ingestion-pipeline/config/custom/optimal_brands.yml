@@ -1,0 +1,1019 @@
+brands:
+  - name: "Coles"
+    retailer_specific: "Coles"
+  - name: "Cadbury"
+    retailer_specific: null
+  - name: "Nivea"
+    retailer_specific: null
+  - name: "Colgate"
+    retailer_specific: null
+  - name: "L'Oreal"
+    retailer_specific: null
+  - name: "Heinz"
+    retailer_specific: null
+  - name: "MasterFoods"
+    retailer_specific: null
+  - name: "Palmolive"
+    retailer_specific: null
+  - name: "Garnier"
+    retailer_specific: null
+  - name: "Nature's Way"
+    retailer_specific: null
+  - name: "Arnott's"
+    retailer_specific: null
+  - name: "Carman's"
+    retailer_specific: null
+  - name: "Schwarzkopf"
+    retailer_specific: null
+  - name: "Coles Simply"
+    retailer_specific: "Coles"
+  - name: "Swisse"
+    retailer_specific: null
+  - name: "Coles Kitchen"
+    retailer_specific: "Coles"
+  - name: "Gillette"
+    retailer_specific: null
+  - name: "Huggies"
+    retailer_specific: null
+  - name: "Uncle Tobys"
+    retailer_specific: null
+  - name: "Cook & Dine"
+    retailer_specific: null
+  - name: "Golden Circle"
+    retailer_specific: null
+  - name: "Nescafe"
+    retailer_specific: null
+  - name: "Nestle"
+    retailer_specific: null
+  - name: "Continental"
+    retailer_specific: null
+  - name: "Primo"
+    retailer_specific: null
+  - name: "Coles Bakery"
+    retailer_specific: "Coles"
+  - name: "Kellogg's"
+    retailer_specific: null
+  - name: "Dove"
+    retailer_specific: null
+  - name: "Coles Finest"
+    retailer_specific: null
+  - name: "Head & Shoulders"
+    retailer_specific: null
+  - name: "Birds Eye"
+    retailer_specific: null
+  - name: "John West"
+    retailer_specific: null
+  - name: "Rexona"
+    retailer_specific: null
+  - name: "Bega"
+    retailer_specific: null
+  - name: "Oral B"
+    retailer_specific: null
+  - name: "Old El Paso"
+    retailer_specific: null
+  - name: "Vittoria"
+    retailer_specific: null
+  - name: "McCain"
+    retailer_specific: null
+  - name: "Air Wick"
+    retailer_specific: null
+  - name: "Blackmores"
+    retailer_specific: null
+  - name: "Maybelline"
+    retailer_specific: null
+  - name: "Sunrice"
+    retailer_specific: null
+  - name: "Pantene"
+    retailer_specific: null
+  - name: "Lindt"
+    retailer_specific: null
+  - name: "Only Organic"
+    retailer_specific: null
+  - name: "Sistema"
+    retailer_specific: null
+  - name: "Hoyts"
+    retailer_specific: null
+  - name: "Peters"
+    retailer_specific: null
+  - name: "Rafferty's Garden"
+    retailer_specific: null
+  - name: "Schweppes"
+    retailer_specific: null
+  - name: "Maggi"
+    retailer_specific: null
+  - name: "Dine"
+    retailer_specific: null
+  - name: "Dettol"
+    retailer_specific: null
+  - name: "Green's"
+    retailer_specific: null
+  - name: "Campbell's"
+    retailer_specific: null
+  - name: "Pauls"
+    retailer_specific: null
+  - name: "Musashi"
+    retailer_specific: null
+  - name: "San Remo"
+    retailer_specific: null
+  - name: "Chobani"
+    retailer_specific: null
+  - name: "Coca-Cola"
+    retailer_specific: null
+  - name: "Decor"
+    retailer_specific: null
+  - name: "Sirena"
+    retailer_specific: null
+  - name: "Schick"
+    retailer_specific: null
+  - name: "Edgell"
+    retailer_specific: null
+  - name: "Olay"
+    retailer_specific: null
+  - name: "Ayam"
+    retailer_specific: null
+  - name: "Bonds"
+    retailer_specific: null
+  - name: "Moccona"
+    retailer_specific: null
+  - name: "Bulla"
+    retailer_specific: null
+  - name: "Red Rock Deli"
+    retailer_specific: null
+  - name: "Arnotts"
+    retailer_specific: null
+  - name: "Always Fresh"
+    retailer_specific: null
+  - name: "Darrell Lea"
+    retailer_specific: null
+  - name: "Neutrogena"
+    retailer_specific: null
+  - name: "Praise"
+    retailer_specific: null
+  - name: "Little Bellies"
+    retailer_specific: null
+  - name: "Tena"
+    retailer_specific: null
+  - name: "Fancy Feast"
+    retailer_specific: null
+  - name: "OMO"
+    retailer_specific: null
+  - name: "Mortein"
+    retailer_specific: null
+  - name: "Optimum"
+    retailer_specific: null
+  - name: "Mirabella"
+    retailer_specific: null
+  - name: "Queen"
+    retailer_specific: null
+  - name: "Bref"
+    retailer_specific: null
+  - name: "Connoisseur"
+    retailer_specific: null
+  - name: "BSc"
+    retailer_specific: null
+  - name: "My Dog"
+    retailer_specific: null
+  - name: "Finish"
+    retailer_specific: null
+  - name: "Mission"
+    retailer_specific: null
+  - name: "Sanitarium"
+    retailer_specific: null
+  - name: "Leggo's"
+    retailer_specific: null
+  - name: "Remedy"
+    retailer_specific: null
+  - name: "Herbal Essences"
+    retailer_specific: null
+  - name: "Bickford's"
+    retailer_specific: null
+  - name: "Botanica"
+    retailer_specific: null
+  - name: "Coles Ultra"
+    retailer_specific: "Coles"
+  - name: "Glad"
+    retailer_specific: null
+  - name: "Farmers Union"
+    retailer_specific: null
+  - name: "Libra"
+    retailer_specific: null
+  - name: "U by Kotex"
+    retailer_specific: null
+  - name: "Gravox"
+    retailer_specific: null
+  - name: "Whiskas"
+    retailer_specific: null
+  - name: "Muscle Nation"
+    retailer_specific: null
+  - name: "SPC"
+    retailer_specific: null
+  - name: "TRESemme"
+    retailer_specific: null
+  - name: "Cenovis"
+    retailer_specific: null
+  - name: "Poise"
+    retailer_specific: null
+  - name: "Tip Top"
+    retailer_specific: null
+  - name: "Latina"
+    retailer_specific: null
+  - name: "Smith's"
+    retailer_specific: null
+  - name: "CSR"
+    retailer_specific: null
+  - name: "NRG"
+    retailer_specific: "Coles"
+  - name: "Vicks"
+    retailer_specific: null
+  - name: "Lynx"
+    retailer_specific: null
+  - name: "Clairol"
+    retailer_specific: null
+  - name: "Cancer Council"
+    retailer_specific: null
+  - name: "UP&GO"
+    retailer_specific: null
+  - name: "Aeroplane"
+    retailer_specific: null
+  - name: "Sukin"
+    retailer_specific: null
+  - name: "Mutti"
+    retailer_specific: null
+  - name: "On The Menu"
+    retailer_specific: null
+  - name: "Rimmel"
+    retailer_specific: null
+  - name: "Barilla"
+    retailer_specific: null
+  - name: "Gippsland Dairy"
+    retailer_specific: null
+  - name: "Purina"
+    retailer_specific: null
+  - name: "Dairy Farmers"
+    retailer_specific: null
+  - name: "Hart & Soul"
+    retailer_specific: null
+  - name: "Nature's Gift"
+    retailer_specific: null
+  - name: "Applaws"
+    retailer_specific: null
+  - name: "Chux"
+    retailer_specific: null
+  - name: "Pedigree"
+    retailer_specific: null
+  - name: "Nudie"
+    retailer_specific: null
+  - name: "Vanish"
+    retailer_specific: null
+  - name: "Hydralyte"
+    retailer_specific: null
+  - name: "Extra"
+    retailer_specific: null
+  - name: "Revlon"
+    retailer_specific: null
+  - name: "Harpic"
+    retailer_specific: null
+  - name: "Allen's"
+    retailer_specific: null
+  - name: "Bundaberg"
+    retailer_specific: null
+  - name: "Yumi's"
+    retailer_specific: null
+  - name: "Masterfoods"
+    retailer_specific: null
+  - name: "Mount Franklin"
+    retailer_specific: null
+  - name: "Oreo"
+    retailer_specific: null
+  - name: "Pine O Cleen"
+    retailer_specific: null
+  - name: "Betty Crocker"
+    retailer_specific: null
+  - name: "Helga's"
+    retailer_specific: null
+  - name: "Vitapet"
+    retailer_specific: null
+  - name: "Yoplait"
+    retailer_specific: null
+  - name: "Earth Choice"
+    retailer_specific: null
+  - name: "Ajax"
+    retailer_specific: null
+  - name: "Lavazza"
+    retailer_specific: null
+  - name: "Tamar Valley"
+    retailer_specific: null
+  - name: "Don"
+    retailer_specific: null
+  - name: "Batiste"
+    retailer_specific: null
+  - name: "Multix"
+    retailer_specific: null
+  - name: "Cold Power"
+    retailer_specific: null
+  - name: "Sabco"
+    retailer_specific: null
+  - name: "Fanta"
+    retailer_specific: null
+  - name: "Mayver's"
+    retailer_specific: null
+  - name: "Monster"
+    retailer_specific: null
+  - name: "Vaalia"
+    retailer_specific: null
+  - name: "Vitasoy"
+    retailer_specific: null
+  - name: "Patak's"
+    retailer_specific: null
+  - name: "Kinder"
+    retailer_specific: null
+  - name: "Nando's"
+    retailer_specific: null
+  - name: "The Natural Confectionery Co."
+    retailer_specific: null
+  - name: "Listerine"
+    retailer_specific: null
+  - name: "Doritos"
+    retailer_specific: null
+  - name: "Vege"
+    retailer_specific: null
+  - name: "Morning Fresh"
+    retailer_specific: null
+  - name: "Dare"
+    retailer_specific: null
+  - name: "Brownes"
+    retailer_specific: null
+  - name: "Banana Boat"
+    retailer_specific: null
+  - name: "V"
+    retailer_specific: null
+  - name: "Elastoplast"
+    retailer_specific: null
+  - name: "Voost"
+    retailer_specific: null
+  - name: "Lipton"
+    retailer_specific: null
+  - name: "Nature's Own"
+    retailer_specific: null
+  - name: "Noshu"
+    retailer_specific: null
+  - name: "Fussy Cat"
+    retailer_specific: null
+  - name: "Magazine"
+    retailer_specific: null
+  - name: "Solo"
+    retailer_specific: null
+  - name: "QV"
+    retailer_specific: null
+  - name: "Nice & Natural"
+    retailer_specific: null
+  - name: "Gatorade"
+    retailer_specific: null
+  - name: "Duracell"
+    retailer_specific: null
+  - name: "Cocobella"
+    retailer_specific: null
+  - name: "Felix"
+    retailer_specific: null
+  - name: "Cetaphil"
+    retailer_specific: null
+  - name: "Kleenex"
+    retailer_specific: null
+  - name: "Mingle"
+    retailer_specific: null
+  - name: "Nurofen"
+    retailer_specific: null
+  - name: "Beerenberg"
+    retailer_specific: null
+  - name: "OC Naturals"
+    retailer_specific: null
+  - name: "Devondale"
+    retailer_specific: null
+  - name: "Berocca"
+    retailer_specific: null
+  - name: "Coco Earth"
+    retailer_specific: null
+  - name: "White Wings"
+    retailer_specific: null
+  - name: "Toni & Guy"
+    retailer_specific: null
+  - name: "Starbucks"
+    retailer_specific: null
+  - name: "Abbott's Bakery"
+    retailer_specific: null
+  - name: "Powerade"
+    retailer_specific: null
+  - name: "Maharajah's Choice"
+    retailer_specific: null
+  - name: "Coles Perform"
+    retailer_specific: null
+  - name: "Johnson's"
+    retailer_specific: null
+  - name: "Sunsilk"
+    retailer_specific: null
+  - name: "Three Threes"
+    retailer_specific: null
+  - name: "Capilano"
+    retailer_specific: null
+  - name: "Aptamil"
+    retailer_specific: null
+  - name: "Jalna"
+    retailer_specific: null
+  - name: "KitKat"
+    retailer_specific: null
+  - name: "Sensodyne"
+    retailer_specific: null
+  - name: "Nicorette"
+    retailer_specific: null
+  - name: "The Spice Tailor"
+    retailer_specific: null
+  - name: "Magnum"
+    retailer_specific: null
+  - name: "Dolmio"
+    retailer_specific: null
+  - name: "Fever-Tree"
+    retailer_specific: null
+  - name: "Tasmanian Heritage"
+    retailer_specific: null
+  - name: "Temptations"
+    retailer_specific: null
+  - name: "Cottee's"
+    retailer_specific: null
+  - name: "Table Of Plenty"
+    retailer_specific: null
+  - name: "Mainland"
+    retailer_specific: null
+  - name: "Perfect Italiano"
+    retailer_specific: null
+  - name: "Red Bull"
+    retailer_specific: null
+  - name: "Vileda"
+    retailer_specific: null
+  - name: "Toscano"
+    retailer_specific: null
+  - name: "Whittaker's"
+    retailer_specific: null
+  - name: "Obela"
+    retailer_specific: null
+  - name: "Kirks"
+    retailer_specific: null
+  - name: "Pepsi"
+    retailer_specific: null
+  - name: "Black Swan"
+    retailer_specific: null
+  - name: "Impressed"
+    retailer_specific: null
+  - name: "Grinders"
+    retailer_specific: null
+  - name: "Glow Lab"
+    retailer_specific: null
+  - name: "Gaviscon"
+    retailer_specific: null
+  - name: "Aerogard"
+    retailer_specific: null
+  - name: "Bic"
+    retailer_specific: null
+  - name: "Sandhurst"
+    retailer_specific: null
+  - name: "Castello"
+    retailer_specific: null
+  - name: "Vaseline"
+    retailer_specific: null
+  - name: "Cuddly"
+    retailer_specific: null
+  - name: "Sunbites"
+    retailer_specific: null
+  - name: "Brunnings"
+    retailer_specific: null
+  - name: "Mckenzie's"
+    retailer_specific: null
+  - name: "Coles I'm Free From"
+    retailer_specific: "Coles"
+  - name: "BC"
+    retailer_specific: null
+  - name: "La Zuppa"
+    retailer_specific: null
+  - name: "Sunbeam"
+    retailer_specific: null
+  - name: "Obento"
+    retailer_specific: null
+  - name: "Cheer"
+    retailer_specific: null
+  - name: "SKYN"
+    retailer_specific: null
+  - name: "Lean Cuisine"
+    retailer_specific: null
+  - name: "Piksters"
+    retailer_specific: null
+  - name: "Depend"
+    retailer_specific: null
+  - name: "Life Botanics"
+    retailer_specific: null
+  - name: "Scholl"
+    retailer_specific: null
+  - name: "Glen 20"
+    retailer_specific: null
+  - name: "Fluffy"
+    retailer_specific: null
+  - name: "Pringles"
+    retailer_specific: null
+  - name: "Vodka Cruiser"
+    retailer_specific: null
+  - name: "Supercoat"
+    retailer_specific: null
+  - name: "Simson's Pantry"
+    retailer_specific: null
+  - name: "Durex"
+    retailer_specific: null
+  - name: "Red Tractor"
+    retailer_specific: null
+  - name: "Biozet Attack"
+    retailer_specific: null
+  - name: "Nyal"
+    retailer_specific: null
+  - name: "Nicabate"
+    retailer_specific: null
+  - name: "Panadol"
+    retailer_specific: null
+  - name: "OB Finest"
+    retailer_specific: null
+  - name: "Cottees"
+    retailer_specific: null
+  - name: "Olina's Bakehouse"
+    retailer_specific: null
+  - name: "Western Star"
+    retailer_specific: null
+  - name: "M&M'S"
+    retailer_specific: null
+  - name: "Trill"
+    retailer_specific: null
+  - name: "Freedom"
+    retailer_specific: null
+  - name: "South Cape"
+    retailer_specific: null
+  - name: "a2 Milk"
+    retailer_specific: null
+  - name: "Four'N Twenty"
+    retailer_specific: null
+  - name: "Dermaveen"
+    retailer_specific: null
+  - name: "Bosisto's"
+    retailer_specific: null
+  - name: "Thankyou"
+    retailer_specific: null
+  - name: "CUB"
+    retailer_specific: "Coles"
+  - name: "Smash"
+    retailer_specific: null
+  - name: "Tommee Tippee"
+    retailer_specific: null
+  - name: "Jacob's Creek"
+    retailer_specific: null
+  - name: "Schmackos"
+    retailer_specific: null
+  - name: "Kiddylicious"
+    retailer_specific: null
+  - name: "Saxa"
+    retailer_specific: null
+  - name: "Fantastic"
+    retailer_specific: null
+  - name: "Armor All"
+    retailer_specific: null
+  - name: "Health Lab"
+    retailer_specific: null
+  - name: "Sard"
+    retailer_specific: null
+  - name: "Cobs"
+    retailer_specific: null
+  - name: "Flora"
+    retailer_specific: null
+  - name: "Moro"
+    retailer_specific: null
+  - name: "B.box"
+    retailer_specific: null
+  - name: "Ben's Original"
+    retailer_specific: null
+  - name: "Sprite"
+    retailer_specific: null
+  - name: "Bow Wow"
+    retailer_specific: null
+  - name: "Oak"
+    retailer_specific: null
+  - name: "I&J"
+    retailer_specific: null
+  - name: "Wonder"
+    retailer_specific: null
+  - name: "Rascals"
+    retailer_specific: null
+  - name: "Steggles"
+    retailer_specific: null
+  - name: "Poppin"
+    retailer_specific: null
+  - name: "Nerada"
+    retailer_specific: null
+  - name: "Kikkoman"
+    retailer_specific: null
+  - name: "Ardmona"
+    retailer_specific: null
+  - name: "Marion's Kitchen"
+    retailer_specific: null
+  - name: "Mix"
+    retailer_specific: null
+  - name: "Selleys"
+    retailer_specific: null
+  - name: "Oakwood"
+    retailer_specific: null
+  - name: "Difflam"
+    retailer_specific: null
+  - name: "Mcvities"
+    retailer_specific: null
+  - name: "Metamucil"
+    retailer_specific: null
+  - name: "Kan Tong"
+    retailer_specific: null
+  - name: "Philadelphia"
+    retailer_specific: null
+  - name: "Passage Foods"
+    retailer_specific: null
+  - name: "Tilda"
+    retailer_specific: null
+  - name: "Mr Chen's"
+    retailer_specific: null
+  - name: "Glade"
+    retailer_specific: null
+  - name: "Earthwise"
+    retailer_specific: null
+  - name: "Mother"
+    retailer_specific: null
+  - name: "Happy Snack Company"
+    retailer_specific: null
+  - name: "Nexba"
+    retailer_specific: null
+  - name: "Jordans"
+    retailer_specific: null
+  - name: "Healtheries"
+    retailer_specific: null
+  - name: "Eclipse"
+    retailer_specific: null
+  - name: "Carefree"
+    retailer_specific: null
+  - name: "Swisspers"
+    retailer_specific: null
+  - name: "Babylove"
+    retailer_specific: null
+  - name: "Kraft"
+    retailer_specific: null
+  - name: "White King"
+    retailer_specific: null
+  - name: "Bonne Maman"
+    retailer_specific: null
+  - name: "Dollar Sweets"
+    retailer_specific: null
+  - name: "Life Savers"
+    retailer_specific: null
+  - name: "Mersey Valley"
+    retailer_specific: null
+  - name: "Veet"
+    retailer_specific: null
+  - name: "Dynamo"
+    retailer_specific: null
+  - name: "Kettle"
+    retailer_specific: null
+  - name: "Radiant"
+    retailer_specific: null
+  - name: "Brut"
+    retailer_specific: null
+  - name: "Spencers"
+    retailer_specific: null
+  - name: "Hahn"
+    retailer_specific: null
+  - name: "McCormick"
+    retailer_specific: null
+  - name: "Femfresh"
+    retailer_specific: null
+  - name: "Milo"
+    retailer_specific: null
+  - name: "Friskies"
+    retailer_specific: null
+  - name: "Pattu"
+    retailer_specific: null
+  - name: "Youfoodz"
+    retailer_specific: null
+  - name: "Hismile"
+    retailer_specific: null
+  - name: "Twisties"
+    retailer_specific: null
+  - name: "Fairy"
+    retailer_specific: null
+  - name: "L'Or"
+    retailer_specific: null
+  - name: "Sakata"
+    retailer_specific: null
+  - name: "Balter"
+    retailer_specific: null
+  - name: "Peckish"
+    retailer_specific: null
+  - name: "Redheads"
+    retailer_specific: null
+  - name: "Valcom"
+    retailer_specific: null
+  - name: "a2"
+    retailer_specific: null
+  - name: "Strepsils"
+    retailer_specific: null
+  - name: "Maggie Beer"
+    retailer_specific: null
+  - name: "Gem"
+    retailer_specific: null
+  - name: "Wellness Road"
+    retailer_specific: null
+  - name: "Taylors"
+    retailer_specific: null
+  - name: "Tassal"
+    retailer_specific: null
+  - name: "Nissin"
+    retailer_specific: null
+  - name: "Ostelin"
+    retailer_specific: null
+  - name: "Lemnos"
+    retailer_specific: null
+  - name: "Wild Turkey"
+    retailer_specific: null
+  - name: "Aunt Betty's"
+    retailer_specific: null
+  - name: "Chang's"
+    retailer_specific: null
+  - name: "Pureharvest"
+    retailer_specific: null
+  - name: "Yates"
+    retailer_specific: null
+  - name: "Lurpak"
+    retailer_specific: null
+  - name: "Mildura"
+    retailer_specific: null
+  - name: "La Famiglia"
+    retailer_specific: null
+  - name: "Gaia"
+    retailer_specific: null
+  - name: "Boss"
+    retailer_specific: null
+  - name: "Nutella"
+    retailer_specific: null
+  - name: "Curash"
+    retailer_specific: null
+  - name: "Bhuja"
+    retailer_specific: null
+  - name: "Redwin"
+    retailer_specific: null
+  - name: "Cottons"
+    retailer_specific: null
+  - name: "Sacla"
+    retailer_specific: null
+  - name: "Bubs"
+    retailer_specific: null
+  - name: "Ritz"
+    retailer_specific: null
+  - name: "Avent"
+    retailer_specific: null
+  - name: "Easy Off Bam"
+    retailer_specific: null
+  - name: "Annabel Karmel"
+    retailer_specific: null
+  - name: "Herbert Adams"
+    retailer_specific: null
+  - name: "Alula"
+    retailer_specific: null
+  - name: "Sara Lee"
+    retailer_specific: null
+  - name: "Tasti"
+    retailer_specific: null
+  - name: "Cornwell's"
+    retailer_specific: null
+  - name: "Trident"
+    retailer_specific: null
+  - name: "Sally Hansen"
+    retailer_specific: null
+  - name: "Cheetos"
+    retailer_specific: null
+  - name: "Diet Rite"
+    retailer_specific: null
+  - name: "Ocean Blue"
+    retailer_specific: null
+  - name: "T2"
+    retailer_specific: null
+  - name: "Australia's Own"
+    retailer_specific: null
+  - name: "Krispy Kreme"
+    retailer_specific: null
+  - name: "Munchme"
+    retailer_specific: null
+  - name: "Coles Organic"
+    retailer_specific: "Coles"
+  - name: "Dilmah"
+    retailer_specific: null
+  - name: "Maltesers"
+    retailer_specific: null
+  - name: "Liddells"
+    retailer_specific: null
+  - name: "Canadian Club"
+    retailer_specific: null
+  - name: "Sunraysia"
+    retailer_specific: null
+  - name: "Sealord"
+    retailer_specific: null
+  - name: "Comfort"
+    retailer_specific: null
+  - name: "Inghams"
+    retailer_specific: null
+  - name: "Mars"
+    retailer_specific: null
+  - name: "Kez's Kitchen"
+    retailer_specific: null
+  - name: "Fehlbergs"
+    retailer_specific: null
+  - name: "McKenzie's"
+    retailer_specific: null
+  - name: "Fodmapped"
+    retailer_specific: null
+  - name: "Karicare+"
+    retailer_specific: null
+  - name: "Mother Earth"
+    retailer_specific: null
+  - name: "La Costena"
+    retailer_specific: null
+  - name: "Trolli"
+    retailer_specific: null
+  - name: "Fitness Outcomes"
+    retailer_specific: null
+  - name: "Ultralife"
+    retailer_specific: "Coles"
+  - name: "No Pong"
+    retailer_specific: null
+  - name: "Garlos"
+    retailer_specific: null
+  - name: "Burgen"
+    retailer_specific: null
+  - name: "Napro Palette"
+    retailer_specific: null
+  - name: "Purina One"
+    retailer_specific: null
+  - name: "Proud & Punch"
+    retailer_specific: null
+  - name: "S & B"
+    retailer_specific: null
+  - name: "Nobby's"
+    retailer_specific: null
+  - name: "Ogx"
+    retailer_specific: null
+  - name: "DryNites"
+    retailer_specific: null
+  - name: "Crisco"
+    retailer_specific: null
+  - name: "Just Juice"
+    retailer_specific: null
+  - name: "Betadine"
+    retailer_specific: null
+  - name: "Goulburn Valley"
+    retailer_specific: null
+  - name: "Aveeno"
+    retailer_specific: null
+  - name: "Katoomba"
+    retailer_specific: null
+  - name: "Harvey Fresh"
+    retailer_specific: null
+  - name: "Purr"
+    retailer_specific: "Coles"
+  - name: "Korbond"
+    retailer_specific: null
+  - name: "Queen Victoria"
+    retailer_specific: null
+  - name: "Hellmann's"
+    retailer_specific: null
+  - name: "Zafarelli"
+    retailer_specific: null
+  - name: "Skittles"
+    retailer_specific: null
+  - name: "Pukka"
+    retailer_specific: null
+  - name: "CC's"
+    retailer_specific: null
+  - name: "Tandaco"
+    retailer_specific: null
+  - name: "Dr Beckmann"
+    retailer_specific: null
+  - name: "Snickers"
+    retailer_specific: null
+  - name: "Raffertys Garden"
+    retailer_specific: null
+  - name: "Nuffin"
+    retailer_specific: null
+  - name: "Kewpie"
+    retailer_specific: null
+  - name: "Quilton"
+    retailer_specific: null
+  - name: "Polident"
+    retailer_specific: null
+  - name: "Sorbent"
+    retailer_specific: null
+  - name: "Pico"
+    retailer_specific: null
+  - name: "Fantastic Delites"
+    retailer_specific: null
+  - name: "Belvita"
+    retailer_specific: null
+  - name: "Quest"
+    retailer_specific: null
+  - name: "Hong Kong Dim Sim Kitchen"
+    retailer_specific: null
+  - name: "Sustagen"
+    retailer_specific: null
+  - name: "Strepsil"
+    retailer_specific: null
+  - name: "Just For Men Hair"
+    retailer_specific: null
+  - name: "Paper Mate"
+    retailer_specific: null
+  - name: "Tampax"
+    retailer_specific: null
+  - name: "Well Naturally"
+    retailer_specific: null
+  - name: "Harvest"
+    retailer_specific: null
+  - name: "Funday"
+    retailer_specific: null
+  - name: "Drano"
+    retailer_specific: null
+  - name: "Australias Own"
+    retailer_specific: null
+  - name: "Messy Monkey"
+    retailer_specific: null
+  - name: "Mcvitie's"
+    retailer_specific: null
+  - name: "Maseur"
+    retailer_specific: null
+  - name: "Mogu Mogu"
+    retailer_specific: null
+  - name: "Voltaren"
+    retailer_specific: null
+  - name: "Demazin"
+    retailer_specific: null
+  - name: "Buderim"
+    retailer_specific: null
+  - name: "Mrs Mac's"
+    retailer_specific: null
+  - name: "D3"
+    retailer_specific: null
+  - name: "Red Island"
+    retailer_specific: null
+  - name: "Kit Kat"
+    retailer_specific: null
+  - name: "Buderim Ginger"
+    retailer_specific: null
+  - name: "Cheezels"
+    retailer_specific: null
+  - name: "Haagen-Dazs"
+    retailer_specific: null
+  - name: "Just For Men"
+    retailer_specific: null
+  - name: "Pump"
+    retailer_specific: null
+  - name: "Bulldog"
+    retailer_specific: null
+  - name: "Duck"
+    retailer_specific: null
+  - name: "Vegemite"
+    retailer_specific: null
+  - name: "Suimin"
+    retailer_specific: null
+  - name: "Daily Juice"
+    retailer_specific: null
+  - name: "David Beckham"
+    retailer_specific: null
+  - name: "Tic Tac"
+    retailer_specific: null
+  - name: "Weis"
+    retailer_specific: null
+  - name: "Tooshies"
+    retailer_specific: null
+  - name: "Safcol"
+    retailer_specific: null
+  - name: "Raid"
+    retailer_specific: null
+  - name: "Woolworths"
+    retailer_specific: "Woolworths"
+  - name: "Macro"
+    retailer_specific: "Woolworths"
+  - name: "Free from gluten"
+    retailer_specific: "Woolworths"
+  - name: "Essentials"
+    retailer_specific: "Woolworths"
+  - name: "Smitten"
+    retailer_specific: "Woolworths"
+  - name: "Balnea"
+    retailer_specific: "Woolworths"
+  - name: "Nature's Kitchen"
+    retailer_specific: "Coles"
+  - name: "Cole's Free Range"
+    retailer_specific: "Coles"
+  - name: "Coles Asia"
+    retailer_specific: "Coles"

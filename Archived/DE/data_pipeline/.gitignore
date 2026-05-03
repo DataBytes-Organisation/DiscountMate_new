@@ -1,0 +1,10 @@
+**/logs/
+*.ipynb
+*.env
+**/data/
+__pycache__/
+*.jar
+*.pyc
+*.crswap
+include/
+.DS_Store

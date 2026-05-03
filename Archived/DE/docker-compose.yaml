@@ -1,0 +1,48 @@
+
+networks:
+  openfga:
+services:
+  postgres:
+    image: postgres:16
+    container_name: app_db
+    networks:
+      - openfga
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - "./postgres_config/postgres.conf:/etc/postgresql/postgresql.conf"
+    command: "postgres -c config_file=/etc/postgresql/postgresql.conf"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db_init:
+    build: ./db_init
+    container_name: db_init
+    networks:
+      - openfga
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - "./db_init:/app"
+    command: ["python", "/app/create_table.py"]
+
+  db_sample:
+    build: ./db_sample_create
+    container_name: db_sample_create
+    networks:
+      - openfga
+    depends_on:
+      postgres:
+        condition: service_healthy
+      db_init:
+        condition: service_completed_successfully
+    volumes:
+      - "./db_sample_create:/app"
+    command: ["python", "/app/create_sample_product.py"]
