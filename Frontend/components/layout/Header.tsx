@@ -4,10 +4,11 @@ import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCart } from "../../app/(tabs)/CartContext";
+import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 import CartPopover from "./CartPopover";
 
 type HeaderProps = {
-   activeRoute?: "Home" | "Compare" | "Specials" | "My Lists" | "Profile" | "Dashboard";
+   activeRoute?: "Home" | "Compare" | "Specials" | "Grocery Lists" | "Profile" | "Dashboard";
 };
 
 type RouteKey = NonNullable<HeaderProps["activeRoute"]>;
@@ -16,7 +17,7 @@ const navItems: RouteKey[] = [
    "Home",
    "Compare",
    "Specials",
-   "My Lists",
+   "Grocery Lists",
    "Dashboard",
    "Profile",
 ];
@@ -25,7 +26,7 @@ const navRoutes: Record<RouteKey, string> = {
    Home: "/",
    Compare: "/(tabs)/compare",
    Specials: "/specials",
-   "My Lists": "/my-lists",
+   "Grocery Lists": "/(tabs)/my-lists",
    Dashboard: "/(tabs)/product-dashboard",
    Profile: "/(tabs)/profile",
 };
@@ -34,8 +35,13 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
    const router = useRouter();
    const [showMenu, setShowMenu] = useState(false);
    const [showCartPopover, setShowCartPopover] = useState(false);
-   const { getTotalItems } = useCart();
+   const { cartItems, getTotalItems } = useCart();
+   const { isLoading } = useShoppingLists();
    const cartItemCount = getTotalItems();
+   const cartTotal = cartItems.reduce(
+      (sum, item) => sum + item.price * (item.quantity || 1),
+      0
+   );
 
    const handleLogout = async () => {
       await AsyncStorage.removeItem("authToken");
@@ -119,21 +125,29 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
             </Pressable>
 
             {/* List summary */}
-            <Pressable onPress={() => setShowCartPopover(true)}>
+            {isLoading && cartItems.length === 0 ? (
                <View className="flex-row items-center gap-3 px-4 md:px-5 py-2.5 bg-gradient-to-r from-primary_green/10 to-secondary_green/10 rounded-xl border border-primary_green/20">
-                  <FontAwesome6
-                     name="list"
-                     size={16}
-                     className="text-primary_green"
-                  />
-                  <Text className="text-sm font-semibold text-[#111827]">
-                     {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'}
-                  </Text>
-                  <Text className="text-sm font-bold text-primary_green">
-                     $12.40 saved
-                  </Text>
+                  <View className="w-4 h-4 rounded bg-primary_green/25" />
+                  <View className="h-4 rounded-full bg-gray-200 w-16" />
+                  <View className="h-4 rounded-full bg-gray-200 w-20" />
                </View>
-            </Pressable>
+            ) : (
+               <Pressable onPress={() => setShowCartPopover(true)}>
+                  <View className="flex-row items-center gap-3 px-4 md:px-5 py-2.5 bg-gradient-to-r from-primary_green/10 to-secondary_green/10 rounded-xl border border-primary_green/20">
+                     <FontAwesome6
+                        name="basket-shopping"
+                        size={16}
+                        className="text-primary_green"
+                     />
+                     <Text className="text-sm font-semibold text-[#111827]">
+                        {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'}
+                     </Text>
+                     <Text className="text-sm font-bold text-gray-900">
+                        ${cartTotal.toFixed(2)}
+                     </Text>
+                  </View>
+               </Pressable>
+            )}
 
             {/* Avatar + menu */}
             <View className="relative">
