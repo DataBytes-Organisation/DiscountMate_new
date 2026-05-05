@@ -4,6 +4,7 @@ locals {
   bucket_location = var.bucket_location == null ? var.region : var.bucket_location
   enabled_apis = toset([
     "artifactregistry.googleapis.com",
+    "cloudscheduler.googleapis.com",
     "iam.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
@@ -15,6 +16,73 @@ locals {
     environment = local.environment
     managed_by  = "opentofu"
   })
+
+  ingestion_job_env_vars = {
+    APP_OUTPUT_DIR           = ".output"
+    APP_DESTINATIONS         = "gcs"
+    APP_LOG_LEVEL            = "INFO"
+    APP_BRANDS_PATH          = "config/custom/optimal_brands.yml"
+    OTEL_ENABLED             = "true"
+    OTEL_SERVICE_NAME        = "discount-mate-ingestion"
+    GCS_BUCKET               = module.data_bucket.name
+    GCS_PREFIX               = "discount-mate"
+    ALDI_SITEMAP_URL         = "https://www.aldi.com.au/sitemap_categories.xml"
+    ALDI_API_URL             = "https://api.aldi.com.au/v3/product-search"
+    ALDI_CURRENCY            = "AUD"
+    ALDI_PAGE_SIZE           = "30"
+    ALDI_TIMEOUT_SECONDS     = "25"
+    ALDI_DELAY_SECONDS       = "1"
+    COLES_HOMEPAGE_URL       = "https://www.coles.com.au"
+    COLES_BUILD_ID           = ""
+    COLES_API_BASE_TEMPLATE  = "https://www.coles.com.au/_next/data/{build_id}/en/search/products.json"
+    COLES_PAGE_SIZE          = "48"
+    COLES_MAX_PAGES          = "8"
+    COLES_TIMEOUT_SECONDS    = "20"
+    COLES_DELAY_SECONDS_MIN  = "20"
+    COLES_DELAY_SECONDS_MAX  = "80"
+    COLES_COOKIE_STRING      = var.ingestion_coles_cookie_string
+    COLES_SCRAPERAPI_KEY     = var.ingestion_coles_scraperapi_key
+    IGA_BASE_URL             = "https://www.igashop.com.au"
+    IGA_STORE_ID             = var.ingestion_iga_store_id
+    IGA_SHOPPING_MODE_COOKIE = "Pickup"
+    IGA_PAGE_SIZE            = "50"
+    IGA_TIMEOUT_SECONDS      = "20"
+    IGA_DELAY_SECONDS        = "0.5"
+    WW_API_URL               = "https://www.woolworths.com.au/apis/ui/Search/products"
+    WW_PAGE_SIZE             = "36"
+    WW_MAX_PAGES             = "5"
+    WW_TIMEOUT_SECONDS       = "20"
+    WW_DELAY_SECONDS         = "1"
+    WW_COOKIE_STRING         = var.ingestion_ww_cookie_string
+    WW_SCRAPERAPI_KEY        = var.ingestion_ww_scraperapi_key
+  }
+
+  ingestion_jobs = {
+    ww = {
+      job_name       = "discount-mate-ingestion-ww"
+      scheduler_name = "discount-mate-ingestion-ww-sat"
+      schedule       = "0 6 * * 6"
+      source         = "ww"
+    }
+    iga = {
+      job_name       = "discount-mate-ingestion-iga"
+      scheduler_name = "discount-mate-ingestion-iga-sat"
+      schedule       = "0 7 * * 6"
+      source         = "iga"
+    }
+    aldi = {
+      job_name       = "discount-mate-ingestion-aldi"
+      scheduler_name = "discount-mate-ingestion-aldi-sat"
+      schedule       = "0 8 * * 6"
+      source         = "aldi"
+    }
+    coles = {
+      job_name       = "discount-mate-ingestion-coles"
+      scheduler_name = "discount-mate-ingestion-coles-sat"
+      schedule       = "0 9 * * 6"
+      source         = "coles"
+    }
+  }
 }
 
 resource "google_project_service" "enabled_apis" {
@@ -137,6 +205,27 @@ module "backend_service" {
     # google_secret_manager_secret_iam_member.backend_mongo_uri_accessor,
     # google_secret_manager_secret_iam_member.backend_jwt_secret_accessor,
   ]
+}
+
+module "ingestion_jobs" {
+  for_each = local.ingestion_jobs
+
+  source = "${local.repo_root}/modules/cloud_run_job"
+
+  project_id                      = var.project_id
+  region                          = var.region
+  job_name                        = each.value.job_name
+  container_image                 = var.ingestion_job_image
+  service_account_email           = module.github_actions_identity.github_actions_service_account_email
+  scheduler_service_account_email = module.github_actions_identity.github_actions_service_account_email
+  scheduler_name                  = each.value.scheduler_name
+  schedule                        = each.value.schedule
+  time_zone                       = var.ingestion_scheduler_time_zone
+  args                            = ["--source", each.value.source, "--runner", "products"]
+  env_vars                        = local.ingestion_job_env_vars
+  task_timeout                    = "18000s"
+
+  depends_on = [google_project_service.enabled_apis]
 }
 
 module "postgresql" {

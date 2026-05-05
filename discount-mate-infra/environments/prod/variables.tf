@@ -104,6 +104,49 @@ variable "base_url" {
   default     = null
 }
 
+variable "ingestion_job_image" {
+  description = "Container image executed by the production ingestion Cloud Run jobs."
+  type        = string
+}
+
+variable "ingestion_scheduler_time_zone" {
+  description = "Timezone used by the production ingestion Cloud Scheduler triggers."
+  type        = string
+  default     = "Australia/Melbourne"
+}
+
+variable "ingestion_coles_cookie_string" {
+  description = "Cookie header string used by the production Coles ingestion job."
+  type        = string
+  default     = ""
+}
+
+variable "ingestion_coles_scraperapi_key" {
+  description = "ScraperAPI key used by the production Coles ingestion job."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "ingestion_iga_store_id" {
+  description = "Store ID used by the production IGA ingestion job."
+  type        = string
+  default     = "206686"
+}
+
+variable "ingestion_ww_cookie_string" {
+  description = "Cookie header string used by the production Woolworths ingestion job."
+  type        = string
+  default     = ""
+}
+
+variable "ingestion_ww_scraperapi_key" {
+  description = "ScraperAPI key used by the production Woolworths ingestion job."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 variable "postgres_instance_name" {
   description = "Cloud SQL instance name for the production PostgreSQL database."
   type        = string

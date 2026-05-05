@@ -10,9 +10,10 @@ This repository currently manages:
 - One Docker Artifact Registry repository for `prod`
 - One GitHub Actions service account and key for `prod`
 - One Cloud Run backend service and Secret Manager secrets for `prod`
+- Four Cloud Run ingestion jobs and Cloud Scheduler triggers for `prod`
 - One Cloud SQL PostgreSQL instance for `prod`
 
-The layout is intentionally split by environment and uses shared modules so Cloud Run and PostgreSQL can be added later without restructuring the repo.
+The layout is intentionally split by environment and uses shared modules so additional services and jobs can be added later without restructuring the repo.
 
 ## Repository layout
 
@@ -24,6 +25,7 @@ The layout is intentionally split by environment and uses shared modules so Clou
 └── modules
     ├── artifact_registry
     ├── cloud_run
+    ├── cloud_run_job
     ├── gcs_bucket
     ├── github_actions_identity
     └── postgresql
@@ -77,6 +79,8 @@ tofu apply
 - `environments/prod`: Docker repository `australia-southeast1-docker.pkg.dev/<project>/discount-mate-images`
 - `environments/prod`: GitHub Actions CI/CD service account and service account key
 - `environments/prod`: Cloud Run service `webdev-backend`
+- `environments/prod`: Cloud Run ingestion jobs for `ww`, `iga`, `aldi`, and `coles`
+- `environments/prod`: Cloud Scheduler triggers for the ingestion jobs
 - `environments/prod`: Secret Manager secrets for backend Mongo URI and JWT secret
 - `environments/prod`: Cloud SQL PostgreSQL instance, one database, and one application user
 
@@ -84,11 +88,12 @@ tofu apply
 
 The repository is prepared for future expansion through shared modules and environment roots.
 
-- `modules/cloud_run`: planned module contract for application deployment
-- `modules/postgresql`: planned module contract for PostgreSQL provisioning
+- `modules/cloud_run`: reusable Cloud Run service deployment
+- `modules/cloud_run_job`: reusable Cloud Run job plus scheduler trigger deployment
+- `modules/postgresql`: reusable Cloud SQL PostgreSQL provisioning
 - Each environment already owns its provider, backend, variables, and outputs
 
-When Cloud Run or PostgreSQL is introduced later, each environment can adopt those modules independently without changing the current state layout.
+Additional environments can adopt those modules independently without changing the current state layout.
 
 The production Artifact Registry output can be used directly as the base path for container image tags, for example:
 
@@ -97,6 +102,26 @@ australia-southeast1-docker.pkg.dev/<project>/discount-mate-images/app:<tag>
 ```
 
 The production GitHub Actions CI/CD service account is managed in this repository and reused as the Cloud Run runtime identity for the backend service.
+
+## Prod Ingestion Cloud Run Jobs
+
+The production ingestion workload is deployed as four Cloud Run jobs that all use the same container image and environment, but each runs with a different `--source` argument:
+
+- `discount-mate-ingestion-ww` with `--source ww --runner products`
+- `discount-mate-ingestion-iga` with `--source iga --runner products`
+- `discount-mate-ingestion-aldi` with `--source aldi --runner products`
+- `discount-mate-ingestion-coles` with `--source coles --runner products`
+
+All four jobs use the existing prod data bucket for `GCS_BUCKET` and run with plain environment variables. The source-specific values `COLES_COOKIE_STRING`, `COLES_SCRAPERAPI_KEY`, `IGA_STORE_ID`, `WW_COOKIE_STRING`, and `WW_SCRAPERAPI_KEY` are supplied through `environments/prod/env.auto.tfvars`.
+
+Cloud Scheduler triggers execute the jobs every Saturday in `Australia/Melbourne`:
+
+- `ww` at `06:00`
+- `iga` at `07:00`
+- `aldi` at `08:00`
+- `coles` at `09:00`
+
+The same production service account is reused as both the Cloud Run job runtime identity and the Cloud Scheduler caller identity.
 
 ## Prod Backend Cloud Run
 

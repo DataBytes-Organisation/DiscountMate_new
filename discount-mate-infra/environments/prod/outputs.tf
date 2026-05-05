@@ -39,6 +39,16 @@ output "backend_service_url" {
   value       = module.backend_service.url
 }
 
+output "ingestion_job_names" {
+  description = "The production ingestion Cloud Run job names keyed by source."
+  value       = { for source, job in module.ingestion_jobs : source => job.job_name }
+}
+
+output "ingestion_scheduler_names" {
+  description = "The production ingestion Cloud Scheduler job names keyed by source."
+  value       = { for source, job in module.ingestion_jobs : source => job.scheduler_name }
+}
+
 output "backend_mongo_secret_name" {
   description = "The Secret Manager secret name for the production backend Mongo URI."
   value       = google_secret_manager_secret.backend_mongo_uri.secret_id
