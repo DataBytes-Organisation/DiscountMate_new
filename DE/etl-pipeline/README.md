@@ -40,6 +40,14 @@ Start PostgreSQL:
 docker compose up -d
 ```
 
+DuckDB now mediates ETL reads and writes to PostgreSQL at runtime. Keep the
+DuckDB runtime directories writable, especially when running in sandboxes:
+
+```bash
+export DUCKDB_HOME_DIRECTORY=/tmp/discountmate-duckdb/home
+export DUCKDB_EXTENSION_DIRECTORY=/tmp/discountmate-duckdb/extensions
+```
+
 Apply migrations:
 
 ```bash
@@ -63,6 +71,9 @@ uv run main.py --model example --start-date 2026-03-21 --end-date 2026-03-25
 ```
 
 The run will process every available date from `--start-date` through the inclusive `--end-date`. If `--end-date` is omitted, the range runs through today. Missing daily files are skipped with logging.
+
+Retailer workflows stage Bronze data locally in DuckDB first, then attach
+PostgreSQL through DuckDB for the final silver-table sync.
 
 ## Output convention
 

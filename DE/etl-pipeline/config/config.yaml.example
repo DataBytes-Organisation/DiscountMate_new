@@ -6,7 +6,7 @@ paths:
 
 models:
   products_coles:
-    products: "{bronze_root}/coles/coles_sample_{date_compact}.csv"
+    products: "{bronze_root}/coles/coles_products_{date_compact}*.csv"
 
   products_woolworths:
     products: "{bronze_root}/woolworths/woolworths_sample_{date_compact}.csv"
@@ -18,4 +18,4 @@ models:
     products: "{bronze_root}/aldi/aldi_sample_{date_compact}.csv"
 
   example:
-    products: "{bronze_root}/coles/coles_sample_{date_compact}.csv"
+    products: "{bronze_root}/coles/coles_products_{date_compact}*.csv"
