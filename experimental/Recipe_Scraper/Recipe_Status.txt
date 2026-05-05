@@ -1,0 +1,16 @@
+Status: Experimental / Not deployed
+
+Purpose:
+Scrape all available woolworths_recipes.
+**NOTE:** this is once of run and thus is not deployed via .py or any other automation. 
+This single run allowed for the extraction of +13,000 food recipes for futher LLM exploration.
+NOTE: This PR includes only a small sample of recipe files for demonstration and reference. 
+Submitting the full set of 13,000 recipes in a single PR would likely be impractical.
+
+Current limitations:
+- Coles Recipes not extracted due to harder and more rigid blocking controls
+- 13,000 recipes are more than enough for an LLM to reference
+
+Next steps:
+- No further steps required unless students would like to scrape Cole's, then reference this file and adapt as needed.
+- Currently testing RAG (Retrieval Augmented Generation) through LLM embedding and Retrieval
