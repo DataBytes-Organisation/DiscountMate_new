@@ -1,0 +1,57 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Recipe",
+  "@id": "https://www.woolworths.com.au/shop/recipes/vegetarian-sweet-potato-and-cottage-cheese-pie",
+  "url": "https://www.woolworths.com.au/shop/recipes/vegetarian-sweet-potato-and-cottage-cheese-pie",
+  "name": "Vegetarian Sweet Potato & Cottage Cheese Pie Recipe | Woolworths",
+  "image": "https://foodhub.scene7.com/is/image/woolworthsltdprod/1108_vegetariansweetpotatoecottagecheesepie:Square-1300x1300",
+  "datePublished": "2025-06-02",
+  "description": "Try our easy to follow Vegetarian Sweet Potato & Cottage Cheese Pie recipe. Absolutely delicious with the best ingredients from Woolworths.",
+  "prepTime": "PT45M",
+  "cookTime": "PT45M",
+  "totalTime": "PT90M",
+  "keywords": "Shepherd's & cottage pie,Roast,Christmas,Sweet potato",
+  "recipeId": "579",
+  "recipeNameId": "vegetarian-sweet-potato-and-cottage-cheese-pie",
+  "recipeYield": "4",
+  "recipeCategory": "Mains",
+  "recipeCuisine": "British",
+  "recipeIngredient": [
+    "2 cup plain flour",
+    "0.33 cup walnut",
+    "135g butter, cold, cubed (save 10g butter melted)",
+    "4 eggs (1 egg for pastry, 3 eggs for filling)",
+    "1-2 tbs water",
+    "750g sweet potato, peeled, cut into 2cm cubes",
+    "5ml olive oil spray",
+    "1 tbs olive oil",
+    "1 brown onion, chopped",
+    "250g cottage cheese",
+    "0.5 cup strong tasty cheese, grated",
+    "0.33 cup continental parsley, leaves roughly chopped",
+    "0.33 cup coarse breadcrumbs"
+  ],
+  "recipeInstructions": [
+    {
+      "text": "Preheat oven to 200°C. Place flour and walnuts in the bowl of a food processor and process until walnuts are finely chopped. Add butter and pulse until mixture resembles fine breadcrumbs. Add egg and water and process until mixture forms a dough. Transfer to a lightly floured surface and knead, lightly, until smooth. Cover in plastic wrap and refrigerate for 30 minutes or until firm.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    },
+    {
+      "text": "Place sweet potato on a baking ray lined with baking paper. Spray with olive oil. Roast on top shelf of oven for 20 minutes or until tender. Cool. Reduce oven temperature to 180°C.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    },
+    {
+      "text": "Grease a 22cm fluted flan tin. Roll pastry out between 2 sheets of baking paper and place, gently, into tin. Trim off excess. Place in freezer for 10 minutes to set. Line pastry with baking paper and fill with baking beads. Place onto a baking tray. Bake for 10 minutes. Remove paper and beads. Bake for a further 10 minutes or until pastry is light golden. Spread sweet potato over base.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    },
+    {
+      "text": "Heat oil in a frying pan. Add onion and cook for 3 minutes or until soft. Transfer to a bowl. Add cheese, eggs and parsley. Whisk until combined. Spoon into pastry shell. Combine melted butter and breadcrumbs in a bowl. Sprinkle over top of pie. Transfer flan tin to a baking tray. Bake for 25 minutes or until filling is set and golden. Stand for 10 minutes before removing from pan. Serve.",
+      "@type": "HowToStep",
+      "HowToTip": {}
+    }
+  ],
+  "headline": "Vegetarian Sweet Potato & Cottage Cheese Pie Recipe | Woolworths"
+}
