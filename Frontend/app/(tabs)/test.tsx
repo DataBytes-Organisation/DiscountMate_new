@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from './AuthContext';  // Ensure you have AuthContext for authentication state
 import Entypo from 'react-native-vector-icons/Entypo';
+import { API_URL } from '../../constants/Api';
 
 const defaultImageUri = require('@/assets/images/defaultprofileimage.png');
 
@@ -41,7 +42,7 @@ export default function Profile() {
         const token = await AsyncStorage.getItem('authToken');
         if (!token) return;
   
-        const response = await axios.get<Profile>('http://localhost:3000/api/users/profile', {
+        const response = await axios.get<Profile>(`${API_URL}/users/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
   
@@ -106,7 +107,7 @@ export default function Profile() {
       const formData = new FormData();
       formData.append('image', blob, imageName);
   
-      await axios.post('http://localhost:3000/api/users/upload-profile-image', formData, {
+      await axios.post(`${API_URL}/users/upload-profile-image`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
