@@ -9,6 +9,8 @@ type ApiProduct = {
    _id: string;
    product_name?: string | null;
    product_code?: string | null;
+   category_id?: string | null;
+   category_name?: string | null;
    description?: string | null;
    link_image?: string | null;
    current_price?: number | null;
@@ -165,7 +167,7 @@ function mapApiProductToCard(product: ApiProduct): Product {
       (typeof rawId === "string" && rawId.trim().length > 0
          ? `Product ${rawId}`
          : "Unnamed product");
-   const category = "";
+   const category = product.category_name?.trim() || undefined;
 
    // Truncate description for grid display
    const truncateDescription = (text: string | null | undefined, maxWords: number = 20): string => {
