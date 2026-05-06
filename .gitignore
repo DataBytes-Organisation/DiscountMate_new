@@ -15,3 +15,4 @@ Document/*
 experimental/ReverseImageSearch/index.faiss
 experimental/ReverseImageSearch/faiss_index.bin
 experimental/ReverseImageSearch/product_metadata.json
+experimental/ReverseImageSearch/Scraped_images/
