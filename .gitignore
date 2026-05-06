@@ -13,3 +13,5 @@ Backend/ml-service/venv/
 Backend/iam_policy.json
 Document/*
 experimental/ReverseImageSearch/index.faiss
+experimental/ReverseImageSearch/faiss_index.bin
+experimental/ReverseImageSearch/product_metadata.json

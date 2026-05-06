@@ -56,9 +56,12 @@ class SearchResult(BaseModel):
     name: str
     similarity_score: float
     image_url: str
+    mongo_id: Optional[str] = None
     price_now: Optional[str] = None
     price_was: Optional[str] = None
     price_comparable: Optional[str] = None
+    woolworths_price: Optional[str] = None
+    iga_price: Optional[str] = None
 
 
 def _clean_price(val) -> Optional[str]:
@@ -99,10 +102,13 @@ async def reverse_image_search(
             product_id=str(r["product_id"]),
             name=r["name"],
             similarity_score=float(r["similarity_score"]),
-            image_url=f"/images/{r['filename']}",
+            image_url=r["image_url"],
+            mongo_id=r.get("mongo_id"),
             price_now=_clean_price(r.get("price_now")),
             price_was=_clean_price(r.get("price_was")),
             price_comparable=_clean_price(r.get("price_comparable")),
+            woolworths_price=_clean_price(r.get("woolworths_price")),
+            iga_price=_clean_price(r.get("iga_price")),
         )
         for r in hits
     ]

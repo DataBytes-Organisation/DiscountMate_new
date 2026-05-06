@@ -9,23 +9,50 @@ import { ImageSearchResult, useImageSearch } from "../../app/(tabs)/ImageSearchC
 
 function buildImageSearchImageUrl(imageUrl: string | null | undefined): string | null {
    if (!imageUrl) return null;
-
+   // Full CDN URL (MongoDB-sourced): browsers can display cross-origin images directly
+   if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+      return imageUrl;
+   }
+   // Relative path returned by the Node.js normalisation ("/images/filename.jpg")
+   if (imageUrl.startsWith("/images/")) {
+      return `${REVERSE_IMAGE_SEARCH_API_URL}${imageUrl}`;
+   }
+   // Legacy bare filename fallback
    const filename = imageUrl.split("/").pop();
    if (!filename) return null;
-
    return `${REVERSE_IMAGE_SEARCH_API_URL}/images/${encodeURIComponent(decodeURIComponent(filename))}`;
 }
 
 function mapImageResultToProduct(result: ImageSearchResult): Product {
-   const parsePrice = (value: string | null): number => {
+   const parsePrice = (value: string | null | undefined): number => {
       if (!value) return 0;
       const parsed = Number.parseFloat(value.replace(/[^0-9.]/g, ""));
       return Number.isNaN(parsed) ? 0 : parsed;
    };
 
-   const priceNow = parsePrice(result.price_now);
+   const formatPrice = (value: string | null | undefined): string => {
+      const p = parsePrice(value);
+      return p > 0 ? `$${p.toFixed(2)}` : "-";
+   };
+
+   const colesPrice = parsePrice(result.price_now);
    const priceWas = parsePrice(result.price_was);
-   const savings = Math.max(0, priceWas - priceNow);
+   const savings = Math.max(0, priceWas - colesPrice);
+
+   const retailers = [
+      { storeKey: "coles",       name: "Coles",       price: formatPrice(result.price_now),        isCheapest: false, unitPriceLabel: result.price_comparable ?? undefined },
+      { storeKey: "woolworths",  name: "Woolworths",  price: formatPrice(result.woolworths_price),  isCheapest: false },
+      { storeKey: "iga",         name: "IGA",         price: formatPrice(result.iga_price),         isCheapest: false },
+   ];
+
+   // Mark cheapest store that has a price
+   const priced = retailers.filter((r) => r.price !== "-");
+   if (priced.length > 0) {
+      const cheapest = priced.reduce((a, b) =>
+         parsePrice(a.price) <= parsePrice(b.price) ? a : b
+      );
+      cheapest.isCheapest = true;
+   }
 
    return {
       id: result.product_id,
@@ -36,17 +63,7 @@ function mapImageResultToProduct(result: ImageSearchResult): Product {
       badge: savings > 0 ? `Save $${savings.toFixed(2)}` : `${(result.similarity_score * 100).toFixed(0)}% Match`,
       trendLabel: "Visual match",
       trendTone: "neutral",
-      retailers: [
-         {
-            storeKey: "coles",
-            name: "Coles",
-            price: priceNow > 0 ? `$${priceNow.toFixed(2)}` : "-",
-            isCheapest: true,
-            unitPriceLabel: result.price_comparable ?? undefined,
-         },
-         { storeKey: "woolworths", name: "Woolworths", price: "-", isCheapest: false },
-         { storeKey: "iga", name: "IGA", price: "-", isCheapest: false },
-      ],
+      retailers,
    };
 }
 

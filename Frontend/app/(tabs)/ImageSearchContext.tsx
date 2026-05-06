@@ -9,6 +9,8 @@ export type ImageSearchResult = {
    price_now: string | null;
    price_was: string | null;
    price_comparable: string | null;
+   woolworths_price: string | null;
+   iga_price: string | null;
 };
 
 type ImageSearchContextType = {

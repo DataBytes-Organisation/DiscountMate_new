@@ -5,7 +5,9 @@ faiss-cpu
 opencv-python
 pillow
 numpy
-pandas
 fastapi
 uvicorn[standard]
 python-multipart
+pymongo
+python-dotenv
+requests

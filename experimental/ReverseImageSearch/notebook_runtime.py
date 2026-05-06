@@ -31,7 +31,6 @@ from torchvision import transforms
 import numpy as np
 import cv2
 import faiss
-import pandas as pd
 from PIL import Image
 
 # ---------------------------------------------------------------------------
@@ -39,9 +38,8 @@ from PIL import Image
 # ---------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent
 SCRAPED_DIR = BASE_DIR / "Scraped_images"
-MASTER_CSV = BASE_DIR / "Master_Coles_Scrape.csv"
-INDEX_PATH = BASE_DIR / "index.faiss"
-METADATA_PATH = BASE_DIR / "metadata.json"
+INDEX_PATH = BASE_DIR / "faiss_index.bin"
+METADATA_PATH = BASE_DIR / "product_metadata.json"
 TEST_IMAGE_DIR = BASE_DIR / "Test_Image"
 
 # ---------------------------------------------------------------------------
@@ -247,32 +245,11 @@ def load_engine(device: Optional[str] = None) -> dict:
 
     model = build_extractor(dev)
 
-    # Pricing lookup table keyed by product_id — strings preserved as-is
-    # (e.g. "$8.00 per 1kg") so the UI can show whatever the scrape captured.
-    pricing: dict = {}
-    if MASTER_CSV.exists():
-        price_df = pd.read_csv(
-            MASTER_CSV,
-            dtype=str,
-            usecols=["product_id", "price_now", "price_was", "price_comparable"],
-        )
-        price_df["product_id"] = price_df["product_id"].str.strip()
-        price_df = price_df.drop_duplicates(subset="product_id").set_index("product_id")
-        pricing = {
-            pid: {
-                "price_now": row["price_now"],
-                "price_was": row["price_was"],
-                "price_comparable": row["price_comparable"],
-            }
-            for pid, row in price_df.iterrows()
-        }
-
     _engine_cache.update({
         "model": model,
         "index": index,
         "metadata": metadata,
         "device": dev,
-        "pricing": pricing,
     })
     return _engine_cache
 
@@ -290,7 +267,6 @@ def _search_bgr(bgr: np.ndarray, top_k: int = 3) -> list:
     index = engine["index"]
     metadata = engine["metadata"]
     device = engine["device"]
-    pricing = engine["pricing"]
 
     aug_imgs = [augment_image(bgr, aug) for aug in AUGMENTS_MAIN]
     aug_vecs = extract_vectors_batch(aug_imgs, model, device)  # (5, dim)
@@ -305,7 +281,8 @@ def _search_bgr(bgr: np.ndarray, top_k: int = 3) -> list:
             if fidx == -1:
                 continue
             meta = metadata[fidx]
-            pid = meta["product_id"]
+            # Deduplicate by mongo_id (one entry per product in new index)
+            pid = meta["mongo_id"]
             score_f = float(score)
             entry = product_agg.get(pid)
             if entry is None:
@@ -332,21 +309,19 @@ def _search_bgr(bgr: np.ndarray, top_k: int = 3) -> list:
 
     results = []
     for rank, (score, meta) in enumerate(ranked, 1):
-        filename = meta["filename"]
-        price_row = pricing.get(meta["product_id"], {})
         results.append({
             "rank": rank,
-            "gtin": meta["gtin"],
-            "name": meta["name"],
-            "product_id": meta["product_id"],
-            "augment": meta["augment"],
-            "view": meta["view"],
-            "filename": filename,
+            "mongo_id": meta["mongo_id"],
+            "name": meta["title"],
+            # product_code kept as product_id for API backward compatibility
+            "product_id": meta.get("product_code") or meta["mongo_id"],
+            "image_url": meta["image_url"],   # full CDN URL from MongoDB
             "similarity_score": float(score),
-            "matched_image_path": SCRAPED_DIR / filename,
-            "price_now": price_row.get("price_now"),
-            "price_was": price_row.get("price_was"),
-            "price_comparable": price_row.get("price_comparable"),
+            "price_now": meta.get("coles_price"),
+            "price_was": None,
+            "price_comparable": None,
+            "woolworths_price": meta.get("woolworths_price"),
+            "iga_price": meta.get("iga_price"),
         })
     return results
 
