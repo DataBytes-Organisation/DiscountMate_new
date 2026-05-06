@@ -15,6 +15,10 @@ const basketRoutes = require('./src/routers/basket.router');
 const shoppingListRoutes = require('./src/routers/shopping-list.router');
 const mlRoutes = require('./src/routers/ml.router');
 const analyticsRoutes = require('./src/routers/analytics.router');
+const dashboardRoutes = require('./src/routers/dashboard.router');
+const notificationRoutes = require('./src/routers/notification.router');
+const alertSegmentRoutes = require('./src/routers/alertSegment.router');
+const listRoutes = require('./src/routers/list.router');
 
 if (process.env.NODE_ENV !== 'production') {
    require('dotenv').config();
@@ -54,7 +58,7 @@ app.use(helmet({
 // CORS Configuration
 app.use(cors({
     origin: "*",
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true
 }));
 
@@ -155,6 +159,10 @@ app.use('/api/news', newsRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/ml', mlRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/alert-segments', alertSegmentRoutes);
+app.use('/api/lists', listRoutes);
 
 // Root route
 app.get('/', (req, res) => {
