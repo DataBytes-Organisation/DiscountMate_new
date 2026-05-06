@@ -25,7 +25,7 @@ ReverseImageSearch/
 ├── api.py                                  # FastAPI service — upload endpoint + image serving
 ├── notebook_runtime.py                     # Query-only runtime extracted from the notebook
 ├── build_faiss_index.ipynb                 # Production index-building notebook (Colab A100 optimised)
-├── coles_reverse_image_search_Official_2.ipynb  # Original research notebook (reference)
+├── coles_reverse_image_search_Official_investigation.ipynb  # Original research notebook (reference)
 ├── app.py                                  # Standalone Streamlit demo (optional)
 ├── requirements.txt                        # Python dependencies
 ├── index.faiss                             # Prebuilt FAISS HNSW index (not in git — see below)
@@ -57,7 +57,7 @@ pip install -r requirements.txt
 ## Running the service
 
 ```bash
-cd experimental/ReverseImageSearch
+cd ML/ReverseImageSearch
 python3 -m uvicorn api:app --host 127.0.0.1 --port 8001
 ```
 
@@ -69,7 +69,7 @@ Start all three services in separate terminals:
 
 ```bash
 # 1. ML service (this folder)
-cd experimental/ReverseImageSearch
+cd ML/ReverseImageSearch
 python3 -m uvicorn api:app --host 127.0.0.1 --port 8001
 
 # 2. Express backend
@@ -150,7 +150,7 @@ Open and run **`build_faiss_index.ipynb`** from top to bottom (Google Colab with
 
 **A100-specific optimisations** in the notebook: bfloat16 autocast, `torch.compile`, TF32 matrix ops, and batch sizes tuned for 40 GB HBM.
 
-`coles_reverse_image_search_Official_2.ipynb` is the original research notebook kept for reference — use `build_faiss_index.ipynb` for production index builds.
+`coles_reverse_image_search_Official_investigation.ipynb` is the original research notebook kept for reference — use `build_faiss_index.ipynb` for production index builds.
 
 ---
 

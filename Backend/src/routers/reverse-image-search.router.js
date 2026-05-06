@@ -14,7 +14,7 @@ const upload = multer({
 const DEFAULT_SERVICE_URL = 'http://localhost:8001';
 const DEFAULT_SCRAPED_IMAGES_DIR = path.resolve(
    __dirname,
-   '../../../experimental/ReverseImageSearch/Scraped_images'
+   '../../../ML/ReverseImageSearch/Scraped_images'
 );
 
 function getServiceUrl() {
