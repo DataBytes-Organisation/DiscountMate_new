@@ -4,7 +4,6 @@ import { Slot, useSegments } from "expo-router";
 import AppHeader from "../../components/layout/Header";
 import CategoryTabs from "../../components/layout/CategoryTabs";
 import SearchBar from "../../components/layout/SearchBar";
-import { CartProvider } from "./CartContext";
 import { UserProfileProvider } from "../../context/UserProfileContext";
 import { NotificationCenterProvider } from "../../context/NotificationCenterContext";
 
@@ -21,7 +20,14 @@ export default function TabsLayout() {
    const isMyListsPage = segments.includes("my-lists");
    const isProductDashboardPage = segments.includes("product-dashboard");
 
-   let activeRoute: "Home" | "Compare" | "Specials" | "My Lists" | "Profile" | undefined = "Home";
+   let activeRoute:
+      | "Home"
+      | "Compare"
+      | "Specials"
+      | "Grocery Lists"
+      | "Profile"
+      | "Dashboard" = "Home";
+
    if (
       isProfilePage ||
       isNotificationsPage ||
@@ -33,51 +39,52 @@ export default function TabsLayout() {
       activeRoute = "Profile";
    } else if (isComparePage) {
       activeRoute = "Compare";
+   } else if (isMyListsPage) {
+      activeRoute = "Grocery Lists";
    } else if (isDashboardPage || isProductDashboardPage) {
-      activeRoute = undefined;
+      activeRoute = "Dashboard";
    }
 
    return (
-      <CartProvider>
-         <UserProfileProvider>
-            <NotificationCenterProvider>
-               <View className="flex-1 bg-[#F3F4F6]">
-                  <AppHeader activeRoute={activeRoute} />
-                  {!isDashboardPage &&
-                     !isProductDashboardPage &&
-                     !isProfilePage &&
-                     !isNotificationsPage &&
-                     !isAlertSegmentsPage &&
-                     !isSubscriptionPage &&
-                     !isSupportPage &&
-                     !isPrivacyTermsPage && <CategoryTabs />}
-                  {!isProfilePage &&
-                     !isNotificationsPage &&
-                     !isAlertSegmentsPage &&
-                     !isSubscriptionPage &&
-                     !isSupportPage &&
-                     !isPrivacyTermsPage &&
-                     !isComparePage &&
-                     !isDashboardPage &&
-                     !isProductDashboardPage && (
-                     <View className="mb-1">
-                        <SearchBar />
-                     </View>
-                  )}
+      <UserProfileProvider>
+         <NotificationCenterProvider>
+            <View className="flex-1 bg-[#F3F4F6]">
+               <AppHeader activeRoute={activeRoute} />
+               {!isDashboardPage &&
+                  !isProductDashboardPage &&
+                  !isProfilePage &&
+                  !isNotificationsPage &&
+                  !isAlertSegmentsPage &&
+                  !isSubscriptionPage &&
+                  !isSupportPage &&
+                  !isPrivacyTermsPage && <CategoryTabs />}
+               {!isProfilePage &&
+                  !isNotificationsPage &&
+                  !isAlertSegmentsPage &&
+                  !isSubscriptionPage &&
+                  !isSupportPage &&
+                  !isPrivacyTermsPage &&
+                  !isComparePage &&
+                  !isMyListsPage &&
+                  !isDashboardPage &&
+                  !isProductDashboardPage && (
+                  <View className="mb-1">
+                     <SearchBar />
+                  </View>
+               )}
 
-                  {isComparePage ? (
+               {isComparePage || isMyListsPage ? (
+                  <Slot />
+               ) : (
+                  <ScrollView
+                     className="flex-1"
+                     contentContainerStyle={{ paddingBottom: 24 }}
+                  >
                      <Slot />
-                  ) : (
-                     <ScrollView
-                        className="flex-1"
-                        contentContainerStyle={{ paddingBottom: 24 }}
-                     >
-                        <Slot />
-                     </ScrollView>
-                  )}
-               </View>
-            </NotificationCenterProvider>
-         </UserProfileProvider>
-      </CartProvider>
+                  </ScrollView>
+               )}
+            </View>
+         </NotificationCenterProvider>
+      </UserProfileProvider>
    );
 }

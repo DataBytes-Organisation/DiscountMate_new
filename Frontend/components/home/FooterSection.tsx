@@ -67,7 +67,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ disableEdgeOffset }) => {
                         "Home",
                         "Compare Prices",
                         "Weekly Specials",
-                        "My Lists",
+                        "Grocery Lists",
                         "Price Alerts",
                      ].map((item) => (
                         <TouchableOpacity key={item}>

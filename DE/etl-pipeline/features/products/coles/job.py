@@ -1,10 +1,81 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
+
+import duckdb
+
+from common.cli import iter_dates
+from common.db import ensure_postgres_attached, open_etl_connection, postgres_table
+from common.duckdb_utils import fetch_scalar, render_sql_template
+from common.paths import resolve_input_paths
 
 if TYPE_CHECKING:
     from common.job_models import JobSummary
     from config.settings import AppSettings, RuntimeConfig
+
+SQL_ROOT = Path(__file__).resolve().parent
+WORKFLOW_SQL_DIR = SQL_ROOT / "workflow_sql"
+COLES_RUNNER = "products"
+COLES_MODEL = "products_coles"
+COLES_TIMEZONE = "Australia/Melbourne"
+
+
+def _workflow_sql_context() -> dict[str, str]:
+    return {
+        "dim_categories_table": postgres_table("dim_categories"),
+        "dim_retailers_table": postgres_table("dim_retailers"),
+        "dim_products_table": postgres_table("dim_products"),
+        "fct_product_prices_table": postgres_table("fct_product_prices"),
+        "static_master_coles_products_table": postgres_table(
+            "static_master_coles_products"
+        ),
+        "dim_product_canonical_key_expr": """
+            trim(regexp_replace(lower(coalesce(products.brand_name, '')), '[^a-z0-9]+', ' ', 'g'))
+            || '|'
+            || trim(regexp_replace(lower(coalesce(products.product_name, '')), '[^a-z0-9]+', ' ', 'g'))
+            || '|'
+            || CASE
+                WHEN products.pack_quantity IS NULL THEN ''
+                ELSE regexp_replace(
+                    regexp_replace(printf('%.3f', products.pack_quantity), '0+$', ''),
+                    '\\.$',
+                    ''
+                )
+            END
+            || '|'
+            || coalesce(lower(products.pack_uom), '')
+        """.strip(),
+    }
+
+
+def _load_input_files(
+    conn: duckdb.DuckDBPyConnection,
+    input_paths: list[Path],
+) -> int:
+    if not input_paths:
+        return 0
+
+    first_path = input_paths[0]
+    conn.execute(
+        """
+        CREATE OR REPLACE TABLE raw_input AS
+        SELECT *, ? AS source_file
+        FROM read_csv_auto(?, header=true, all_varchar=true)
+        """,
+        [str(first_path), str(first_path)],
+    )
+    for input_path in input_paths[1:]:
+        conn.execute(
+            """
+            INSERT INTO raw_input
+            SELECT *, ? AS source_file
+            FROM read_csv_auto(?, header=true, all_varchar=true)
+            """,
+            [str(input_path), str(input_path)],
+        )
+
+    return fetch_scalar(conn, "SELECT count(*) FROM raw_input")
 
 
 def run(
@@ -14,7 +85,67 @@ def run(
     runtime_config: RuntimeConfig,
     settings: AppSettings,
 ) -> JobSummary:
-    del model, start_date, end_date, runtime_config, settings
-    raise NotImplementedError(
-        "The Coles products job is scaffold-only for now. Use `--model example` to run the working demo workflow."
-    )
+    if model != COLES_MODEL:
+        raise ValueError(f"The Coles workflow supports only model='{COLES_MODEL}'.")
+
+    counts = {
+        "raw_input": 0,
+        "raw_input_normalized": 0,
+    }
+    processed_dates: list[str] = []
+    skipped_dates: list[str] = []
+    input_paths: list[Path] = []
+
+    for run_date in iter_dates(start_date, end_date):
+        run_date_value = run_date.isoformat()
+        date_input_paths = resolve_input_paths(
+            runtime_config,
+            model,
+            COLES_RUNNER,
+            run_date,
+        )
+        if not date_input_paths:
+            skipped_dates.append(run_date_value)
+            continue
+        input_paths.extend(date_input_paths)
+        processed_dates.append(run_date_value)
+
+    conn = open_etl_connection(settings)
+    try:
+        conn.execute(f"SET TimeZone = '{COLES_TIMEZONE}'")
+        if input_paths:
+            counts["raw_input"] = _load_input_files(conn, input_paths)
+            conn.execute(render_sql_template(WORKFLOW_SQL_DIR / "transform.sql"))
+            counts["raw_input_normalized"] = fetch_scalar(
+                conn,
+                "SELECT count(*) FROM raw_input_normalized",
+            )
+            ensure_postgres_attached(conn, settings)
+            sql_context = _workflow_sql_context()
+
+            conn.execute("BEGIN")
+            try:
+                conn.execute(
+                    render_sql_template(
+                        WORKFLOW_SQL_DIR / "sync_dim_products.sql",
+                        **sql_context,
+                    )
+                )
+                conn.execute(
+                    render_sql_template(
+                        WORKFLOW_SQL_DIR / "sync_fct_product_prices.sql",
+                        **sql_context,
+                    )
+                )
+                conn.execute("COMMIT")
+            except duckdb.Error:
+                conn.execute("ROLLBACK")
+                raise
+    finally:
+        conn.close()
+
+    return {
+        "processed_dates": ",".join(processed_dates) if processed_dates else "none",
+        "skipped_dates": ",".join(skipped_dates) if skipped_dates else "none",
+        "counts": counts,
+    }
