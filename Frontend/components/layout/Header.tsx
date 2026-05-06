@@ -1,14 +1,23 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, useWindowDimensions } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCart } from "../../app/(tabs)/CartContext";
 import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 import CartPopover from "./CartPopover";
+import { useUserProfile } from "../../context/UserProfileContext";
+import { useNotificationCenter } from "../../context/NotificationCenterContext";
+import NotificationsPanel from "./NotificationsPanel";
 
 type HeaderProps = {
-   activeRoute?: "Home" | "Compare" | "Specials" | "Grocery Lists" | "Profile" | "Dashboard";
+   activeRoute?:
+      | "Home"
+      | "Compare"
+      | "Specials"
+      | "Grocery Lists"
+      | "Profile"
+      | "Dashboard";
 };
 
 type RouteKey = NonNullable<HeaderProps["activeRoute"]>;
@@ -31,17 +40,40 @@ const navRoutes: Record<RouteKey, string> = {
    Profile: "/(tabs)/profile",
 };
 
+function getInitials(name: string): string {
+   const parts = String(name || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2);
+
+   if (parts.length === 0) {
+      return "DM";
+   }
+
+   return parts.map((part) => part.charAt(0).toUpperCase()).join("");
+}
+
 export default function Header({ activeRoute = "Home" }: HeaderProps) {
    const router = useRouter();
    const [showMenu, setShowMenu] = useState(false);
    const [showCartPopover, setShowCartPopover] = useState(false);
    const { cartItems, getTotalItems } = useCart();
    const { isLoading } = useShoppingLists();
+   const { width } = useWindowDimensions();
+   const { profile } = useUserProfile();
+   const { unreadCount, panelOpen, openPanel, closePanel } = useNotificationCenter();
+
    const cartItemCount = getTotalItems();
    const cartTotal = cartItems.reduce(
       (sum, item) => sum + item.price * (item.quantity || 1),
       0
    );
+   const compactHeader = width < 980;
+   const displayName =
+      `${profile?.firstName ?? ""} ${profile?.lastName ?? ""}`.trim() ||
+      "DiscountMate Member";
+   const avatarUri = profile?.profileImage ?? null;
 
    const handleLogout = async () => {
       await AsyncStorage.removeItem("authToken");
@@ -51,14 +83,13 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
 
    const handleProfile = () => {
       setShowMenu(false);
-      const profileRoute = navRoutes.Profile ?? "/profile";
-      router.push(profileRoute);
+      router.push(navigationSafe(navRoutes.Profile));
    };
 
    const handleNavPress = (item: RouteKey) => {
       const route = navRoutes[item];
       if (route) {
-         router.push(route);
+         router.push(navigationSafe(route));
       }
    };
 
@@ -67,64 +98,62 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
          className="w-full flex-row items-center justify-between px-4 md:px-8 py-4 border-b border-gray-100 bg-white"
          style={{ zIndex: 60, elevation: 12 }}
       >
-         {/* Left: logo + nav */}
-         <View className="flex-row items-center gap-6 md:gap-8">
-            {/* Logo + brand */}
+         <View className="flex-row items-center gap-4 md:gap-8">
             <View className="flex-row items-center gap-2">
                <View className="w-11 h-11 bg-gradient-to-br from-primary_green to-secondary_green rounded-lg flex items-center justify-center shadow-md">
                   <FontAwesome6 name="tag" size={18} color="#FFFFFF" />
                </View>
-               <Text className="text-2xl font-bold bg-gradient-to-r from-primary_green to-secondary_green bg-clip-text text-transparent">
+               <Text
+                  className={`${
+                     compactHeader ? "text-xl" : "text-2xl"
+                  } font-bold bg-gradient-to-r from-primary_green to-secondary_green bg-clip-text text-transparent`}
+               >
                   DiscountMate
                </Text>
             </View>
 
-            {/* Nav */}
-            <View className="flex-row items-center gap-1">
-               {navItems.map((item) => {
-                  const isActive = item === activeRoute;
-                  if (isActive) {
+            {!compactHeader && (
+               <View className="flex-row items-center gap-1">
+                  {navItems.map((item) => {
+                     const isActive = item === activeRoute;
                      return (
                         <Pressable
                            key={item}
-                           className="px-4 py-2 rounded-lg bg-primary_green/10"
+                           className={`px-4 py-2 rounded-lg ${
+                              isActive
+                                 ? "bg-primary_green/10"
+                                 : "hover:bg-primary_green/5"
+                           }`}
                            onPress={() => handleNavPress(item)}
                         >
-                           <Text className="text-[15px] font-semibold text-primary_green">
+                           <Text
+                              className={`text-[15px] ${
+                                 isActive
+                                    ? "font-semibold text-primary_green"
+                                    : "text-gray-600"
+                              }`}
+                           >
                               {item}
                            </Text>
                         </Pressable>
                      );
-                  }
-
-                  return (
-                     <Pressable
-                        key={item}
-                        className="group px-4 py-2 rounded-lg hover:bg-primary_green/5"
-                        onPress={() => handleNavPress(item)}
-                     >
-                        <Text className="text-[15px] text-gray-600 group-hover:text-primary_green transition-colors">
-                           {item}
-                        </Text>
-                     </Pressable>
-                  );
-               })}
-            </View>
+                  })}
+               </View>
+            )}
          </View>
 
-         {/* Right: bell + list + avatar */}
-         <View className="flex-row items-center gap-3 md:gap-4">
-            {/* Notifications */}
-            <Pressable className="relative">
-               <FontAwesome6
-                  name="bell"
-                  size={20}
-                  className="text-gray-600"
-               />
-               <View className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500" />
+         <View className="flex-row items-center gap-2 md:gap-4">
+            <Pressable className="relative" onPress={openPanel}>
+               <FontAwesome6 name="bell" size={20} className="text-gray-600" />
+               {unreadCount > 0 && (
+                  <View className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 items-center justify-center">
+                     <Text className="text-[10px] font-bold text-white">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                     </Text>
+                  </View>
+               )}
             </Pressable>
 
-            {/* List summary */}
             {isLoading && cartItems.length === 0 ? (
                <View className="flex-row items-center gap-3 px-4 md:px-5 py-2.5 bg-gradient-to-r from-primary_green/10 to-secondary_green/10 rounded-xl border border-primary_green/20">
                   <View className="w-4 h-4 rounded bg-primary_green/25" />
@@ -140,24 +169,31 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
                         className="text-primary_green"
                      />
                      <Text className="text-sm font-semibold text-[#111827]">
-                        {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'}
+                        {cartItemCount} {cartItemCount === 1 ? "item" : "items"}
                      </Text>
-                     <Text className="text-sm font-bold text-gray-900">
-                        ${cartTotal.toFixed(2)}
-                     </Text>
+                     {!compactHeader && (
+                        <Text className="text-sm font-bold text-gray-900">
+                           ${cartTotal.toFixed(2)}
+                        </Text>
+                     )}
                   </View>
                </Pressable>
             )}
 
-            {/* Avatar + menu */}
             <View className="relative">
                <Pressable onPress={() => setShowMenu((prev) => !prev)}>
-                  <Image
-                     source={{
-                        uri: "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
-                     }}
-                     className="w-10 h-10 rounded-full border-2 border-primary_green/30"
-                  />
+                  {avatarUri ? (
+                     <Image
+                        source={{ uri: avatarUri }}
+                        className="w-10 h-10 rounded-full border-2 border-primary_green/30"
+                     />
+                  ) : (
+                     <View className="w-10 h-10 rounded-full border-2 border-primary_green/30 bg-emerald-50 items-center justify-center">
+                        <Text className="text-sm font-bold text-primary_green">
+                           {getInitials(displayName)}
+                        </Text>
+                     </View>
+                  )}
                </Pressable>
 
                {showMenu && (
@@ -182,11 +218,15 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
             </View>
          </View>
 
-         {/* Cart Popover */}
          <CartPopover
             visible={showCartPopover}
             onClose={() => setShowCartPopover(false)}
          />
+         <NotificationsPanel visible={panelOpen} onClose={closePanel} />
       </View>
    );
+}
+
+function navigationSafe(route: string) {
+   return route as any;
 }

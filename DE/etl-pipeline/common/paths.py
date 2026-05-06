@@ -32,3 +32,18 @@ def resolve_input_path(
 
     project_root = Path(__file__).resolve().parents[1]
     return project_root / relative_path
+
+
+def resolve_input_paths(
+    runtime_config: RuntimeConfig,
+    model: str,
+    runner: str,
+    run_date: date,
+) -> list[Path]:
+    resolved_path = resolve_input_path(runtime_config, model, runner, run_date)
+    path_pattern = str(resolved_path)
+    if any(token in path_pattern for token in ("*", "?", "[")):
+        return sorted(resolved_path.parent.glob(resolved_path.name))
+    if resolved_path.exists():
+        return [resolved_path]
+    return []
