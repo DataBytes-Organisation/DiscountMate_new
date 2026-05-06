@@ -12,3 +12,4 @@ Backend/ml-service/venv/
 *.csv
 Backend/iam_policy.json
 Document/*
+experimental/ReverseImageSearch/index.faiss

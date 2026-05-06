@@ -231,11 +231,11 @@ const getProfileImage = async (req, res) => {
   };
 
 module.exports = {
+    signupLimiter: limiter,
     signup,
     signin,
     getProfile,
     updateProfileImage,
     getProfileImage
 };
-
 

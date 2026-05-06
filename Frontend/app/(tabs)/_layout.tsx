@@ -3,6 +3,7 @@ import { View, ScrollView } from "react-native";
 import { Slot, useSegments } from "expo-router";
 import AppHeader from "../../components/layout/Header";
 import SearchBar from "../../components/layout/SearchBar";
+import { ImageSearchProvider } from "./ImageSearchContext";
 
 export default function TabsLayout() {
    const segments = useSegments();
@@ -23,24 +24,26 @@ export default function TabsLayout() {
    }
 
    return (
-      <View className="flex-1 bg-[#F3F4F6]">
-         <AppHeader activeRoute={activeRoute} />
-         {!isProfilePage && !isComparePage && !isMyListsPage && (
-            <View className="mb-1">
-               <SearchBar />
-            </View>
-         )}
+      <ImageSearchProvider>
+         <View className="flex-1 bg-[#F3F4F6]">
+            <AppHeader activeRoute={activeRoute} />
+            {!isProfilePage && !isComparePage && !isMyListsPage && (
+               <View className="mb-1">
+                  <SearchBar />
+               </View>
+            )}
 
-         {isComparePage || isMyListsPage ? (
-            <Slot />
-         ) : (
-            <ScrollView
-               className="flex-1"
-               contentContainerStyle={{ paddingBottom: 24 }}
-            >
+            {isComparePage || isMyListsPage ? (
                <Slot />
-            </ScrollView>
-         )}
-      </View>
+            ) : (
+               <ScrollView
+                  className="flex-1"
+                  contentContainerStyle={{ paddingBottom: 24 }}
+               >
+                  <Slot />
+               </ScrollView>
+            )}
+         </View>
+      </ImageSearchProvider>
    );
 }

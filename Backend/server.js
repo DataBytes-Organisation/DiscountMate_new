@@ -15,6 +15,7 @@ const basketRoutes = require('./src/routers/basket.router');
 const shoppingListRoutes = require('./src/routers/shopping-list.router');
 const mlRoutes = require('./src/routers/ml.router');
 const analyticsRoutes = require('./src/routers/analytics.router');
+const reverseImageSearchRoutes = require('./src/routers/reverse-image-search.router');
 
 if (process.env.NODE_ENV !== 'production') {
    require('dotenv').config();
@@ -155,6 +156,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/ml', mlRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/reverse-image-search', reverseImageSearchRoutes);
 
 // Root route
 app.get('/', (req, res) => {
