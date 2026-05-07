@@ -445,7 +445,7 @@ const signup = async (req, res) => {
 const { rateLimit } = require("express-rate-limit");
 
 // Only allows for one request every 5 minutes per IP
-const limiter = rateLimit({
+const signupLimiter = rateLimit({
 
 windowMs: 5 * 60 * 1000,
 
@@ -1173,6 +1173,7 @@ const getProfileImage = async (req, res) => {
   };
 
 module.exports = {
+    signupLimiter,
     signup,
     signin,
     getProfile,
@@ -1187,6 +1188,5 @@ module.exports = {
     updateSubscription,
     deleteAccount,
     updateProfileImage,
-    getProfileImage,
-    signupLimiter: limiter
+    getProfileImage
 };
