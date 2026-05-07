@@ -54,10 +54,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const trendColorClass = getTrendColorClass(trendTone);
 
    const handleOpenDetails = () => {
-      // Navigate to the dedicated product detail route: app/(product)/product/[id].tsx
-      // Pass only the ID; product page fetches the rest from the API
       router.push({
-         pathname: "/product/[id]",
+         pathname: "/(product)/product/[id]",
          params: { id },
       });
    };
