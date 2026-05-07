@@ -9,11 +9,12 @@ Python Flask service that provides ML/AI endpoints for the DiscountMate applicat
 3. [Architecture Overview](#architecture-overview)
 4. [Quick Start](#quick-start)
 5. [API Endpoints](#api-endpoints)
-6. [Integrating ML Models](#integrating-ml-models)
-7. [Testing](#testing)
-8. [Troubleshooting](#troubleshooting)
-9. [Next Steps](#next-steps)
-10. [Service Management with manage.sh](#service-management-with-managesh)
+6. [Reverse Image Search](#reverse-image-search)
+7. [Integrating ML Models](#integrating-ml-models)
+8. [Testing](#testing)
+9. [Troubleshooting](#troubleshooting)
+10. [Next Steps](#next-steps)
+11. [Service Management with manage.sh](#service-management-with-managesh)
 
 
 
@@ -167,18 +168,19 @@ Simply follow the same instructions in the `analytics-service` directory.
 ## Architecture Overview
 
 ```
-Frontend (React Native)
+Frontend (React Native / Web)
     ↓
-Node.js Backend (Express) - Port 3000
-    ↓
-Python ML Service (Flask) - Port 5001
-    ↓
-Your ML Models & Notebooks
+Node.js Backend (Express) - Port 8080
+    ├── → Python ML Service (Flask)         - Port 5001  [manual start]
+    └── → Reverse Image Search (FastAPI)    - Port 8001  [auto-spawned by Node.js]
+              ↓
+         FAISS index + DINOv2 (ml_models/)
 ```
 
 **Separation of Concerns:**
-- `app.py` - Handles HTTP requests/responses (API layer)
-- `ml_models/` - Contains ML logic and model integrations (business logic layer)
+- `app.py` - Flask API server (OCR, recommendations, weekly specials)
+- `ml_models/` - ML logic, trained models, and FAISS artifacts
+- `reverse_image_search/` - FastAPI sidecar; auto-started by `node server.js`
 
 
 
@@ -232,6 +234,61 @@ curl 'http://localhost:3000/api/ml/weekly-specials?limit=4'
 
 ### Price Prediction (To be implemented)
 - `POST /api/ml/price-prediction` - Predict future prices
+
+### Reverse Image Search (FastAPI — Port 8001)
+- `GET  /health` - Health check for the sidecar
+- `POST /reverse-image-search?top_k=5` - Upload a product image, get the top-K matching products
+  - Body: `multipart/form-data` with field `file` (image/*)
+  - Response: ranked list of `{ rank, product_id, name, similarity_score, image_url, mongo_id, price_now, woolworths_price, iga_price }`
+- `GET  /images/{filename}` - Serve a locally scraped product image
+- Via Node.js proxy: `POST /api/reverse-image-search` → forwarded to port 8001
+
+
+
+## Reverse Image Search
+
+The reverse image search feature lives in `reverse_image_search/` inside this service. It is a **FastAPI + Uvicorn** app (separate from the Flask `app.py`) that runs on **port 8001** and is **automatically spawned by `node server.js`** — you do not need to start it manually.
+
+### How it works
+
+1. User uploads a product image via the Node.js API (`POST /api/reverse-image-search`)
+2. Node.js proxies the image to the FastAPI sidecar on port 8001
+3. The sidecar extracts a 768-dim embedding using **DINOv2 ViT-B/14** with 5 test-time augmentations
+4. A prebuilt **FAISS HNSW index** (`ml_models/reverse_image_search.faiss`) retrieves the nearest neighbours
+5. Results are deduplicated by product and ranked by similarity score
+6. Node.js enriches the results with live pricing from MongoDB before returning them
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `reverse_image_search/api.py` | FastAPI app — routes, request validation, response models |
+| `reverse_image_search/notebook_runtime.py` | Search engine — DINOv2 embedder, FAISS search, TTA augmentations |
+| `ml_models/reverse_image_search.faiss` | Prebuilt FAISS HNSW index (~33 MB) |
+| `ml_models/reverse_image_search_metadata.json` | Product metadata for each indexed vector (~33 MB) |
+
+### First-run note
+
+On first startup DINOv2 (~330 MB) is downloaded from Torch Hub to `~/.cache/torch/hub/`. This makes the first startup 30–60 seconds slower. Subsequent runs use the local cache.
+
+### Rebuilding the index
+
+The FAISS index is built by the notebooks in `ML/ReverseImageSearch/`. Run those notebooks if you need to re-index products (e.g. after a catalogue update) and copy the output files back to `ml_models/`.
+
+### Testing
+
+```bash
+# Health check (direct to sidecar)
+curl http://localhost:8001/health
+
+# Search by image (direct to sidecar)
+curl -X POST "http://localhost:8001/reverse-image-search?top_k=5" \
+  -F "file=@/path/to/product.jpg"
+
+# Search via Node.js proxy (includes MongoDB price enrichment)
+curl -X POST "http://localhost:8080/api/reverse-image-search" \
+  -F "file=@/path/to/product.jpg"
+```
 
 
 
@@ -342,7 +399,7 @@ curl -X POST http://localhost:5001/api/ml/recommendations \
 ### Test Through Node.js Backend
 
 ```bash
-curl 'http://localhost:3000/api/ml/weekly-specials?limit=4'
+curl 'http://localhost:8080/api/ml/weekly-specials?limit=4'
 ```
 
 ### Using Postman
@@ -443,21 +500,24 @@ where python  # Should show venv\Scripts\python.exe (Windows)
 
 ## Running All Services
 
-For the full application, you need **3 services** running:
+For the full application, you need the following services running:
 
-### Terminal 1: Python ML Service
+### Terminal 1: Python ML Service (Flask — port 5001)
 ```bash
 cd Backend/ml-service
 ./start.sh
 ```
 ✅ Runs on: `http://localhost:5001`
+Provides: OCR, recommendations, weekly specials
 
-### Terminal 2: Node.js Backend
+### Terminal 2: Node.js Backend (port 8080)
 ```bash
 cd Backend
 node server.js
 ```
-✅ Runs on: `http://localhost:3000`
+✅ Runs on: `http://localhost:8080`
+
+> **Note:** `node server.js` automatically spawns the Reverse Image Search FastAPI sidecar on port 8001 before Express starts accepting traffic. You do **not** need a separate terminal for it.
 
 ### Terminal 3: Frontend (if using Expo/React Native)
 ```bash
@@ -562,9 +622,10 @@ taskkill /PID <PID> /F
    ```
 
 **Common ports:**
-- Port 5001: ML Service (default)
+- Port 5001: ML Service / Flask (default)
 - Port 5002: Analytics Service (default)
-- Port 3000: Node.js Backend
+- Port 8001: Reverse Image Search / FastAPI (auto-spawned by Node.js)
+- Port 8080: Node.js Backend
 - Port 5000: Sometimes used by other Flask apps
 
 
@@ -573,14 +634,26 @@ taskkill /PID <PID> /F
 
 ```
 Backend/ml-service/
-├── app.py                    # Flask API server
-├── requirements.txt          # Python dependencies
+├── app.py                    # Flask API server (OCR, recommendations, weekly specials)
+├── requirements.txt          # Python dependencies (Flask + FastAPI/torch/faiss)
 ├── manage.sh                 # Service management script (background)
 ├── start.sh                  # Quick start script (foreground)
 ├── ml_models/
 │   ├── __init__.py
-│   ├── weekly_specials.py    # Simple demo (placeholder)
-│   └── recommendations.py    # Real model integration example
+│   ├── weekly_specials.py                    # Weekly specials logic
+│   ├── recommendations.py                    # Product recommendations (joblib model)
+│   ├── reverse_image_search.faiss            # Prebuilt FAISS HNSW index
+│   └── reverse_image_search_metadata.json   # Product metadata for indexed vectors
+├── reverse_image_search/
+│   ├── __init__.py
+│   ├── api.py                # FastAPI app — routes, validation, response models
+│   └── notebook_runtime.py  # DINOv2 embedder, FAISS search, TTA augmentations
+├── ocr/
+│   ├── __init__.py
+│   ├── extractor.py
+│   ├── matcher.py
+│   ├── parser.py
+│   └── preprocess.py
 └── venv/                     # Virtual environment (gitignored)
 ```
 

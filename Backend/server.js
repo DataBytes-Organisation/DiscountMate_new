@@ -16,6 +16,7 @@ const shoppingListRoutes = require('./src/routers/shopping-list.router');
 const mlRoutes = require('./src/routers/ml.router');
 const analyticsRoutes = require('./src/routers/analytics.router');
 const reverseImageSearchRoutes = require('./src/routers/reverse-image-search.router');
+const { startReverseImageSearch, stopReverseImageSearch } = require('./src/services/reverseImageSearchProcess');
 
 if (process.env.NODE_ENV !== 'production') {
    require('dotenv').config();
@@ -140,6 +141,13 @@ async function startServer() {
       process.exit(1);
    }
 
+   try {
+      await startReverseImageSearch();
+   } catch (err) {
+      console.error('Failed to start ReverseImageSearch sidecar:', err.message);
+      process.exit(1);
+   }
+
    app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
    });
@@ -171,3 +179,11 @@ app.use((err, req, res, next) => {
 
 // Start the server
 startServer();
+
+function shutdown(signal) {
+   console.log(`Received ${signal}. Shutting down...`);
+   stopReverseImageSearch();
+   process.exit(0);
+}
+process.on('SIGINT',  () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
