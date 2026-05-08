@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, ScrollView, useWindowDimensions } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useShoppingLists } from "./ShoppingListsContext";
 import EditShoppingListModal from "../../components/my-lists/EditShoppingListModal";
 import MyListsHeroSection from "../../components/my-lists/MyListsHeroSection";
@@ -12,6 +13,7 @@ import type { ShoppingList } from "../../types/ShoppingList";
 
 export default function MyListsScreen() {
    const { width } = useWindowDimensions();
+   const router = useRouter();
    const { listId, create } = useLocalSearchParams<{ listId?: string; create?: string }>();
    const wide = width >= 900;
 
@@ -75,7 +77,12 @@ export default function MyListsScreen() {
       return columns;
    }, [sortedLists, listColumnCount]);
 
-   const openCreate = () => {
+   const openCreate = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+         router.push("/(auth)/register");
+         return;
+      }
       setEditingList(null);
       setModalOpen(true);
    };

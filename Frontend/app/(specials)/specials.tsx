@@ -10,6 +10,7 @@ import {
   Dimensions,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import FooterSection from "../../components/home/FooterSection";
 
 const { width } = Dimensions.get("window");
 const isDesktop = width >= 1100;
@@ -543,23 +544,6 @@ export default function SpecialsScreen() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
         <View style={styles.container}>
-          <View style={styles.topTabs}>
-            {FILTER_CHIPS.map((chip) => {
-              const active = chip === activeChip;
-              return (
-                <Pressable
-                  key={chip}
-                  onPress={() => setActiveChip(chip)}
-                  style={[styles.topChip, active && styles.topChipActive]}
-                >
-                  <Text style={[styles.topChipText, active && styles.topChipTextActive]}>
-                    {chip}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-
           <View style={styles.searchRow}>
             <View style={styles.searchBox}>
               <Ionicons name="search" size={18} color="#9ca3af" />
@@ -577,25 +561,27 @@ export default function SpecialsScreen() {
             </Pressable>
           </View>
 
-          <Text style={styles.pageEyebrow}>🔥 This Week’s Specials</Text>
-          <Text style={styles.pageTitle}>Current Specials & Discounts</Text>
-          <Text style={styles.pageDescription}>
-            Browse the latest deals across all major retailers. Updated daily with
-            new specials and exclusive offers.
-          </Text>
+          <View style={styles.heroIntroCard}>
+            <Text style={styles.pageEyebrow}>🔥 This Week’s Specials</Text>
+            <Text style={styles.pageTitle}>Current Specials & Discounts</Text>
+            <Text style={styles.pageDescription}>
+              Browse the latest deals across all major retailers. Updated daily with
+              new specials and exclusive offers.
+            </Text>
 
-          <View style={styles.statsRow}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>847</Text>
-              <Text style={styles.statLabel}>Active Specials</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={[styles.statValue, { color: "#f59e0b" }]}>$42.80</Text>
-              <Text style={styles.statLabel}>Avg Savings</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>3</Text>
-              <Text style={styles.statLabel}>Retailers</Text>
+            <View style={styles.statsRow}>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>847</Text>
+                <Text style={styles.statLabel}>Active Specials</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={[styles.statValue, { color: "#f59e0b" }]}>$42.80</Text>
+                <Text style={styles.statLabel}>Avg Savings</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>3</Text>
+                <Text style={styles.statLabel}>Retailers</Text>
+              </View>
             </View>
           </View>
 
@@ -828,67 +814,9 @@ export default function SpecialsScreen() {
             </View>
           </View>
 
-          <View style={styles.footer}>
-            <View style={styles.footerColLarge}>
-              <View style={styles.brandRow}>
-                <View style={styles.brandBadge}>
-                  <Ionicons name="pricetag" size={14} color="#fff" />
-                </View>
-                <Text style={styles.footerBrand}>DiscountMate</Text>
-              </View>
-              <Text style={styles.footerText}>
-                Compare prices across major retailers and never miss a deal. Save
-                money on your grocery shopping with Australia’s leading price
-                comparison platform.
-              </Text>
-              <View style={styles.socialRow}>
-                {["logo-facebook", "logo-twitter", "logo-instagram", "logo-linkedin"].map(
-                  (icon) => (
-                    <View key={icon} style={styles.socialIcon}>
-                      <Ionicons name={icon as any} size={14} color="#e5e7eb" />
-                    </View>
-                  )
-                )}
-              </View>
-            </View>
-
-            <View style={styles.footerCol}>
-              <Text style={styles.footerHeading}>Quick Links</Text>
-              {["Home", "Compare Prices", "Specials", "My Lists", "Profile"].map((item) => (
-                <Text key={item} style={styles.footerLink}>
-                  {item}
-                </Text>
-              ))}
-            </View>
-
-            <View style={styles.footerCol}>
-              <Text style={styles.footerHeading}>Support</Text>
-              {["Help Center", "Contact Us", "FAQs", "Privacy Policy", "Terms of Service"].map(
-                (item) => (
-                  <Text key={item} style={styles.footerLink}>
-                    {item}
-                  </Text>
-                )
-              )}
-            </View>
-
-            <View style={styles.footerCol}>
-              <Text style={styles.footerHeading}>Newsletter</Text>
-              <Text style={styles.footerText}>
-                Get weekly updates on the best deals directly to your inbox.
-              </Text>
-              <View style={styles.newsletterRow}>
-                <TextInput
-                  placeholder="Your email"
-                  placeholderTextColor="#9ca3af"
-                  style={styles.newsletterInput}
-                />
-                <Pressable style={styles.newsletterButton}>
-                  <Ionicons name="arrow-forward" size={14} color="#fff" />
-                </Pressable>
-              </View>
-            </View>
-          </View>
+        </View>
+        <View style={{ marginTop: 24 }}>
+          <FooterSection disableEdgeOffset />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -907,7 +835,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8faf8",
   },
   content: {
-    paddingBottom: 40,
+    paddingBottom: 0,
   },
   container: {
     width: "100%",
@@ -979,48 +907,51 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 14,
   },
+  heroIntroCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    padding: 20,
+    marginBottom: 20,
+  },
   pageEyebrow: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "700",
     color: "#6b7280",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   pageTitle: {
-    fontSize: 42,
-    lineHeight: 48,
+    fontSize: 44,
+    lineHeight: 50,
     fontWeight: "800",
     color: "#111827",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   pageDescription: {
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 14,
+    lineHeight: 22,
     color: "#6b7280",
     maxWidth: 760,
-    marginBottom: 20,
+    marginBottom: 18,
   },
   statsRow: {
     flexDirection: "row",
-    gap: 14,
+    gap: 12,
     flexWrap: "wrap",
-    marginBottom: 24,
+    marginBottom: 2,
   },
   statCard: {
     minWidth: 150,
-    backgroundColor: "#fff",
-    borderRadius: 16,
+    backgroundColor: "#f9fafb",
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: "#e5e7eb",
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.03,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
   },
   statValue: {
-    fontSize: 30,
+    fontSize: 36,
     fontWeight: "800",
     color: "#111827",
   },
