@@ -17,6 +17,10 @@ const mlRoutes = require('./src/routers/ml.router');
 const analyticsRoutes = require('./src/routers/analytics.router');
 const reverseImageSearchRoutes = require('./src/routers/reverse-image-search.router');
 const { startReverseImageSearch, stopReverseImageSearch } = require('./src/services/reverseImageSearchProcess');
+const dashboardRoutes = require('./src/routers/dashboard.router');
+const notificationRoutes = require('./src/routers/notification.router');
+const alertSegmentRoutes = require('./src/routers/alertSegment.router');
+const listRoutes = require('./src/routers/list.router');
 
 if (process.env.NODE_ENV !== 'production') {
    require('dotenv').config({ path: path.join(__dirname, '.env') });
@@ -56,7 +60,7 @@ app.use(helmet({
 // CORS Configuration
 app.use(cors({
     origin: "*",
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true
 }));
 
@@ -165,6 +169,10 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/ml', mlRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/reverse-image-search', reverseImageSearchRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/alert-segments', alertSegmentRoutes);
+app.use('/api/lists', listRoutes);
 
 // Root route
 app.get('/', (req, res) => {

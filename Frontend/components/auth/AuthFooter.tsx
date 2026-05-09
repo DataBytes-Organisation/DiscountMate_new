@@ -1,8 +1,18 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
+import { useRouter } from "expo-router";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
 export default function AuthFooter() {
+   const router = useRouter();
+   const footerLinks = [
+      { label: "Privacy Policy", route: "/privacy-terms?tab=privacy" },
+      { label: "Terms & Conditions", route: "/privacy-terms?tab=terms" },
+      { label: "FAQs", route: "/contact" },
+      { label: "Contact Us", route: "/contact" },
+      { label: "Help Center", route: "/contact" },
+   ];
+
    return (
       <View className="mt-10 bg-dark px-6 pt-8 pb-6">
          <View className="w-full max-w-5xl self-center gap-5">
@@ -28,10 +38,13 @@ export default function AuthFooter() {
                   © 2024 DiscountMate. All rights reserved.
                </Text>
                <View className="flex-row flex-wrap items-center gap-4">
-                  {["Privacy", "Terms", "Support"].map((item) => (
-                     <Pressable key={item}>
+                  {footerLinks.map((item) => (
+                     <Pressable
+                        key={item.label}
+                        onPress={() => router.push(item.route as any)}
+                     >
                         <Text className="text-[11px] text-gray-300">
-                           {item}
+                           {item.label}
                         </Text>
                      </Pressable>
                   ))}
@@ -41,4 +54,3 @@ export default function AuthFooter() {
       </View>
    );
 }
-
