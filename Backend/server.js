@@ -19,7 +19,7 @@ const reverseImageSearchRoutes = require('./src/routers/reverse-image-search.rou
 const { startReverseImageSearch, stopReverseImageSearch } = require('./src/services/reverseImageSearchProcess');
 
 if (process.env.NODE_ENV !== 'production') {
-   require('dotenv').config();
+   require('dotenv').config({ path: path.join(__dirname, '.env') });
 }
 
 const setupSwagger = require('./src/config/swagger');

@@ -10,7 +10,7 @@ import os
 os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 
 import io
-from pathlib import Path
+from contextlib import asynccontextmanager
 from typing import Optional
 
 import cv2
@@ -19,18 +19,26 @@ from PIL import Image
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from notebook_runtime import (
-    INDEX_PATH,
     METADATA_PATH,
-    SCRAPED_DIR,
     load_engine,
     search_image_array,
 )
 
-app = FastAPI(title="DiscountMate Reverse Image Search", version="1.0.0")
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if not METADATA_PATH.exists():
+        raise RuntimeError(f"Metadata not found at '{METADATA_PATH}'.")
+    load_engine()
+    yield
+
+
+app = FastAPI(title="DiscountMate Reverse Image Search", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,16 +46,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-if not INDEX_PATH.exists():
-    raise RuntimeError(f"FAISS index not found at '{INDEX_PATH}'.")
-if not METADATA_PATH.exists():
-    raise RuntimeError(f"Metadata not found at '{METADATA_PATH}'.")
-
-
-@app.on_event("startup")
-async def _preload_engine() -> None:
-    load_engine()
 
 
 class SearchResult(BaseModel):
@@ -76,12 +74,16 @@ async def reverse_image_search(
     file: UploadFile = File(...),
     top_k: int = 5,
 ) -> list[SearchResult]:
+    if not (1 <= top_k <= 20):
+        raise HTTPException(status_code=400, detail="top_k must be between 1 and 20.")
     if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Uploaded file must be an image.")
 
-    data = await file.read()
+    data = await file.read(MAX_UPLOAD_BYTES + 1)
     if not data:
         raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+    if len(data) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="Image too large (max 10 MB).")
 
     try:
         pil_img = Image.open(io.BytesIO(data)).convert("RGB")
@@ -112,15 +114,6 @@ async def reverse_image_search(
         )
         for r in hits
     ]
-
-
-@app.get("/images/{filename}")
-async def serve_image(filename: str) -> FileResponse:
-    safe_name = Path(filename).name  # strip any directory traversal
-    image_path = SCRAPED_DIR / safe_name
-    if not image_path.exists():
-        raise HTTPException(status_code=404, detail="Image not found.")
-    return FileResponse(str(image_path))
 
 
 @app.get("/health")

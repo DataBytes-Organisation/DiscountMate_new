@@ -1,8 +1,8 @@
 """
-Query-only runtime extracted from coles_reverse_image_search_Official_2.ipynb.
+Query-only runtime extracted from the reverse-image-search Jupyter notebook.
 
-Loads the prebuilt FAISS index and metadata in this directory and exposes
-two entrypoints for reverse-image search:
+Loads reverse-image-search metadata plus the FAISS index cached from GCS, and
+exposes two entrypoints for reverse-image search:
 
     search_image_file(image_path, top_k=3)    -> list[dict]
     search_image_array(bgr_image,  top_k=3)   -> list[dict]
@@ -20,7 +20,11 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Optional, cast
+
+import google.auth
+from dotenv import load_dotenv
+from google.cloud.storage import Client as StorageClient  # pyright: ignore[reportMissingImports]
 
 # torch MUST be imported before faiss (OpenMP runtime claim — see notebook).
 import torch
@@ -37,10 +41,81 @@ from PIL import Image
 # Paths (local project root)
 # ---------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent
-SCRAPED_DIR = BASE_DIR / "Scraped_images"
-INDEX_PATH = BASE_DIR.parent / "ml_models" / "reverse_image_search.faiss"
 METADATA_PATH = BASE_DIR.parent / "ml_models" / "reverse_image_search_metadata.json"
 TEST_IMAGE_DIR = BASE_DIR / "Test_Image"
+
+# Allow direct `uvicorn api:app` runs to use Backend/.env too. When spawned by
+# node server.js, dotenv is already loaded there and these values are preserved.
+load_dotenv(BASE_DIR.parent.parent / ".env", override=False)
+
+# ---------------------------------------------------------------------------
+# GCS config — override via env vars if needed
+# ---------------------------------------------------------------------------
+FAISS_BUCKET_NAME = os.environ.get("FAISS_BUCKET_NAME", "discountmate-ml-models")
+FAISS_OBJECT_NAME = os.environ.get("FAISS_OBJECT_NAME", "reverse_image_search.faiss")
+FAISS_GCP_PROJECT = (
+    os.environ.get("FAISS_GCP_PROJECT")
+    or os.environ.get("GOOGLE_CLOUD_PROJECT")
+    or os.environ.get("GCLOUD_PROJECT")
+    or os.environ.get("GCP_PROJECT")
+)
+FAISS_QUOTA_PROJECT = os.environ.get("FAISS_QUOTA_PROJECT") or FAISS_GCP_PROJECT
+
+
+def _resolve_faiss_local_path() -> Path:
+    if override := os.environ.get("LOCAL_FAISS_PATH"):
+        return Path(override)
+    if _is_gcp_serverless():
+        return Path("/tmp") / FAISS_OBJECT_NAME
+    return BASE_DIR.parent / "ml_models" / FAISS_OBJECT_NAME
+
+
+def _is_gcp_serverless() -> bool:
+    return bool(os.environ.get("K_SERVICE") or os.environ.get("GAE_SERVICE"))
+
+
+INDEX_PATH = _resolve_faiss_local_path()
+
+
+def load_faiss_index_from_gcs() -> Path:
+    """Download the FAISS index from GCS if not already cached locally."""
+    if INDEX_PATH.exists():
+        return INDEX_PATH
+    INDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = INDEX_PATH.with_name(f".{INDEX_PATH.name}.download")
+    try:
+        if not FAISS_GCP_PROJECT and not _is_gcp_serverless():
+            raise RuntimeError(
+                "GCP project is not configured for local Google Cloud Storage access."
+            )
+        credentials, detected_project = google.auth.default(
+            scopes=["https://www.googleapis.com/auth/devstorage.read_only"],
+            quota_project_id=FAISS_QUOTA_PROJECT,
+        )
+        client = StorageClient(
+            project=FAISS_GCP_PROJECT or detected_project,
+            credentials=credentials,
+        )
+        bucket = client.bucket(FAISS_BUCKET_NAME)
+        blob = bucket.blob(FAISS_OBJECT_NAME)
+        print(
+            f"Downloading FAISS index from "
+            f"gs://{FAISS_BUCKET_NAME}/{FAISS_OBJECT_NAME} to {INDEX_PATH}"
+        )
+        blob.download_to_filename(str(temp_path))
+        os.replace(temp_path, INDEX_PATH)
+    except Exception as exc:
+        if temp_path.exists():
+            temp_path.unlink()
+        raise RuntimeError(
+            f"Failed to download FAISS index from "
+            f"gs://{FAISS_BUCKET_NAME}/{FAISS_OBJECT_NAME}: {exc}. "
+            "For local development, set FAISS_GCP_PROJECT or GOOGLE_CLOUD_PROJECT "
+            "to your GCP project ID, then run "
+            "`gcloud config set project <project-id>` and "
+            "`gcloud auth application-default set-quota-project <project-id>`."
+        ) from exc
+    return INDEX_PATH
 
 # ---------------------------------------------------------------------------
 # Config — mirrors notebook defaults that produced the shipped index.
@@ -117,7 +192,7 @@ def _patch_cached_dinov2_for_python39() -> bool:
 
 def load_dinov2_backbone() -> nn.Module:
     try:
-        return torch.hub.load("facebookresearch/dinov2", "dinov2_vitb14")
+        return cast(nn.Module, torch.hub.load("facebookresearch/dinov2", "dinov2_vitb14"))
     except TypeError as exc:
         if sys.version_info >= (3, 10) or "unsupported operand type(s) for |" not in str(exc):
             raise
@@ -132,7 +207,7 @@ def load_dinov2_backbone() -> nn.Module:
             if name == "dinov2" or name.startswith("dinov2."):
                 sys.modules.pop(name, None)
 
-        return torch.hub.load("facebookresearch/dinov2", "dinov2_vitb14")
+        return cast(nn.Module, torch.hub.load("facebookresearch/dinov2", "dinov2_vitb14"))
 
 
 _PREPROCESS_EFFNET = transforms.Compose([
@@ -198,6 +273,8 @@ def augment_image(bgr: np.ndarray, augment: str) -> np.ndarray:
         return cv2.flip(img, 1)
     if augment == "centre_zoom":
         h, w = img.shape[:2]
+        if h < 4 or w < 4:
+            return img
         cy, cx = h // 2, w // 2
         ch, cw = int(h * 0.7), int(w * 0.7)
         y1, x1 = cy - ch // 2, cx - cw // 2
@@ -222,23 +299,32 @@ def load_engine(device: Optional[str] = None) -> dict:
 
     dev = device or DEVICE
 
-    if not INDEX_PATH.exists():
-        raise FileNotFoundError(
-            f"FAISS index not found at '{INDEX_PATH}'. "
-            "Expected a prebuilt index alongside the runtime module."
-        )
     if not METADATA_PATH.exists():
         raise FileNotFoundError(
             f"Metadata file not found at '{METADATA_PATH}'. "
             "Expected a prebuilt metadata file alongside the runtime module."
         )
 
-    index = faiss.read_index(str(INDEX_PATH))
+    resolved_index = load_faiss_index_from_gcs()
+    try:
+        index = faiss.read_index(str(resolved_index))
+    except Exception as exc:
+        raise RuntimeError(
+            f"Failed to load FAISS index from '{resolved_index}': {exc}. "
+            "Delete the cached file and restart to download a fresh copy."
+        ) from exc
     if index.d != VECTOR_DIM:
         raise ValueError(
             f"Index dimension ({index.d}) does not match BACKBONE "
             f"{BACKBONE!r} (expected {VECTOR_DIM}). "
             "Rebuild the index or change BACKBONE to match."
+        )
+    if index.ntotal == 0:
+        print(
+            "[ReverseImageSearch] WARNING: FAISS index contains 0 vectors — "
+            "all searches will return empty results. "
+            "Upload the correct index to GCS and delete the local cache to re-download.",
+            file=sys.stderr,
         )
     with open(METADATA_PATH, encoding="utf-8") as f:
         metadata = json.load(f)

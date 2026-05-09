@@ -4,7 +4,6 @@ import SidebarFilters from "./SidebarFilters";
 import ProductGrid from "../home/ProductGrid";
 import ProductCard, { Product } from "../home/ProductCard";
 import { useLocalSearchParams } from "expo-router";
-import { REVERSE_IMAGE_SEARCH_API_URL } from "@/constants/Api";
 import { ImageSearchResult, useImageSearch } from "../../app/(tabs)/ImageSearchContext";
 
 function buildImageSearchImageUrl(imageUrl: string | null | undefined): string | null {
@@ -13,14 +12,7 @@ function buildImageSearchImageUrl(imageUrl: string | null | undefined): string |
    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
       return imageUrl;
    }
-   // Relative path returned by the Node.js normalisation ("/images/filename.jpg")
-   if (imageUrl.startsWith("/images/")) {
-      return `${REVERSE_IMAGE_SEARCH_API_URL}${imageUrl}`;
-   }
-   // Legacy bare filename fallback
-   const filename = imageUrl.split("/").pop();
-   if (!filename) return null;
-   return `${REVERSE_IMAGE_SEARCH_API_URL}/images/${encodeURIComponent(decodeURIComponent(filename))}`;
+   return null;
 }
 
 function mapImageResultToProduct(result: ImageSearchResult): Product {

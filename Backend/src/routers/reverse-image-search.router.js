@@ -1,7 +1,5 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const { ObjectId } = require('mongodb');
 const { getDb } = require('../config/database');
 
@@ -12,28 +10,9 @@ const upload = multer({
 });
 
 const DEFAULT_SERVICE_URL = 'http://localhost:8001';
-const DEFAULT_SCRAPED_IMAGES_DIR = path.resolve(
-   __dirname,
-   '../../../ML/ReverseImageSearch/Scraped_images'
-);
 
 function getServiceUrl() {
    return (process.env.REVERSE_IMAGE_SEARCH_SERVICE_URL || DEFAULT_SERVICE_URL).replace(/\/+$/, '');
-}
-
-function getScrapedImagesDir() {
-   return process.env.REVERSE_IMAGE_SEARCH_IMAGES_DIR || DEFAULT_SCRAPED_IMAGES_DIR;
-}
-
-async function fetchLatestPrice(db, productCode, storeChain) {
-   if (!productCode) return null;
-   const doc = await db.collection('product_pricings').findOne(
-      { product_code: productCode, store_chain: storeChain },
-      { sort: { created_at: -1 }, projection: { price: 1 } }
-   );
-   if (!doc || doc.price == null) return null;
-   const p = Number.parseFloat(String(doc.price));
-   return Number.isFinite(p) ? `$${p.toFixed(2)}` : null;
 }
 
 function normaliseTopK(value) {
@@ -50,12 +29,7 @@ function normaliseImageUrl(imageUrl) {
    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
       return imageUrl;
    }
-   // Legacy local path (Coles scraper): strip to filename only
-   const filename = imageUrl.split('/').pop();
-   if (!filename) {
-      return imageUrl;
-   }
-   return `/images/${encodeURIComponent(filename)}`;
+   return null;
 }
 
 router.get('/health', async (_req, res) => {
@@ -94,21 +68,6 @@ router.get('/images/proxy', async (req, res) => {
    } catch (error) {
       return res.status(502).json({ message: 'Could not fetch image', detail: error.message });
    }
-});
-
-router.get('/images/:filename', async (req, res) => {
-   const filename = path.basename(req.params.filename);
-   const imagePath = path.join(getScrapedImagesDir(), filename);
-
-   if (!fs.existsSync(imagePath)) {
-      return res.status(404).json({
-         message: 'Reverse image search image not found in Scraped_images',
-      });
-   }
-
-   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-   res.setHeader('Cache-Control', 'public, max-age=3600');
-   return res.sendFile(imagePath);
 });
 
 router.post('/', upload.single('file'), async (req, res) => {
