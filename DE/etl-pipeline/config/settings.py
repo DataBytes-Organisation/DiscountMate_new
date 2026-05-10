@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import quote
 
 import yaml
 from pydantic import BaseModel, Field
@@ -24,11 +25,28 @@ class AppSettings(BaseSettings):
     postgres_user: str = Field(default="postgres", alias="POSTGRES_USER")
     postgres_password: str = Field(default="postgres", alias="POSTGRES_PASSWORD")
     postgres_schema: str = Field(default="silver", alias="POSTGRES_SCHEMA")
+    duckdb_home_directory: str = Field(
+        default="/tmp/discountmate-duckdb/home",
+        alias="DUCKDB_HOME_DIRECTORY",
+    )
+    duckdb_extension_directory: str = Field(
+        default="/tmp/discountmate-duckdb/extensions",
+        alias="DUCKDB_EXTENSION_DIRECTORY",
+    )
 
     def postgres_url(self) -> str:
         return (
             f"postgresql+psycopg://{self.postgres_user}:{self.postgres_password}"
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_database}"
+        )
+
+    def postgres_duckdb_uri(self) -> str:
+        encoded_user = quote(self.postgres_user, safe="")
+        encoded_password = quote(self.postgres_password, safe="")
+        encoded_database = quote(self.postgres_database, safe="")
+        return (
+            f"postgresql://{encoded_user}:{encoded_password}"
+            f"@{self.postgres_host}:{self.postgres_port}/{encoded_database}"
         )
 
 

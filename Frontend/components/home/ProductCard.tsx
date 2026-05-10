@@ -42,13 +42,8 @@ function getTrendColorClass(tone: TrendTone): string {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const router = useRouter();
    const { addToCart } = useCart();
-   const { id, name, subtitle, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
+   const { id, name, subtitle, category, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
    const [imageError, setImageError] = React.useState(false);
-
-   // Find Coles retailer
-   const colesRetailer = retailers.find(r =>
-      r.storeKey === "coles" || r.name?.toLowerCase() === "coles"
-   ) || retailers[0];
 
    // Use retailers as-is for display
    const normalizedRetailers: Retailer[] = retailers;
@@ -59,31 +54,59 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const trendColorClass = getTrendColorClass(trendTone);
 
    const handleOpenDetails = () => {
-      // Navigate to the dedicated product detail route: app/(product)/product/[id].tsx
-      // Pass only the ID; product page fetches the rest from the API
       router.push({
-         pathname: "/product/[id]",
+         pathname: "/(product)/product/[id]",
          params: { id },
       });
    };
 
    const handleAddToCart = () => {
-      const retailerWithPrice =
-         retailers.find((r) => {
-            if (!r.price || r.price === "-") return false;
-            const n = parseFloat(r.price.replace(/[^0-9.]/g, ""));
-            return !isNaN(n) && n > 0;
-         }) ?? colesRetailer;
+      const parseRetailerPrice = (priceText?: string) => {
+         if (!priceText || priceText === "-") return null;
+         const parsed = parseFloat(priceText.replace(/[^0-9.]/g, ""));
+         return !isNaN(parsed) && parsed > 0 ? parsed : null;
+      };
 
-      const price = retailerWithPrice?.price
-         ? parseFloat(retailerWithPrice.price.replace(/[^0-9.]/g, ""))
-         : 0;
+      const pricedRetailers = retailers
+         .map((retailer) => ({
+            retailer,
+            price: parseRetailerPrice(retailer.price),
+         }))
+         .filter(
+            (entry): entry is { retailer: Retailer; price: number } =>
+               entry.price != null
+         );
+
+      const cheapestRetailer =
+         pricedRetailers.length > 0
+            ? pricedRetailers.reduce((lowest, current) =>
+               current.price < lowest.price ? current : lowest
+            )
+            : null;
+
+      const retailerPriceMap = retailers.reduce<{
+         coles?: number;
+         woolworths?: number;
+         iga?: number;
+      }>((acc, retailer) => {
+         const parsedPrice = parseRetailerPrice(retailer.price);
+         if (parsedPrice == null) return acc;
+
+         const key = retailer.storeKey?.toLowerCase();
+         if (key === "coles") acc.coles = parsedPrice;
+         if (key === "woolworths") acc.woolworths = parsedPrice;
+         if (key === "iga") acc.iga = parsedPrice;
+         return acc;
+      }, {});
 
       addToCart({
          id: id,
          name: name,
-         price: price,
-         store: retailerWithPrice?.name || "Coles",
+         price: cheapestRetailer?.price ?? 0,
+         store: cheapestRetailer?.retailer.name || "Unknown retailer",
+         image: link_image ?? undefined,
+         category,
+         retailerPrices: retailerPriceMap,
       });
    };
 

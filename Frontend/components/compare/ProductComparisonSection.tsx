@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { useRouter } from "expo-router";
 import { useCart } from "../../app/(tabs)/CartContext";
 
 type StoreKey = "coles" | "woolworths" | "aldi";
@@ -15,11 +16,13 @@ type ProductRow = {
    id: string;
    name: string;
    subtitle: string;
+   category?: string;
    imageUrl?: string; // optional, fallback icon if missing
    stores: Record<StoreKey, StorePrice>;
 };
 
 export default function ProductComparisonSection() {
+   const router = useRouter();
    const [searchQuery, setSearchQuery] = useState("");
    const { addToCart } = useCart();
 
@@ -28,6 +31,7 @@ export default function ProductComparisonSection() {
          id: "1",
          name: "Milk Full Cream 2L",
          subtitle: "Fresh dairy milk",
+         category: "Dairy & fridge",
          stores: {
             coles: { price: 3.8, oldPrice: 5.0, unitPrice: "$1.90/L" },
             woolworths: { price: 4.2, oldPrice: 5.0, unitPrice: "$2.10/L" },
@@ -38,6 +42,7 @@ export default function ProductComparisonSection() {
          id: "2",
          name: "White Bread 700g",
          subtitle: "Soft white sandwich",
+         category: "Bakery",
          stores: {
             coles: { price: 2.5, oldPrice: 3.35, unitPrice: "$3.57/kg" },
             woolworths: { price: 2.8, oldPrice: 3.2, unitPrice: "$4.00/kg" },
@@ -48,6 +53,7 @@ export default function ProductComparisonSection() {
          id: "3",
          name: "Cheddar Cheese Block 500g",
          subtitle: "Tasty mature cheddar",
+         category: "Dairy & fridge",
          stores: {
             coles: { price: 7.5, oldPrice: 9.0, unitPrice: "$15.00/kg" },
             woolworths: { price: 6.8, oldPrice: 9.1, unitPrice: "$13.60/kg" },
@@ -58,6 +64,7 @@ export default function ProductComparisonSection() {
          id: "4",
          name: "Coffee Beans 1kg",
          subtitle: "Premium arabica",
+         category: "Pantry & dry goods",
          stores: {
             coles: { price: 22.0, oldPrice: 26.5, unitPrice: "$22.00/kg" },
             woolworths: { price: 21.5, oldPrice: 26.0, unitPrice: "$21.50/kg" },
@@ -100,10 +107,19 @@ export default function ProductComparisonSection() {
             <View className="flex-row items-center justify-between mb-4">
                <Text className="text-2xl font-bold text-gray-900">Compare Products</Text>
 
-               <Pressable className="flex-row items-center gap-2 px-4 py-2.5 rounded-xl border border-primary_green bg-white">
-                  <FontAwesome6 name="plus" size={14} color="#10B981" />
-                  <Text className="text-primary_green font-semibold text-sm">Add Product to Compare</Text>
-               </Pressable>
+               <View className="flex-row items-center gap-3">
+                  <Pressable
+                     className="flex-row items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white"
+                     onPress={() => router.push("/(tabs)/compare-powerbi")}
+                  >
+                     <FontAwesome6 name="chart-column" size={14} color="#374151" />
+                     <Text className="text-gray-700 font-semibold text-sm">View Power BI Report</Text>
+                  </Pressable>
+                  <Pressable className="flex-row items-center gap-2 px-4 py-2.5 rounded-xl border border-primary_green bg-white">
+                     <FontAwesome6 name="plus" size={14} color="#10B981" />
+                     <Text className="text-primary_green font-semibold text-sm">Add Product to Compare</Text>
+                  </Pressable>
+               </View>
             </View>
 
             {/* Search */}
@@ -265,6 +281,13 @@ export default function ProductComparisonSection() {
                                           name: row.name,
                                           price: best.bestPrice,
                                           store: storeLabel(best.bestStore),
+                                          image: row.imageUrl,
+                                          category: row.category,
+                                          retailerPrices: {
+                                             coles: row.stores.coles.price,
+                                             woolworths: row.stores.woolworths.price,
+                                             iga: row.stores.aldi.price,
+                                          },
                                        });
                                     }}
                                  >
