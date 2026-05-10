@@ -1,159 +1,278 @@
-// app/(tabs)/profile.tsx
-import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import ProfileHeaderCard from "../../components/profile/ProfileHeaderCard";
+import UserHubSidebar from "../../components/common/UserHubSidebar";
 import ProfileBasicInfoSection from "../../components/profile/ProfileBasicInfoSection";
-import ProfileShoppingListsSection from "../../components/profile/ProfileShoppingListsSection";
-import ProfilePriceAlertsSection from "../../components/profile/ProfilePriceAlertsSection";
-import ProfilePreferredStoresSection from "../../components/profile/ProfilePreferredStoresSection";
-import ProfileNotificationPreferencesSection from "../../components/profile/ProfileNotificationPreferencesSection";
-import ProfileDietaryPreferencesSection from "../../components/profile/ProfileDietaryPreferencesSection";
-import ProfileShoppingHistorySection from "../../components/profile/ProfileShoppingHistorySection";
-
-import ProfileSavingsOverviewCard from "../../components/profile/ProfileSavingsOverviewCard";
-import ProfileRecentActivityCard from "../../components/profile/ProfileRecentActivityCard";
-import ProfileAchievementsCard from "../../components/profile/ProfileAchievementsCard";
-import ProfileAccountActionsCard from "../../components/profile/ProfileAccountActionsCard";
-import ProfileHelpCard from "../../components/profile/ProfileHelpCard";
-import FooterSection from "../../components/home/FooterSection";
-import { API_URL } from "../../constants/Api";
+import ProfilePasswordSection from "../../components/profile/ProfilePasswordSection";
+import ProfileDeleteAccountSection from "../../components/profile/ProfileDeleteAccountSection";
+import {
+   changePassword,
+   deleteAccount,
+   fetchProfile,
+   saveProfile,
+   uploadProfileImage,
+} from "../../services/profile";
+import { useUserProfile } from "../../context/UserProfileContext";
 import { UserProfile } from "../../types/UserProfile";
+import { SESSION_EXPIRED_MESSAGE } from "../../utils/authSession";
 
-const ProfileHeader = ProfileHeaderCard as React.ComponentType<{
-   user?: UserProfile | null;
-   loading?: boolean;
-}>;
+const FALLBACK_USER: UserProfile = {
+   firstName: "",
+   lastName: "",
+   email: "",
+   phoneNumber: "",
+   address: "",
+   postcode: "",
+   memberSince: "",
+   subscriptionPlan: "free",
+   totalSaved: 0,
+   shoppingTrips: 0,
+   activeAlerts: 0,
+   shoppingLists: 0,
+   profileImage: null,
+};
 
-const ProfileBasicInfo = ProfileBasicInfoSection as React.ComponentType<{
-   user?: UserProfile | null;
-   loading?: boolean;
-}>;
+function getDisplayName(user: UserProfile) {
+   return `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || "DiscountMate Member";
+}
 
-export default function ProfilePage() {
-   const [user, setUser] = useState<UserProfile | null>(null);
-   const [loading, setLoading] = useState<boolean>(true);
+export default function ProfileScreen() {
+   const router = useRouter();
+   const { setCachedProfile } = useUserProfile();
+   const [user, setUser] = useState<UserProfile>(FALLBACK_USER);
+   const [loading, setLoading] = useState(true);
+   const [saving, setSaving] = useState(false);
+   const [uploadingImage, setUploadingImage] = useState(false);
+   const [changingPassword, setChangingPassword] = useState(false);
+   const [deletingAccount, setDeletingAccount] = useState(false);
    const [error, setError] = useState<string | null>(null);
+   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
    useEffect(() => {
-      let isMounted = true;
+      let active = true;
 
-      const fetchProfile = async () => {
+      const loadProfile = async () => {
          setLoading(true);
          setError(null);
          try {
-            const token = await AsyncStorage.getItem("authToken");
-            if (!token) {
-               throw new Error("You need to log in to view your profile.");
-            }
-
-            const response = await fetch(`${API_URL}/users/profile`, {
-               headers: { Authorization: `Bearer ${token}` },
-            });
-
-            const data = await response.json();
-            if (!response.ok) {
-               const message =
-                  typeof data === "string"
-                     ? data
-                     : data?.message || "Unable to load profile";
-               throw new Error(message);
-            }
-
-            const profile: UserProfile = {
-               firstName: data.user_fname ?? "",
-               lastName: data.user_lname ?? "",
-               email: data.email ?? "",
-               phoneNumber: data.phone_number ?? "",
-               phoneVerified: Boolean(data.phone_number),
-               address: data.address ?? "",
-               postcode: data.address ?? "",
-               memberSince: data.memberSince,
-               profileImage:
-                  data?.profile_image?.content &&
-                     typeof data.profile_image.content === "string"
-                     ? `data:${data.profile_image.mime};base64,${data.profile_image.content}`
-                     : null,
-               totalSaved: data.totalSaved ?? 0,
-               shoppingTrips: data.shoppingTrips ?? 0,
-               activeAlerts: data.activeAlerts ?? 0,
-               shoppingLists: data.shoppingLists ?? 0,
-            };
-
-            if (isMounted) {
-               setUser(profile);
+            const data = await fetchProfile();
+            if (active) {
+               setUser(data);
+               setCachedProfile(data);
             }
          } catch (err: any) {
-            if (isMounted) {
-               setError(err.message || "Something went wrong.");
+            if (active) {
+               const message = err?.message || "Unable to load your profile.";
+               if (message === SESSION_EXPIRED_MESSAGE) {
+                  setError(message);
+                  router.replace("/login");
+                  return;
+               }
+
+               setError(message);
             }
          } finally {
-            if (isMounted) {
+            if (active) {
                setLoading(false);
             }
          }
       };
 
-      fetchProfile();
+      loadProfile();
 
       return () => {
-         isMounted = false;
+         active = false;
       };
    }, []);
 
+   const displayName = useMemo(() => getDisplayName(user), [user]);
+   const membershipLabel = useMemo(() => {
+      const plan = String(user.subscriptionPlan || "free");
+      return `${plan.charAt(0).toUpperCase()}${plan.slice(1)} Member`;
+   }, [user.subscriptionPlan]);
+
+   const handleSave = async (nextProfile: UserProfile) => {
+      setSaving(true);
+      setError(null);
+      setSuccessMessage(null);
+      try {
+         const updated = await saveProfile(nextProfile);
+         const mergedUser = {
+            ...user,
+            ...updated,
+         };
+         setUser(mergedUser);
+         setCachedProfile(mergedUser);
+         setSuccessMessage("Profile updated successfully.");
+      } catch (err: any) {
+         const message = err?.message || "Unable to save your profile.";
+         setError(message);
+         if (message === SESSION_EXPIRED_MESSAGE) {
+            router.replace("/login");
+         }
+         throw err;
+      } finally {
+         setSaving(false);
+      }
+   };
+
+   const handleAvatarUpload = async () => {
+      setError(null);
+      setSuccessMessage(null);
+
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+         setError("Please allow photo library access to upload your profile picture.");
+         return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+         allowsEditing: true,
+         aspect: [1, 1],
+         quality: 0.8,
+      });
+
+      if (result.canceled || result.assets.length === 0) {
+         return;
+      }
+
+      const asset = result.assets[0];
+      setUploadingImage(true);
+
+      try {
+         const nextProfileImage = await uploadProfileImage({
+            uri: asset.uri,
+            fileName: asset.fileName ?? `profile-${Date.now()}.jpg`,
+            mimeType: asset.mimeType ?? "image/jpeg",
+            file: (asset as any).file,
+         });
+
+         const nextUser = {
+            ...user,
+            profileImage: nextProfileImage,
+         };
+
+         setUser(nextUser);
+         setCachedProfile(nextUser);
+         setSuccessMessage("Profile picture updated successfully.");
+      } catch (err: any) {
+         const message =
+            err?.message || "Unable to upload your profile picture.";
+         setError(message);
+         if (message === SESSION_EXPIRED_MESSAGE) {
+            router.replace("/login");
+         }
+      } finally {
+         setUploadingImage(false);
+      }
+   };
+
+   const handlePasswordChange = async (payload: {
+      currentPassword: string;
+      newPassword: string;
+      confirmNewPassword: string;
+   }) => {
+      setChangingPassword(true);
+      setError(null);
+      setSuccessMessage(null);
+
+      try {
+         const message = await changePassword(payload);
+         setSuccessMessage(message);
+      } catch (err: any) {
+         const message = err?.message || "Unable to update your password.";
+         setError(message);
+         if (message === SESSION_EXPIRED_MESSAGE) {
+            router.replace("/login");
+         }
+         throw err;
+      } finally {
+         setChangingPassword(false);
+      }
+   };
+
+   const handleDeleteAccount = async () => {
+      setDeletingAccount(true);
+      setError(null);
+      setSuccessMessage(null);
+
+      try {
+         await deleteAccount();
+         await AsyncStorage.removeItem("authToken");
+         setCachedProfile(null);
+         router.replace("/login");
+      } catch (err: any) {
+         const message = err?.message || "Unable to delete your account.";
+         setError(message);
+         if (message === SESSION_EXPIRED_MESSAGE) {
+            router.replace("/login");
+         }
+         throw err;
+      } finally {
+         setDeletingAccount(false);
+      }
+   };
+
    return (
-      <>
-         <View className="bg-[#F3F4F6]">
-            {/* Top profile header - spans full width */}
-            <ProfileHeader user={user} loading={loading} />
+      <View className="flex-1 bg-[#F7F8F4]">
+         <View className="flex-col lg:flex-row">
+            <UserHubSidebar
+               activeKey="profile"
+               displayName={displayName}
+               email={user.email}
+               membershipLabel={membershipLabel}
+               profileImage={user.profileImage}
+               onAvatarPress={handleAvatarUpload}
+               avatarUploading={uploadingImage}
+            />
 
-            <View className="px-4 pt-4 pb-10">
-               {/* Main content + sidebar */}
-               <View className="flex-row gap-4 mt-4">
-                  {/* LEFT COLUMN */}
-                  <View className="flex-1">
-                     <ProfileBasicInfo user={user} loading={loading} />
-                     <ProfileShoppingListsSection />
-                     <ProfilePriceAlertsSection />
-                     <ProfilePreferredStoresSection />
-                     <ProfileNotificationPreferencesSection />
-                     <ProfileDietaryPreferencesSection />
-                     <ProfileShoppingHistorySection />
+            <View className="flex-1 px-3 md:px-5 xl:px-6 py-4 md:py-5">
+               {error && (
+                  <View className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
+                     <Text className="text-sm text-red-700">{error}</Text>
                   </View>
+               )}
 
-                  {/* RIGHT SIDEBAR */}
-                  <View className="w-[280px]">
-                     <ProfileSavingsOverviewCard />
-                     <ProfileRecentActivityCard />
-                     <ProfileAchievementsCard />
-                     <ProfileAccountActionsCard />
-                     <ProfileHelpCard />
+               {successMessage && (
+                  <View className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                     <Text className="text-sm text-emerald-700">{successMessage}</Text>
                   </View>
-               </View>
-            </View>
+               )}
 
-            {error && (
-               <View className="px-4 pb-4">
-                  <View className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-                     <Text className="text-red-700 text-sm">{error}</Text>
-                  </View>
-               </View>
-            )}
-
-            {loading && (
-               <View className="px-4 pb-4">
-                  <View className="flex-row items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-3">
+               {loading ? (
+                  <View className="rounded-3xl border border-gray-100 bg-white px-5 py-8 flex-row items-center gap-3">
                      <ActivityIndicator color="#10B981" />
-                     <Text className="text-gray-700">Loading your profile...</Text>
+                     <Text className="text-gray-700">Loading your profile settings...</Text>
                   </View>
-               </View>
-            )}
+               ) : (
+                  <View className="max-w-[1480px] w-full gap-4">
+                     <ProfileBasicInfoSection
+                        user={user}
+                        loading={loading}
+                        saving={saving}
+                        membershipLabel={membershipLabel}
+                        profileImage={user.profileImage}
+                        onAvatarPress={handleAvatarUpload}
+                        avatarUploading={uploadingImage}
+                        onSave={handleSave}
+                     />
+
+                     <ProfilePasswordSection
+                        saving={changingPassword}
+                        onSubmit={handlePasswordChange}
+                     />
+
+                     <ProfileDeleteAccountSection
+                        deleting={deletingAccount}
+                        onDelete={handleDeleteAccount}
+                     />
+                  </View>
+               )}
+            </View>
          </View>
-         {/* Footer - outside padded container to span full width */}
-         <View style={{ marginHorizontal: -16 }}>
-            <FooterSection disableEdgeOffset />
-         </View>
-      </>
+      </View>
    );
 }

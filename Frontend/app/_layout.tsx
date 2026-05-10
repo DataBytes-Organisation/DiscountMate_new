@@ -10,6 +10,8 @@ import '../global.css';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { CartProvider } from './(tabs)/CartContext';
 import { ShoppingListsProvider } from './(tabs)/ShoppingListsContext';
+import { UserProfileProvider } from '../context/UserProfileContext';
+import { NotificationCenterProvider } from '../context/NotificationCenterContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -54,12 +56,17 @@ export default function RootLayout() {
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
          <ShoppingListsProvider>
             <CartProvider>
-               <Stack>
-                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                  <Stack.Screen name="(product)" options={{ headerShown: false }} />
-                  <Stack.Screen name="+not-found" />
-               </Stack>
+               <UserProfileProvider>
+                  <NotificationCenterProvider>
+                     <Stack>
+                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                        <Stack.Screen name="(product)" options={{ headerShown: false }} />
+                        <Stack.Screen name="(specials)" options={{ headerShown: false }} />
+                        <Stack.Screen name="+not-found" />
+                     </Stack>
+                  </NotificationCenterProvider>
+               </UserProfileProvider>
             </CartProvider>
          </ShoppingListsProvider>
       </ThemeProvider>
