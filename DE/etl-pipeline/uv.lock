@@ -32,6 +32,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "alembic" },
     { name = "duckdb" },
+    { name = "duckdb-extension-httpfs" },
     { name = "duckdb-extension-postgres" },
     { name = "duckdb-extensions" },
     { name = "jinja2" },
@@ -53,6 +54,7 @@ dev = [
 requires-dist = [
     { name = "alembic", specifier = ">=1.16.5" },
     { name = "duckdb", specifier = ">=1.5.1" },
+    { name = "duckdb-extension-httpfs", specifier = ">=1.5.1" },
     { name = "duckdb-extension-postgres", specifier = ">=1.5.1" },
     { name = "duckdb-extensions", specifier = ">=1.5.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
@@ -95,6 +97,21 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d4/4c/47e838393aa90d3d78549c8c04cb09452efeb14aaae0ee24dc0bd61c3a41/duckdb-1.5.1-cp314-cp314-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:8843bd9594e1387f1e601439e19ad73abdf57356104fd1e53a708255bb95a13d", size = 21387569, upload-time = "2026-03-23T12:12:05.693Z" },
     { url = "https://files.pythonhosted.org/packages/f4/9b/ce65743e0e85f5c984d2f7e8a81bc908d0bac345d6d8b6316436b29430e7/duckdb-1.5.1-cp314-cp314-win_amd64.whl", hash = "sha256:d68c5a01a283cb13b79eafe016fe5869aa11bff8c46e7141c70aa0aac808010f", size = 13603876, upload-time = "2026-03-23T12:12:09.344Z" },
     { url = "https://files.pythonhosted.org/packages/e6/ac/f9e4e731635192571f86f52d86234f537c7f8ca4f6917c56b29051c077ef/duckdb-1.5.1-cp314-cp314-win_arm64.whl", hash = "sha256:a3be2072315982e232bfe49c9d3db0a59ba67b2240a537ef42656cc772a887c7", size = 14370790, upload-time = "2026-03-23T12:12:12.497Z" },
+]
+
+[[package]]
+name = "duckdb-extension-httpfs"
+version = "1.5.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "duckdb" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/09/09/5ebb98fcff8b21bd8ad6632886959cafd665f8b104e3301e9680816249f8/duckdb_extension_httpfs-1.5.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:d46eb1249f69f51beb0208ef190923cbe762f4a6c52126ebbe0826a57a462509", size = 5508161, upload-time = "2026-03-29T19:59:27.398Z" },
+    { url = "https://files.pythonhosted.org/packages/05/21/738823c44b6265607e5308c742a9e148e6185b59f68338789ff6b95545f8/duckdb_extension_httpfs-1.5.1-py3-none-macosx_11_0_x86_64.whl", hash = "sha256:74089643e647fb80705fa3a5e5bbb055d3afcb3bd2ec8e245cc28bacdd7c86a2", size = 5634899, upload-time = "2026-03-29T19:59:29.441Z" },
+    { url = "https://files.pythonhosted.org/packages/09/e3/80ade11df00cb6ac49b4e92ac734e36fd2209429b8e965b8fcace333ab17/duckdb_extension_httpfs-1.5.1-py3-none-manylinux2014_aarch64.whl", hash = "sha256:2e12b48add6969bf0c8f5f89db89891cd6823258e97e215f6dbed25bc8fddab7", size = 6995812, upload-time = "2026-03-29T19:59:31.822Z" },
+    { url = "https://files.pythonhosted.org/packages/24/dc/6b5df447835fa4c17799b48bfec4d6af9de6b37daa40fb69868bad712dbc/duckdb_extension_httpfs-1.5.1-py3-none-manylinux2014_x86_64.whl", hash = "sha256:46e87941711d874dc2afe60ccbc6388b982e6de9aa8b80d1fc1336e2218f0366", size = 7135814, upload-time = "2026-03-29T19:59:33.525Z" },
+    { url = "https://files.pythonhosted.org/packages/82/e9/94fa3b78975359f0b6d1f2ff2032ab2e7850ca3fbba75ff9123e5d38fe6b/duckdb_extension_httpfs-1.5.1-py3-none-win_amd64.whl", hash = "sha256:ed717101104fd919899487df7805f1fbaf2b2cdd63531e30e4067a39f0d4e256", size = 10392326, upload-time = "2026-03-29T19:59:35.33Z" },
 ]
 
 [[package]]

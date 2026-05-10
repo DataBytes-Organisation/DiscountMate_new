@@ -16,6 +16,7 @@ dependencies = [
     "pyyaml>=6.0.3",
     "sqlalchemy>=2.0.43",
     "duckdb-extensions>=1.5.1",
+    "duckdb-extension-httpfs>=1.5.1",
     "duckdb-extension-postgres>=1.5.1",
 ]
 

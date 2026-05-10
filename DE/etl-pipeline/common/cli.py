@@ -3,9 +3,21 @@ from __future__ import annotations
 import argparse
 from datetime import date, datetime, timedelta
 
+DEFAULT_LOOKBACK_DAYS = 7
+
 
 def parse_iso_date(date_value: str) -> date:
     return datetime.strptime(date_value, "%Y-%m-%d").date()
+
+
+def default_start_date(*, today: date | None = None) -> str:
+    current_day = today or date.today()
+    return (current_day - timedelta(days=DEFAULT_LOOKBACK_DAYS - 1)).isoformat()
+
+
+def default_end_date(*, today: date | None = None) -> str:
+    current_day = today or date.today()
+    return current_day.isoformat()
 
 
 def iter_dates(
@@ -32,7 +44,11 @@ def iter_dates(
     return run_dates
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(
+    argv: list[str] | None = None,
+    *,
+    today: date | None = None,
+) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run the reusable DuckDB ETL framework for a model/date range."
     )
@@ -43,15 +59,18 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--start-date",
-        required=True,
-        help="Inclusive start date in YYYY-MM-DD format.",
+        default=default_start_date(today=today),
+        help=(
+            "Inclusive start date in YYYY-MM-DD format. "
+            f"Defaults to the last {DEFAULT_LOOKBACK_DAYS} days including today."
+        ),
     )
     parser.add_argument(
         "--end-date",
-        required=False,
+        default=default_end_date(today=today),
         help=(
-            "Optional inclusive end date in YYYY-MM-DD format. "
+            "Inclusive end date in YYYY-MM-DD format. "
             "Defaults to today's local date."
         ),
     )
-    return parser.parse_args()
+    return parser.parse_args(args=argv)
