@@ -58,7 +58,10 @@ def resolve_input_paths(
 
     resolved_local_path = Path(path_pattern)
     if any(token in path_pattern for token in ("*", "?", "[")):
-        return sorted(str(path) for path in resolved_local_path.parent.glob(resolved_local_path.name))
+        return sorted(
+            str(path)
+            for path in resolved_local_path.parent.glob(resolved_local_path.name)
+        )
     if resolved_local_path.exists():
         return [str(resolved_local_path)]
     return []

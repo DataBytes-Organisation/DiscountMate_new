@@ -69,8 +69,7 @@ def parse_args(
         "--end-date",
         default=default_end_date(today=today),
         help=(
-            "Inclusive end date in YYYY-MM-DD format. "
-            "Defaults to today's local date."
+            "Inclusive end date in YYYY-MM-DD format. Defaults to today's local date."
         ),
     )
     return parser.parse_args(args=argv)
