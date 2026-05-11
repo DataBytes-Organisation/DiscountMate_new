@@ -1,0 +1,961 @@
+From 33f535301c4cafcb38a97d889e653db8e74c2169 Mon Sep 17 00:00:00 2001
+From: Brennan <brennanterreoz@gmail.com>
+Date: Sat, 9 May 2026 13:50:23 +1000
+Subject: [PATCH] fix(security): address PR266 findings
+
+---
+ Backend/package-lock.json                     | 47 +++++++++++++----
+ Backend/package.json                          |  2 +
+ Backend/src/controllers/basket.controller.js  | 41 ++++++++++-----
+ Backend/src/controllers/user.controller.js    | 30 ++++-------
+ Backend/src/middleware/admin.middleware.js    | 19 +++++++
+ .../src/middleware/antiScraping.middleware.js | 52 +++++++++++++++++++
+ Backend/src/middleware/auth.middleware.js     | 19 +++++--
+ .../src/middleware/ipThrottle.middleware.js   | 20 +++++++
+ .../middleware/validateRequest.middleware.js  | 17 ++++++
+ Backend/src/routers/analytics.router.js       | 46 ++++++++++++++--
+ Backend/src/routers/basket.router.js          |  9 ++--
+ Backend/src/routers/product.router.js         | 42 ++++++++++++++-
+ Backend/src/routers/user.router.js            | 33 ++++++------
+ Backend/src/utils/securityLogger.js           | 28 ++++++++++
+ .../src/validators/analytics.validators.js    | 48 +++++++++++++++++
+ Backend/src/validators/product.validators.js  | 37 +++++++++++++
+ Backend/src/validators/user.validators.js     | 41 +++++++++++++++
+ 17 files changed, 460 insertions(+), 71 deletions(-)
+ create mode 100644 Backend/src/middleware/admin.middleware.js
+ create mode 100644 Backend/src/middleware/antiScraping.middleware.js
+ create mode 100644 Backend/src/middleware/ipThrottle.middleware.js
+ create mode 100644 Backend/src/middleware/validateRequest.middleware.js
+ create mode 100644 Backend/src/utils/securityLogger.js
+ create mode 100644 Backend/src/validators/analytics.validators.js
+ create mode 100644 Backend/src/validators/product.validators.js
+ create mode 100644 Backend/src/validators/user.validators.js
+
+diff --git a/Backend/package-lock.json b/Backend/package-lock.json
+index 75de8486f..5ef9bfb87 100644
+--- a/Backend/package-lock.json
++++ b/Backend/package-lock.json
+@@ -19,6 +19,8 @@
+         "env": "^0.0.2",
+         "express": "^4.20.0",
+         "express-rate-limit": "^8.1.0",
++        "express-slow-down": "^3.1.0",
++        "express-validator": "^7.3.2",
+         "firebase": "^10.13.0",
+         "firebase-admin": "^12.4.0",
+         "helmet": "^8.1.0",
+@@ -263,7 +265,6 @@
+       "resolved": "https://registry.npmjs.org/@firebase/app/-/app-0.10.13.tgz",
+       "integrity": "sha512-OZiDAEK/lDB6xy/XzYAyJJkaDqmQ+BCtOEPLqFvxWKUz5JbBmej7IiiRHdtiIOD/twW7O5AxVsfaaGA/V1bNsA==",
+       "license": "Apache-2.0",
+-      "peer": true,
+       "dependencies": {
+         "@firebase/component": "0.6.9",
+         "@firebase/logger": "0.4.2",
+@@ -321,7 +322,6 @@
+       "resolved": "https://registry.npmjs.org/@firebase/app-compat/-/app-compat-0.2.43.tgz",
+       "integrity": "sha512-HM96ZyIblXjAC7TzE8wIk2QhHlSvksYkQ4Ukh1GmEenzkucSNUmUX4QvoKrqeWsLEQ8hdcojABeCV8ybVyZmeg==",
+       "license": "Apache-2.0",
+-      "peer": true,
+       "dependencies": {
+         "@firebase/app": "0.10.13",
+         "@firebase/component": "0.6.9",
+@@ -334,8 +334,7 @@
+       "version": "0.9.2",
+       "resolved": "https://registry.npmjs.org/@firebase/app-types/-/app-types-0.9.2.tgz",
+       "integrity": "sha512-oMEZ1TDlBz479lmABwWsWjzHwheQKiAgnuKxE0pz0IXCVx7/rtlkx1fQ6GfgK24WCrxDKMplZrT50Kh04iMbXQ==",
+-      "license": "Apache-2.0",
+-      "peer": true
++      "license": "Apache-2.0"
+     },
+     "node_modules/@firebase/auth": {
+       "version": "1.7.9",
+@@ -756,7 +755,6 @@
+       "resolved": "https://registry.npmjs.org/@firebase/util/-/util-1.10.0.tgz",
+       "integrity": "sha512-xKtx4A668icQqoANRxyDLBLz51TAbDP9KRfpbKGxiCAW346d0BeJe5vN6/hKxxmWwnZ0mautyv39JxviwwQMOQ==",
+       "license": "Apache-2.0",
+-      "peer": true,
+       "dependencies": {
+         "tslib": "^2.1.0"
+       }
+@@ -1439,7 +1437,6 @@
+       "integrity": "sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "bin": {
+         "acorn": "bin/acorn"
+       },
+@@ -2618,7 +2615,6 @@
+       "deprecated": "This version is no longer supported. Please see https://eslint.org/version-support for other options.",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "@eslint-community/eslint-utils": "^4.2.0",
+         "@eslint-community/regexpp": "^4.6.1",
+@@ -2981,7 +2977,6 @@
+       "resolved": "https://registry.npmjs.org/express/-/express-4.22.1.tgz",
+       "integrity": "sha512-F2X8g9P1X7uCPZMA3MVf9wcTqlyNp7IhH5qPCI0izhaOIYXaW9L535tGA3qmjRzpH+bZczqq7hVKxTR4NWnu+g==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "accepts": "~1.3.8",
+         "array-flatten": "1.1.1",
+@@ -3041,6 +3036,34 @@
+         "express": ">= 4.11"
+       }
+     },
++    "node_modules/express-slow-down": {
++      "version": "3.1.0",
++      "resolved": "https://registry.npmjs.org/express-slow-down/-/express-slow-down-3.1.0.tgz",
++      "integrity": "sha512-0gZ1HHow8H83z1/+81DdWB60RSGHI0mJB0ZM1m5P6/BexORFcA8P1TgU0NKEwOiRmxyCIoktZYqmA+1UCc83+A==",
++      "license": "MIT",
++      "dependencies": {
++        "express-rate-limit": "8"
++      },
++      "engines": {
++        "node": ">= 16"
++      },
++      "peerDependencies": {
++        "express": "4 || 5 || ^5.0.0-beta.1"
++      }
++    },
++    "node_modules/express-validator": {
++      "version": "7.3.2",
++      "resolved": "https://registry.npmjs.org/express-validator/-/express-validator-7.3.2.tgz",
++      "integrity": "sha512-ctLw1Vl6dXVH62dIQMDdTAQkrh480mkFuG6/SGXOaVlwPNukhRAe7EgJIMJ2TSAni8iwHBRp530zAZE5ZPF2IA==",
++      "license": "MIT",
++      "dependencies": {
++        "lodash": "^4.18.1",
++        "validator": "~13.15.23"
++      },
++      "engines": {
++        "node": ">= 8.0.0"
++      }
++    },
+     "node_modules/express/node_modules/debug": {
+       "version": "2.6.9",
+       "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+@@ -4695,6 +4718,12 @@
+         "url": "https://github.com/sponsors/sindresorhus"
+       }
+     },
++    "node_modules/lodash": {
++      "version": "4.18.1",
++      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.18.1.tgz",
++      "integrity": "sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==",
++      "license": "MIT"
++    },
+     "node_modules/lodash.camelcase": {
+       "version": "4.3.0",
+       "resolved": "https://registry.npmjs.org/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz",
+@@ -5522,7 +5551,6 @@
+       "resolved": "https://registry.npmjs.org/pg/-/pg-8.17.1.tgz",
+       "integrity": "sha512-EIR+jXdYNSMOrpRp7g6WgQr7SaZNZfS7IzZIO0oTNEeibq956JxeD15t3Jk3zZH0KH8DmOIx38qJfQenoE8bXQ==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "pg-connection-string": "^2.10.0",
+         "pg-pool": "^3.11.0",
+@@ -5613,7 +5641,6 @@
+       "integrity": "sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "engines": {
+         "node": ">=12"
+       },
+diff --git a/Backend/package.json b/Backend/package.json
+index fd7e6b978..5b95f6a1b 100755
+--- a/Backend/package.json
++++ b/Backend/package.json
+@@ -26,6 +26,8 @@
+     "env": "^0.0.2",
+     "express": "^4.20.0",
+     "express-rate-limit": "^8.1.0",
++    "express-slow-down": "^3.1.0",
++    "express-validator": "^7.3.2",
+     "firebase": "^10.13.0",
+     "firebase-admin": "^12.4.0",
+     "helmet": "^8.1.0",
+diff --git a/Backend/src/controllers/basket.controller.js b/Backend/src/controllers/basket.controller.js
+index 8f8f98e38..6362e3073 100755
+--- a/Backend/src/controllers/basket.controller.js
++++ b/Backend/src/controllers/basket.controller.js
+@@ -73,14 +73,32 @@ const getUserFromToken = async (token) => {
+     return user;
+ };
+ 
++const getUserFromRequest = async (req) => {
++    if (req.user?.email) {
++        const db = await connectToMongoDB();
++        return db.collection('users').findOne(
++            { email: req.user.email },
++            { projection: { encrypted_password: 0 } }
++        );
++    }
++
++    const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
++    if (!token) {
++        return null;
++    }
++    return getUserFromToken(token);
++};
++
+ // Function to get the basket for a user
+ const getBasket = async (req, res) => {
+     try {
+       // Fetch the basket details from the database
+       const db = await connectToMongoDB()
+   
+-      const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+-      const user = await getUserFromToken(token);
++      const user = await getUserFromRequest(req);
++      if (!user?._id) {
++        return res.status(401).json({ message: 'Unauthorized' });
++      }
+       const basket = await db.collection('basket').find({ user_id: user._id.toString() }).toArray();
+   
+       console.log('Basket for a particular user contains=', basket);
+@@ -121,12 +139,7 @@ const getBasket = async (req, res) => {
+ // Function to add an item to the basket
+ const addToBasket = async (req, res) => {
+     try {
+-        const token = req.headers.authorization?.split(' ')[1];
+-        if (!token) {
+-            return res.status(401).json({ message: 'Authorization token is required' });
+-        }
+-
+-        const user = await getUserFromToken(token);
++        const user = await getUserFromRequest(req);
+         if (!user || !user._id) {
+             return res.status(401).json({ message: 'Invalid or missing user data' });
+         }
+@@ -169,8 +182,10 @@ const addToBasket = async (req, res) => {
+ // Function to update the quantity of an item in the basket
+ const updateQuantity = async (req, res, db) => {
+     try {
+-        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+-        const user = await getUserFromToken(token);
++        const user = await getUserFromRequest(req);
++        if (!user?._id) {
++            return res.status(401).json({ message: 'Unauthorized' });
++        }
+ 
+         const productId = String(req.body.productId || req.body.product_id || '').trim();
+         if (!productId) {
+@@ -206,8 +221,10 @@ const updateQuantity = async (req, res, db) => {
+ // Function to delete an item from the basket
+ const deleteFromBasket = async (req, res, db) => {
+     try {
+-        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+-        const user = await getUserFromToken(token);
++        const user = await getUserFromRequest(req);
++        if (!user?._id) {
++            return res.status(401).json({ message: 'Unauthorized' });
++        }
+ 
+         const productId = String(req.body.productId || req.body.product_id || '').trim();
+         if (!productId) {
+diff --git a/Backend/src/controllers/user.controller.js b/Backend/src/controllers/user.controller.js
+index faaadf73c..3bc8ddb84 100755
+--- a/Backend/src/controllers/user.controller.js
++++ b/Backend/src/controllers/user.controller.js
+@@ -459,6 +459,14 @@ legacyHeaders: false,
+ 
+ });
+ 
++const signinLimiter = rateLimit({
++windowMs: 5 * 60 * 1000,
++limit: 5,
++message: "Too many signin attempts. Please try again later.",
++standardHeaders: true,
++legacyHeaders: false,
++});
++
+ // Signin Controller
+ const signin = async (req, res) => {
+     const { email, password } = req.body;
+@@ -492,17 +500,7 @@ const signin = async (req, res) => {
+ 
+ const getProfile = async (req, res) => {
+     try {
+-        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+-        if (!token) {
+-            return res.status(401).json({ message: 'No token provided, please log in' });
+-        }
+-
+-        jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+-            if (err) {
+-                return res.status(401).json({ message: 'Invalid token, please log in again' });
+-            }
+-
+-            const email = decoded.email;
++        const email = req.user?.email || getAuthEmail(req);
+ 
+             const db = await connectToMongoDB();
+             if (!db) {
+@@ -521,7 +519,6 @@ const getProfile = async (req, res) => {
+             const activeAlerts = await getActiveAlertsCount(db, user, email);
+ 
+             return res.status(200).json(buildProfileResponse(user, activeAlerts));
+-        });
+     } catch (error) {
+         console.error('Error fetching profile:', error);
+         res.status(500).json({ message: 'Internal Server Error' });
+@@ -1144,13 +1141,7 @@ const updateProfileImage = async (req, res) => {
+ // Get Profile Image
+ const getProfileImage = async (req, res) => {
+     try {
+-      const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+-      if (!token) {
+-        return res.status(401).json({ message: 'No token provided' });
+-      }
+-
+-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+-      const email = decoded.email;
++      const email = req.user?.email || getAuthEmail(req);
+ 
+       const db = await connectToMongoDB();
+       const user = await db.collection('users').findOne({ email });
+@@ -1174,6 +1165,7 @@ const getProfileImage = async (req, res) => {
+ 
+ module.exports = {
+     signupLimiter,
++    signinLimiter,
+     signup,
+     signin,
+     getProfile,
+diff --git a/Backend/src/middleware/admin.middleware.js b/Backend/src/middleware/admin.middleware.js
+new file mode 100644
+index 000000000..24f6a586b
+--- /dev/null
++++ b/Backend/src/middleware/admin.middleware.js
+@@ -0,0 +1,19 @@
++// NEW: admin-only authorization middleware 
++const isAdmin = (req, res, next) => {
++    try {
++        const effectiveRole = req.user?.role || (req.user?.admin ? 'admin' : 'user');
++
++        // NEW: block access if user is not an admin
++        if (!req.user || effectiveRole !== 'admin') {
++            return res.status(403).json({ message: 'Access denied: Admins only' });
++        }
++
++        // NEW: allow request to continue if role is admin
++        next();
++    } catch (error) {
++        console.error('Admin middleware error:', error);
++        return res.status(500).json({ message: 'Internal Server Error' });
++    }
++};
++
++module.exports = isAdmin;
+\ No newline at end of file
+diff --git a/Backend/src/middleware/antiScraping.middleware.js b/Backend/src/middleware/antiScraping.middleware.js
+new file mode 100644
+index 000000000..01e6a8dda
+--- /dev/null
++++ b/Backend/src/middleware/antiScraping.middleware.js
+@@ -0,0 +1,52 @@
++const slowDown = require('express-slow-down'); // imports request slow-down middleware
++const { logSecurityEvent } = require('../utils/securityLogger'); // security log helper
++
++
++const scraperSlowDown = slowDown({ // creates slow-down protection
++  windowMs: 1 * 60 * 1000, // 1 minute window
++  delayAfter: 10, // first 10 requests have no delay
++  delayMs: () => 500, // add 500ms delay after that
++});
++
++const suspiciousTrafficLogger = (req, res, next) => { // logs suspicious request patterns
++  const signals = []; // stores suspicious indicators
++  const userAgent = req.get('user-agent') || ''; // gets User-Agent header
++  const acceptHeader = req.get('accept') || ''; // gets Accept header
++
++  const scraperAgents = [ // common scraping tools
++    'python-requests',
++    'curl/',
++    'wget/',
++    'scrapy',
++    'aiohttp',
++  ];
++
++  if (!userAgent) signals.push('missing-user-agent'); // flags missing User-Agent
++  if (!acceptHeader) signals.push('missing-accept-header'); // flags missing Accept header
++
++  const matchedAgent = scraperAgents.find(agent =>
++    userAgent.toLowerCase().includes(agent) // checks for known scraper agent
++  );
++
++  if (matchedAgent) {
++    signals.push(`suspicious-user-agent:${matchedAgent}`); // flags suspicious tool
++  }
++
++  if (req.query && Object.keys(req.query).length > 10) {
++    signals.push('excessive-query-params'); // flags too many query params
++  }
++
++  if (req.query?.page && Number(req.query.page) > 50) {
++    signals.push('deep-pagination'); // flags unusually high page number
++  }
++
++  if (signals.length > 0) {
++    console.warn(
++      `[ANTI-SCRAPING] Suspicious request from IP ${req.ip} on ${req.originalUrl} :: ${signals.join(', ')}`
++    ); // logs suspicious request details
++  }
++
++  next(); // continues to next middleware
++};
++
++module.exports = { scraperSlowDown, suspiciousTrafficLogger }; // exports both middleware functions
+\ No newline at end of file
+diff --git a/Backend/src/middleware/auth.middleware.js b/Backend/src/middleware/auth.middleware.js
+index 1f1f3ba65..3e78b72eb 100644
+--- a/Backend/src/middleware/auth.middleware.js
++++ b/Backend/src/middleware/auth.middleware.js
+@@ -3,19 +3,28 @@ require('dotenv').config();
+ const jwt = require('jsonwebtoken');
+ 
+ const verifyToken = (req, res, next) => {
+-    const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
++    const authHeader = req.headers.authorization || '';
++    const token = authHeader.startsWith('Bearer ')
++        ? authHeader.split(' ')[1]
++        : null;
+ 
+     if (!token) {
+-        return res.status(403).send("A token is required for authentication");
++        return res.status(401).json({ message: 'No token provided' });
+     }
+ 
+     try {
+         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+-        req.user = decoded;
++        req.user = {
++            ...decoded,
++            role: decoded.role || (decoded.admin ? 'admin' : 'user'),
++        };
++        return next();
+     } catch (err) {
+-        return res.status(401).send("Invalid Token");
++        if (err?.name === 'TokenExpiredError') {
++            return res.status(401).json({ message: 'Token has expired' });
++        }
++        return res.status(401).json({ message: 'Invalid token' });
+     }
+-    return next();
+ };
+ 
+ module.exports = verifyToken;
+diff --git a/Backend/src/middleware/ipThrottle.middleware.js b/Backend/src/middleware/ipThrottle.middleware.js
+new file mode 100644
+index 000000000..21ecd18a7
+--- /dev/null
++++ b/Backend/src/middleware/ipThrottle.middleware.js
+@@ -0,0 +1,20 @@
++const rateLimit = require('express-rate-limit');
++const { logSecurityEvent } = require('../utils/securityLogger'); // security log helper
++
++
++const ipThrottle = rateLimit({
++  windowMs: 10 * 60 * 1000, // 10 minutes
++  limit: 50, // 50 requests per IP per window
++  standardHeaders: true,
++  legacyHeaders: false,
++  message: {
++    success: false,
++    message: 'Too many requests from this IP. Please try again later.',
++  },
++  handler: (req, res, next, options) => {
++    console.warn(`[IP THROTTLE] Blocked IP ${req.ip} on ${req.originalUrl}`);
++    return res.status(options.statusCode).json(options.message);
++  },
++});
++
++module.exports = ipThrottle;
+\ No newline at end of file
+diff --git a/Backend/src/middleware/validateRequest.middleware.js b/Backend/src/middleware/validateRequest.middleware.js
+new file mode 100644
+index 000000000..17a115103
+--- /dev/null
++++ b/Backend/src/middleware/validateRequest.middleware.js
+@@ -0,0 +1,17 @@
++const { validationResult } = require('express-validator'); // import validation result checker
++
++const validateRequest = (req, res, next) => { // middleware to check validation results
++  const errors = validationResult(req); // get validation errors from request
++
++  if (!errors.isEmpty()) { // if validation failed
++    return res.status(400).json({
++      success: false,
++      message: 'Invalid request data.',
++      errors: errors.array(),
++    });
++  }
++
++  next(); // continue if no errors
++};
++
++module.exports = validateRequest; // export middleware
+\ No newline at end of file
+diff --git a/Backend/src/routers/analytics.router.js b/Backend/src/routers/analytics.router.js
+index 10d754c2b..185875de9 100644
+--- a/Backend/src/routers/analytics.router.js
++++ b/Backend/src/routers/analytics.router.js
+@@ -1,5 +1,13 @@
+ const express = require('express');
+ const analyticsController = require('../controllers/analytics.controller');
++const ipThrottle = require('../middleware/ipThrottle.middleware');
++const { scraperSlowDown, suspiciousTrafficLogger } = require('../middleware/antiScraping.middleware');
++const validateRequest = require('../middleware/validateRequest.middleware');
++const {
++    salesSummaryValidation,
++    brandAnalysisValidation,
++    priceComparisonValidation,
++} = require('../validators/analytics.validators');
+ 
+ const router = express.Router();
+ 
+@@ -30,7 +38,15 @@ const router = express.Router();
+  *       503:
+  *         description: Analytics service unavailable
+  */
+-router.post('/sales-summary', analyticsController.getSalesSummary);
++router.post(
++    '/sales-summary',
++    suspiciousTrafficLogger,
++    scraperSlowDown,
++    ipThrottle,
++    salesSummaryValidation,
++    validateRequest,
++    analyticsController.getSalesSummary
++);
+ 
+ /**
+  * @swagger
+@@ -56,7 +72,15 @@ router.post('/sales-summary', analyticsController.getSalesSummary);
+  *       200:
+  *         description: Brand analysis retrieved successfully
+  */
+-router.post('/brand-analysis', analyticsController.getBrandAnalysis);
++router.post(
++    '/brand-analysis',
++    suspiciousTrafficLogger,
++    scraperSlowDown,
++    ipThrottle,
++    brandAnalysisValidation,
++    validateRequest,
++    analyticsController.getBrandAnalysis
++);
+ 
+ /**
+  * @swagger
+@@ -82,7 +106,15 @@ router.post('/brand-analysis', analyticsController.getBrandAnalysis);
+  *       200:
+  *         description: Price comparison retrieved successfully
+  */
+-router.post('/price-comparison', analyticsController.getPriceComparison);
++router.post(
++    '/price-comparison',
++    suspiciousTrafficLogger,
++    scraperSlowDown,
++    ipThrottle,
++    priceComparisonValidation,
++    validateRequest,
++    analyticsController.getPriceComparison
++);
+ 
+ /**
+  * @swagger
+@@ -111,7 +143,13 @@ router.post('/price-comparison', analyticsController.getPriceComparison);
+  *       200:
+  *         description: Data cleaned successfully
+  */
+-router.post('/data-cleaning', analyticsController.cleanData);
++router.post(
++    '/data-cleaning',
++    suspiciousTrafficLogger,
++    scraperSlowDown,
++    ipThrottle,
++    analyticsController.cleanData
++);
+ 
+ module.exports = router;
+ 
+diff --git a/Backend/src/routers/basket.router.js b/Backend/src/routers/basket.router.js
+index 94d26e32c..43539e5f1 100755
+--- a/Backend/src/routers/basket.router.js
++++ b/Backend/src/routers/basket.router.js
+@@ -1,5 +1,6 @@
+ const express = require('express');
+ const basketController = require('../controllers/basket.controller');
++const verifyToken = require('../middleware/auth.middleware');
+ 
+ const router = express.Router();
+ 
+@@ -16,7 +17,7 @@ const router = express.Router();
+  *       401:
+  *         description: Unauthorized. Token missing or invalid.
+  */
+-router.post('/getbasket', basketController.getBasket);
++router.post('/getbasket', verifyToken, basketController.getBasket);
+ 
+ /**
+  * @swagger
+@@ -33,7 +34,7 @@ router.post('/getbasket', basketController.getBasket);
+  *       401:
+  *         description: Unauthorized. Token missing or invalid.
+  */
+-router.post('/addtobasket', basketController.addToBasket);
++router.post('/addtobasket', verifyToken, basketController.addToBasket);
+ 
+ /**
+  * @swagger
+@@ -50,7 +51,7 @@ router.post('/addtobasket', basketController.addToBasket);
+  *       401:
+  *         description: Unauthorized. Token missing or invalid.
+  */
+-router.post('/updatequantity', basketController.updateQuantity);
++router.post('/updatequantity', verifyToken, basketController.updateQuantity);
+ 
+ /**
+  * @swagger
+@@ -67,6 +68,6 @@ router.post('/updatequantity', basketController.updateQuantity);
+  *       401:
+  *         description: Unauthorized. Token missing or invalid.
+  */
+-router.delete('/deleteitemfrombasket', basketController.deleteFromBasket);
++router.delete('/deleteitemfrombasket', verifyToken, basketController.deleteFromBasket);
+ 
+ module.exports = router;
+diff --git a/Backend/src/routers/product.router.js b/Backend/src/routers/product.router.js
+index df5429572..30f7ef566 100755
+--- a/Backend/src/routers/product.router.js
++++ b/Backend/src/routers/product.router.js
+@@ -1,5 +1,10 @@
+ const express = require('express');
+ const { getProducts, getProduct } = require("../controllers/product.controller");
++const ipThrottle = require('../middleware/ipThrottle.middleware');
++const { scraperSlowDown, suspiciousTrafficLogger } = require('../middleware/antiScraping.middleware');
++const validateRequest = require('../middleware/validateRequest.middleware');
++const { getProductsValidation, getProductValidation } = require('../validators/product.validators');
++const { logSecurityEvent } = require('../utils/securityLogger');
+ 
+ const router = express.Router();
+ 
+@@ -14,7 +19,32 @@ const router = express.Router();
+  *       200:
+  *         description: Products retrieved successfully.
+  */
+-router.get('/', getProducts);
++router.get(
++    '/',
++    suspiciousTrafficLogger,
++    scraperSlowDown,
++    ipThrottle,
++    getProductsValidation,
++    validateRequest,
++    getProducts
++);
++
++router.get(
++    '/export-all',
++    suspiciousTrafficLogger,
++    scraperSlowDown,
++    ipThrottle,
++    (req, res) => {
++        logSecurityEvent({
++            event: 'honeypot_triggered',
++            ip: req.ip,
++            method: req.method,
++            route: req.originalUrl,
++            details: ['decoy-endpoint-accessed'],
++        });
++        return res.status(403).json({ success: false, message: 'Access denied.' });
++    }
++);
+ 
+ /**
+  * @swagger
+@@ -25,6 +55,14 @@ router.get('/', getProducts);
+  *     description: Fetch details of a specific product by ID.
+  */
+ // router.post('/getproduct', productController.getProduct);
+-router.get("/:id", getProduct); // uses req.params.id
++router.get(
++    "/:id",
++    suspiciousTrafficLogger,
++    scraperSlowDown,
++    ipThrottle,
++    getProductValidation,
++    validateRequest,
++    getProduct
++); // uses req.params.id
+ 
+ module.exports = router;
+diff --git a/Backend/src/routers/user.router.js b/Backend/src/routers/user.router.js
+index fa95c889f..861f90885 100755
+--- a/Backend/src/routers/user.router.js
++++ b/Backend/src/routers/user.router.js
+@@ -1,6 +1,9 @@
+ const express = require('express');
+ const userController = require('../controllers/user.controller');
+ const multer = require('multer');
++const verifyToken = require('../middleware/auth.middleware');
++const validateRequest = require('../middleware/validateRequest.middleware');
++const { signupValidation, signinValidation } = require('../validators/user.validators');
+ 
+ const storage = multer.memoryStorage();
+ const upload = multer({
+@@ -60,7 +63,7 @@ const router = express.Router();
+  *       500:
+  *         description: Internal server error
+  */
+-router.post('/signup', userController.signupLimiter, userController.signup); // Signup using limiter
++router.post('/signup', userController.signupLimiter, signupValidation, validateRequest, userController.signup);
+ 
+ // Signin route
+ /**
+@@ -91,7 +94,7 @@ router.post('/signup', userController.signupLimiter, userController.signup); //
+  *       500:
+  *         description: Internal server error
+  */
+-router.post('/signin', userController.signin);
++router.post('/signin', userController.signinLimiter, signinValidation, validateRequest, userController.signin);
+ 
+ // Get profile route
+ /**
+@@ -109,17 +112,17 @@ router.post('/signin', userController.signin);
+  *       401:
+  *         description: Unauthorized - Invalid or missing token
+  */
+-router.get('/profile', userController.getProfile);
+-router.put('/profile', userController.updateProfile);
+-router.put('/change-password', userController.changePassword);
+-router.get('/address-suggestions', userController.getAddressSuggestions);
+-router.get('/notification-preferences', userController.getNotificationPreferences);
+-router.put('/notification-preferences', userController.updateNotificationPreferences);
+-router.get('/dashboard-preferences', userController.getDashboardPreferences);
+-router.put('/dashboard-preferences', userController.updateDashboardPreferences);
+-router.get('/subscription', userController.getSubscription);
+-router.put('/subscription', userController.updateSubscription);
+-router.delete('/account', userController.deleteAccount);
++router.get('/profile', verifyToken, userController.getProfile);
++router.put('/profile', verifyToken, userController.updateProfile);
++router.put('/change-password', verifyToken, userController.changePassword);
++router.get('/address-suggestions', verifyToken, userController.getAddressSuggestions);
++router.get('/notification-preferences', verifyToken, userController.getNotificationPreferences);
++router.put('/notification-preferences', verifyToken, userController.updateNotificationPreferences);
++router.get('/dashboard-preferences', verifyToken, userController.getDashboardPreferences);
++router.put('/dashboard-preferences', verifyToken, userController.updateDashboardPreferences);
++router.get('/subscription', verifyToken, userController.getSubscription);
++router.put('/subscription', verifyToken, userController.updateSubscription);
++router.delete('/account', verifyToken, userController.deleteAccount);
+ 
+ // Upload profile image
+ /**
+@@ -149,7 +152,7 @@ router.delete('/account', userController.deleteAccount);
+  *       401:
+  *         description: Unauthorized - Invalid or missing token
+  */
+-router.post('/upload-profile-image', upload.single('image'), userController.updateProfileImage);
++router.post('/upload-profile-image', verifyToken, upload.single('image'), userController.updateProfileImage);
+ 
+ // Get Profile Image
+ /**
+@@ -169,6 +172,6 @@ router.post('/upload-profile-image', upload.single('image'), userController.upda
+  *       401:
+  *         description: Unauthorized - Invalid or missing token
+  */
+-router.get('/profile-image', userController.getProfileImage);
++router.get('/profile-image', verifyToken, userController.getProfileImage);
+ 
+ module.exports = router;
+diff --git a/Backend/src/utils/securityLogger.js b/Backend/src/utils/securityLogger.js
+new file mode 100644
+index 000000000..e550abb69
+--- /dev/null
++++ b/Backend/src/utils/securityLogger.js
+@@ -0,0 +1,28 @@
++const fs = require('node:fs'); // file system tools
++const path = require('node:path'); // path tools
++
++const LOG_DIR = path.join(process.cwd(), 'logs'); // logs folder
++const LOG_FILE = path.join(LOG_DIR, 'security.log'); // log file
++
++if (!fs.existsSync(LOG_DIR)) { // if logs folder does not exist
++  fs.mkdirSync(LOG_DIR, { recursive: true }); // create it
++}
++
++const logSecurityEvent = ({ event, ip, method, route, details = [] }) => { // log security event
++  const logEntry = JSON.stringify({
++    timestamp: new Date().toISOString(), // time of event
++    event, // event type
++    ip, // user IP
++    method, // request method
++    route, // request route
++    details, // extra details
++  }) + '\n'; // new line for each log
++
++  fs.appendFile(LOG_FILE, logEntry, (err) => { // add log to file
++    if (err) { // if error happens
++      console.error('[SECURITY LOGGER] Failed to write log:', err.message); // show error
++    }
++  });
++};
++
++module.exports = { logSecurityEvent }; // export function
+\ No newline at end of file
+diff --git a/Backend/src/validators/analytics.validators.js b/Backend/src/validators/analytics.validators.js
+new file mode 100644
+index 000000000..70caa6060
+--- /dev/null
++++ b/Backend/src/validators/analytics.validators.js
+@@ -0,0 +1,48 @@
++const { body } = require('express-validator'); // import body validator
++
++const salesSummaryValidation = [
++  body('keyword') // validate keyword field
++    .exists({ values: 'falsy' }).withMessage('Keyword is required.')
++    .isString().withMessage('Keyword must be text.')
++    .trim()
++    .escape()
++    .isLength({ max: 100 }).withMessage('Keyword is too long.'),
++
++  body('store') // validate store field
++    .optional()
++    .isIn(['all', 'woolworths', 'coles']).withMessage('Invalid store value.'),
++];
++
++const brandAnalysisValidation = [
++  body('keyword')
++    .exists({ values: 'falsy' }).withMessage('Keyword is required.')
++    .isString().withMessage('Keyword must be text.')
++    .trim()
++    .escape()
++    .isLength({ max: 100 }).withMessage('Keyword is too long.'),
++
++  body('top_n')
++    .optional()
++    .isInt({ min: 1, max: 20 }).withMessage('top_n must be between 1 and 20.')
++    .toInt(),
++];
++
++const priceComparisonValidation = [
++  body('keyword')
++    .exists({ values: 'falsy' }).withMessage('Keyword is required.')
++    .isString().withMessage('Keyword must be text.')
++    .trim()
++    .escape()
++    .isLength({ max: 100 }).withMessage('Keyword is too long.'),
++
++  body('include_details')
++    .optional()
++    .isBoolean().withMessage('include_details must be true or false.')
++    .toBoolean(),
++];
++
++module.exports = {
++  salesSummaryValidation,
++  brandAnalysisValidation,
++  priceComparisonValidation,
++};
+\ No newline at end of file
+diff --git a/Backend/src/validators/product.validators.js b/Backend/src/validators/product.validators.js
+new file mode 100644
+index 000000000..5fa7442db
+--- /dev/null
++++ b/Backend/src/validators/product.validators.js
+@@ -0,0 +1,37 @@
++const { param, query } = require('express-validator'); // import query and param validators
++
++const getProductsValidation = [
++  query('page') // validate page query
++    .optional() // only validate if provided
++    .isInt({ min: 1, max: 100 }).withMessage('Page must be between 1 and 100.') // must be integer in range
++    .toInt(), // convert to integer
++
++  query('limit') // validate limit query
++    .optional()
++    .isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50.')
++    .toInt(),
++
++  query('keyword') // validate keyword query
++    .optional()
++    .isString().withMessage('Keyword must be text.')
++    .trim() // remove spaces
++    .escape() // sanitize special characters
++    .isLength({ max: 100 }).withMessage('Keyword is too long.'),
++
++  query('category') // validate category query
++    .optional()
++    .isString().withMessage('Category must be text.')
++    .trim()
++    .escape()
++    .isLength({ max: 50 }).withMessage('Category is too long.'),
++];
++
++const getProductValidation = [
++  param('id') // validate product id in URL
++    .isMongoId().withMessage('Invalid product ID.'),
++];
++
++module.exports = {
++  getProductsValidation,
++  getProductValidation,
++};
+\ No newline at end of file
+diff --git a/Backend/src/validators/user.validators.js b/Backend/src/validators/user.validators.js
+new file mode 100644
+index 000000000..c3981ae7a
+--- /dev/null
++++ b/Backend/src/validators/user.validators.js
+@@ -0,0 +1,41 @@
++const { body } = require('express-validator'); // import body validator
++
++const signupValidation = [
++  body('email')
++    .exists({ values: 'falsy' }).withMessage('Email is required.')
++    .isEmail().withMessage('Email must be valid.')
++    .normalizeEmail(),
++
++  body('password')
++    .exists({ values: 'falsy' }).withMessage('Password is required.')
++    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters.'),
++
++  body('firstName')
++    .optional()
++    .isString().withMessage('First name must be text.')
++    .trim()
++    .escape()
++    .isLength({ max: 50 }).withMessage('First name is too long.'),
++
++  body('lastName')
++    .optional()
++    .isString().withMessage('Last name must be text.')
++    .trim()
++    .escape()
++    .isLength({ max: 50 }).withMessage('Last name is too long.'),
++];
++
++const signinValidation = [
++  body('email')
++    .exists({ values: 'falsy' }).withMessage('Email is required.')
++    .isEmail().withMessage('Email must be valid.')
++    .normalizeEmail(),
++
++  body('password')
++    .exists({ values: 'falsy' }).withMessage('Password is required.'),
++];
++
++module.exports = {
++  signupValidation,
++  signinValidation,
++};
+\ No newline at end of file
+-- 
+2.43.0
+
