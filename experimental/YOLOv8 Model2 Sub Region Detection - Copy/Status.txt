@@ -1,0 +1,14 @@
+Status: Experimental / Near deployment.
+
+Model Yolo B chosen, as other albumentation break some dependencies on load. 
+
+Purpose:
+phase 2 of catalogue ingestion pipeline. This shows the development of the sub region bounding box detection model.
+
+Current limitations:
+- OCR processing moved to a new .ipynb and is near completion. 
+- full deployment pipeline including model 1 -> model 2 -> OCR
+
+Next steps:
+- OCR module is near completion and a successful run using paddle OCR and zone tesseract as two different alternatives have been completed.
+- finalise the production run for backlog. Work with the DE team to create a production run for newly released catalogues as a backup data pipeline.

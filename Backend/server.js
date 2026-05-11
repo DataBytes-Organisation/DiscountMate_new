@@ -12,11 +12,18 @@ const blogRoutes = require('./src/routers/blog.router');
 const newsRoutes = require('./src/routers/news.router');
 const contactRoutes = require('./src/routers/contact.router');
 const basketRoutes = require('./src/routers/basket.router');
+const shoppingListRoutes = require('./src/routers/shopping-list.router');
 const mlRoutes = require('./src/routers/ml.router');
 const analyticsRoutes = require('./src/routers/analytics.router');
+const reverseImageSearchRoutes = require('./src/routers/reverse-image-search.router');
+const { startReverseImageSearch, stopReverseImageSearch } = require('./src/services/reverseImageSearchProcess');
+const dashboardRoutes = require('./src/routers/dashboard.router');
+const notificationRoutes = require('./src/routers/notification.router');
+const alertSegmentRoutes = require('./src/routers/alertSegment.router');
+const listRoutes = require('./src/routers/list.router');
 
 if (process.env.NODE_ENV !== 'production') {
-   require('dotenv').config();
+   require('dotenv').config({ path: path.join(__dirname, '.env') });
 }
 
 const setupSwagger = require('./src/config/swagger');
@@ -53,7 +60,7 @@ app.use(helmet({
 // CORS Configuration
 app.use(cors({
     origin: "*",
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true
 }));
 
@@ -138,6 +145,13 @@ async function startServer() {
       process.exit(1);
    }
 
+   try {
+      await startReverseImageSearch();
+   } catch (err) {
+      console.error('Failed to start ReverseImageSearch sidecar:', err.message);
+      process.exit(1);
+   }
+
    app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
    });
@@ -148,11 +162,17 @@ app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/baskets', basketRoutes);
+app.use('/api/shopping-lists', shoppingListRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/ml', mlRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/reverse-image-search', reverseImageSearchRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/alert-segments', alertSegmentRoutes);
+app.use('/api/lists', listRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -167,3 +187,11 @@ app.use((err, req, res, next) => {
 
 // Start the server
 startServer();
+
+function shutdown(signal) {
+   console.log(`Received ${signal}. Shutting down...`);
+   stopReverseImageSearch();
+   process.exit(0);
+}
+process.on('SIGINT',  () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
