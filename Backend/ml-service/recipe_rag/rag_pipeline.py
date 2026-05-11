@@ -27,6 +27,10 @@ except ImportError:
     print("WARNING: sentence-transformers not installed. "
           "Run: pip install sentence-transformers")
 
+try:
+    from .gcs_loader import ensure_index_file       # when imported as package (Flask)
+except ImportError:
+    from gcs_loader import ensure_index_file        # when run directly (CLI test)
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -239,13 +243,14 @@ class RecipeRetriever:
         self._load()
 
     def _load(self):
-        emb_path = os.path.join(self.index_dir, "recipe_index.npz")
-        meta_path = os.path.join(self.index_dir, "recipe_metadata.json")
-        if not (os.path.exists(emb_path) and os.path.exists(meta_path)):
+        try:
+            emb_path = ensure_index_file("recipe_index.npz", self.index_dir)
+            meta_path = ensure_index_file("recipe_metadata.json", self.index_dir)
+        except RuntimeError as e:
             raise FileNotFoundError(
-                f"Recipe index missing in {self.index_dir}. "
-                "Run: python build_recipe_index.py"
-            )
+                f"Recipe index unavailable (local + GCS both failed): {e}\n"
+                "Run: python build_recipe_index.py — or check GCS auth."
+            ) from e
         self.embeddings = np.load(emb_path)["embeddings"].astype(np.float32)
         with open(meta_path, "r", encoding="utf-8") as f:
             self.recipes = json.load(f)
@@ -313,11 +318,12 @@ class ProductMatcher:
         self._try_load()
 
     def _try_load(self):
-        emb_path = os.path.join(self.index_dir, "product_index.npz")
-        meta_path = os.path.join(self.index_dir, "product_metadata.json")
-        if not (os.path.exists(emb_path) and os.path.exists(meta_path)):
-            print(f"[ProductMatcher] no product index in {self.index_dir} "
-                  "— annotations DISABLED. Run product_embedder.py to enable.")
+        try:
+            emb_path = ensure_index_file("product_index.npz", self.index_dir)
+            meta_path = ensure_index_file("product_metadata.json", self.index_dir)
+        except RuntimeError as e:
+            print(f"[ProductMatcher] product index unavailable "
+                  f"(local + GCS both failed) — annotations DISABLED. {e}")
             return
 
         data = np.load(emb_path, allow_pickle=True)

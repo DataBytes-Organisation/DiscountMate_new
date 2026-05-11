@@ -5,6 +5,7 @@ import AppHeader from "../../components/layout/Header";
 import CategoryTabs from "../../components/layout/CategoryTabs";
 import SearchBar from "../../components/layout/SearchBar";
 import { CartProvider } from "./CartContext";
+import RecipeBot from "./RecipeBot";
 
 export default function TabsLayout() {
    const segments = useSegments();
@@ -42,6 +43,11 @@ export default function TabsLayout() {
                   <Slot />
                </ScrollView>
             )}
+
+            {/* Floating Recipe RAG chatbot — sits above the scroll
+             container so it stays pinned to the viewport corner
+             on every page in the (tabs) group. */}
+            <RecipeBot />
          </View>
       </CartProvider>
    );
