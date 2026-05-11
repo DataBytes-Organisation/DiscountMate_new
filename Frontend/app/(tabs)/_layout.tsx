@@ -3,7 +3,6 @@ import { View, ScrollView } from "react-native";
 import { Slot, useSegments } from "expo-router";
 import AppHeader from "../../components/layout/Header";
 import SearchBar from "../../components/layout/SearchBar";
-
 export default function TabsLayout() {
    const segments = useSegments();
    const isDashboardPage = segments.includes("dashboard");

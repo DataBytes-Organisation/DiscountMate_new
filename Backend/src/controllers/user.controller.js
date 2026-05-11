@@ -318,7 +318,6 @@ const SUBSCRIPTION_PLAN_CONFIG = {
         },
     },
 };
-
 function normalizeSubscriptionPlan(plan) {
     const normalized = String(plan || '').trim().toLowerCase();
     if (normalized === 'premium' || normalized === 'family') {

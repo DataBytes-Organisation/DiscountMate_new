@@ -1,0 +1,13 @@
+streamlit
+torch
+torchvision
+faiss-cpu
+opencv-python
+pillow
+numpy
+fastapi
+uvicorn[standard]
+python-multipart
+pymongo
+python-dotenv
+requests

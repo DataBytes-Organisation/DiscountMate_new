@@ -4,12 +4,17 @@ pandas==2.1.4
 numpy==1.26.2
 pymongo==4.6.1
 python-dotenv==1.0.0
+joblib==1.3.2
 
-# ML/AI libraries (add as needed based on your models)
-# scikit-learn==1.3.2
-# tensorflow==2.15.0
-# torch==2.1.0
-# transformers==4.36.0
-joblib==1.3.2  # Required for loading the recommendation model
-# pickle5==0.0.12
+# Reverse image search (FastAPI sidecar in reverse_image_search/)
+torch
+torchvision
+faiss-cpu
+opencv-python
+pillow
+fastapi
+uvicorn[standard]
+python-multipart
+requests
+google-cloud-storage
 

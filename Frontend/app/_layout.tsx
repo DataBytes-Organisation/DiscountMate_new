@@ -10,6 +10,7 @@ import '../global.css';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { CartProvider } from './(tabs)/CartContext';
 import { ShoppingListsProvider } from './(tabs)/ShoppingListsContext';
+import { ImageSearchProvider } from './(tabs)/ImageSearchContext';
 import { UserProfileProvider } from '../context/UserProfileContext';
 import { NotificationCenterProvider } from '../context/NotificationCenterContext';
 
@@ -52,23 +53,26 @@ export default function RootLayout() {
       return null;
    }
 
-   return (
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-         <ShoppingListsProvider>
-            <CartProvider>
-               <UserProfileProvider>
-                  <NotificationCenterProvider>
-                     <Stack>
-                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                        <Stack.Screen name="(product)" options={{ headerShown: false }} />
-                        <Stack.Screen name="(specials)" options={{ headerShown: false }} />
-                        <Stack.Screen name="+not-found" />
-                     </Stack>
-                  </NotificationCenterProvider>
-               </UserProfileProvider>
-            </CartProvider>
-         </ShoppingListsProvider>
-      </ThemeProvider>
-   );
+    return (
+       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <ImageSearchProvider>
+             <ShoppingListsProvider>
+                <CartProvider>
+                   <UserProfileProvider>
+                      <NotificationCenterProvider>
+                         <Stack>
+                            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                            <Stack.Screen name="(product)" options={{ headerShown: false }} />
+                            <Stack.Screen name="(specials)" options={{ headerShown: false }} />
+                            <Stack.Screen name="+not-found" />
+                         </Stack>
+                      </NotificationCenterProvider>
+                   </UserProfileProvider>
+                </CartProvider>
+             </ShoppingListsProvider>
+          </ImageSearchProvider>
+       </ThemeProvider>
+    );
+
 }
