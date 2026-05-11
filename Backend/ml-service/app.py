@@ -9,10 +9,13 @@ import numpy as np
 from datetime import datetime, timedelta
 import os
 import sys
+import tempfile
+from werkzeug.utils import secure_filename
 
 # Import ML model functions
 from ml_models.weekly_specials import get_weekly_specials_ml
 from ml_models.recommendations import get_recommendations_ml
+from ocr.extractor import process_receipt_internal, build_user_response
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -22,6 +25,7 @@ CORS(app)  # Enable CORS for all routes
 # Example: ML_SERVICE_PORT=5002 python app.py
 ML_SERVICE_PORT = int(os.getenv('ML_SERVICE_PORT', 5001))
 
+
 @app.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
@@ -30,6 +34,7 @@ def health_check():
         'service': 'ML/AI Service',
         'timestamp': datetime.now().isoformat()
     })
+
 
 @app.route('/api/weekly-specials', methods=['GET'])
 def get_weekly_specials():
@@ -66,11 +71,13 @@ def get_weekly_specials():
             'error': str(e)
         }), 500
 
+
 def get_current_week():
     """Get current week identifier"""
     today = datetime.now()
     week_start = today - timedelta(days=today.weekday())
     return week_start.strftime('%Y-W%W')
+
 
 @app.route('/api/ml/recommendations', methods=['POST'])
 def get_recommendations():
@@ -124,12 +131,68 @@ def get_recommendations():
             'error': str(e)
         }), 500
 
+
+@app.route('/api/ocr/receipt', methods=['POST'])
+def process_receipt_api():
+    """
+    Upload a receipt image and return extracted structured data
+    """
+    temp_path = None
+
+    try:
+        if 'file' not in request.files:
+            return jsonify({
+                'success': False,
+                'error': 'No file uploaded. Please attach a receipt image using the "file" field.'
+            }), 400
+
+        uploaded_file = request.files['file']
+
+        if uploaded_file.filename == '':
+            return jsonify({
+                'success': False,
+                'error': 'No file selected. Please choose a receipt image to upload.'
+            }), 400
+
+        filename = secure_filename(uploaded_file.filename)
+        allowed_extensions = {'.jpg', '.jpeg', '.png', '.webp', '.bmp'}
+        file_ext = os.path.splitext(filename)[1].lower()
+
+        if file_ext not in allowed_extensions:
+            return jsonify({
+                'success': False,
+                'error': 'Unsupported file type. Please upload a JPG, JPEG, PNG, WEBP, or BMP image.'
+            }), 400
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as temp_file:
+            uploaded_file.save(temp_file.name)
+            temp_path = temp_file.name
+
+        internal_result = process_receipt_internal(temp_path)
+        user_result = build_user_response(internal_result)
+
+        if not user_result.get('success'):
+            return jsonify(user_result), 400
+
+        return jsonify(user_result), 200
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Receipt processing failed: {str(e)}'
+        }), 500
+
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
+
+
 if __name__ == '__main__':
     print(f"Starting ML/AI Service on port {ML_SERVICE_PORT}")
     print("Available endpoints:")
     print("  GET  /health - Health check")
     print("  GET  /api/weekly-specials - Get this week's top specials")
     print("  POST /api/ml/recommendations - Get product recommendations")
-   #  print("  POST /api/ml/price-prediction - Predict future prices")
+    print("  POST /api/ocr/receipt - Process uploaded receipt image")
+    # print("  POST /api/ml/price-prediction - Predict future prices")
     app.run(host='0.0.0.0', port=ML_SERVICE_PORT, debug=True)
-

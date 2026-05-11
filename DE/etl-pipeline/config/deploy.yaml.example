@@ -1,0 +1,21 @@
+# Deployment template. Values are read from environment variables at runtime.
+mode: cloud
+
+paths:
+  bronze_root: ${BRONZE_ROOT}
+
+models:
+  products_coles:
+    products: "{bronze_root}/coles/coles_sample_{date_compact}.csv"
+
+  products_woolworths:
+    products: "{bronze_root}/woolworths/woolworths_sample_{date_compact}.csv"
+
+  products_iga:
+    products: "{bronze_root}/iga/iga_sample_{date_compact}.csv"
+
+  products_aldi:
+    products: "{bronze_root}/aldi/aldi_sample_{date_compact}.csv"
+
+  example:
+    products: "{bronze_root}/coles/coles_sample_{date_compact}.csv"

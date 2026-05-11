@@ -1,0 +1,81 @@
+---
+title: "Docusaurus Copy-Paste Template"
+sidebar_label: "Docusaurus Template MDX Format"
+sidebar_position: 2
+---
+
+# Docusaurus Copy-Paste Template (use for PDF embeddings or more advanced features)
+
+The standard markdown template which can be found here should cover most of your needs. 
+```
+docs-site\docs\Templates & Examples\documarkdown_copy_paste_template.md
+```
+However if you need more advanced features such as PDF embedding tabs etc then you can use MDX format. 
+
+For more information see this cheat sheet 
+
+[Docusaurus MD and MDX Cheat Sheet](https://docs.flashbots.net/cheatsheet)
+
+:::note Redback Attribution
+This format was copied from Redbacks Docusaurus site.
+
+See link here:
+
+[Redback Docusaurus](https://redback-operations.github.io/redback-documentation/docs/example/pdf-tutorial)
+:::
+
+:::danger[Important!]
+
+Please view the source code of this file on
+[Github](https://github.com/Redback-Operations/redback-documentation/blob/main/docs/example/pdf-tutorial.mdx) to see how it's done!
+
+:::
+
+## How-to
+
+### Check your file types!
+
+For embedding PDFs to work, please ensure:
+
+1. It is actually a PDF file.
+
+2. Ensure that your documentation file is a **`.mdx`** file **rather than** a **`.md`** file. This
+is due to **`.mdx`** supporting small amounts of HTML, CSS, JS, and React, of which some HTML
+is used here. (this also means you can do other cool things too if you want!).
+
+
+### Hosting the file
+
+Typically when files such as PDFs are uploaded to this build, their names are converted
+to a random string in order to avoid duplication. However, we can bypass this.
+
+To do so, save your PDF in the **`static/pdf`** folder. Ensure the document has a unique
+name.
+
+Once deployed, the file will have the URL **`https://redback-operations.github.io/redback-documentation/pdf/<file name.pdf>`**
+
+The `<file name.pdf>` (which you need to replace!) is **case sensitive**.
+
+This cannot be tested locally, so please ensure the URL is correct before putting in the
+pull request, and also check after an approver has deployed the live site in case there is an
+issue.
+
+
+### Adding the PDF to the pages
+
+Now the fun part! However, once again, this cannot be tested locally so please ensure you
+follow the steps correctly.
+
+On your **`.mdx`** file, after you have set the page up see here for more information copy and paste the below code where relevant
+on your page, ensuring you replace the URL with that you created in the previous step.
+
+```
+<embed
+      src="https://redback-operations.github.io/redback-documentation/pdf/<file>.pdf"
+      type="application/pdf"
+      width="100%"
+      height="800px"
+/>
+```
+
+`800px` height is recommended, but this can be changed if needed.

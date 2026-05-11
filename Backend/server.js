@@ -12,6 +12,7 @@ const blogRoutes = require('./src/routers/blog.router');
 const newsRoutes = require('./src/routers/news.router');
 const contactRoutes = require('./src/routers/contact.router');
 const basketRoutes = require('./src/routers/basket.router');
+const shoppingListRoutes = require('./src/routers/shopping-list.router');
 const mlRoutes = require('./src/routers/ml.router');
 const analyticsRoutes = require('./src/routers/analytics.router');
 
@@ -148,6 +149,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/baskets', basketRoutes);
+app.use('/api/shopping-lists', shoppingListRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/contact', contactRoutes);

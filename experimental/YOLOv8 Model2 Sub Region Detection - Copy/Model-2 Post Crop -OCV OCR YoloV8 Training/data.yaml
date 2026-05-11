@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 5
+names: ['description_block', 'price_main', 'product_image_block', 'promo_text_block', 'unit_price_block']
+
+roboflow:
+  workspace: deakincapstonediscountmatecomputervision
+  project: model-2-post-crop-ocv-ocr
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/deakincapstonediscountmatecomputervision/model-2-post-crop-ocv-ocr/dataset/2

@@ -1,0 +1,119 @@
+task: detect
+mode: train
+model: runs_dm/model2_tiles_regions2/weights/best.pt
+data: Model-2 Post Crop -OCV OCR YoloV8 Training\data.yaml
+epochs: 120
+time: null
+patience: 20
+batch: 2
+imgsz: 640
+save: true
+save_period: -1
+cache: false
+device: '0'
+workers: 2
+project: runs_dm
+name: model2_tiles_regions_yolo8_albu_pixelonly
+exist_ok: false
+pretrained: true
+optimizer: auto
+verbose: true
+seed: 0
+deterministic: true
+single_cls: false
+rect: false
+cos_lr: false
+close_mosaic: 10
+resume: false
+amp: true
+fraction: 1.0
+profile: false
+freeze: null
+multi_scale: false
+compile: false
+overlap_mask: true
+mask_ratio: 4
+dropout: 0.0
+val: true
+split: val
+save_json: false
+conf: null
+iou: 0.7
+max_det: 300
+half: false
+dnn: false
+plots: true
+source: null
+vid_stride: 1
+stream_buffer: false
+visualize: false
+augment: false
+agnostic_nms: false
+classes: null
+retina_masks: false
+embed: null
+show: false
+save_frames: false
+save_txt: false
+save_conf: false
+save_crop: false
+show_labels: true
+show_conf: true
+show_boxes: true
+line_width: null
+format: torchscript
+keras: false
+optimize: false
+int8: false
+dynamic: false
+simplify: true
+opset: null
+workspace: null
+nms: false
+lr0: 0.01
+lrf: 0.01
+momentum: 0.937
+weight_decay: 0.0005
+warmup_epochs: 3.0
+warmup_momentum: 0.8
+warmup_bias_lr: 0.1
+box: 7.5
+cls: 0.5
+dfl: 1.5
+pose: 12.0
+kobj: 1.0
+nbs: 64
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+degrees: 0.0
+translate: 0.0
+scale: 0.0
+shear: 0.0
+perspective: 0.0
+flipud: 0.0
+fliplr: 0.0
+bgr: 0.0
+mosaic: 0.0
+mixup: 0.0
+cutmix: 0.0
+copy_paste: 0.0
+copy_paste_mode: flip
+auto_augment: randaugment
+erasing: 0.4
+cfg: null
+tracker: botsort.yaml
+augmentations:
+- "OneOf([\n  Blur(p=1.0, blur_limit=(3, 5)),\n  MedianBlur(p=1.0, blur_limit=(3,
+  5)),\n  GaussianBlur(p=1.0, blur_limit=(3, 5), sigma_limit=(0.5, 3.0)),\n], p=0.15)"
+- "OneOf([\n  GaussNoise(p=1.0, mean_range=(0.0, 0.0), noise_scale_factor=1.0, per_channel=True,
+  std_range=(0.2, 0.44)),\n  ISONoise(p=1.0, color_shift=(0.01, 0.03), intensity=(0.1,
+  0.3)),\n], p=0.15)"
+- RandomBrightnessContrast(p=0.35, brightness_by_max=True, brightness_limit=(-0.15,
+  0.15), contrast_limit=(-0.15, 0.15), ensure_safe_range=False)
+- HueSaturationValue(p=0.25, hue_shift_limit=(-5.0, 5.0), sat_shift_limit=(-20.0,
+  20.0), val_shift_limit=(-10.0, 10.0))
+- ToGray(p=0.05, method='weighted_average', num_output_channels=3)
+- CLAHE(p=0.1, clip_limit=(1.0, 3.0), tile_grid_size=(8, 8))
+save_dir: D:\DEAKIN Post Grad Data Science\MASTERS UNITS\DiscountMate_Clone\DiscountMate_new\YOLOv8
+  Model2 Sub Region Detection\runs_dm\model2_tiles_regions_yolo8_albu_pixelonly

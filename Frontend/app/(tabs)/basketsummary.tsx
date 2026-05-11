@@ -3,6 +3,7 @@ import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-nati
 import BasketSummaryItem from './basketsummaryitem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSegments } from 'expo-router';
+import { API_URL } from '../../constants/Api';
 
 interface Basket {
   basketItemId: number;
@@ -33,7 +34,7 @@ export default function basketsummary() {
 
   const getBasketItems = async () => {
     console.log('Getting basket items');
-    const url = 'http://localhost:3000/api/baskets/getbasket';
+    const url = `${API_URL}/baskets/getbasket`;
     const token = await AsyncStorage.getItem('authToken');
     if (!token) {
       return;
@@ -66,7 +67,7 @@ export default function basketsummary() {
   };
 
   const deleteItemFromBasket = async (productId: number) => {
-    const url = 'http://localhost:3000/api/baskets/deleteitemfrombasket';
+    const url = `${API_URL}/baskets/deleteitemfrombasket`;
     const token = await AsyncStorage.getItem('authToken');
     if (!token) {
       return;
@@ -90,7 +91,7 @@ export default function basketsummary() {
   };
 
   const updateQuantity = async (productId: number, quantity: number) => {
-    const url = 'http://localhost:3000/api/baskets/updatequantity';
+    const url = `${API_URL}/baskets/updatequantity`;
     const token = await AsyncStorage.getItem('authToken');
     const data = {
       quantity: quantity,

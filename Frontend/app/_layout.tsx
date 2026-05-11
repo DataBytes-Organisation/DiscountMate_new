@@ -9,6 +9,7 @@ import '../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { CartProvider } from './(tabs)/CartContext';
+import { ShoppingListsProvider } from './(tabs)/ShoppingListsContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -17,6 +18,27 @@ export default function RootLayout() {
    const [loaded] = useFonts({
       SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
    });
+
+   // Inject Google Analytics for Expo Web
+   useEffect(() => {
+      if (typeof document !== 'undefined') {
+         // Load GA script
+         const script = document.createElement('script');
+         script.async = true;
+         script.src = "https://www.googletagmanager.com/gtag/js?id=G-KV1PBPHM30";
+         document.head.appendChild(script);
+
+         // Configure GA
+         const inlineScript = document.createElement('script');
+         inlineScript.innerHTML = `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-KV1PBPHM30');
+         `;
+         document.head.appendChild(inlineScript);
+      }
+   }, []);
 
    useEffect(() => {
       if (loaded) {
@@ -30,14 +52,16 @@ export default function RootLayout() {
 
    return (
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-         <CartProvider>
-            <Stack>
-               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-               <Stack.Screen name="(product)" options={{ headerShown: false }} />
-               <Stack.Screen name="+not-found" />
-            </Stack>
-         </CartProvider>
+         <ShoppingListsProvider>
+            <CartProvider>
+               <Stack>
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                  <Stack.Screen name="(product)" options={{ headerShown: false }} />
+                  <Stack.Screen name="+not-found" />
+               </Stack>
+            </CartProvider>
+         </ShoppingListsProvider>
       </ThemeProvider>
    );
 }

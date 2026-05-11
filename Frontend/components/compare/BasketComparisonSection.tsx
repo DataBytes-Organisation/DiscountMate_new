@@ -1,33 +1,32 @@
-import React, { useMemo } from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
+import React, { useMemo, useState } from "react";
+import { View, Text, Pressable, ScrollView, Image, Modal } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useCart } from "../../app/(tabs)/CartContext";
+import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
+import type { ShoppingList } from "../../types/ShoppingList";
 
-type StoreKey = "aldi" | "coles" | "woolworths";
+type StoreKey = "iga" | "coles" | "woolworths";
 
 type BasketItem = {
    id: string;
    name: string;
    subtitle: string;
    qty: number;
+   image?: string;
    icon: string;
-   prices: Record<StoreKey, number>; // per-item total for that qty (like the table)
+   lineTotal: number;
+   unitRetailerPrices?: {
+      coles?: number;
+      woolworths?: number;
+      iga?: number;
+   };
+   prices: Record<StoreKey, number | null>; // per-item total for that qty
 };
 
-// Helper function to generate store prices based on base price
-// This creates realistic price variations across stores
-const generateStorePrices = (basePrice: number, quantity: number): Record<StoreKey, number> => {
-   // Generate prices with some variation: Aldi typically cheapest, then Coles, then Woolworths
-   const aldiPrice = basePrice * 0.92; // ~8% cheaper
-   const colesPrice = basePrice * 0.98; // ~2% cheaper
-   const woolworthsPrice = basePrice; // base price
-
-   return {
-      aldi: aldiPrice * quantity,
-      coles: colesPrice * quantity,
-      woolworths: woolworthsPrice * quantity,
-   };
+type BasketComparisonSectionProps = {
+   selectedList?: ShoppingList | null;
+   useStaticStoreTotals?: boolean;
 };
 
 // Helper to get icon based on product name
@@ -42,99 +41,234 @@ const getIconForProduct = (name: string): string => {
    return "bag-shopping";
 };
 
-export default function BasketComparisonSection() {
+export default function BasketComparisonSection({
+   selectedList,
+   useStaticStoreTotals = false,
+}: BasketComparisonSectionProps) {
    const router = useRouter();
-   const { cartItems, removeFromCart, updateQuantity } = useCart();
+   const { cartItems, updateQuantity } = useCart();
+   const {
+      getActiveList,
+      getListById,
+      updateListItemQuantity,
+      updateListItemRetailer,
+      updateListItemsRetailers,
+   } = useShoppingLists();
+   const activeList = getActiveList();
+   const liveSelectedList = selectedList?.id ? getListById(selectedList.id) ?? selectedList : selectedList;
+   const activeListName = activeList?.name ?? "Your Grocery List";
+   const displayedListName = liveSelectedList?.name ?? activeListName;
+   const [previewItem, setPreviewItem] = useState<BasketItem | null>(null);
+   const sourceItems =
+      liveSelectedList?.items ??
+      cartItems.map((item) => ({
+         id: item.id,
+         name: item.name,
+         price: item.price,
+         quantity: item.quantity || 1,
+         store: item.store,
+         image: item.image,
+         retailerPrices: item.retailerPrices,
+      }));
 
    // Convert cart items to basket items format with store prices
    const basketItems: BasketItem[] = useMemo(() => {
-      return cartItems.map((item) => {
+      return sourceItems.map((item) => {
          const quantity = item.quantity || 1;
-         const prices = generateStorePrices(item.price, quantity);
+         const selectedStoreName = (item.store ?? "").toLowerCase();
+         const selectedStore =
+            selectedStoreName.includes("coles")
+               ? "coles"
+               : selectedStoreName.includes("woolworths")
+                  ? "woolworths"
+                  : selectedStoreName.includes("iga")
+                     ? "iga"
+                     : null;
+
+         const priceForStore = (store: StoreKey) => {
+            const retailerPrice = item.retailerPrices?.[store];
+            if (typeof retailerPrice === "number" && !isNaN(retailerPrice) && retailerPrice > 0) {
+               return retailerPrice * quantity;
+            }
+
+            if (selectedStore === store && item.price > 0) {
+               return item.price * quantity;
+            }
+
+            return null;
+         };
 
          return {
             id: item.id,
             name: item.name,
             subtitle: item.store || "Available at all stores",
             qty: quantity,
+            image: item.image,
             icon: getIconForProduct(item.name),
-            prices,
+            lineTotal: item.price * quantity,
+            unitRetailerPrices: item.retailerPrices,
+            prices: {
+               coles: priceForStore("coles"),
+               woolworths: priceForStore("woolworths"),
+               iga: priceForStore("iga"),
+            },
          };
       });
-   }, [cartItems]);
+   }, [sourceItems]);
 
-   const bestStoreForItem = (item: BasketItem) => {
-      const entries = Object.entries(item.prices) as [StoreKey, number][];
+   const targetListId = liveSelectedList?.id ?? activeList?.id ?? null;
+
+   const bestStoreForItem = (item: BasketItem): StoreKey | null => {
+      const entries = (Object.entries(item.prices) as [StoreKey, number | null][])
+         .filter(([, price]) => typeof price === "number" && !isNaN(price));
+      if (entries.length === 0) return null;
       entries.sort((a, b) => a[1] - b[1]);
       return entries[0][0];
    };
 
-   const storeLabel = (k: StoreKey) =>
-      k === "aldi" ? "Aldi" : k === "coles" ? "Coles" : "Woolworths";
+   const isCheapestStoreForItem = (item: BasketItem, store: StoreKey) => {
+      const currentPrice = item.prices[store];
+      if (typeof currentPrice !== "number" || isNaN(currentPrice)) return false;
 
-   // Calculate store totals from basket items
+      const availablePrices = Object.values(item.prices).filter(
+         (price): price is number => typeof price === "number" && !isNaN(price)
+      );
+      if (availablePrices.length === 0) return false;
+
+      const cheapestPrice = Math.min(...availablePrices);
+      return Math.abs(currentPrice - cheapestPrice) < 0.005;
+   };
+
+   const selectedStoreForItem = (item: BasketItem): StoreKey | null => {
+      const normalized = item.subtitle.toLowerCase();
+      if (normalized.includes("coles")) return "coles";
+      if (normalized.includes("woolworths")) return "woolworths";
+      if (normalized.includes("iga")) return "iga";
+      return null;
+   };
+
+   const storeLabel = (k: StoreKey) =>
+      k === "iga" ? "IGA" : k === "coles" ? "Coles" : "Woolworths";
+
+   const previewRetailers = useMemo(() => {
+      if (!previewItem) return [];
+
+      const rows = (Object.entries(previewItem.prices) as [StoreKey, number | null][])
+         .map(([store, price]) => ({
+            store,
+            label: storeLabel(store),
+            price,
+            isSelected: selectedStoreForItem(previewItem) === store,
+            isCheapest: isCheapestStoreForItem(previewItem, store),
+         }));
+
+      return rows;
+   }, [previewItem]);
+
+   // Calculate each retailer's actual total based on the current list allocation.
    const storeTotals = useMemo(() => {
       const totals: Record<StoreKey, number> = {
-         aldi: 0,
+         iga: 0,
          coles: 0,
          woolworths: 0,
       };
 
       basketItems.forEach((item) => {
-         totals.aldi += item.prices.aldi;
-         totals.coles += item.prices.coles;
-         totals.woolworths += item.prices.woolworths;
+         const selectedStore = selectedStoreForItem(item);
+         if (!selectedStore) return;
+         totals[selectedStore] += item.lineTotal;
       });
 
       return totals;
    }, [basketItems]);
 
-   // Find cheapest store
-   const cheapestStore: StoreKey = useMemo(() => {
-      const entries = Object.entries(storeTotals) as [StoreKey, number][];
-      entries.sort((a, b) => a[1] - b[1]);
-      return entries[0][0];
-   }, [storeTotals]);
-
-   const cheapestTotal = storeTotals[cheapestStore];
-   const deltas = {
-      coles: storeTotals.coles - cheapestTotal,
-      woolworths: storeTotals.woolworths - cheapestTotal,
-   };
-
-   // Calculate wins per store
-   const wins = useMemo(() => {
-      const winCounts: Record<StoreKey, number> = {
-         aldi: 0,
+   const allocationResultByStore = useMemo(() => {
+      const result: Record<StoreKey, number> = {
+         iga: 0,
          coles: 0,
          woolworths: 0,
       };
 
       basketItems.forEach((item) => {
-         const best = bestStoreForItem(item);
-         winCounts[best]++;
+         const selectedStore = selectedStoreForItem(item);
+         if (!selectedStore) return;
+
+         const selectedPrice = item.prices[selectedStore];
+         if (typeof selectedPrice !== "number" || isNaN(selectedPrice)) return;
+
+         const availablePrices = Object.values(item.prices).filter(
+            (price): price is number => typeof price === "number" && !isNaN(price)
+         );
+         if (availablePrices.length === 0) return;
+
+         const cheapestPrice = Math.min(...availablePrices);
+         const highestPrice = Math.max(...availablePrices);
+         const isCheapestSelection = Math.abs(selectedPrice - cheapestPrice) < 0.005;
+         result[selectedStore] += isCheapestSelection
+            ? Math.max(0, highestPrice - selectedPrice)
+            : -(selectedPrice - cheapestPrice);
+      });
+
+      return result;
+   }, [basketItems]);
+
+   // Calculate selected item counts per store for the current list allocation.
+   const selectedCounts = useMemo(() => {
+      if (useStaticStoreTotals) {
+         return {
+            iga: 6,
+            coles: 0,
+            woolworths: 0,
+         } satisfies Record<StoreKey, number>;
+      }
+
+      const winCounts: Record<StoreKey, number> = {
+         iga: 0,
+         coles: 0,
+         woolworths: 0,
+      };
+
+      basketItems.forEach((item) => {
+         const selectedStore = selectedStoreForItem(item);
+         if (!selectedStore) return;
+         winCounts[selectedStore]++;
       });
 
       return winCounts;
-   }, [basketItems]);
+   }, [basketItems, useStaticStoreTotals]);
+
+   const bestSavingsStore = useMemo<StoreKey | null>(() => {
+      const entries = (Object.entries(allocationResultByStore) as [StoreKey, number][])
+         .filter(([store, value]) => selectedCounts[store] > 0 && value > 0.005);
+      if (entries.length === 0) return null;
+      entries.sort((a, b) => b[1] - a[1]);
+      return entries[0][0];
+   }, [allocationResultByStore, selectedCounts]);
 
    // For the progress bars in store totals card
    const winPercent = (store: StoreKey) => {
+      if (useStaticStoreTotals) {
+         return store === "iga" ? 100 : 0;
+      }
+
       const totalItems = basketItems.length;
       if (totalItems === 0) return 0;
-      return Math.round((wins[store] / totalItems) * 100);
+      return Math.round((selectedCounts[store] / totalItems) * 100);
    };
 
-   // Calculate savings summary
-   const originalTotal = useMemo(() => {
-      // Use highest store total as "original"
-      return Math.max(storeTotals.coles, storeTotals.woolworths, storeTotals.aldi);
-   }, [storeTotals]);
+   const optimizeGroceryList = () => {
+      if (!targetListId || basketItems.length === 0) return;
 
-   const optimizedTotal = cheapestTotal;
-   const totalSavings = originalTotal - optimizedTotal;
-   const savingsFromDiscounts = totalSavings * 0.6; // 60% from discounts
-   const savingsFromBestPrices = totalSavings * 0.4; // 40% from best prices
+      const retailersByItemId = basketItems.reduce<Record<string, StoreKey>>((acc, item) => {
+         const bestStore = bestStoreForItem(item);
+         if (bestStore) {
+            acc[item.id] = bestStore;
+         }
+         return acc;
+      }, {});
+
+      updateListItemsRetailers(targetListId, retailersByItemId);
+   };
 
    return (
       <View className="px-4 md:px-8 py-10 bg-[#F9FAFB]">
@@ -150,7 +284,13 @@ export default function BasketComparisonSection() {
                   </Text>
                </View>
 
-               <Pressable className="bg-primary_green rounded-2xl px-5 py-3 flex-row items-center gap-2 shadow-sm">
+               <Pressable
+                  onPress={optimizeGroceryList}
+                  disabled={!targetListId || basketItems.length === 0}
+                  className={`bg-primary_green rounded-2xl px-5 py-3 flex-row items-center gap-2 shadow-sm ${
+                     !targetListId || basketItems.length === 0 ? "opacity-60" : ""
+                  }`}
+               >
                   <FontAwesome6 name="arrows-rotate" size={14} color="#FFFFFF" />
                   <Text className="text-white font-semibold">Optimize Grocery List</Text>
                </Pressable>
@@ -162,7 +302,7 @@ export default function BasketComparisonSection() {
                <View className="flex-[2] bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
                   <View className="flex-row items-center justify-between mb-4">
                      <Text className="text-lg font-bold text-gray-900">
-                        Your Grocery List{" "}
+                        {displayedListName}{" "}
                         <Text className="text-primary_green font-bold">
                            ({basketItems.length} items)
                         </Text>
@@ -191,20 +331,44 @@ export default function BasketComparisonSection() {
                                  idx < basketItems.length - 1 ? "border-b border-gray-100" : "",
                               ].join(" ")}
                            >
-                              <View className="w-12 h-12 rounded-xl bg-gray-100 items-center justify-center mr-4">
-                                 <FontAwesome6 name={item.icon as any} size={16} color="#9CA3AF" />
-                              </View>
+                              <Pressable
+                                 onPress={() => setPreviewItem(item)}
+                                 className="flex-1 flex-row items-center"
+                              >
+                                 <View className="w-12 h-12 rounded-xl bg-gray-100 items-center justify-center mr-4 overflow-hidden">
+                                    {item.image ? (
+                                       <Image
+                                          source={{ uri: item.image }}
+                                          style={{ width: "100%", height: "100%" }}
+                                          resizeMode="cover"
+                                       />
+                                    ) : (
+                                       <FontAwesome6 name={item.icon as any} size={16} color="#9CA3AF" />
+                                    )}
+                                 </View>
 
-                              <View className="flex-1">
-                                 <Text className="font-semibold text-gray-900">{item.name}</Text>
-                                 <Text className="text-xs text-gray-500 mt-1">{item.subtitle}</Text>
-                              </View>
+                                 <View className="flex-1">
+                                    <Text className="font-semibold text-gray-900">{item.name}</Text>
+                                    <Text className="text-xs text-gray-500 mt-1">{item.subtitle}</Text>
+                                 </View>
+                              </Pressable>
 
                               <View className="flex-row items-center gap-3">
+                                 <Pressable onPress={() => setPreviewItem(item)}>
+                                    <Text className="text-sm font-semibold text-gray-900 min-w-[72px] text-right">
+                                    ${item.lineTotal.toFixed(2)}
+                                    </Text>
+                                 </Pressable>
                                  {/* Quantity controls */}
                                  <View className="flex-row items-center gap-2 border border-gray-200 rounded-lg">
                                     <Pressable
-                                       onPress={() => updateQuantity(item.id, item.qty - 1)}
+                                       onPress={() => {
+                                          if (targetListId) {
+                                             updateListItemQuantity(targetListId, item.id, item.qty - 1);
+                                          } else {
+                                             updateQuantity(item.id, item.qty - 1);
+                                          }
+                                       }}
                                        className="px-2 py-1"
                                     >
                                        <FontAwesome6 name="minus" size={12} color="#6B7280" />
@@ -213,20 +377,18 @@ export default function BasketComparisonSection() {
                                        {item.qty}
                                     </Text>
                                     <Pressable
-                                       onPress={() => updateQuantity(item.id, item.qty + 1)}
+                                       onPress={() => {
+                                          if (targetListId) {
+                                             updateListItemQuantity(targetListId, item.id, item.qty + 1);
+                                          } else {
+                                             updateQuantity(item.id, item.qty + 1);
+                                          }
+                                       }}
                                        className="px-2 py-1"
                                     >
                                        <FontAwesome6 name="plus" size={12} color="#6B7280" />
                                     </Pressable>
                                  </View>
-
-                                 {/* Delete button */}
-                                 <Pressable
-                                    onPress={() => removeFromCart(item.id)}
-                                    className="p-2"
-                                 >
-                                    <FontAwesome6 name="trash" size={14} color="#EF4444" />
-                                 </Pressable>
                               </View>
                            </View>
                         ))
@@ -251,25 +413,23 @@ export default function BasketComparisonSection() {
                      Store Totals
                   </Text>
 
-                  {/* Aldi */}
+                  {/* IGA */}
                   <StoreTotalCard
-                     store="Aldi"
-                     total={storeTotals.aldi}
-                     savings={cheapestStore === "aldi" ? totalSavings : undefined}
-                     delta={cheapestStore !== "aldi" ? `+${(storeTotals.aldi - cheapestTotal).toFixed(2)}` : undefined}
-                     isCheapest={cheapestStore === "aldi"}
-                     winsText={`Wins on ${wins.aldi} items`}
-                     winPercent={winPercent("aldi")}
+                     store="IGA"
+                     total={storeTotals.iga}
+                     savings={allocationResultByStore.iga}
+                     isCheapest={bestSavingsStore === "iga"}
+                     winsText={`Selected for ${selectedCounts.iga} items`}
+                     winPercent={winPercent("iga")}
                   />
 
                   {/* Coles */}
                   <StoreTotalCard
                      store="Coles"
                      total={storeTotals.coles}
-                     savings={cheapestStore === "coles" ? totalSavings : undefined}
-                     delta={cheapestStore !== "coles" ? `+${deltas.coles.toFixed(2)}` : undefined}
-                     isCheapest={cheapestStore === "coles"}
-                     winsText={`Wins on ${wins.coles} items`}
+                     savings={allocationResultByStore.coles}
+                     isCheapest={bestSavingsStore === "coles"}
+                     winsText={`Selected for ${selectedCounts.coles} items`}
                      winPercent={winPercent("coles")}
                   />
 
@@ -277,23 +437,32 @@ export default function BasketComparisonSection() {
                   <StoreTotalCard
                      store="Woolworths"
                      total={storeTotals.woolworths}
-                     savings={cheapestStore === "woolworths" ? totalSavings : undefined}
-                     delta={cheapestStore !== "woolworths" ? `+${deltas.woolworths.toFixed(2)}` : undefined}
-                     isCheapest={cheapestStore === "woolworths"}
-                     winsText={`Wins on ${wins.woolworths} items`}
+                     savings={allocationResultByStore.woolworths}
+                     isCheapest={bestSavingsStore === "woolworths"}
+                     winsText={`Selected for ${selectedCounts.woolworths} items`}
                      winPercent={winPercent("woolworths")}
                   />
                </View>
             </View>
 
-            {/* Bottom grid: Item breakdown + Savings summary */}
             <View className="flex-row gap-6">
-               {/* Item-by-Item Breakdown */}
-               <View className="flex-[2] bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm">
-                  <View className="px-6 py-5 border-b border-gray-200 bg-gray-50">
-                     <Text className="text-lg font-bold text-gray-900">
-                        Item-by-Item Breakdown
-                     </Text>
+               <View className="w-full bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm">
+                  <View className="px-6 py-4 border-b border-gray-300 bg-gray-200">
+                     <View className="flex-row items-start justify-between gap-4">
+                        <View className="flex-1 min-w-0">
+                           <Text className="text-lg font-bold text-gray-900">
+                              Item-by-Item Breakdown
+                           </Text>
+                           <Text className="text-xs text-gray-600 mt-1">
+                              Tap a retailer price to apply it across this list.
+                           </Text>
+                        </View>
+                        <View className="px-2.5 py-1 rounded-full bg-white border border-gray-300">
+                           <Text className="text-[11px] font-semibold text-gray-700">
+                              Interactive pricing
+                           </Text>
+                        </View>
+                     </View>
                   </View>
 
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -307,16 +476,15 @@ export default function BasketComparisonSection() {
                            <>
                               {/* Table header */}
                               <View className="flex-row bg-gray-50 border-b border-gray-200">
-                                 <TableHeader title="Item" width={290} />
-                                 <TableHeader title="Qty" width={90} />
-                                 <TableHeader title="Coles" width={140} />
-                                 <TableHeader title="Woolworths" width={160} />
-                                 <TableHeader title="Aldi" width={140} isLast />
+                                 <TableHeader title="Item" width={420} />
+                                 <TableHeader title="Coles" width={190} />
+                                 <TableHeader title="Woolworths" width={190} />
+                                 <TableHeader title="IGA" width={190} isLast />
                               </View>
 
                               {/* Rows */}
                               {basketItems.map((item, idx) => {
-                                 const best = bestStoreForItem(item);
+                                 const selectedStore = selectedStoreForItem(item);
 
                                  return (
                                     <View
@@ -326,35 +494,60 @@ export default function BasketComparisonSection() {
                                           idx < basketItems.length - 1 ? "border-b border-gray-100" : "",
                                        ].join(" ")}
                                     >
-                                       <View className="w-[290px] px-6 py-4">
-                                          <Text className="text-sm font-semibold text-gray-900">
-                                             {item.name}
-                                          </Text>
-                                       </View>
-
-                                       <View className="w-[90px] px-4 py-4">
-                                          <View className="flex-row items-center gap-2 border border-gray-200 rounded-lg justify-center">
-                                             <Pressable
-                                                onPress={() => updateQuantity(item.id, item.qty - 1)}
-                                                className="px-1.5 py-1"
-                                             >
-                                                <FontAwesome6 name="minus" size={10} color="#6B7280" />
-                                             </Pressable>
-                                             <Text className="text-sm text-gray-900 font-semibold">
-                                                {item.qty}
-                                             </Text>
-                                             <Pressable
-                                                onPress={() => updateQuantity(item.id, item.qty + 1)}
-                                                className="px-1.5 py-1"
-                                             >
-                                                <FontAwesome6 name="plus" size={10} color="#6B7280" />
-                                             </Pressable>
+                                       <View className="w-[420px] px-6 py-4">
+                                          <View className="flex-row items-center gap-3">
+                                             <View className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden items-center justify-center">
+                                                {item.image ? (
+                                                   <Image
+                                                      source={{ uri: item.image }}
+                                                      style={{ width: "100%", height: "100%" }}
+                                                      resizeMode="cover"
+                                                   />
+                                                ) : (
+                                                   <FontAwesome6 name={item.icon as any} size={14} color="#9CA3AF" />
+                                                )}
+                                             </View>
+                                             <View className="flex-1 min-w-0">
+                                                <Text className="text-sm font-semibold text-gray-900" numberOfLines={2}>
+                                                   {item.name}
+                                                </Text>
+                                                <Text className="text-xs text-gray-500 mt-0.5">
+                                                   Qty {item.qty}
+                                                </Text>
+                                             </View>
                                           </View>
                                        </View>
 
-                                       <PriceCell value={item.prices.coles} isBest={best === "coles"} width={140} />
-                                       <PriceCell value={item.prices.woolworths} isBest={best === "woolworths"} width={160} />
-                                       <PriceCell value={item.prices.aldi} isBest={best === "aldi"} width={140} />
+                                       <PriceCell
+                                          value={item.prices.coles}
+                                          width={190}
+                                          isSelected={selectedStore === "coles"}
+                                          isCheapest={isCheapestStoreForItem(item, "coles")}
+                                          onPress={() => {
+                                             if (!targetListId || item.prices.coles == null) return;
+                                             updateListItemRetailer(targetListId, item.id, "coles");
+                                          }}
+                                       />
+                                       <PriceCell
+                                          value={item.prices.woolworths}
+                                          width={190}
+                                          isSelected={selectedStore === "woolworths"}
+                                          isCheapest={isCheapestStoreForItem(item, "woolworths")}
+                                          onPress={() => {
+                                             if (!targetListId || item.prices.woolworths == null) return;
+                                             updateListItemRetailer(targetListId, item.id, "woolworths");
+                                          }}
+                                       />
+                                       <PriceCell
+                                          value={item.prices.iga}
+                                          width={190}
+                                          isSelected={selectedStore === "iga"}
+                                          isCheapest={isCheapestStoreForItem(item, "iga")}
+                                          onPress={() => {
+                                             if (!targetListId || item.prices.iga == null) return;
+                                             updateListItemRetailer(targetListId, item.id, "iga");
+                                          }}
+                                       />
                                     </View>
                                  );
                               })}
@@ -363,53 +556,99 @@ export default function BasketComparisonSection() {
                      </View>
                   </ScrollView>
                </View>
-
-               {/* Savings Summary */}
-               <View className="flex-1 bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
-                  <Text className="text-lg font-bold text-gray-900 mb-4">
-                     Savings Summary
-                  </Text>
-
-                  <SummaryRow label="Original total" value={`$${originalTotal.toFixed(2)}`} />
-                  <SummaryRow label="Optimized total" value={`$${optimizedTotal.toFixed(2)}`} />
-
-                  <View className="h-px bg-gray-200 my-4" />
-
-                  <View className="flex-row items-center justify-between mb-4">
-                     <Text className="text-sm font-semibold text-gray-800">Total savings</Text>
-                     <Text className="text-2xl font-bold text-primary_green">
-                        ${totalSavings.toFixed(2)}
-                     </Text>
-                  </View>
-
-                  <View className="border-t border-gray-100 pt-4">
-                     <Text className="text-xs font-semibold text-gray-600 mb-3">
-                        Savings breakdown:
-                     </Text>
-
-                     <View className="flex-row items-center justify-between mb-2">
-                        <Text className="text-xs text-gray-600">• From discounts</Text>
-                        <Text className="text-xs font-semibold text-gray-800">
-                           ${savingsFromDiscounts.toFixed(2)}
-                        </Text>
-                     </View>
-
-                     <View className="flex-row items-center justify-between">
-                        <Text className="text-xs text-gray-600">• From best prices</Text>
-                        <Text className="text-xs font-semibold text-gray-800">
-                           ${savingsFromBestPrices.toFixed(2)}
-                        </Text>
-                     </View>
-                  </View>
-
-                  <Pressable className="mt-6 bg-primary_green rounded-2xl py-4 items-center shadow-sm">
-                     <Text className="text-white font-semibold">
-                        Shop at {storeLabel(cheapestStore)}
-                     </Text>
-                  </Pressable>
-               </View>
             </View>
          </View>
+         <Modal
+            visible={previewItem != null}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setPreviewItem(null)}
+         >
+            <Pressable
+               className="flex-1 bg-black/45 items-center justify-center px-4"
+               onPress={() => setPreviewItem(null)}
+            >
+               <Pressable
+                  className="w-full max-w-[700px]"
+                  onPress={(event) => event.stopPropagation()}
+               >
+                  <View className="mb-3 flex-row justify-end">
+                     <Pressable
+                        onPress={() => setPreviewItem(null)}
+                        className="w-9 h-9 rounded-full bg-white/95 border border-gray-200 items-center justify-center"
+                     >
+                        <FontAwesome6 name="xmark" size={16} color="#111827" />
+                     </Pressable>
+                  </View>
+
+                  {previewItem ? (
+                     <View className="rounded-2xl border border-gray-200 bg-white p-4">
+                        <View className="flex-row items-start gap-4">
+                           <View className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 items-center justify-center">
+                              {previewItem.image ? (
+                                 <Image
+                                    source={{ uri: previewItem.image }}
+                                    style={{ width: "100%", height: "100%" }}
+                                    resizeMode="cover"
+                                 />
+                              ) : (
+                                 <FontAwesome6 name={previewItem.icon as any} size={18} color="#9CA3AF" />
+                              )}
+                           </View>
+                           <View className="flex-1 min-w-0">
+                              <Text className="text-xl font-bold text-gray-900" numberOfLines={2}>
+                                 {previewItem.name}
+                              </Text>
+                              <Text className="text-sm text-gray-500 mt-1">
+                                 Selected retailer: {previewItem.subtitle}
+                              </Text>
+                              <Text className="text-sm text-gray-500">Quantity: {previewItem.qty}</Text>
+                              <Text className="text-base font-bold text-gray-900 mt-2">
+                                 Selected total: ${previewItem.lineTotal.toFixed(2)}
+                              </Text>
+                           </View>
+                        </View>
+
+                        <View className="mt-4 border-t border-gray-100 pt-3">
+                           <Text className="text-xs font-semibold uppercase text-gray-500 mb-2">
+                              Retailer totals
+                           </Text>
+                           <View className="flex-row gap-2">
+                              {previewRetailers.map((retailer) => (
+                                 <View
+                                    key={retailer.store}
+                                    className={`flex-1 rounded-lg px-3 py-2 border ${
+                                       retailer.isCheapest
+                                          ? "border-amber-300 bg-amber-50"
+                                          : retailer.isSelected
+                                             ? "border-gray-300 bg-gray-50"
+                                             : "border-gray-200 bg-white"
+                                    }`}
+                                 >
+                                    <Text className="text-xs text-gray-500">{retailer.label}</Text>
+                                    <Text
+                                       className={`text-base font-bold ${
+                                          retailer.isCheapest ? "text-amber-700" : "text-gray-900"
+                                       }`}
+                                    >
+                                       {typeof retailer.price === "number"
+                                          ? `$${retailer.price.toFixed(2)}`
+                                          : "-"}
+                                    </Text>
+                                    {retailer.isSelected ? (
+                                       <Text className="text-[11px] font-semibold text-primary_green mt-1">
+                                          Selected
+                                       </Text>
+                                    ) : null}
+                                 </View>
+                              ))}
+                           </View>
+                        </View>
+                     </View>
+                  ) : null}
+               </Pressable>
+            </Pressable>
+         </Modal>
       </View>
    );
 }
@@ -420,7 +659,6 @@ function StoreTotalCard({
    store,
    total,
    savings,
-   delta,
    isCheapest,
    winsText,
    winPercent,
@@ -428,11 +666,13 @@ function StoreTotalCard({
    store: string;
    total: number;
    savings?: number;
-   delta?: string;
    isCheapest?: boolean;
    winsText: string;
    winPercent: number;
 }) {
+   const hasLoss = typeof savings === "number" && savings < -0.005;
+   const hasSavings = typeof savings === "number" && savings > 0.005;
+
    return (
       <View
          className={[
@@ -452,8 +692,6 @@ function StoreTotalCard({
                <View className="px-3 py-1 rounded-full bg-amber-600">
                   <Text className="text-white text-xs font-semibold">Cheapest</Text>
                </View>
-            ) : delta ? (
-               <Text className="text-xs font-semibold text-red-500">{delta}</Text>
             ) : null}
          </View>
 
@@ -461,12 +699,14 @@ function StoreTotalCard({
             ${total.toFixed(2)}
          </Text>
 
-         {typeof savings === "number" ? (
-            <Text className="text-sm font-semibold text-primary_green mb-4">
-               You save ${savings.toFixed(2)}
+         {hasSavings || hasLoss ? (
+            <Text className={`text-sm font-semibold mb-4 ${hasLoss ? "text-red-500" : "text-primary_green"}`}>
+               {hasLoss
+                  ? `Loss $${Math.abs(savings ?? 0).toFixed(2)}`
+                  : `You save $${(savings ?? 0).toFixed(2)}`}
             </Text>
          ) : (
-            <Text className="text-sm text-gray-600 mb-4"> </Text>
+            <Text className="text-sm text-gray-500 mb-4">No savings/loss</Text>
          )}
 
          <View className="h-px bg-gray-100 mb-3" />
@@ -513,38 +753,48 @@ function TableHeader({
 
 function PriceCell({
    value,
-   isBest,
+   isSelected,
+   isCheapest,
+   onPress,
    width = 120,
 }: {
-   value: number;
-   isBest?: boolean;
+   value: number | null;
+   isSelected?: boolean;
+   isCheapest?: boolean;
+   onPress?: () => void;
    width?: number;
 }) {
+   const selectedClass = isSelected
+      ? isCheapest
+         ? "bg-amber-50 border-l-4 border-amber-500"
+         : "bg-gray-100 border-l-4 border-gray-400"
+      : "";
+
+   const textClass = isSelected
+      ? isCheapest
+         ? "text-amber-700"
+         : "text-gray-700"
+      : "text-gray-900";
+
    return (
-      <View
+      <Pressable
+         onPress={onPress}
+         disabled={!onPress || value == null}
          className={[
             "px-4 py-4",
-            isBest ? "bg-amber-50 border-l-4 border-amber-500" : "",
+            selectedClass,
          ].join(" ")}
          style={{ width }}
       >
          <Text
             className={[
                "text-sm font-semibold",
-               isBest ? "text-amber-700" : "text-gray-900",
+               textClass,
             ].join(" ")}
          >
-            ${value.toFixed(2)}
+            {typeof value === "number" ? `$${value.toFixed(2)}` : "-"}
          </Text>
-      </View>
+      </Pressable>
    );
 }
 
-function SummaryRow({ label, value }: { label: string; value: string }) {
-   return (
-      <View className="flex-row items-center justify-between py-3 border-b border-gray-100">
-         <Text className="text-sm text-gray-700">{label}</Text>
-         <Text className="text-sm font-semibold text-gray-900">{value}</Text>
-      </View>
-   );
-}

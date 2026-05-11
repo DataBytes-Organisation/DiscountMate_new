@@ -1,0 +1,49 @@
+name: Ingestion Pipeline Checks
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "DE/ingestion-pipeline/**"
+      - ".github/workflows/ingestion-pipeline-checks.yml"
+  push:
+    branches: [main]
+    paths:
+      - "DE/ingestion-pipeline/**"
+      - ".github/workflows/ingestion-pipeline-checks.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Type, lint, and format checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: DE/ingestion-pipeline
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: uv sync --frozen --dev
+
+      - name: Run ty type checks
+        run: uvx ty check
+
+      - name: Run Ruff lint
+        run: uv run ruff check --output-format=github .
+
+      - name: Run Ruff format check
+        run: uv run ruff format --check --diff .
