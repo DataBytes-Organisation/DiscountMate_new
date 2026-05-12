@@ -3,6 +3,9 @@ import { View, ScrollView } from "react-native";
 import { Slot, useSegments } from "expo-router";
 import AppHeader from "../../components/layout/Header";
 import SearchBar from "../../components/layout/SearchBar";
+import { CartProvider } from "./CartContext";
+import RecipeBot from "./RecipeBot";
+
 export default function TabsLayout() {
    const segments = useSegments();
    const isDashboardPage = segments.includes("dashboard");
@@ -35,33 +38,40 @@ export default function TabsLayout() {
    }
 
    return (
-      <View className="flex-1 bg-[#F3F4F6]">
-         <AppHeader activeRoute={activeRoute} />
-         {!isProfilePage &&
-            !isNotificationsPage &&
-            !isAlertSegmentsPage &&
-            !isSubscriptionPage &&
-            !isSupportPage &&
-            !isPrivacyTermsPage &&
-            !isComparePage &&
-            !isMyListsPage &&
-            !isDashboardPage &&
-            !isProductDashboardPage && (
-            <View className="mb-1">
-               <SearchBar />
-            </View>
-         )}
+      <CartProvider>
+         <View className="flex-1 bg-[#F3F4F6]">
+            <AppHeader activeRoute={activeRoute} />
+            {!isProfilePage &&
+               !isNotificationsPage &&
+               !isAlertSegmentsPage &&
+               !isSubscriptionPage &&
+               !isSupportPage &&
+               !isPrivacyTermsPage &&
+               !isComparePage &&
+               !isMyListsPage &&
+               !isDashboardPage &&
+               !isProductDashboardPage && (
+               <View className="mb-1">
+                  <SearchBar />
+               </View>
+            )}
 
-         {isComparePage || isMyListsPage ? (
-            <Slot />
-         ) : (
-            <ScrollView
-               className="flex-1"
-               contentContainerStyle={{ paddingBottom: 24 }}
-            >
+            {isComparePage || isMyListsPage ? (
                <Slot />
-            </ScrollView>
-         )}
-      </View>
+            ) : (
+               <ScrollView
+                  className="flex-1"
+                  contentContainerStyle={{ paddingBottom: 24 }}
+               >
+                  <Slot />
+               </ScrollView>
+            )}
+
+            {/* Floating Recipe RAG chatbot — sits above the scroll
+                container so it stays pinned to the viewport corner
+                on every page in the (tabs) group. */}
+            <RecipeBot />
+         </View>
+      </CartProvider>
    );
 }

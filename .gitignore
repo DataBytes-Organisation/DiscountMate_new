@@ -10,6 +10,9 @@ venv/
 Backend/ml-service/venv/
 .vscode/settings.json
 *.csv
+# RAG embedding artefacts — too large for git, see README in index/
+Backend/ml-service/recipe_rag/index/*.npz
+Backend/ml-service/recipe_rag/index/*.json
 Backend/iam_policy.json
 Document/*
 ML/ReverseImageSearch/index.faiss

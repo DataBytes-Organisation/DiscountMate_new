@@ -18,3 +18,10 @@ python-multipart
 requests
 google-cloud-storage
 
+# RAG / Recipe chatbot - packages required for the RAG pipeline
+# the below packages worked with the RAG pipeline, but you may need to adjust versions based on compatibility with your specific models and code
+sentence-transformers==5.2.2
+transformers==5.1.0
+huggingface_hub==1.4.1
+torch==2.7.1
+requests==2.32.5
