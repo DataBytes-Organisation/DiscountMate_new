@@ -41,8 +41,25 @@ const priceComparisonValidation = [
     .toBoolean(),
 ];
 
+const dataCleaningValidation = [
+  body('data')
+    .exists({ values: 'falsy' }).withMessage('Data is required.')
+    .isArray().withMessage('Data must be an array.'),
+
+  body('operations')
+    .optional()
+    .isArray().withMessage('Operations must be an array.'),
+
+  body('operations.*')
+    .optional()
+    .isString().withMessage('Each operation must be text.')
+    .trim()
+    .escape(),
+];
+
 module.exports = {
   salesSummaryValidation,
   brandAnalysisValidation,
   priceComparisonValidation,
+  dataCleaningValidation,
 };

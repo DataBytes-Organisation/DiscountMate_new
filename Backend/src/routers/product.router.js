@@ -1,10 +1,10 @@
 const express = require('express');
 const { getProducts, getProduct } = require("../controllers/product.controller");
-const ipThrottle = require('../middleware/ipThrottle.middleware'); // NEW
-const { scraperSlowDown, suspiciousTrafficLogger } = require('../middleware/antiScraping.middleware'); // NEW
-const { logSecurityEvent } = require('../utils/securityLogger'); // NEW
-const validateRequest = require('../middleware/validateRequest.middleware'); // NEW
-const { getProductsValidation, getProductValidation } = require('../validators/product.validators'); // NEW
+const ipThrottle = require('../middleware/ipThrottle.middleware');
+const { scraperSlowDown, suspiciousTrafficLogger } = require('../middleware/antiScraping.middleware');
+const { logSecurityEvent } = require('../utils/securityLogger');
+const validateRequest = require('../middleware/validateRequest.middleware');
+const { getProductsValidation, getProductValidation } = require('../validators/product.validators');
 
 const router = express.Router();
 
@@ -18,69 +18,69 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Products retrieved successfully.
- *       429: 
- *         description: Too many requests. // NEW
+ *       429:
+ *         description: Too many requests.
  */
 router.get(
   '/',
-  suspiciousTrafficLogger, // NEW
-  scraperSlowDown, // NEW
-  ipThrottle, // NEW
-  getProductsValidation, // NEW
-  validateRequest, // NEW
+  suspiciousTrafficLogger,
+  scraperSlowDown,
+  ipThrottle,
+  getProductsValidation,
+  validateRequest,
   getProducts
 );
 /**
  * Honeypot endpoint for bot detection
  */
-router.get( // NEW
-  '/export-all', // NEW
-  suspiciousTrafficLogger, // NEW
-  scraperSlowDown, // NEW
-  ipThrottle, // NEW
-  (req, res) => { // NEW
-    logSecurityEvent({ // NEW
-      event: 'honeypot_triggered', // NEW
-      ip: req.ip, // NEW
-      method: req.method, // NEW
-      route: req.originalUrl, // NEW
-      details: ['decoy-endpoint-accessed'], // NEW
-    }); // NEW
+router.get(
+  '/export-all',
+  suspiciousTrafficLogger,
+  scraperSlowDown,
+  ipThrottle,
+  (req, res) => {
+    logSecurityEvent({
+      event: 'honeypot_triggered',
+      ip: req.ip,
+      method: req.method,
+      route: req.originalUrl,
+      details: ['decoy-endpoint-accessed'],
+    });
 
-    return res.status(403).json({ // NEW
-      success: false, // NEW
-      message: 'Access denied.', // NEW
-    }); // NEW
-  } // NEW
-); // NEW
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied.',
+    });
+  }
+);
 
 /**
  * @swagger
- * /products/{id}: // NEW
- *   get: // NEW
+ * /products/{id}:
+ *   get:
  *     tags: [Products]
  *     summary: Get product details
  *     description: Fetch details of a specific product by ID.
- *     parameters: // NEW
- *       - in: path // NEW
- *         name: id // NEW
- *         required: true // NEW
- *         schema: // NEW
- *           type: string // NEW
- *         description: Product ID // NEW
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
  *     responses:
  *       200:
- *         description: Product retrieved successfully. // NEW
+ *         description: Product retrieved successfully.
  *       429:
- *         description: Too many requests. // NEW
+ *         description: Too many requests.
  */
 router.get(
   '/:id',
-  suspiciousTrafficLogger, // NEW
-  scraperSlowDown, // NEW
-  ipThrottle, // NEW
-  getProductValidation, // NEW
-  validateRequest, // NEW
+  suspiciousTrafficLogger,
+  scraperSlowDown,
+  ipThrottle,
+  getProductValidation,
+  validateRequest,
   getProduct
 );
 

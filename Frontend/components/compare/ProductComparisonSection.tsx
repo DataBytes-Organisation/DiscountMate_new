@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { useRouter } from "expo-router";
 import { useCart } from "../../app/(tabs)/CartContext";
 
 type StoreKey = "coles" | "woolworths" | "aldi";
@@ -21,6 +22,7 @@ type ProductRow = {
 };
 
 export default function ProductComparisonSection() {
+   const router = useRouter();
    const [searchQuery, setSearchQuery] = useState("");
    const { addToCart } = useCart();
 
@@ -105,10 +107,19 @@ export default function ProductComparisonSection() {
             <View className="flex-row items-center justify-between mb-4">
                <Text className="text-2xl font-bold text-gray-900">Compare Products</Text>
 
-               <Pressable className="flex-row items-center gap-2 px-4 py-2.5 rounded-xl border border-primary_green bg-white">
-                  <FontAwesome6 name="plus" size={14} color="#10B981" />
-                  <Text className="text-primary_green font-semibold text-sm">Add Product to Compare</Text>
-               </Pressable>
+               <View className="flex-row items-center gap-3">
+                  <Pressable
+                     className="flex-row items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white"
+                     onPress={() => router.push("/(tabs)/compare-powerbi")}
+                  >
+                     <FontAwesome6 name="chart-column" size={14} color="#374151" />
+                     <Text className="text-gray-700 font-semibold text-sm">View Power BI Report</Text>
+                  </Pressable>
+                  <Pressable className="flex-row items-center gap-2 px-4 py-2.5 rounded-xl border border-primary_green bg-white">
+                     <FontAwesome6 name="plus" size={14} color="#10B981" />
+                     <Text className="text-primary_green font-semibold text-sm">Add Product to Compare</Text>
+                  </Pressable>
+               </View>
             </View>
 
             {/* Search */}

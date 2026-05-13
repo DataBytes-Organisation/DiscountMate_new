@@ -3,14 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import duckdb
-
 from common.cli import iter_dates
-from common.db import load_demo_slice
-from common.duckdb_utils import load_sql, sql_number
-from common.paths import resolve_input_path
+from common.db import configure_bronze_storage, load_demo_slice, open_etl_connection
+from common.duckdb_utils import fetch_scalar, load_sql
+from common.paths import resolve_input_paths
 
 if TYPE_CHECKING:
+    import duckdb
+
     from common.job_models import JobSummary
     from config.settings import AppSettings, RuntimeConfig
 
@@ -21,24 +21,29 @@ DEMO_TRANSFORM_SQL = load_sql(WORKFLOW_SQL_DIR / "demo_transform.sql")
 QA_CHECK_SQL = load_sql(WORKFLOW_SQL_DIR / "qa_check.sql")
 
 
-def _fetch_scalar(conn: duckdb.DuckDBPyConnection, query: str) -> int:
-    row = conn.execute(query).fetchone()
-    if row is None:
-        raise RuntimeError(f"Expected a scalar result for query: {query}")
-    return int(row[0])
+def _load_input_files(
+    conn: duckdb.DuckDBPyConnection,
+    input_paths: list[str],
+) -> int:
+    if not input_paths:
+        return 0
 
-
-def _load_input_file(conn: duckdb.DuckDBPyConnection, input_path: Path) -> int:
+    first_path = input_paths[0]
     conn.execute(
         "CREATE OR REPLACE TABLE raw_input AS SELECT * FROM read_csv_auto(?, header=true, all_varchar=true)",
-        [str(input_path)],
+        [str(first_path)],
     )
-    return _fetch_scalar(conn, "SELECT count(*) FROM raw_input")
+    for input_path in input_paths[1:]:
+        conn.execute(
+            "INSERT INTO raw_input SELECT * FROM read_csv_auto(?, header=true, all_varchar=true)",
+            [str(input_path)],
+        )
+    return fetch_scalar(conn, "SELECT count(*) FROM raw_input")
 
 
 def _transform_data(
     conn: duckdb.DuckDBPyConnection,
-    input_path: Path,
+    input_path: str,
     run_date: str,
 ) -> int:
     # Keep the starter example generic even though it reads a Coles-shaped file.
@@ -61,14 +66,35 @@ def _transform_data(
                 NULLIF(trim(CategoryGroup), '')
             ) AS raw_category,
             NULLIF(trim(ImageUri), '') AS image_url,
-            {sql_number("Price_Now")} AS current_price,
-            {sql_number("Price_Was")} AS previous_price,
-            {sql_number("SaveAmount")} AS discount_amount,
-            {sql_number("UnitPrice")} AS price_per_unit,
+            TRY_CAST(
+                regexp_replace(coalesce(CAST(Price_Now AS VARCHAR), ''), '[^0-9.-]', '', 'g')
+                AS DOUBLE
+            ) AS current_price,
+            TRY_CAST(
+                regexp_replace(coalesce(CAST(Price_Was AS VARCHAR), ''), '[^0-9.-]', '', 'g')
+                AS DOUBLE
+            ) AS previous_price,
+            TRY_CAST(
+                regexp_replace(coalesce(CAST(SaveAmount AS VARCHAR), ''), '[^0-9.-]', '', 'g')
+                AS DOUBLE
+            ) AS discount_amount,
+            TRY_CAST(
+                regexp_replace(coalesce(CAST(UnitPrice AS VARCHAR), ''), '[^0-9.-]', '', 'g')
+                AS DOUBLE
+            ) AS price_per_unit,
             NULLIF(trim(UnitMeasure), '') AS unit_measure,
-            {sql_number("UnitQuantity")} AS unit_quantity,
+            TRY_CAST(
+                regexp_replace(coalesce(CAST(UnitQuantity AS VARCHAR), ''), '[^0-9.-]', '', 'g')
+                AS DOUBLE
+            ) AS unit_quantity,
             CASE
-                WHEN {sql_number("Price_Was")} > {sql_number("Price_Now")} THEN TRUE
+                WHEN TRY_CAST(
+                    regexp_replace(coalesce(CAST(Price_Was AS VARCHAR), ''), '[^0-9.-]', '', 'g')
+                    AS DOUBLE
+                ) > TRY_CAST(
+                    regexp_replace(coalesce(CAST(Price_Now AS VARCHAR), ''), '[^0-9.-]', '', 'g')
+                    AS DOUBLE
+                ) THEN TRUE
                 ELSE FALSE
             END AS is_on_special,
             TRY_CAST(Timestamp AS TIMESTAMP) AS scraped_at,
@@ -80,7 +106,7 @@ def _transform_data(
         """
     )
     conn.execute(DEMO_TRANSFORM_SQL)
-    return _fetch_scalar(conn, "SELECT count(*) FROM raw_input_normalized")
+    return fetch_scalar(conn, "SELECT count(*) FROM raw_input_normalized")
 
 
 def _run_quality_checks(conn: duckdb.DuckDBPyConnection) -> None:
@@ -127,23 +153,28 @@ def run(
     processed_dates: list[str] = []
     skipped_dates: list[str] = []
 
-    conn = duckdb.connect()
+    conn = open_etl_connection(settings)
     try:
+        configure_bronze_storage(conn, settings, runtime_config.paths.bronze_root)
         for run_date in iter_dates(start_date, end_date):
             run_date_value = run_date.isoformat()
-            input_path = resolve_input_path(
-                runtime_config, model, EXAMPLE_RUNNER, run_date
+            input_paths = resolve_input_paths(
+                conn,
+                runtime_config,
+                model,
+                EXAMPLE_RUNNER,
+                run_date,
             )
-            if not input_path.exists():
+            if not input_paths:
                 skipped_dates.append(run_date_value)
                 continue
 
             # Step 1: load the source file into a reusable staging table.
-            counts["raw_input"] += _load_input_file(conn, input_path)
+            counts["raw_input"] += _load_input_files(conn, input_paths)
 
             # Step 2: normalize the raw file and build the downstream summary tables.
             counts["raw_input_normalized"] += _transform_data(
-                conn, input_path, run_date_value
+                conn, input_paths[0], run_date_value
             )
 
             # Step 3: fail fast if the transformed slice does not meet the QA rules.

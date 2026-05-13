@@ -1,192 +1,43 @@
 const express = require('express');
 const userController = require('../controllers/user.controller');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-
-// Import JWT middleware
 const verifyToken = require('../middleware/auth.middleware');
-const validateRequest = require('../middleware/validateRequest.middleware'); // NEW
-const { signupValidation, signinValidation } = require('../validators/user.validators'); // NEW
+const validateRequest = require('../middleware/validateRequest.middleware');
+const { signupValidation, signinValidation } = require('../validators/user.validators');
 
-// Configure multer storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadDir = path.join(__dirname, '../../uploads'); // or another directory
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // Ensure unique filenames
-    },
-});
-
-// IA -> only allow image files when uploading profile images (CS-06-T1)
-const upload = multer({  
-    storage: storage,
-    limits: 
-    {
-        fileSize: 10 * 1024 * 1024 // Limit file size to 10MB
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024,
     },
     fileFilter: (req, file, cb) => {
-        // allows images only (jpg, jpeg, png, gif)
-        if (file.mimetype.startsWith('image/')) {
+        if (file.mimetype?.startsWith('image/')) {
             cb(null, true);
-        } else {
-            cb(new Error('Error: that file type is not accepted :('), false);
+            return;
         }
-    }
+
+        cb(new Error('Only image files are allowed'), false);
+    },
 });
 
-// Define routes
 const router = express.Router();
 
-// Signup route
-/**
- * @swagger
- * /users/signup:
- *   post:
- *     tags: [Users]
- *     summary: User signup
- *     description: Create a new user account.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 example: "testuser@example.com"
- *               password:
- *                 type: string
- *                 example: "Test@123"
- *               verifyPassword:
- *                 type: string
- *                 example: "Test@123"
- *               user_fname:
- *                 type: string
- *                 example: "John"
- *               user_lname:
- *                 type: string
- *                 example: "Doe"
- *               address:
- *                 type: string
- *                 example: "123 Test Street"
- *               phone_number:
- *                 type: string
- *                 example: "1234567890"
- *               admin:
- *                 type: boolean
- *                 example: false
- *     responses:
- *       201:
- *         description: User created successfully
- *       400:
- *         description: Bad request
- *       500:
- *         description: Internal server error
- */
-router.post('/signup', userController.signupLimiter, validateRequest, userController.signup); // NEW: Apply rate limiting to signup
+router.post('/signup', userController.signupLimiter, signupValidation, validateRequest, userController.signup);
+router.post('/signin', userController.signinLimiter, signinValidation, validateRequest, userController.signin);
 
-// Signin route
-/**
- * @swagger
- * /users/signin:
- *   post:
- *     tags: [Users]
- *     summary: User signin
- *     description: Authenticate a user and return a token.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 example: "testuser@example.com"
- *               password:
- *                 type: string
- *                 example: "Test@123"
- *     responses:
- *       200:
- *         description: Signin successful
- *       400:
- *         description: Invalid credentials
- *       500:
- *         description: Internal server error
- */
-router.post('/signin', userController.signinLimiter, validateRequest, userController.signin); // NEW: Apply rate limiting to signin 
-
-
-// Get profile route
-/**
- * @swagger
- * /users/profile:
- *   get:
- *     tags: [Users]
- *     summary: Get user profile
- *     description: Retrieve details of the authenticated user.
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Successfully retrieved user profile
- *       401:
- *         description: Unauthorized - Invalid or missing token
- */
-router.get('/profile', verifyToken, userController.getProfile); //NEW: Protect route using JWT middleware
-
-// Upload profile image
-/**
- * @swagger
- * /users/upload-profile-image:
- *   post:
- *     tags: [Users]
- *     summary: Upload profile image
- *     description: Uploads a profile image for the user.
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               image:
- *                 type: string
- *                 format: binary
- *     responses:
- *       200:
- *         description: Profile image uploaded successfully
- *       400:
- *         description: No file uploaded
- *       401:
- *         description: Unauthorized - Invalid or missing token
- */
-router.post('/upload-profile-image', verifyToken, upload.single('image'), userController.updateProfileImage); //NEW: Protected upload route
-
-// Get Profile Image
-/**
- * @swagger
- * /users/profile-image:
- *   get:
- *     tags: [Users]
- *     summary: Get profile image
- *     description: Retrieve the user's profile image.
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Profile image retrieved successfully
- *       404:
- *         description: Profile image not found
- *       401:
- *         description: Unauthorized - Invalid or missing token
- */
-router.get('/profile-image', verifyToken, userController.getProfileImage); //NEW: Protected profile image retrieva
+router.get('/profile', verifyToken, userController.getProfile);
+router.put('/profile', verifyToken, userController.updateProfile);
+router.put('/change-password', verifyToken, userController.changePassword);
+router.get('/address-suggestions', verifyToken, userController.getAddressSuggestions);
+router.get('/notification-preferences', verifyToken, userController.getNotificationPreferences);
+router.put('/notification-preferences', verifyToken, userController.updateNotificationPreferences);
+router.get('/dashboard-preferences', verifyToken, userController.getDashboardPreferences);
+router.put('/dashboard-preferences', verifyToken, userController.updateDashboardPreferences);
+router.get('/subscription', verifyToken, userController.getSubscription);
+router.put('/subscription', verifyToken, userController.updateSubscription);
+router.delete('/account', verifyToken, userController.deleteAccount);
+router.post('/upload-profile-image', verifyToken, upload.single('image'), userController.updateProfileImage);
+router.get('/profile-image', verifyToken, userController.getProfileImage);
 
 module.exports = router;

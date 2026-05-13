@@ -1,4 +1,4 @@
-// NEW: admin-only authorization middleware 
+// NEW: admin-only authorization middleware
 const isAdmin = (req, res, next) => {
     try {
         const effectiveRole = req.user?.role || (req.user?.admin ? 'admin' : 'user');

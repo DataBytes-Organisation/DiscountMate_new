@@ -11,7 +11,6 @@ export default function ProductSidebarQuickPanel({
 }: ProductSidebarQuickPanelProps) {
    const [monthlyQuantity, setMonthlyQuantity] = useState("4");
 
-   // Mock data for savings calculation
    const averagePrice = 4.80;
    const cheapestPrice = 3.50;
 
@@ -33,19 +32,9 @@ export default function ProductSidebarQuickPanel({
             </Text>
 
             <View className="gap-3">
-               {/* Secondary actions */}
-               <QuickActionButton
-                  icon="list"
-                  label="Add to List"
-               />
-               <QuickActionButton
-                  icon="bell"
-                  label="Set Price Alert"
-               />
-               <QuickActionButton
-                  icon="share-nodes"
-                  label="Share Product"
-               />
+               <QuickActionButton icon="list" label="Add to List" />
+               <QuickActionButton icon="bell" label="Set Price Alert" />
+               <QuickActionButton icon="share-nodes" label="Share Product" />
             </View>
          </View>
 
@@ -80,6 +69,7 @@ export default function ProductSidebarQuickPanel({
                      ${savings.monthly.toFixed(2)}
                   </Text>
                </View>
+
                <View className="flex-row items-center justify-between">
                   <Text className="text-sm text-gray-700">Yearly Savings</Text>
                   <Text className="text-xl font-bold text-primary_green">
@@ -93,68 +83,6 @@ export default function ProductSidebarQuickPanel({
             </Text>
          </View>
 
-         {/* DELIVERY OPTIONS */}
-         <View className="bg-white rounded-3xl border border-gray-200 p-5">
-            <View className="flex-row items-center gap-3 mb-4">
-               <View className="w-9 h-9 rounded-2xl bg-emerald-50 items-center justify-center">
-                  <FontAwesome6 name="truck" size={16} color="#10B981" />
-               </View>
-               <Text className="text-lg font-bold text-gray-900">
-                  Delivery Options
-               </Text>
-            </View>
-
-            <View className="gap-4">
-               {/* Standard */}
-               <View>
-                  <View className="flex-row items-center gap-2 mb-1">
-                     <FontAwesome6 name="box" size={14} color="#10B981" />
-                     <Text className="font-semibold text-gray-900">
-                        Standard Delivery
-                     </Text>
-                  </View>
-                  <Text className="text-sm text-gray-600">
-                     2–3 business days
-                  </Text>
-                  <Text className="text-sm font-semibold text-primary_green mt-1">
-                     Free over $50
-                  </Text>
-               </View>
-
-               <View className="h-px bg-gray-100" />
-
-               {/* Express */}
-               <View>
-                  <View className="flex-row items-center gap-2 mb-1">
-                     <FontAwesome6 name="bolt" size={14} color="#10B981" />
-                     <Text className="font-semibold text-gray-900">
-                        Express Delivery
-                     </Text>
-                  </View>
-                  <Text className="text-sm text-gray-600">Next day</Text>
-                  <Text className="text-sm font-semibold text-gray-900 mt-1">
-                     $9.95
-                  </Text>
-               </View>
-
-               <View className="h-px bg-gray-100" />
-
-               {/* Click & Collect */}
-               <View>
-                  <View className="flex-row items-center gap-2 mb-1">
-                     <FontAwesome6 name="store" size={14} color="#10B981" />
-                     <Text className="font-semibold text-gray-900">
-                        Click & Collect
-                     </Text>
-                  </View>
-                  <Text className="text-sm text-gray-600">Ready in 2 hours</Text>
-                  <Text className="text-sm font-semibold text-primary_green mt-1">
-                     Free
-                  </Text>
-               </View>
-            </View>
-         </View>
-
          {/* RELATED CATEGORIES */}
          <View className="bg-white rounded-3xl border border-gray-200 p-5">
             <Text className="text-lg font-bold text-gray-900 mb-4">
@@ -162,24 +90,24 @@ export default function ProductSidebarQuickPanel({
             </Text>
 
             <View className="gap-2">
-               {["All Dairy Products", "Fresh Milk", "Organic Milk", "Flavored Milk"].map(
-                  (cat, idx) => (
-                     <Pressable
-                        key={cat}
-                        className={[
-                           "flex-row items-center justify-between px-3 py-3 rounded-2xl bg-gray-50",
-                           idx === 0 ? "" : "",
-                        ].join(" ")}
-                     >
-                        <Text className="text-sm text-gray-800">{cat}</Text>
-                        <FontAwesome6
-                           name="chevron-right"
-                           size={12}
-                           color="#9CA3AF"
-                        />
-                     </Pressable>
-                  )
-               )}
+               {[
+                  "All Dairy Products",
+                  "Fresh Milk",
+                  "Organic Milk",
+                  "Flavored Milk",
+               ].map((cat) => (
+                  <Pressable
+                     key={cat}
+                     className="flex-row items-center justify-between px-3 py-3 rounded-2xl bg-gray-50"
+                  >
+                     <Text className="text-sm text-gray-800">{cat}</Text>
+                     <FontAwesome6
+                        name="chevron-right"
+                        size={12}
+                        color="#9CA3AF"
+                     />
+                  </Pressable>
+               ))}
             </View>
          </View>
 
@@ -224,6 +152,7 @@ export default function ProductSidebarQuickPanel({
                            resizeMode="cover"
                         />
                      </View>
+
                      <View className="flex-1">
                         <Text className="text-sm font-medium text-gray-900">
                            {item.name}
@@ -240,7 +169,6 @@ export default function ProductSidebarQuickPanel({
    );
 }
 
-/** Simple secondary quick action button */
 function QuickActionButton({
    icon,
    label,

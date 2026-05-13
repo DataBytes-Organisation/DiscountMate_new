@@ -17,6 +17,28 @@ from ml_models.weekly_specials import get_weekly_specials_ml
 from ml_models.recommendations import get_recommendations_ml
 from ocr.extractor import process_receipt_internal, build_user_response
 
+# ============================================================
+# Recipe RAG initialisation
+# ============================================================
+# Import the RAG class. Done here (not inside a route) so we
+# can build the global `rag` instance ONCE at startup.
+from recipe_rag.rag_pipeline import RecipeRAG
+# The `rag` global holds the embedding model + recipe index in
+# RAM for the lifetime of the Flask process. ~15-20s to construct.
+# Wrapped in try/except so the rest of the service still works
+# even if the index is missing or sentence-transformers is broken.
+try:
+    print("[startup] initialising Recipe RAG (this takes ~15s)...")
+    rag = RecipeRAG()
+    RAG_READY = True
+except Exception as e:
+    print(f"[startup] WARNING: RAG failed to initialise: {e}")
+    print("[startup] /api/recipe/* endpoints will return 503.")
+    rag = None
+    RAG_READY = False
+
+
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
@@ -186,6 +208,134 @@ def process_receipt_api():
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
 
+# ============================================================
+# Recipe RAG endpoints
+# ============================================================
+
+@app.route('/api/recipe/stats', methods=['GET'])
+def recipe_stats():
+    """
+    Diagnostic / health endpoint for the recipe RAG.
+    Layman: "Is the recipe brain awake? How big is its memory?"
+    """
+    if not RAG_READY:
+        return jsonify({
+            'success': False,
+            'ready': False,
+            'error': 'RAG pipeline failed to initialise at startup'
+        }), 503
+
+    return jsonify({
+        'success': True,
+        'ready': True,
+        'recipe_count': len(rag.retriever.recipes),
+        'active_sessions': len(rag.sessions),
+        'max_turns_per_session': rag.max_turns,
+        'product_annotations_enabled': rag.product_matcher.enabled,
+    })
+
+
+@app.route('/api/recipe/search', methods=['GET'])
+def recipe_search():
+    """
+    Pure retrieval — no LLM call.
+    Layman: "Find me recipes whose words look like 'chicken curry' — fast and free."
+    Technical: cosine similarity over the precomputed embedding index.
+    Use case: autocomplete, browse-by-keyword, debugging retrieval quality.
+    """
+    if not RAG_READY:
+        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
+
+    query = request.args.get('q', '').strip()
+    top_k = int(request.args.get('top_k', 5))
+
+    if not query:
+        return jsonify({'success': False, 'error': 'Missing query parameter ?q='}), 400
+
+    try:
+        results = rag.retriever.search(query, top_k=top_k)
+        # Strip the bulky `text` field; frontend doesn't need it for browse
+        slim = [
+            {
+                'rank': r['rank'],
+                'score': r['score'],
+                'name': r['metadata'].get('name', ''),
+                'metadata': r['metadata'],
+            }
+            for r in results
+        ]
+        return jsonify({'success': True, 'query': query, 'results': slim})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/recipe/chat', methods=['POST'])
+def recipe_chat():
+    """
+    Full RAG chat — embed query, retrieve recipes, generate answer via LLM cascade.
+    Layman: "Ask the chatbot a question, get a cooked answer back."
+    Technical: orchestrates retrieve → context build → multi-turn LLM call,
+               with per-session history capped at MAX_TURNS_PER_SESSION.
+
+    Request JSON:
+      {
+        "session_id": "uuid-from-browser",   # required, identifies the conversation
+        "message": "what can I make with chicken?",  # required, user's question
+        "top_k": 5                           # optional, how many recipes to retrieve
+      }
+
+    Response JSON:
+      {
+        "success": true,
+        "answer": "...generated text...",
+        "sources": [{"name": "...", "score": 0.78}, ...],
+        "turns": 1,                # how many user messages so far
+        "limit_reached": false,    # true once user has sent MAX_TURNS messages
+        "product_annotations": false
+      }
+    """
+    if not RAG_READY:
+        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
+
+    data = request.get_json(silent=True) or {}
+    session_id = data.get('session_id')
+    message = (data.get('message') or '').strip()
+    top_k = int(data.get('top_k', 5))
+
+    if not session_id:
+        return jsonify({'success': False, 'error': 'session_id is required'}), 400
+    if not message:
+        return jsonify({'success': False, 'error': 'message is required'}), 400
+
+    try:
+        result = rag.chat(session_id=session_id, user_query=message, top_k=top_k)
+        # rag.chat() already returns a clean dict; just wrap with success flag
+        return jsonify({'success': True, **result})
+    except Exception as e:
+        # Defensive: any unexpected crash inside RAG returns 500 with a message
+        # rather than dumping a stack trace to the user.
+        print(f"[recipe_chat] ERROR: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/recipe/reset', methods=['POST'])
+def recipe_reset():
+    """
+    Wipe a session's conversation history.
+    Layman: "Forget everything we've talked about — start fresh."
+    Technical: deletes the session_id key from rag.sessions dict, freeing
+               memory and resetting the turn counter to zero.
+    """
+    if not RAG_READY:
+        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
+
+    data = request.get_json(silent=True) or {}
+    session_id = data.get('session_id')
+    if not session_id:
+        return jsonify({'success': False, 'error': 'session_id is required'}), 400
+
+    rag.reset_session(session_id)
+    return jsonify({'success': True, 'session_id': session_id})
 
 if __name__ == '__main__':
     print(f"Starting ML/AI Service on port {ML_SERVICE_PORT}")
@@ -195,4 +345,8 @@ if __name__ == '__main__':
     print("  POST /api/ml/recommendations - Get product recommendations")
     print("  POST /api/ocr/receipt - Process uploaded receipt image")
     # print("  POST /api/ml/price-prediction - Predict future prices")
+    print("  GET  /api/recipe/stats - Recipe RAG diagnostics")
+    print("  GET  /api/recipe/search?q=... - Recipe retrieval (no LLM)")
+    print("  POST /api/recipe/chat - Recipe RAG chat (full LLM)")
+    print("  POST /api/recipe/reset - Wipe a chat session")
     app.run(host='0.0.0.0', port=ML_SERVICE_PORT, debug=True)

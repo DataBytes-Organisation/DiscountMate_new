@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
-import { FontAwesome, Feather } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 
 
@@ -9,6 +10,15 @@ interface FooterSectionProps {
 }
 
 const FooterSection: React.FC<FooterSectionProps> = ({ disableEdgeOffset }) => {
+   const router = useRouter();
+   const supportLinks = [
+      { label: "Privacy Policy", route: "/privacy-terms?tab=privacy" },
+      { label: "Terms & Conditions", route: "/privacy-terms?tab=terms" },
+      { label: "FAQs", route: "/contact" },
+      { label: "Contact Us", route: "/contact" },
+      { label: "Help Center", route: "/contact" },
+   ];
+
    return (
       <View
          className="bg-dark m-0"
@@ -73,16 +83,13 @@ const FooterSection: React.FC<FooterSectionProps> = ({ disableEdgeOffset }) => {
                <View className="flex-1">
                   <Text className="text-white font-bold mb-5">Support</Text>
                   <View className="gap-3">
-                     {[
-                        "Help Center",
-                        "Contact Us",
-                        "FAQs",
-                        "Privacy Policy",
-                        "Terms of Service",
-                     ].map((item) => (
-                        <TouchableOpacity key={item}>
+                     {supportLinks.map((item) => (
+                        <TouchableOpacity
+                           key={item.label}
+                           onPress={() => router.push(item.route as any)}
+                        >
                            <Text className="text-sm text-gray-400 active:text-primary">
-                              {item}
+                              {item.label}
                            </Text>
                         </TouchableOpacity>
                      ))}
@@ -115,11 +122,14 @@ const FooterSection: React.FC<FooterSectionProps> = ({ disableEdgeOffset }) => {
                   © 2024 DiscountMate. All rights reserved.
                </Text>
 
-               <View className="flex flex-row items-center gap-6">
-                  {["Privacy", "Terms", "Cookies"].map((item) => (
-                     <TouchableOpacity key={item}>
+               <View className="flex flex-row flex-wrap items-center gap-6">
+                  {supportLinks.map((item) => (
+                     <TouchableOpacity
+                        key={item.label}
+                        onPress={() => router.push(item.route as any)}
+                     >
                         <Text className="text-sm text-gray-400 active:text-primary">
-                           {item}
+                           {item.label}
                         </Text>
                      </TouchableOpacity>
                   ))}
