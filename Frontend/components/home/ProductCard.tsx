@@ -53,22 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    // Use retailers as-is for display
    const normalizedRetailers: Retailer[] = retailers;
 
-   // Calculate savings
-   const maxSavings = (() => {
-      if (!colesRetailer || !colesRetailer.originalPrice || !colesRetailer.price) {
-         return badge;
-      }
-
-      const original = parseFloat(colesRetailer.originalPrice.replace(/[^0-9.]/g, ""));
-      const current = parseFloat(colesRetailer.price.replace(/[^0-9.]/g, ""));
-
-      if (!isNaN(original) && !isNaN(current) && original > current) {
-         const savings = original - current;
-         return savings > 0 ? `Save $${savings.toFixed(2)}` : badge;
-      }
-
-      return badge;
-   })();
+   const maxSavings = badge;
 
    const trendIcon = getTrendIcon(trendTone);
    const trendColorClass = getTrendColorClass(trendTone);
@@ -83,16 +68,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    };
 
    const handleAddToCart = () => {
-      // Coles is the only retailer with value
-      const price = colesRetailer?.price
-         ? parseFloat(colesRetailer.price.replace(/[^0-9.]/g, ""))
+      const retailerWithPrice =
+         retailers.find((r) => {
+            if (!r.price || r.price === "-") return false;
+            const n = parseFloat(r.price.replace(/[^0-9.]/g, ""));
+            return !isNaN(n) && n > 0;
+         }) ?? colesRetailer;
+
+      const price = retailerWithPrice?.price
+         ? parseFloat(retailerWithPrice.price.replace(/[^0-9.]/g, ""))
          : 0;
 
       addToCart({
          id: id,
          name: name,
          price: price,
-         store: colesRetailer?.name || "Coles",
+         store: retailerWithPrice?.name || "Coles",
       });
    };
 

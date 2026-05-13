@@ -1,0 +1,22 @@
+[project]
+name = "discount-mate-etl-pipeline"
+version = "0.1.0"
+description = "Reusable ETL framework using uv, DuckDB, PostgreSQL, and Alembic."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.16.5",
+    "duckdb>=1.5.1",
+    "psycopg[binary]>=3.2.10",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.13.1",
+    "pytz>=2024.2",
+    "python-dotenv>=1.2.2",
+    "pyyaml>=6.0.3",
+    "sqlalchemy>=2.0.43",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.6",
+]
