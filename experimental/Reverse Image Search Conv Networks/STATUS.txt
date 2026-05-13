@@ -1,0 +1,14 @@
+Status: Experimental / Not deployed
+
+Purpose:
+Initial prototype for reverse image product matching.
+
+Current limitations:
+- at start of semester no available images from previous semesters
+- Not integrated with main pipeline, but uploaded here for academic purposes, git submissions, evidence of contributions
+- Requires further data and evaluation
+
+Next steps:
+- Continue development now with 61,000 product images
+- Benchmark various pretrained CNN models
+- Determine how to deploy to discount mate via camera or image upload

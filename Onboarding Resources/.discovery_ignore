@@ -1,0 +1,9 @@
+# Skip the folder with the 96,000 JPEGs
+catalogues
+
+# current onboarding file to prevent reading in the same onboarding file
+Onboarding Resources
+
+# Additional exclusions to speed up scanning
+debug_html
+git

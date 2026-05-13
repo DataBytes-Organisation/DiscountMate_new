@@ -1,276 +1,278 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Modal, Pressable } from 'react-native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as ImagePicker from 'expo-image-picker';
-import { useAuth } from './AuthContext';  // Ensure you have AuthContext for authentication state
-import Entypo from 'react-native-vector-icons/Entypo';
-import { useToast } from 'react-native-toast-notifications';
+import React, { useEffect, useMemo, useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import UserHubSidebar from "../../components/common/UserHubSidebar";
+import ProfileBasicInfoSection from "../../components/profile/ProfileBasicInfoSection";
+import ProfilePasswordSection from "../../components/profile/ProfilePasswordSection";
+import ProfileDeleteAccountSection from "../../components/profile/ProfileDeleteAccountSection";
+import {
+   changePassword,
+   deleteAccount,
+   fetchProfile,
+   saveProfile,
+   uploadProfileImage,
+} from "../../services/profile";
+import { useUserProfile } from "../../context/UserProfileContext";
+import { UserProfile } from "../../types/UserProfile";
+import { SESSION_EXPIRED_MESSAGE } from "../../utils/authSession";
 
-const defaultImageUri = require('@/assets/images/defaultprofileimage.png');
+const FALLBACK_USER: UserProfile = {
+   firstName: "",
+   lastName: "",
+   email: "",
+   phoneNumber: "",
+   address: "",
+   postcode: "",
+   memberSince: "",
+   subscriptionPlan: "free",
+   totalSaved: 0,
+   shoppingTrips: 0,
+   activeAlerts: 0,
+   shoppingLists: 0,
+   profileImage: null,
+};
 
-interface ProfileImage {
-  mime: string; // MIME type of the image
-  content: Buffer; // Image binary content
+function getDisplayName(user: UserProfile) {
+   return `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || "DiscountMate Member";
 }
 
-interface Profile {
-  user_fname: string;
-  user_lname: string;
-  email: string;
-  address: string;
-  phone_number: string;
-  profile_image?: ProfileImage | null;
-}
+export default function ProfileScreen() {
+   const router = useRouter();
+   const { setCachedProfile } = useUserProfile();
+   const [user, setUser] = useState<UserProfile>(FALLBACK_USER);
+   const [loading, setLoading] = useState(true);
+   const [saving, setSaving] = useState(false);
+   const [uploadingImage, setUploadingImage] = useState(false);
+   const [changingPassword, setChangingPassword] = useState(false);
+   const [deletingAccount, setDeletingAccount] = useState(false);
+   const [error, setError] = useState<string | null>(null);
+   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-export default function Profile() {
-  const { isAuthenticated, logout } = useAuth();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [image, setImage] = useState<string | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const toast = useToast();
+   useEffect(() => {
+      let active = true;
 
-  const getImage = (profileImage: { mime: string; content: string } | null): string => {
-    if (!profileImage) {
-      return defaultImageUri as string;
-    }
+      const loadProfile = async () => {
+         setLoading(true);
+         setError(null);
+         try {
+            const data = await fetchProfile();
+            if (active) {
+               setUser(data);
+               setCachedProfile(data);
+            }
+         } catch (err: any) {
+            if (active) {
+               const message = err?.message || "Unable to load your profile.";
+               if (message === SESSION_EXPIRED_MESSAGE) {
+                  setError(message);
+                  router.replace("/login");
+                  return;
+               }
 
-    return `data:${profileImage.mime};base64,${profileImage.content}`;
-  };
+               setError(message);
+            }
+         } finally {
+            if (active) {
+               setLoading(false);
+            }
+         }
+      };
 
-  useEffect(() => {
-    const fetchProfile = async () => {
+      loadProfile();
+
+      return () => {
+         active = false;
+      };
+   }, []);
+
+   const displayName = useMemo(() => getDisplayName(user), [user]);
+   const membershipLabel = useMemo(() => {
+      const plan = String(user.subscriptionPlan || "free");
+      return `${plan.charAt(0).toUpperCase()}${plan.slice(1)} Member`;
+   }, [user.subscriptionPlan]);
+
+   const handleSave = async (nextProfile: UserProfile) => {
+      setSaving(true);
+      setError(null);
+      setSuccessMessage(null);
       try {
-        const token = await AsyncStorage.getItem('authToken');
-        if (!token) return;
-
-        // Make API call to get profile data
-        const response = await axios.get<Profile>('http://localhost:3000/api/users/profile', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        setProfile(response.data);
-
-        if (response.data.profile_image) {
-          const imageContent =
-            typeof response.data.profile_image.content === 'string'
-              ? response.data.profile_image.content
-              : response.data.profile_image.content.toString('base64');
-
-          setImage(
-            getImage({
-              mime: response.data.profile_image.mime,
-              content: imageContent,
-            })
-          );
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
+         const updated = await saveProfile(nextProfile);
+         const mergedUser = {
+            ...user,
+            ...updated,
+         };
+         setUser(mergedUser);
+         setCachedProfile(mergedUser);
+         setSuccessMessage("Profile updated successfully.");
+      } catch (err: any) {
+         const message = err?.message || "Unable to save your profile.";
+         setError(message);
+         if (message === SESSION_EXPIRED_MESSAGE) {
+            router.replace("/login");
+         }
+         throw err;
+      } finally {
+         setSaving(false);
       }
-    };
+   };
 
-    if (isAuthenticated) {
-      fetchProfile();
-    }
-  }, [isAuthenticated]);
+   const handleAvatarUpload = async () => {
+      setError(null);
+      setSuccessMessage(null);
 
-  const handleSignOut = async () => {
-    logout();
-    setProfile(null);
-    toast.show("Signed out successfully!", { type: 'success', placement: 'top' });
-  };
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+         setError("Please allow photo library access to upload your profile picture.");
+         return;
+      }
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets[0].uri) {
-      const imageUri = result.assets[0].uri;
-      setImage(imageUri);
-      await uploadImage(imageUri, result.assets[0].fileName!);
-      setModalVisible(true); // Show success dialog
-    } else {
-      console.log('Image picker was canceled');
-    }
-  };
-
-  const uploadImage = async (uri: string, imageName: string) => {
-    const token = await AsyncStorage.getItem('authToken');
-    if (!token) {
-      console.log('No token available');
-      return;
-    }
-
-    try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-
-      const formData = new FormData();
-      formData.append('image', blob, imageName);
-
-      await axios.post('http://localhost:3000/api/users/upload-profile-image', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
+      const result = await ImagePicker.launchImageLibraryAsync({
+         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+         allowsEditing: true,
+         aspect: [1, 1],
+         quality: 0.8,
       });
 
-      console.log('Image uploaded successfully');
-    } catch (error) {
-      console.error('Error uploading image:', error);
-    }
-  };
+      if (result.canceled || result.assets.length === 0) {
+         return;
+      }
 
-  return (
-    <ScrollView style={styles.container}>
-      <View style={styles.profileCard}>
-        <Image source={{ uri: image || defaultImageUri }} style={styles.image} />
-        <Text style={styles.name}>{profile?.user_fname} {profile?.user_lname}</Text>
-        <Text style={styles.email}>{profile?.email}</Text>
-        <Text style={styles.phone}>{profile?.phone_number}</Text>
-        <Text style={styles.address}>{profile?.address}</Text>
+      const asset = result.assets[0];
+      setUploadingImage(true);
 
-        <TouchableOpacity onPress={pickImage} style={styles.uploadButton}>
-          <Entypo name="camera" size={24} color="#fff" />
-          <Text style={styles.uploadButtonText}>Change Profile Picture</Text>
-        </TouchableOpacity>
+      try {
+         const nextProfileImage = await uploadProfileImage({
+            uri: asset.uri,
+            fileName: asset.fileName ?? `profile-${Date.now()}.jpg`,
+            mimeType: asset.mimeType ?? "image/jpeg",
+            file: (asset as any).file,
+         });
 
-        <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
-          <Text style={styles.signOutButtonText}>Sign Out</Text>
-        </TouchableOpacity>
+         const nextUser = {
+            ...user,
+            profileImage: nextProfileImage,
+         };
+
+         setUser(nextUser);
+         setCachedProfile(nextUser);
+         setSuccessMessage("Profile picture updated successfully.");
+      } catch (err: any) {
+         const message =
+            err?.message || "Unable to upload your profile picture.";
+         setError(message);
+         if (message === SESSION_EXPIRED_MESSAGE) {
+            router.replace("/login");
+         }
+      } finally {
+         setUploadingImage(false);
+      }
+   };
+
+   const handlePasswordChange = async (payload: {
+      currentPassword: string;
+      newPassword: string;
+      confirmNewPassword: string;
+   }) => {
+      setChangingPassword(true);
+      setError(null);
+      setSuccessMessage(null);
+
+      try {
+         const message = await changePassword(payload);
+         setSuccessMessage(message);
+      } catch (err: any) {
+         const message = err?.message || "Unable to update your password.";
+         setError(message);
+         if (message === SESSION_EXPIRED_MESSAGE) {
+            router.replace("/login");
+         }
+         throw err;
+      } finally {
+         setChangingPassword(false);
+      }
+   };
+
+   const handleDeleteAccount = async () => {
+      setDeletingAccount(true);
+      setError(null);
+      setSuccessMessage(null);
+
+      try {
+         await deleteAccount();
+         await AsyncStorage.removeItem("authToken");
+         setCachedProfile(null);
+         router.replace("/login");
+      } catch (err: any) {
+         const message = err?.message || "Unable to delete your account.";
+         setError(message);
+         if (message === SESSION_EXPIRED_MESSAGE) {
+            router.replace("/login");
+         }
+         throw err;
+      } finally {
+         setDeletingAccount(false);
+      }
+   };
+
+   return (
+      <View className="flex-1 bg-[#F7F8F4]">
+         <View className="flex-col lg:flex-row">
+            <UserHubSidebar
+               activeKey="profile"
+               displayName={displayName}
+               email={user.email}
+               membershipLabel={membershipLabel}
+               profileImage={user.profileImage}
+               onAvatarPress={handleAvatarUpload}
+               avatarUploading={uploadingImage}
+            />
+
+            <View className="flex-1 px-3 md:px-5 xl:px-6 py-4 md:py-5">
+               {error && (
+                  <View className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
+                     <Text className="text-sm text-red-700">{error}</Text>
+                  </View>
+               )}
+
+               {successMessage && (
+                  <View className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                     <Text className="text-sm text-emerald-700">{successMessage}</Text>
+                  </View>
+               )}
+
+               {loading ? (
+                  <View className="rounded-3xl border border-gray-100 bg-white px-5 py-8 flex-row items-center gap-3">
+                     <ActivityIndicator color="#10B981" />
+                     <Text className="text-gray-700">Loading your profile settings...</Text>
+                  </View>
+               ) : (
+                  <View className="max-w-[1480px] w-full gap-4">
+                     <ProfileBasicInfoSection
+                        user={user}
+                        loading={loading}
+                        saving={saving}
+                        membershipLabel={membershipLabel}
+                        profileImage={user.profileImage}
+                        onAvatarPress={handleAvatarUpload}
+                        avatarUploading={uploadingImage}
+                        onSave={handleSave}
+                     />
+
+                     <ProfilePasswordSection
+                        saving={changingPassword}
+                        onSubmit={handlePasswordChange}
+                     />
+
+                     <ProfileDeleteAccountSection
+                        deleting={deletingAccount}
+                        onDelete={handleDeleteAccount}
+                     />
+                  </View>
+               )}
+            </View>
+         </View>
       </View>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Profile picture uploaded successfully!</Text>
-            <Pressable
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>OK</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
-    </ScrollView>
-  );
+   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f2f2f2',
-    paddingTop: 20,
-    paddingHorizontal: 16,
-  },
-  profileCard: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 24,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-    marginBottom: 20,
-  },
-  image: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 20,
-    borderWidth: 3,
-    borderColor: '#eee',
-  },
-  name: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  email: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 4,
-  },
-  phone: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 4,
-  },
-  address: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  uploadButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  uploadButtonText: {
-    fontSize: 16,
-    color: '#fff',
-    marginLeft: 8,
-  },
-  signOutButton: {
-    backgroundColor: '#FF5722',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-  },
-  signOutButtonText: {
-    fontSize: 16,
-    color: '#fff',
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalText: {
-    fontSize: 18,
-    fontWeight: '500',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  closeButton: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  closeButtonText: {
-    fontSize: 16,
-    color: '#fff',
-    textAlign: 'center',
-  },
-});

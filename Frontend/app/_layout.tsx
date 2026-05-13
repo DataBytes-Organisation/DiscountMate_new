@@ -5,34 +5,74 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import React from 'react';
+import '../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { CartProvider } from './(tabs)/CartContext';
+import { ShoppingListsProvider } from './(tabs)/ShoppingListsContext';
+import { ImageSearchProvider } from './(tabs)/ImageSearchContext';
+import { UserProfileProvider } from '../context/UserProfileContext';
+import { NotificationCenterProvider } from '../context/NotificationCenterContext';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+   const colorScheme = useColorScheme();
+   const [loaded] = useFonts({
+      SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+   });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+   // Inject Google Analytics for Expo Web
+   useEffect(() => {
+      if (typeof document !== 'undefined') {
+         // Load GA script
+         const script = document.createElement('script');
+         script.async = true;
+         script.src = "https://www.googletagmanager.com/gtag/js?id=G-KV1PBPHM30";
+         document.head.appendChild(script);
 
-  if (!loaded) {
-    return null;
-  }
+         // Configure GA
+         const inlineScript = document.createElement('script');
+         inlineScript.innerHTML = `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-KV1PBPHM30');
+         `;
+         document.head.appendChild(inlineScript);
+      }
+   }, []);
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
-  );
+   useEffect(() => {
+      if (loaded) {
+         SplashScreen.hideAsync();
+      }
+   }, [loaded]);
+
+   if (!loaded) {
+      return null;
+   }
+
+    return (
+       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <ImageSearchProvider>
+             <ShoppingListsProvider>
+                <CartProvider>
+                   <UserProfileProvider>
+                      <NotificationCenterProvider>
+                         <Stack>
+                            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                            <Stack.Screen name="(product)" options={{ headerShown: false }} />
+                            <Stack.Screen name="(specials)" options={{ headerShown: false }} />
+                            <Stack.Screen name="+not-found" />
+                         </Stack>
+                      </NotificationCenterProvider>
+                   </UserProfileProvider>
+                </CartProvider>
+             </ShoppingListsProvider>
+          </ImageSearchProvider>
+       </ThemeProvider>
+    );
+
 }

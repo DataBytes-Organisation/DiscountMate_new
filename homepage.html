@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10B981',
+                        secondary: '#059669',
+                        accent: '#FBBF24',
+                        dark: '#1F2937',
+                        light: '#F9FAFB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>::-webkit-scrollbar { display: none;}</style>
+</head>
+<body class="bg-light font-sans">
+
+<div id="header" class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="max-w-[1920px] mx-auto">
+    <div class="flex items-center justify-between px-8 py-4 border-b border-gray-100">
+      <div class="flex items-center gap-8">
+        <div class="flex items-center gap-2">
+          <div class="w-11 h-11 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-md">
+            <i class="fa-solid fa-tag text-white text-xl"></i>
+          </div>
+          <span class="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">DiscountMate</span>
+        </div>
+        <nav class="flex items-center gap-1">
+          <a href="#" class="px-4 py-2 text-dark font-semibold rounded-lg bg-primary/10 text-primary">Home</a>
+          <a href="#" class="px-4 py-2 text-gray-600 hover:text-primary hover:bg-primary/5 rounded-lg transition-all">Compare</a>
+          <a href="#" class="px-4 py-2 text-gray-600 hover:text-primary hover:bg-primary/5 rounded-lg transition-all">Specials</a>
+          <a href="#" class="px-4 py-2 text-gray-600 hover:text-primary hover:bg-primary/5 rounded-lg transition-all">My Lists</a>
+          <a href="#" class="px-4 py-2 text-gray-600 hover:text-primary hover:bg-primary/5 rounded-lg transition-all">Profile</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="relative text-gray-600 hover:text-primary transition-colors">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+        </button>
+        <div class="flex items-center gap-3 px-5 py-2.5 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl border border-primary/20">
+          <i class="fa-solid fa-basket-shopping text-primary"></i>
+          <span class="text-sm font-semibold text-dark">3 items</span>
+          <span class="text-sm font-bold text-primary">$12.40 saved</span>
+        </div>
+        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" alt="User" class="w-10 h-10 rounded-full border-2 border-primary/30 shadow-sm">
+      </div>
+    </div>
+    <div class="flex items-center gap-3 px-8 py-3 overflow-x-auto">
+      <button class="px-5 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-sm font-medium whitespace-nowrap shadow-md hover:shadow-lg transition-all">Cheapest Today</button>
+      <button class="px-5 py-2 bg-white text-gray-700 rounded-full text-sm font-medium whitespace-nowrap hover:bg-primary/10 hover:text-primary border border-gray-200 transition-all">On Special</button>
+      <button class="px-5 py-2 bg-white text-gray-700 rounded-full text-sm font-medium whitespace-nowrap hover:bg-primary/10 hover:text-primary border border-gray-200 transition-all">Trending Down</button>
+      <button class="px-5 py-2 bg-white text-gray-700 rounded-full text-sm font-medium whitespace-nowrap hover:bg-primary/10 hover:text-primary border border-gray-200 transition-all">High Savings</button>
+      <button class="px-5 py-2 bg-white text-gray-700 rounded-full text-sm font-medium whitespace-nowrap hover:bg-primary/10 hover:text-primary border border-gray-200 transition-all">Bulk Deals</button>
+      <button class="px-5 py-2 bg-white text-gray-700 rounded-full text-sm font-medium whitespace-nowrap hover:bg-primary/10 hover:text-primary border border-gray-200 transition-all">More...</button>
+    </div>
+  </div>
+</div>
+
+<div id="search-section" class="bg-white border-b border-gray-100 sticky top-[128px] z-40 shadow-sm">
+  <div class="max-w-[1920px] mx-auto px-8 py-6">
+    <div class="flex items-center gap-4">
+      <div class="flex-1 relative">
+        <i class="fa-solid fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        <input type="text" placeholder="Search for products, brands, or categories..." class="w-full pl-14 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-base transition-all">
+      </div>
+      <button class="px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-all">Search</button>
+    </div>
+  </div>
+</div>
+
+<div id="main-content" class="bg-light">
+  <div class="max-w-[1920px] mx-auto flex">
+    <aside id="sidebar" class="w-64 bg-white border-r border-gray-100 sticky top-[200px] h-[calc(100vh-200px)] overflow-y-auto shadow-sm">
+      <div class="p-6">
+        <h3 class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-4">Categories</h3>
+        <nav class="space-y-1">
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-box text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Pantry</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-cheese text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Dairy</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-bottle-water text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Drinks</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-snowflake text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Frozen</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-house text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Household</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-cookie text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Snacks</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-heart-pulse text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Health</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-baby text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Baby</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-paw text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Pet Care</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-spray-can text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Personal Care</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-bread-slice text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Bakery</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-drumstick-bite text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Meat & Seafood</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-apple-whole text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Fruit & Veg</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-mug-hot text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Tea & Coffee</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-all group">
+            <i class="fa-solid fa-wine-bottle text-gray-400 group-hover:text-primary transition-colors"></i>
+            <span class="text-sm font-medium">Liquor</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <div id="controls-section" class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-4">
+          <button class="flex items-center gap-2 px-5 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-700 font-medium hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+            <i class="fa-solid fa-filter"></i>
+            Add Filters
+          </button>
+          <div class="flex items-center gap-2 text-sm text-gray-600">
+            <span class="font-medium">Showing <span class="text-primary font-bold">247</span> products</span>
+          </div>
+        </div>
+        <div class="relative">
+          <select class="appearance-none bg-white border-2 border-gray-200 rounded-xl px-5 py-2.5 pr-12 text-sm text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+            <option>Sort by: Best Savings</option>
+            <option>Sort by: Price Low to High</option>
+            <option>Sort by: Price High to Low</option>
+            <option>Sort by: Trending</option>
+            <option>Sort by: Most Popular</option>
+          </select>
+          <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+        </div>
+      </div>
+
+      <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="p-5">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-wine-glass text-gray-400 text-2xl"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-dark font-bold mb-1 truncate">Milk Full Cream 2L</h3>
+                <p class="text-xs text-gray-500 mb-3">Fresh dairy milk</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-3 py-1 bg-gradient-to-r from-accent/20 to-accent/10 text-accent text-xs font-bold rounded-full whitespace-nowrap">Save $1.20</span>
+                  <span class="flex items-center gap-1 text-xs text-primary font-medium whitespace-nowrap">
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                    Trending down
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="border-t border-gray-100 pt-4 mb-4">
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Coles</div>
+                  <div class="text-base text-dark font-bold">$3.80</div>
+                  <div class="text-xs text-gray-400 line-through">$5.00</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Woolworths</div>
+                  <div class="text-base text-dark font-bold">$4.20</div>
+                  <div class="text-xs text-gray-400 line-through">$5.00</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/30">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Aldi</div>
+                  <div class="text-base text-primary font-bold">$3.50</div>
+                  <div class="text-xs text-gray-400 line-through">$4.70</div>
+                  <div class="mt-1">
+                    <span class="px-2 py-0.5 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold rounded-full">Cheapest</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="flex-1 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+                <i class="fa-solid fa-basket-shopping mr-1"></i>
+                Add
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-list"></i>
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-bell"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="p-5">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-bread-slice text-gray-400 text-2xl"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-dark font-bold mb-1 truncate">White Bread 700g</h3>
+                <p class="text-xs text-gray-500 mb-3">Soft white sandwich bread</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-3 py-1 bg-gradient-to-r from-accent/20 to-accent/10 text-accent text-xs font-bold rounded-full whitespace-nowrap">Save $0.85</span>
+                  <span class="flex items-center gap-1 text-xs text-red-500 font-medium whitespace-nowrap">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    Price rising
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="border-t border-gray-100 pt-4 mb-4">
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/30">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Coles</div>
+                  <div class="text-base text-primary font-bold">$2.50</div>
+                  <div class="text-xs text-gray-400 line-through">$3.35</div>
+                  <div class="mt-1">
+                    <span class="px-2 py-0.5 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold rounded-full">Cheapest</span>
+                  </div>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Woolworths</div>
+                  <div class="text-base text-dark font-bold">$2.80</div>
+                  <div class="text-xs text-gray-400 line-through">$3.20</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Aldi</div>
+                  <div class="text-base text-dark font-bold">$2.90</div>
+                  <div class="text-xs text-gray-400">-</div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="flex-1 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+                <i class="fa-solid fa-basket-shopping mr-1"></i>
+                Add
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-list"></i>
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-bell"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="p-5">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-apple-whole text-gray-400 text-2xl"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-dark font-bold mb-1 truncate">Bananas 1kg</h3>
+                <p class="text-xs text-gray-500 mb-3">Fresh Australian bananas</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-3 py-1 bg-gradient-to-r from-accent/20 to-accent/10 text-accent text-xs font-bold rounded-full whitespace-nowrap">Save $1.50</span>
+                  <span class="flex items-center gap-1 text-xs text-gray-500 font-medium whitespace-nowrap">
+                    <i class="fa-solid fa-minus"></i>
+                    Stable
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="border-t border-gray-100 pt-4 mb-4">
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Coles</div>
+                  <div class="text-base text-dark font-bold">$3.20</div>
+                  <div class="text-xs text-gray-400 line-through">$4.00</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/30">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Woolworths</div>
+                  <div class="text-base text-primary font-bold">$2.90</div>
+                  <div class="text-xs text-gray-400 line-through">$4.40</div>
+                  <div class="mt-1">
+                    <span class="px-2 py-0.5 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold rounded-full">Cheapest</span>
+                  </div>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Aldi</div>
+                  <div class="text-base text-dark font-bold">$3.10</div>
+                  <div class="text-xs text-gray-400 line-through">$3.90</div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="flex-1 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+                <i class="fa-solid fa-basket-shopping mr-1"></i>
+                Add
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-list"></i>
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-bell"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="p-5">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-wheat-awn text-gray-400 text-2xl"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-dark font-bold mb-1 truncate">Pasta Penne 500g</h3>
+                <p class="text-xs text-gray-500 mb-3">Italian durum wheat pasta</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-3 py-1 bg-gradient-to-r from-accent/20 to-accent/10 text-accent text-xs font-bold rounded-full whitespace-nowrap">Save $0.50</span>
+                  <span class="flex items-center gap-1 text-xs text-primary font-medium whitespace-nowrap">
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                    Trending down
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="border-t border-gray-100 pt-4 mb-4">
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Coles</div>
+                  <div class="text-base text-dark font-bold">$2.00</div>
+                  <div class="text-xs text-gray-400 line-through">$2.50</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Woolworths</div>
+                  <div class="text-base text-dark font-bold">$2.10</div>
+                  <div class="text-xs text-gray-400 line-through">$2.50</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/30">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Aldi</div>
+                  <div class="text-base text-primary font-bold">$1.79</div>
+                  <div class="text-xs text-gray-400 line-through">$2.29</div>
+                  <div class="mt-1">
+                    <span class="px-2 py-0.5 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold rounded-full">Cheapest</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="flex-1 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+                <i class="fa-solid fa-basket-shopping mr-1"></i>
+                Add
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-list"></i>
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-bell"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="p-5">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-cheese text-gray-400 text-2xl"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-dark font-bold mb-1 truncate">Cheddar Cheese Block 500g</h3>
+                <p class="text-xs text-gray-500 mb-3">Tasty mature cheddar</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-3 py-1 bg-gradient-to-r from-accent/20 to-accent/10 text-accent text-xs font-bold rounded-full whitespace-nowrap">Save $2.30</span>
+                  <span class="flex items-center gap-1 text-xs text-orange-500 font-medium whitespace-nowrap">
+                    <i class="fa-solid fa-fire"></i>
+                    Hot deal
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="border-t border-gray-100 pt-4 mb-4">
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Coles</div>
+                  <div class="text-base text-dark font-bold">$7.50</div>
+                  <div class="text-xs text-gray-400 line-through">$9.00</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/30">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Woolworths</div>
+                  <div class="text-base text-primary font-bold">$6.80</div>
+                  <div class="text-xs text-gray-400 line-through">$9.10</div>
+                  <div class="mt-1">
+                    <span class="px-2 py-0.5 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold rounded-full">Cheapest</span>
+                  </div>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Aldi</div>
+                  <div class="text-base text-dark font-bold">$7.20</div>
+                  <div class="text-xs text-gray-400 line-through">$8.50</div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="flex-1 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+                <i class="fa-solid fa-basket-shopping mr-1"></i>
+                Add
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-list"></i>
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-bell"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="p-5">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-glass-water text-gray-400 text-2xl"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-dark font-bold mb-1 truncate">Orange Juice 2L</h3>
+                <p class="text-xs text-gray-500 mb-3">100% pure squeezed orange juice</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-3 py-1 bg-gradient-to-r from-accent/20 to-accent/10 text-accent text-xs font-bold rounded-full whitespace-nowrap">Save $1.80</span>
+                  <span class="flex items-center gap-1 text-xs text-primary font-medium whitespace-nowrap">
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                    Trending down
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="border-t border-gray-100 pt-4 mb-4">
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/30">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Coles</div>
+                  <div class="text-base text-primary font-bold">$5.20</div>
+                  <div class="text-xs text-gray-400 line-through">$7.00</div>
+                  <div class="mt-1">
+                    <span class="px-2 py-0.5 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold rounded-full">Cheapest</span>
+                  </div>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Woolworths</div>
+                  <div class="text-base text-dark font-bold">$5.50</div>
+                  <div class="text-xs text-gray-400 line-through">$6.80</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Aldi</div>
+                  <div class="text-base text-dark font-bold">$5.90</div>
+                  <div class="text-xs text-gray-400 line-through">$6.50</div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="flex-1 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+                <i class="fa-solid fa-basket-shopping mr-1"></i>
+                Add
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-list"></i>
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-bell"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="p-5">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-toilet-paper text-gray-400 text-2xl"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-dark font-bold mb-1 truncate">Toilet Paper 24 Pack</h3>
+                <p class="text-xs text-gray-500 mb-3">Soft 3-ply quilted tissue</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-3 py-1 bg-gradient-to-r from-accent/20 to-accent/10 text-accent text-xs font-bold rounded-full whitespace-nowrap">Save $3.00</span>
+                  <span class="flex items-center gap-1 text-xs text-orange-500 font-medium whitespace-nowrap">
+                    <i class="fa-solid fa-fire"></i>
+                    Bulk deal
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="border-t border-gray-100 pt-4 mb-4">
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Coles</div>
+                  <div class="text-base text-dark font-bold">$16.00</div>
+                  <div class="text-xs text-gray-400 line-through">$19.00</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Woolworths</div>
+                  <div class="text-base text-dark font-bold">$15.80</div>
+                  <div class="text-xs text-gray-400 line-through">$18.50</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/30">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Aldi</div>
+                  <div class="text-base text-primary font-bold">$14.99</div>
+                  <div class="text-xs text-gray-400 line-through">$17.99</div>
+                  <div class="mt-1">
+                    <span class="px-2 py-0.5 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold rounded-full">Cheapest</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="flex-1 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+                <i class="fa-solid fa-basket-shopping mr-1"></i>
+                Add
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-list"></i>
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-bell"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="p-5">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-mug-hot text-gray-400 text-2xl"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-dark font-bold mb-1 truncate">Coffee Beans 1kg</h3>
+                <p class="text-xs text-gray-500 mb-3">Premium arabica coffee beans</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-3 py-1 bg-gradient-to-r from-accent/20 to-accent/10 text-accent text-xs font-bold rounded-full whitespace-nowrap">Save $4.50</span>
+                  <span class="flex items-center gap-1 text-xs text-primary font-medium whitespace-nowrap">
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                    Trending down
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="border-t border-gray-100 pt-4 mb-4">
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Coles</div>
+                  <div class="text-base text-dark font-bold">$22.00</div>
+                  <div class="text-xs text-gray-400 line-through">$26.50</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/30">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Woolworths</div>
+                  <div class="text-base text-primary font-bold">$21.50</div>
+                  <div class="text-xs text-gray-400 line-through">$26.00</div>
+                  <div class="mt-1">
+                    <span class="px-2 py-0.5 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold rounded-full">Cheapest</span>
+                  </div>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Aldi</div>
+                  <div class="text-base text-dark font-bold">$23.90</div>
+                  <div class="text-xs text-gray-400 line-through">$25.50</div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="flex-1 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+                <i class="fa-solid fa-basket-shopping mr-1"></i>
+                Add
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-list"></i>
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-bell"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div class="p-5">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-bowl-food text-gray-400 text-2xl"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-dark font-bold mb-1 truncate">Greek Yogurt 1kg</h3>
+                <p class="text-xs text-gray-500 mb-3">Natural full fat yogurt</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-3 py-1 bg-gradient-to-r from-accent/20 to-accent/10 text-accent text-xs font-bold rounded-full whitespace-nowrap">Save $1.90</span>
+                  <span class="flex items-center gap-1 text-xs text-primary font-medium whitespace-nowrap">
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                    Trending down
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="border-t border-gray-100 pt-4 mb-4">
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Coles</div>
+                  <div class="text-base text-dark font-bold">$6.50</div>
+                  <div class="text-xs text-gray-400 line-through">$8.00</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-50">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Woolworths</div>
+                  <div class="text-base text-dark font-bold">$6.80</div>
+                  <div class="text-xs text-gray-400 line-through">$8.20</div>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/30">
+                  <div class="text-xs text-gray-500 mb-1 font-medium">Aldi</div>
+                  <div class="text-base text-primary font-bold">$5.99</div>
+                  <div class="text-xs text-gray-400 line-through">$7.89</div>
+                  <div class="mt-1">
+                    <span class="px-2 py-0.5 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold rounded-full">Cheapest</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="flex-1 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+                <i class="fa-solid fa-basket-shopping mr-1"></i>
+                Add
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-list"></i>
+              </button>
+              <button class="px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+                <i class="fa-solid fa-bell"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="pagination-section" class="mt-10 flex items-center justify-center gap-2">
+        <button class="px-4 py-2 border-2 border-gray-200 rounded-xl text-sm text-gray-400 cursor-not-allowed" disabled>
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold shadow-md">1</button>
+        <button class="px-4 py-2 border-2 border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">2</button>
+        <button class="px-4 py-2 border-2 border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">3</button>
+        <button class="px-4 py-2 border-2 border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">4</button>
+        <span class="px-2 text-gray-500">...</span>
+        <button class="px-4 py-2 border-2 border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">12</button>
+        <button class="px-4 py-2 border-2 border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-primary/5 hover:border-primary hover:text-primary transition-all">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="trending-insights-section" class="bg-white border-t border-gray-100">
+  <div class="max-w-[1920px] mx-auto px-8 py-16">
+    <div class="mb-10">
+      <h2 class="text-3xl font-bold text-dark mb-2">Trending Insights</h2>
+      <p class="text-gray-600">See what's moving in the market this week</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/20 rounded-2xl p-8 hover:shadow-lg transition-all">
+        <div class="flex items-center justify-between mb-6">
+          <div class="w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-md">
+            <i class="fa-solid fa-arrow-trend-down text-white text-xl"></i>
+          </div>
+          <span class="text-sm font-bold text-primary">23% price drop</span>
+        </div>
+        <h3 class="text-dark font-bold text-xl mb-2">Dairy Products</h3>
+        <p class="text-sm text-gray-600 mb-6">Average savings of $2.40 across milk, cheese, and yogurt</p>
+        <a href="#" class="text-sm text-primary font-semibold hover:underline inline-flex items-center gap-2">View all dairy deals <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div class="bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20 rounded-2xl p-8 hover:shadow-lg transition-all">
+        <div class="flex items-center justify-between mb-6">
+          <div class="w-14 h-14 bg-gradient-to-br from-accent to-orange-400 rounded-xl flex items-center justify-center shadow-md">
+            <i class="fa-solid fa-fire text-white text-xl"></i>
+          </div>
+          <span class="text-sm font-bold text-accent">Hot deals</span>
+        </div>
+        <h3 class="text-dark font-bold text-xl mb-2">Household Essentials</h3>
+        <p class="text-sm text-gray-600 mb-6">Bulk deals on cleaning supplies and paper products</p>
+        <a href="#" class="text-sm text-accent font-semibold hover:underline inline-flex items-center gap-2">Explore household <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl p-8 hover:shadow-lg transition-all">
+        <div class="flex items-center justify-between mb-6">
+          <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+            <i class="fa-solid fa-chart-line text-white text-xl"></i>
+          </div>
+          <span class="text-sm font-bold text-blue-600">Price watch</span>
+        </div>
+        <h3 class="text-dark font-bold text-xl mb-2">Fresh Produce</h3>
+        <p class="text-sm text-gray-600 mb-6">Seasonal fruits and vegetables at best prices</p>
+        <a href="#" class="text-sm text-blue-600 font-semibold hover:underline inline-flex items-center gap-2">Check fresh produce <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="savings-summary-section" class="bg-gradient-to-br from-light to-white border-t border-gray-100">
+  <div class="max-w-[1920px] mx-auto px-8 py-16">
+    <div class="bg-white border border-gray-200 rounded-2xl p-10 shadow-lg">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3">$127.50</div>
+          <div class="text-sm text-gray-600 font-medium">Total community savings today</div>
+        </div>
+        <div class="text-center">
+          <div class="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3">2,847</div>
+          <div class="text-sm text-gray-600 font-medium">Products tracked</div>
+        </div>
+        <div class="text-center">
+          <div class="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3">18%</div>
+          <div class="text-sm text-gray-600 font-medium">Average savings per shop</div>
+        </div>
+        <div class="text-center">
+          <div class="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3">3</div>
+          <div class="text-sm text-gray-600 font-medium">Major retailers compared</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="smart-lists-section" class="bg-white border-t border-gray-100">
+  <div class="max-w-[1920px] mx-auto px-8 py-16">
+    <div class="mb-10">
+      <h2 class="text-3xl font-bold text-dark mb-2">Smart Shopping Lists</h2>
+      <p class="text-gray-600">Create and manage your shopping lists for better savings</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-gradient-to-br from-light to-white border-2 border-dashed border-gray-300 rounded-2xl p-10 flex flex-col items-center justify-center text-center hover:border-primary hover:bg-primary/5 cursor-pointer transition-all">
+        <div class="w-20 h-20 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full flex items-center justify-center mb-5">
+          <i class="fa-solid fa-plus text-primary text-3xl"></i>
+        </div>
+        <h3 class="text-dark font-bold text-lg mb-2">Create New List</h3>
+        <p class="text-sm text-gray-600">Start building your custom shopping list</p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all cursor-pointer">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-dark font-bold text-lg">Weekly Essentials</h3>
+          <button class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </button>
+        </div>
+        <div class="space-y-3 mb-5">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-600 font-medium">12 items</span>
+            <span class="text-primary font-bold">Save $8.40</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="flex -space-x-2">
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center text-lg shadow-sm">🥛</div>
+              <div class="w-10 h-10 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg flex items-center justify-center text-lg shadow-sm">🍞</div>
+              <div class="w-10 h-10 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center text-lg shadow-sm">🥚</div>
+            </div>
+            <span class="text-xs text-gray-500 font-medium">+9 more</span>
+          </div>
+        </div>
+        <button class="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+          View List
+        </button>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all cursor-pointer">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-dark font-bold text-lg">Monthly Stock-up</h3>
+          <button class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </button>
+        </div>
+        <div class="space-y-3 mb-5">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-600 font-medium">8 items</span>
+            <span class="text-primary font-bold">Save $15.20</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="flex -space-x-2">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg flex items-center justify-center text-lg shadow-sm">🧻</div>
+              <div class="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 rounded-lg flex items-center justify-center text-lg shadow-sm">🧼</div>
+              <div class="w-10 h-10 bg-gradient-to-br from-red-100 to-red-200 rounded-lg flex items-center justify-center text-lg shadow-sm">☕</div>
+            </div>
+            <span class="text-xs text-gray-500 font-medium">+5 more</span>
+          </div>
+        </div>
+        <button class="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+          View List
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="price-alerts-section" class="bg-light border-t border-gray-100">
+  <div class="max-w-[1920px] mx-auto px-8 py-16">
+    <div class="mb-10">
+      <h2 class="text-3xl font-bold text-dark mb-2">Price Alerts & Notifications</h2>
+      <p class="text-gray-600">Never miss a deal on your favorite products</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-2xl p-10 shadow-lg">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div>
+          <div class="flex items-center gap-4 mb-8">
+            <div class="w-14 h-14 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center">
+              <i class="fa-solid fa-bell text-primary text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-dark font-bold text-lg">Active Alerts</h3>
+              <p class="text-sm text-gray-600">You have 5 price alerts set</p>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-5 bg-light rounded-xl border border-gray-100">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                  <i class="fa-solid fa-mug-hot text-gray-500"></i>
+                </div>
+                <div>
+                  <div class="text-dark text-sm font-semibold">Coffee Beans 1kg</div>
+                  <div class="text-xs text-gray-500">Alert when under $20.00</div>
+                </div>
+              </div>
+              <button class="text-gray-400 hover:text-red-500 transition-colors">
+                <i class="fa-solid fa-trash text-sm"></i>
+              </button>
+            </div>
+            <div class="flex items-center justify-between p-5 bg-light rounded-xl border border-gray-100">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                  <i class="fa-solid fa-bottle-droplet text-gray-500"></i>
+                </div>
+                <div>
+                  <div class="text-dark text-sm font-semibold">Olive Oil 1L</div>
+                  <div class="text-xs text-gray-500">Alert when under $12.00</div>
+                </div>
+              </div>
+              <button class="text-gray-400 hover:text-red-500 transition-colors">
+                <i class="fa-solid fa-trash text-sm"></i>
+              </button>
+            </div>
+            <div class="flex items-center justify-between p-5 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl border border-primary/30">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                  <i class="fa-solid fa-spray-can-sparkles text-white"></i>
+                </div>
+                <div>
+                  <div class="text-dark text-sm font-semibold">Laundry Detergent 2L</div>
+                  <div class="text-xs text-primary font-semibold">Price dropped to $9.50!</div>
+                </div>
+              </div>
+              <button class="px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-lg text-xs font-semibold shadow-md">
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-4 mb-8">
+            <div class="w-14 h-14 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center">
+              <i class="fa-solid fa-chart-line text-primary text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-dark font-bold text-lg">Set New Alert</h3>
+              <p class="text-sm text-gray-600">Track prices on any product</p>
+            </div>
+          </div>
+          <div class="space-y-5">
+            <div>
+              <label class="block text-sm text-gray-700 font-semibold mb-2">Product Name</label>
+              <input type="text" placeholder="Search for a product..." class="w-full px-5 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+            </div>
+            <div>
+              <label class="block text-sm text-gray-700 font-semibold mb-2">Target Price</label>
+              <div class="relative">
+                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">$</span>
+                <input type="number" placeholder="0.00" class="w-full pl-10 pr-5 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm text-gray-700 font-semibold mb-3">Notification Method</label>
+              <div class="space-y-3">
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" checked class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
+                  <span class="text-sm text-gray-700">Email notifications</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
+                  <span class="text-sm text-gray-700">Push notifications</span>
+                </label>
+              </div>
+            </div>
+            <button class="w-full py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+              Create Alert
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="comparison-tools-section" class="bg-white border-t border-gray-100">
+  <div class="max-w-[1920px] mx-auto px-8 py-16">
+    <div class="mb-10">
+      <h2 class="text-3xl font-bold text-dark mb-2">Comparison Tools</h2>
+      <p class="text-gray-600">Advanced features to help you save more</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-gradient-to-br from-light to-white border border-gray-200 rounded-2xl p-10 hover:shadow-xl transition-all">
+        <div class="flex items-start gap-5 mb-8">
+          <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+            <i class="fa-solid fa-calculator text-white text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-xl text-dark font-bold mb-2">Unit Price Calculator</h3>
+            <p class="text-sm text-gray-600">Compare products by weight, volume, or quantity to find the best value</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-5 bg-white border border-gray-200 rounded-xl">
+            <div>
+              <div class="text-sm text-dark font-semibold">500g @ $7.50</div>
+              <div class="text-xs text-gray-500">$15.00 per kg</div>
+            </div>
+            <div class="text-lg text-dark font-bold">$15.00/kg</div>
+          </div>
+          <div class="flex items-center justify-between p-5 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/30 rounded-xl">
+            <div>
+              <div class="text-sm text-dark font-semibold">1kg @ $12.00</div>
+              <div class="text-xs text-primary font-semibold">Best value - Save $3.00 per kg</div>
+            </div>
+            <div class="text-lg text-primary font-bold">$12.00/kg</div>
+          </div>
+        </div>
+        <button class="w-full mt-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+          Open Calculator
+        </button>
+      </div>
+      <div class="bg-gradient-to-br from-light to-white border border-gray-200 rounded-2xl p-10 hover:shadow-xl transition-all">
+        <div class="flex items-start gap-5 mb-8">
+          <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+            <i class="fa-solid fa-basket-shopping text-white text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-xl text-dark font-bold mb-2">Basket Optimizer</h3>
+            <p class="text-sm text-gray-600">Split your shopping across stores to maximize savings</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="p-5 bg-white border border-gray-200 rounded-xl">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm text-dark font-semibold">Current basket</span>
+              <span class="text-sm text-gray-600 font-semibold">$87.50</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+              <div class="bg-gray-400 h-3 rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+          <div class="p-5 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/30 rounded-xl">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm text-dark font-semibold">Optimized split</span>
+              <span class="text-sm text-primary font-bold">$74.20</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-3">
+              <div class="bg-gradient-to-r from-primary to-secondary h-3 rounded-full" style="width: 85%"></div>
+            </div>
+            <div class="text-xs text-primary font-semibold">
+              Save $13.30 by shopping at 2 stores
+            </div>
+          </div>
+        </div>
+        <button class="w-full mt-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+          Optimize My Basket
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="retailer-comparison-section" class="bg-light border-t border-gray-100">
+  <div class="max-w-[1920px] mx-auto px-8 py-16">
+    <div class="mb-10">
+      <h2 class="text-3xl font-bold text-dark mb-2">Retailer Performance</h2>
+      <p class="text-gray-600">See how retailers compare this week</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-lg">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gradient-to-r from-light to-white border-b border-gray-200">
+            <tr>
+              <th class="px-8 py-5 text-left text-sm text-dark font-bold">Retailer</th>
+              <th class="px-8 py-5 text-left text-sm text-dark font-bold">Avg. Price Index</th>
+              <th class="px-8 py-5 text-left text-sm text-dark font-bold">Items on Special</th>
+              <th class="px-8 py-5 text-left text-sm text-dark font-bold">Avg. Discount</th>
+              <th class="px-8 py-5 text-left text-sm text-dark font-bold">Trending</th>
+              <th class="px-8 py-5 text-left text-sm text-dark font-bold">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr class="hover:bg-light transition-colors">
+              <td class="px-8 py-5">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center">
+                    <span class="text-sm text-red-600 font-bold">C</span>
+                  </div>
+                  <span class="text-dark font-semibold">Coles</span>
+                </div>
+              </td>
+              <td class="px-8 py-5">
+                <div class="flex items-center gap-2">
+                  <div class="text-lg text-dark font-bold">98.5</div>
+                  <span class="text-xs text-gray-500">(baseline: 100)</span>
+                </div>
+              </td>
+              <td class="px-8 py-5">
+                <span class="text-sm text-dark font-semibold">342 items</span>
+              </td>
+              <td class="px-8 py-5">
+                <span class="text-sm text-primary font-bold">18.5%</span>
+              </td>
+              <td class="px-8 py-5">
+                <span class="flex items-center gap-2 text-sm text-primary font-semibold">
+                  <i class="fa-solid fa-arrow-trend-down"></i>
+                  Improving
+                </span>
+              </td>
+              <td class="px-8 py-5">
+                <button class="text-sm text-primary font-semibold hover:underline">View deals</button>
+              </td>
+            </tr>
+            <tr class="hover:bg-light transition-colors">
+              <td class="px-8 py-5">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center">
+                    <span class="text-sm text-green-600 font-bold">W</span>
+                  </div>
+                  <span class="text-dark font-semibold">Woolworths</span>
+                </div>
+              </td>
+              <td class="px-8 py-5">
+                <div class="flex items-center gap-2">
+                  <div class="text-lg text-dark font-bold">101.2</div>
+                  <span class="text-xs text-gray-500">(baseline: 100)</span>
+                </div>
+              </td>
+              <td class="px-8 py-5">
+                <span class="text-sm text-dark font-semibold">318 items</span>
+              </td>
+              <td class="px-8 py-5">
+                <span class="text-sm text-primary font-bold">16.2%</span>
+              </td>
+              <td class="px-8 py-5">
+                <span class="flex items-center gap-2 text-sm text-gray-600 font-semibold">
+                  <i class="fa-solid fa-minus"></i>
+                  Stable
+                </span>
+              </td>
+              <td class="px-8 py-5">
+                <button class="text-sm text-primary font-semibold hover:underline">View deals</button>
+              </td>
+            </tr>
+            <tr class="bg-gradient-to-r from-primary/5 to-secondary/5 hover:from-primary/10 hover:to-secondary/10 transition-colors">
+              <td class="px-8 py-5">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-md">
+                    <span class="text-sm text-white font-bold">A</span>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-dark font-semibold">Aldi</span>
+                      <span class="px-3 py-1 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold rounded-full">Best Value</span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-8 py-5">
+                <div class="flex items-center gap-2">
+                  <div class="text-lg text-primary font-bold">94.8</div>
+                  <span class="text-xs text-gray-500">(baseline: 100)</span>
+                </div>
+              </td>
+              <td class="px-8 py-5">
+                <span class="text-sm text-dark font-semibold">289 items</span>
+              </td>
+              <td class="px-8 py-5">
+                <span class="text-sm text-primary font-bold">21.3%</span>
+              </td>
+              <td class="px-8 py-5">
+                <span class="flex items-center gap-2 text-sm text-primary font-semibold">
+                  <i class="fa-solid fa-arrow-trend-down"></i>
+                  Improving
+                </span>
+              </td>
+              <td class="px-8 py-5">
+                <button class="text-sm text-primary font-semibold hover:underline">View deals</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="weekly-specials-preview" class="bg-white border-t border-gray-100">
+  <div class="max-w-[1920px] mx-auto px-8 py-16">
+    <div class="flex items-center justify-between mb-10">
+      <div>
+        <h2 class="text-3xl font-bold text-dark mb-2">This Week's Top Specials</h2>
+        <p class="text-gray-600">Handpicked deals with the biggest savings</p>
+      </div>
+      <a href="#" class="px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+        View All Specials
+      </a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+        <div class="relative">
+          <div class="w-full h-56 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+            <i class="fa-solid fa-bottle-droplet text-gray-400 text-4xl"></i>
+          </div>
+          <div class="absolute top-4 right-4">
+            <span class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold rounded-full shadow-lg">50% OFF</span>
+          </div>
+        </div>
+        <div class="p-5">
+          <h3 class="text-dark font-bold mb-1">Premium Olive Oil 1L</h3>
+          <p class="text-xs text-gray-500 mb-4">Extra virgin cold pressed</p>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="text-3xl text-dark font-bold">$9.99</div>
+              <div class="text-sm text-gray-400 line-through">$19.99</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-gray-500 mb-1">at Coles</div>
+              <span class="text-xs text-primary font-bold">Save $10.00</span>
+            </div>
+          </div>
+          <button class="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+            Add to Basket
+          </button>
+        </div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+        <div class="relative">
+          <div class="w-full h-56 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+            <i class="fa-solid fa-chocolate-bar text-gray-400 text-4xl"></i>
+          </div>
+          <div class="absolute top-4 right-4">
+            <span class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold rounded-full shadow-lg">40% OFF</span>
+          </div>
+        </div>
+        <div class="p-5">
+          <h3 class="text-dark font-bold mb-1">Chocolate Block 200g</h3>
+          <p class="text-xs text-gray-500 mb-4">Premium dark chocolate</p>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="text-3xl text-dark font-bold">$3.60</div>
+              <div class="text-sm text-gray-400 line-through">$6.00</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-gray-500 mb-1">at Woolworths</div>
+              <span class="text-xs text-primary font-bold">Save $2.40</span>
+            </div>
+          </div>
+          <button class="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+            Add to Basket
+          </button>
+        </div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+        <div class="relative">
+          <div class="w-full h-56 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+            <i class="fa-solid fa-spray-can-sparkles text-gray-400 text-4xl"></i>
+          </div>
+          <div class="absolute top-4 right-4">
+            <span class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold rounded-full shadow-lg">35% OFF</span>
+          </div>
+        </div>
+        <div class="p-5">
+          <h3 class="text-dark font-bold mb-1">Laundry Detergent 2L</h3>
+          <p class="text-xs text-gray-500 mb-4">Advanced stain removal</p>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="text-3xl text-dark font-bold">$9.75</div>
+              <div class="text-sm text-gray-400 line-through">$15.00</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-gray-500 mb-1">at Aldi</div>
+              <span class="text-xs text-primary font-bold">Save $5.25</span>
+            </div>
+          </div>
+          <button class="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+            Add to Basket
+          </button>
+        </div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+        <div class="relative">
+          <div class="w-full h-56 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+            <i class="fa-solid fa-ice-cream text-gray-400 text-4xl"></i>
+          </div>
+          <div class="absolute top-4 right-4">
+            <span class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold rounded-full shadow-lg">45% OFF</span>
+          </div>
+        </div>
+        <div class="p-5">
+          <h3 class="text-dark font-bold mb-1">Ice Cream Tub 2L</h3>
+          <p class="text-xs text-gray-500 mb-4">Premium vanilla bean</p>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="text-3xl text-dark font-bold">$5.50</div>
+              <div class="text-sm text-gray-400 line-through">$10.00</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-gray-500 mb-1">at Coles</div>
+              <span class="text-xs text-primary font-bold">Save $4.50</span>
+            </div>
+          </div>
+          <button class="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+            Add to Basket
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer" class="bg-dark text-white">
+  <div class="max-w-[1920px] mx-auto px-8 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+      <div>
+        <div class="flex items-center gap-2 mb-6">
+          <div class="w-11 h-11 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center shadow-md">
+            <i class="fa-solid fa-tag text-white text-xl"></i>
+          </div>
+          <span class="text-2xl font-bold">DiscountMate</span>
+        </div>
+        <p class="text-gray-400 text-sm mb-6">Your smart shopping companion for finding the best grocery deals across Australia's leading retailers.</p>
+        <div class="flex items-center gap-4">
+          <a href="#" class="w-10 h-10 bg-white/10 hover:bg-primary rounded-lg flex items-center justify-center transition-all">
+            <i class="fa-brands fa-facebook text-lg"></i>
+          </a>
+          <a href="#" class="w-10 h-10 bg-white/10 hover:bg-primary rounded-lg flex items-center justify-center transition-all">
+            <i class="fa-brands fa-twitter text-lg"></i>
+          </a>
+          <a href="#" class="w-10 h-10 bg-white/10 hover:bg-primary rounded-lg flex items-center justify-center transition-all">
+            <i class="fa-brands fa-instagram text-lg"></i>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-5">Quick Links</h4>
+        <ul class="space-y-3">
+          <li><a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Home</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Compare Prices</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Weekly Specials</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">My Lists</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Price Alerts</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-5">Support</h4>
+        <ul class="space-y-3">
+          <li><a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Help Center</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Contact Us</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">FAQs</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Privacy Policy</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-5">Newsletter</h4>
+        <p class="text-gray-400 text-sm mb-5">Subscribe to get weekly deals and exclusive offers.</p>
+        <div class="flex gap-2">
+          <input type="email" placeholder="Your email" class="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary">
+          <button class="px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:shadow-lg transition-all">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-gray-400 text-sm">© 2024 DiscountMate. All rights reserved.</p>
+      <div class="flex items-center gap-6">
+        <a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Privacy</a>
+        <a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Terms</a>
+        <a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Cookies</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

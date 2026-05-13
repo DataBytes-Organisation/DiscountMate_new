@@ -2,6 +2,16 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## 📚 Important Documentation
+
+**👉 New developers should read this first:** [`LAYOUT_STRUCTURE_GUIDE.md`](./LAYOUT_STRUCTURE_GUIDE.md)
+
+This guide explains:
+- The current layout structure and architecture
+- How to add new pages and route groups
+- Standard Operating Procedures (SOP) for development
+- Best practices and examples
+
 ## Get started
 
 1. Install dependencies
