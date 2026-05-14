@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { useRouter } from "expo-router";
 import AddButton from "../common/AddButton";
 import { API_URL } from "@/constants/Api";
+import { useCart } from "../../app/(tabs)/CartContext";
+import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 
 interface WeeklySpecial {
    id: number;
@@ -29,6 +32,9 @@ interface WeeklySpecialsResponse {
 }
 
 export default function WeeklySpecialsSection() {
+   const router = useRouter();
+   const { addToCart } = useCart();
+   const { getActiveList } = useShoppingLists();
    const [specials, setSpecials] = useState<WeeklySpecial[]>([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState<string | null>(null);
@@ -68,6 +74,32 @@ export default function WeeklySpecialsSection() {
    const formatDiscount = (percentage: number): string => {
       return `${Math.round(percentage)}% OFF`;
    };
+
+   const handleAddSpecial = (item: WeeklySpecial) => {
+      if (!getActiveList()) {
+         router.push({
+            pathname: "/(tabs)/my-lists",
+            params: { create: "1" },
+         });
+         return;
+      }
+
+      const storeKey = item.store_key?.toLowerCase();
+      addToCart({
+         id: item.product_id || String(item.id),
+         name: item.product_name,
+         price: item.price,
+         store: item.store,
+         category: item.category,
+         image: item.image_url ?? undefined,
+         retailerPrices: {
+            ...(storeKey === "coles" ? { coles: item.price } : {}),
+            ...(storeKey === "woolworths" ? { woolworths: item.price } : {}),
+            ...(storeKey === "iga" ? { iga: item.price } : {}),
+         },
+      });
+   };
+
    return (
       <View className="bg-white border-t border-gray-100">
          <View className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-16">
@@ -167,7 +199,13 @@ export default function WeeklySpecialsSection() {
                               </View>
 
                               <View className="mt-2">
-                                 <AddButton label="Add to List" />
+                                 <AddButton
+                                    label="Add to List"
+                                    onPress={(event) => {
+                                       event.stopPropagation();
+                                       handleAddSpecial(item);
+                                    }}
+                                 />
                               </View>
                            </View>
                         </View>
