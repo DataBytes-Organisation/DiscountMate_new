@@ -1,0 +1,16 @@
+"""
+MongoDB (Legacy) Documentation
+Historically, MongoDB was used as the primary data storage solution for DiscountMate.
+As the platform transitions to a PostgreSQL‑based ETL pipeline, the resources in this folder serve as legacy documentation for reference and archival purposes.
+
+Contents
+MongoDB SOP – T1 2026.pdf  
+A SOP outlining how MongoDB has been used within DiscountMate, including database structure, workflows, and operational guidelines.
+
+MongoDBUploadScript_Woolworths.ipynb  
+Notebook used during T1 2026 to upload weekly Woolworths prices to MongoDB.
+
+Status
+These files will be deprecated and are maintained here predominately for historical context.
+Once the PostgreSQL migration is fully complete, this folder will no longer be required.
+"""
