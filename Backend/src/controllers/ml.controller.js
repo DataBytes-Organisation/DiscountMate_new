@@ -286,14 +286,51 @@ const postRecipeReset = async (req, res) => {
 };
 
 
+/**
+ * GET /api/ml/recipe/products?context_id=...
+ * Forwards to Flask GET /api/recipe/products — fetches MongoDB product cards
+ * for a completed chat turn. Called after /chat returns products_pending=true.
+ */
+const getRecipeProducts = async (req, res) => {
+  try {
+    const response = await axios.get(
+      `${ML_SERVICE_URL}/api/recipe/products`,
+      {
+        params: req.query,   // forwards ?context_id=...
+        timeout: 15000
+      }
+    );
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error calling recipe products:', error.message);
+    if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+      return res.status(503).json({
+        success: false,
+        message: 'ML service is currently unavailable',
+        error: 'Recipe service is not running on port 5001.'
+      });
+    }
+    if (error.response) {
+      return res.status(error.response.status).json(error.response.data);
+    }
+    return res.status(500).json({
+      success: false,
+      message: 'Recipe products fetch failed',
+      error: error.message
+    });
+  }
+};
+
+
 module.exports = {
   getWeeklySpecials,
   getRecommendations,
   getPricePrediction,
-  // Recipe RAG (added Step 2)
+  // Recipe RAG
   getRecipeStats,
   getRecipeSearch,
   postRecipeChat,
-  postRecipeReset
+  postRecipeReset,
+  getRecipeProducts,
 };
 

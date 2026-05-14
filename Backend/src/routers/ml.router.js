@@ -189,5 +189,33 @@ router.post('/recipe/chat', mlController.postRecipeChat);
  */
 router.post('/recipe/reset', mlController.postRecipeReset);
 
+/**
+ * @swagger
+ * /ml/recipe/products:
+ *   get:
+ *     tags: [ML/AI - Recipe RAG]
+ *     summary: Fetch product cards for a chat turn
+ *     description: >
+ *       Returns MongoDB-grounded product cards (name, price, image) for the
+ *       recipe turn identified by context_id. Call this after /chat returns
+ *       products_pending=true to display product cards without blocking the answer.
+ *     parameters:
+ *       - in: query
+ *         name: context_id
+ *         required: true
+ *         schema: { type: string }
+ *         description: Value returned by POST /ml/recipe/chat as recipe_context_id
+ *     responses:
+ *       200:
+ *         description: Product cards returned
+ *       400:
+ *         description: Missing context_id
+ *       404:
+ *         description: Context not found or expired
+ *       503:
+ *         description: ML service unavailable
+ */
+router.get('/recipe/products', mlController.getRecipeProducts);
+
 module.exports = router;
 

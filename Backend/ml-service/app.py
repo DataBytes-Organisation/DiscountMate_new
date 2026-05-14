@@ -231,7 +231,8 @@ def recipe_stats():
         'recipe_count': len(rag.retriever.recipes),
         'active_sessions': len(rag.sessions),
         'max_turns_per_session': rag.max_turns,
-        'product_annotations_enabled': rag.product_matcher.enabled,
+        'product_matcher_enabled': rag.product_matcher.enabled,
+        'mongo_grounding_enabled': rag.mongo_resolver.enabled,
     })
 
 
@@ -337,6 +338,53 @@ def recipe_reset():
     rag.reset_session(session_id)
     return jsonify({'success': True, 'session_id': session_id})
 
+
+@app.route('/api/recipe/products', methods=['GET'])
+def recipe_products():
+    """
+    Fetch MongoDB-grounded product cards for a completed chat turn.
+    Layman: "Give me the actual product images and prices for the
+             recipe ingredients the chatbot just mentioned."
+    Technical: looks up the context_id written by /api/recipe/chat,
+               bulk-fetches from MongoDB products + product_pricings,
+               returns display-ready cards. Call this after /chat returns
+               products_pending=true to avoid blocking the first answer.
+
+    Query params:
+      context_id  (required) — value returned by /api/recipe/chat
+
+    Response JSON:
+      {
+        "success": true,
+        "products_used": [
+          {
+            "product_id":   "<MongoDB _id string>",
+            "product_name": "...",
+            "price":        4.50,
+            "image_url":    "https://...",
+            "product_url":  "/product/<MongoDB _id string>"
+          }
+        ]
+      }
+    """
+    if not RAG_READY:
+        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
+
+    context_id = request.args.get('context_id', '').strip()
+    if not context_id:
+        return jsonify({'success': False, 'error': 'context_id is required'}), 400
+
+    product_lookups = rag.get_context_products(context_id)
+    if product_lookups is None:
+        return jsonify({'success': False, 'error': 'Context not found or expired'}), 404
+
+    try:
+        products_used = rag.mongo_resolver.fetch_for_display(product_lookups)
+        return jsonify({'success': True, 'products_used': products_used})
+    except Exception as e:
+        print(f"[recipe_products] ERROR: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 if __name__ == '__main__':
     print(f"Starting ML/AI Service on port {ML_SERVICE_PORT}")
     print("Available endpoints:")
@@ -349,4 +397,5 @@ if __name__ == '__main__':
     print("  GET  /api/recipe/search?q=... - Recipe retrieval (no LLM)")
     print("  POST /api/recipe/chat - Recipe RAG chat (full LLM)")
     print("  POST /api/recipe/reset - Wipe a chat session")
+    print("  GET  /api/recipe/products?context_id=... - Fetch product cards for a chat turn")
     app.run(host='0.0.0.0', port=ML_SERVICE_PORT, debug=True)

@@ -11,7 +11,7 @@ Behaviour by environment:
                       that are MISSING locally trigger a GCS fetch.
   - CLOUD RUN / GAE:  cache directory defaults to /tmp/recipe_rag/.
 
-Required env vars (already set in project-root .env):
+Required env vars (already set in Backend/.env):
   GOOGLE_CLOUD_PROJECT       sit-26t1-discountmate-935cb94
   RAG_BUCKET_NAME            discountmate-ml-models
   RAG_OBJECT_PREFIX          recipe_rag/
@@ -20,6 +20,7 @@ Required env vars (already set in project-root .env):
 from __future__ import annotations
 
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
 
@@ -27,10 +28,10 @@ from typing import Optional
 # download function so the rest of the pipeline still works on machines
 # that haven't installed the GCS deps.
 
-# Load project-root .env (3 levels up: recipe_rag/ -> ml-service/ -> Backend/ -> root)
+# Load Backend/.env (2 levels up: recipe_rag/ -> ml-service/ -> Backend)
 try:
     from dotenv import load_dotenv
-    _ENV_PATH = Path(__file__).resolve().parents[3] / ".env"
+    _ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
     if _ENV_PATH.exists():
         load_dotenv(_ENV_PATH, override=False)
 except ImportError:
@@ -41,13 +42,11 @@ except ImportError:
 # Config
 # ---------------------------------------------------------------------------
 
-# All six artefacts the RAG pipeline needs at runtime. If you add new ones
+# All artefacts the RAG pipeline needs at runtime. If you add new ones
 # to the index folder later, add the filename here.
 INDEX_FILES = [
     "recipe_index.npz",
     "recipe_metadata.json",
-    "ingredient_index.npz",
-    "ingredient_metadata.json",
     "product_index.npz",
     "product_metadata.json",
 ]
@@ -145,13 +144,23 @@ def ensure_index_file(filename: str,
 
 
 def ensure_all_indexes(index_dir: Optional[str] = None) -> None:
-    """Ensure every file in INDEX_FILES is present locally."""
+    """Ensure every file in INDEX_FILES is present locally, downloading in parallel."""
     target_dir = Path(index_dir) if index_dir else _resolve_local_index_dir()
-    missing = [f for f in INDEX_FILES
-               if not (target_dir / f).exists()]
+    missing = [f for f in INDEX_FILES if not (target_dir / f).exists()]
     if not missing:
         return
     print(f"[gcs_loader] {len(missing)} file(s) missing locally, "
-          f"fetching from GCS: {missing}")
-    for filename in missing:
-        ensure_index_file(filename, str(target_dir))
+          f"fetching from GCS in parallel: {missing}")
+    with ThreadPoolExecutor(max_workers=min(len(missing), 4)) as executor:
+        futures = {
+            executor.submit(ensure_index_file, f, str(target_dir)): f
+            for f in missing
+        }
+        for future in as_completed(futures):
+            filename = futures[future]
+            try:
+                future.result()
+            except RuntimeError as exc:
+                raise RuntimeError(
+                    f"Failed to download {filename}: {exc}"
+                ) from exc
