@@ -6,7 +6,12 @@ from typing import TYPE_CHECKING
 import duckdb
 
 from common.cli import iter_dates
-from common.db import ensure_postgres_attached, open_etl_connection, postgres_table
+from common.db import (
+    configure_bronze_storage,
+    ensure_postgres_attached,
+    open_etl_connection,
+    postgres_table,
+)
 from common.duckdb_utils import fetch_scalar, render_sql_template
 from common.paths import resolve_input_paths
 
@@ -51,7 +56,7 @@ def _workflow_sql_context() -> dict[str, str]:
 
 def _load_input_files(
     conn: duckdb.DuckDBPyConnection,
-    input_paths: list[Path],
+    input_paths: list[str],
 ) -> int:
     if not input_paths:
         return 0
@@ -94,25 +99,27 @@ def run(
     }
     processed_dates: list[str] = []
     skipped_dates: list[str] = []
-    input_paths: list[Path] = []
-
-    for run_date in iter_dates(start_date, end_date):
-        run_date_value = run_date.isoformat()
-        date_input_paths = resolve_input_paths(
-            runtime_config,
-            model,
-            COLES_RUNNER,
-            run_date,
-        )
-        if not date_input_paths:
-            skipped_dates.append(run_date_value)
-            continue
-        input_paths.extend(date_input_paths)
-        processed_dates.append(run_date_value)
+    input_paths: list[str] = []
 
     conn = open_etl_connection(settings)
     try:
         conn.execute(f"SET TimeZone = '{COLES_TIMEZONE}'")
+        configure_bronze_storage(conn, settings, runtime_config.paths.bronze_root)
+        for run_date in iter_dates(start_date, end_date):
+            run_date_value = run_date.isoformat()
+            date_input_paths = resolve_input_paths(
+                conn,
+                runtime_config,
+                model,
+                COLES_RUNNER,
+                run_date,
+            )
+            if not date_input_paths:
+                skipped_dates.append(run_date_value)
+                continue
+            input_paths.extend(date_input_paths)
+            processed_dates.append(run_date_value)
+
         if input_paths:
             counts["raw_input"] = _load_input_files(conn, input_paths)
             conn.execute(render_sql_template(WORKFLOW_SQL_DIR / "transform.sql"))

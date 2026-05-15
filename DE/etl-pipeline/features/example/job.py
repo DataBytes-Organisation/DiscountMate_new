@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from common.cli import iter_dates
-from common.db import load_demo_slice, open_etl_connection
+from common.db import configure_bronze_storage, load_demo_slice, open_etl_connection
 from common.duckdb_utils import fetch_scalar, load_sql
 from common.paths import resolve_input_paths
 
@@ -23,7 +23,7 @@ QA_CHECK_SQL = load_sql(WORKFLOW_SQL_DIR / "qa_check.sql")
 
 def _load_input_files(
     conn: duckdb.DuckDBPyConnection,
-    input_paths: list[Path],
+    input_paths: list[str],
 ) -> int:
     if not input_paths:
         return 0
@@ -43,7 +43,7 @@ def _load_input_files(
 
 def _transform_data(
     conn: duckdb.DuckDBPyConnection,
-    input_path: Path,
+    input_path: str,
     run_date: str,
 ) -> int:
     # Keep the starter example generic even though it reads a Coles-shaped file.
@@ -155,10 +155,15 @@ def run(
 
     conn = open_etl_connection(settings)
     try:
+        configure_bronze_storage(conn, settings, runtime_config.paths.bronze_root)
         for run_date in iter_dates(start_date, end_date):
             run_date_value = run_date.isoformat()
             input_paths = resolve_input_paths(
-                runtime_config, model, EXAMPLE_RUNNER, run_date
+                conn,
+                runtime_config,
+                model,
+                EXAMPLE_RUNNER,
+                run_date,
             )
             if not input_paths:
                 skipped_dates.append(run_date_value)

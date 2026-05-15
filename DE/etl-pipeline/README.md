@@ -34,6 +34,13 @@ cp .env.example .env
 cp config/config.yaml.example config/config.yaml
 ```
 
+Runtime config can be provided in either of two ways:
+
+- `APP_CONFIG_BASE64`: base64-encoded contents of `config.yaml`. If this is set, it takes priority.
+- `APP_CONFIG_PATH`: filesystem path to the YAML config. This is used only when `APP_CONFIG_BASE64` is empty.
+
+If `APP_CONFIG_BASE64` is present but cannot be base64-decoded, UTF-8 decoded, or parsed as YAML, the app raises an exception and stops.
+
 Start PostgreSQL:
 
 ```bash
@@ -46,6 +53,14 @@ DuckDB runtime directories writable, especially when running in sandboxes:
 ```bash
 export DUCKDB_HOME_DIRECTORY=/tmp/discountmate-duckdb/home
 export DUCKDB_EXTENSION_DIRECTORY=/tmp/discountmate-duckdb/extensions
+```
+
+If Bronze files live in Google Cloud Storage, also provide GCS HMAC credentials
+for DuckDB's `httpfs` extension:
+
+```bash
+export GCS_KEY_ID=your_gcs_hmac_key_id
+export GCS_SECRET=your_gcs_hmac_secret
 ```
 
 Apply migrations:
@@ -70,10 +85,13 @@ The example stays generic on purpose:
 uv run main.py --model example --start-date 2026-03-21 --end-date 2026-03-25
 ```
 
-The run will process every available date from `--start-date` through the inclusive `--end-date`. If `--end-date` is omitted, the range runs through today. Missing daily files are skipped with logging.
+The run will process every available date from `--start-date` through the inclusive `--end-date`. If `--start-date` is omitted, it defaults to the last 7 days including today. If `--end-date` is omitted, the range runs through today. Missing daily files are skipped with logging.
 
-Retailer workflows stage Bronze data locally in DuckDB first, then attach
-PostgreSQL through DuckDB for the final silver-table sync.
+Retailer workflows stage Bronze data in DuckDB first, then attach PostgreSQL
+through DuckDB for the final silver-table sync. Bronze inputs can come from:
+
+- local paths under `data/local_bronze`
+- `gs://...` prefixes configured through `paths.bronze_root`
 
 ## Output convention
 
@@ -155,6 +173,9 @@ docker run --rm \
 ```
 
 The runtime config and local sample CSV files are mounted because they are kept out of the image on purpose.
+
+For GCS-backed Bronze inputs, set `paths.bronze_root` to a `gs://bucket/prefix`
+value in `config/config.yaml` and provide `GCS_KEY_ID` / `GCS_SECRET`.
 
 ## Config and secrets
 

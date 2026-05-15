@@ -27,3 +27,6 @@ export function buildApiUrl(path = ""): string {
 export function buildRootUrl(path = ""): string {
    return joinUrl(API_ROOT_URL, path);
 }
+
+export const API_BASE_URL = API_ROOT_URL;
+export const REVERSE_IMAGE_SEARCH_API_URL = buildApiUrl('/reverse-image-search');

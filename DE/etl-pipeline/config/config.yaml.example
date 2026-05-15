@@ -1,8 +1,10 @@
-# Local-only template. Copy to `config/config.yaml` and fill your machine-specific values.
+# Runtime template. Copy to `config/config.yaml` and fill your machine-specific values.
 mode: local
 
 paths:
   bronze_root: data/local_bronze
+  # Example GCS prefix:
+  # bronze_root: gs://your-bronze-bucket/path/to/bronze
 
 models:
   products_coles:
@@ -12,7 +14,7 @@ models:
     products: "{bronze_root}/woolworths/woolworths_sample_{date_compact}.csv"
 
   products_iga:
-    products: "{bronze_root}/iga/iga_sample_{date_compact}.csv"
+    products: "{bronze_root}/iga/iga_products_{date_compact}*.csv"
 
   products_aldi:
     products: "{bronze_root}/aldi/aldi_sample_{date_compact}.csv"

@@ -1,11 +1,12 @@
 // Frontend/components/product/ProductCard.tsx
 import React from "react";
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, type GestureResponderEvent } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import RetailerCard, { Retailer } from "./RetailerCard";
 import AddButton from "../common/AddButton";
 import { useRouter } from "expo-router";
 import { useCart } from "../../app/(tabs)/CartContext";
+import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 export type TrendTone = "green" | "red" | "orange" | "neutral";
 
 export type Product = {
@@ -42,6 +43,7 @@ function getTrendColorClass(tone: TrendTone): string {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const router = useRouter();
    const { addToCart } = useCart();
+   const { getActiveList } = useShoppingLists();
    const { id, name, subtitle, category, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
    const [imageError, setImageError] = React.useState(false);
 
@@ -54,15 +56,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const trendColorClass = getTrendColorClass(trendTone);
 
    const handleOpenDetails = () => {
-      // Navigate to the dedicated product detail route: app/(product)/product/[id].tsx
-      // Pass only the ID; product page fetches the rest from the API
       router.push({
-         pathname: "/product/[id]",
+         pathname: "/(product)/product/[id]",
          params: { id },
       });
    };
 
-   const handleAddToCart = () => {
+   const handleAddToCart = (event?: GestureResponderEvent) => {
+      event?.stopPropagation();
+
+      if (!getActiveList()) {
+         router.push({
+            pathname: "/(tabs)/my-lists",
+            params: { create: "1" },
+         });
+         return;
+      }
+
       const parseRetailerPrice = (priceText?: string) => {
          if (!priceText || priceText === "-") return null;
          const parsed = parseFloat(priceText.replace(/[^0-9.]/g, ""));
@@ -117,9 +127,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
          className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300"
          onPress={handleOpenDetails}
       >
-         <View className="p-5">
+         <View className="p-5 min-h-[340px]">
             {/* Top: icon/image + title + badges */}
-            <View className="flex-row items-start gap-4 mb-4">
+            <View className="flex-row items-start gap-4 mb-4 min-h-[150px]">
                <View className="w-24 h-24 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 items-center justify-center flex-shrink-0 overflow-hidden">
                   {link_image && !imageError ? (
                      <Image
@@ -140,7 +150,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   >
                      {name}
                   </Text>
-                  <Text className="text-xs text-gray-500 mb-3">
+                  <Text className="text-xs text-gray-500 mb-3 min-h-[68px]" numberOfLines={4}>
                      {subtitle}
                   </Text>
 

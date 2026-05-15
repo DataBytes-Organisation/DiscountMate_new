@@ -11,6 +11,7 @@ import RetailerPerformanceSection from "../../components/home/RetailerPerformanc
 import WeeklySpecialsSection from "../../components/home/WeeklySpecialsSection";
 import FooterSection from "../../components/home/FooterSection";
 
+
 export default function HomeScreen() {
    return (
       <View className="flex-1 bg-[#F9FAFB]">

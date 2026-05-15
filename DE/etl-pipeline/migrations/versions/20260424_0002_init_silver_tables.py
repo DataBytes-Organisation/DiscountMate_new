@@ -225,8 +225,12 @@ def upgrade() -> None:
         sa.Column("price_now", sa.Numeric(10, 2), nullable=True),
         sa.Column("price_was", sa.Numeric(10, 2), nullable=True),
         sa.Column("price_comparable", sa.Text(), nullable=True),
-        sa.Column("variations_json", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
-        sa.Column("images_json", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
+        sa.Column(
+            "variations_json", postgresql.JSONB(astext_type=sa.Text()), nullable=False
+        ),
+        sa.Column(
+            "images_json", postgresql.JSONB(astext_type=sa.Text()), nullable=False
+        ),
         sa.Column("local_image_paths", sa.Text(), nullable=True),
         sa.Column("image_count", sa.Integer(), nullable=False),
         sa.Column("url", sa.Text(), nullable=False),
