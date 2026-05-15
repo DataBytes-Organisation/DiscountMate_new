@@ -67,10 +67,33 @@ jobs:
       - name: Run backend syntax checks
         run: npm run check:ci
 
+  ml-checks:
+    name: ML service install and smoke checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend/ml-service
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: Backend/ml-service/requirements.txt
+
+      - name: Install ML service dependencies
+        run: pip install -r requirements.txt
+
+      - name: Smoke test ML service import
+        run: python -c "from app import app; print(sorted(str(rule) for rule in app.url_map.iter_rules()))"
+
   deploy-backend:
     name: Deploy backend to Cloud Run
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_CLOUD_RUN_DEPLOY == 'true'
-    needs: [frontend-checks, backend-checks]
+    needs: [frontend-checks, backend-checks, ml-checks]
     runs-on: ubuntu-latest
     outputs:
       service_url: ${{ steps.backend-url.outputs.service_url }}
@@ -97,17 +120,91 @@ jobs:
           echo "BACKEND_IMAGE_URI=${BACKEND_IMAGE_URI}" >> "${GITHUB_ENV}"
           docker build -t "${BACKEND_IMAGE_URI}" Backend
 
+      - name: Build ML image
+        run: |
+          ML_IMAGE_URI="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/${{ vars.ML_IMAGE_NAME }}:${{ github.sha }}"
+          echo "ML_IMAGE_URI=${ML_IMAGE_URI}" >> "${GITHUB_ENV}"
+          docker build -t "${ML_IMAGE_URI}" Backend/ml-service
+
       - name: Push backend image
         run: docker push "${BACKEND_IMAGE_URI}"
 
+      - name: Push ML image
+        run: docker push "${ML_IMAGE_URI}"
+
+      - name: Render backend Cloud Run manifest
+        env:
+          CORS_ORIGIN: ${{ vars.CORS_ORIGIN }}
+          BASE_URL: ${{ vars.BASE_URL }}
+          ANALYTICS_SERVICE_URL: ${{ vars.ANALYTICS_SERVICE_URL }}
+        run: |
+          cat <<EOF > /tmp/backend-cloudrun.yaml
+          apiVersion: serving.knative.dev/v1
+          kind: Service
+          metadata:
+            name: ${{ vars.BACKEND_CLOUD_RUN_SERVICE }}
+          spec:
+            template:
+              metadata:
+                annotations:
+                  run.googleapis.com/container-dependencies: '{"backend":["ml-service"]}'
+              spec:
+                containers:
+                  - name: backend
+                    image: ${BACKEND_IMAGE_URI}
+                    ports:
+                      - name: http1
+                        containerPort: 8080
+                    env:
+                      - name: NODE_ENV
+                        value: production
+                      - name: PORT
+                        value: "8080"
+                      - name: GOOGLE_CLOUD_PROJECT
+                        value: ${{ vars.GCP_PROJECT_ID }}
+                      - name: ML_SERVICE_URL
+                        value: http://127.0.0.1:5001
+                      - name: MONGO_URI_SECRET_NAME
+                        value: mongo-uri
+                      - name: JWT_SECRET_SECRET_NAME
+                        value: jwt-secret
+          EOF
+          if [ -n "${CORS_ORIGIN}" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: CORS_ORIGIN
+                        value: ${CORS_ORIGIN}
+          EOF
+          fi
+          if [ -n "${BASE_URL}" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: BASE_URL
+                        value: ${BASE_URL}
+          EOF
+          fi
+          if [ -n "${ANALYTICS_SERVICE_URL}" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: ANALYTICS_SERVICE_URL
+                        value: ${ANALYTICS_SERVICE_URL}
+          EOF
+          fi
+          cat <<EOF >> /tmp/backend-cloudrun.yaml
+                  - name: ml-service
+                    image: ${ML_IMAGE_URI}
+                    env:
+                      - name: ML_SERVICE_PORT
+                        value: "5001"
+                    startupProbe:
+                      tcpSocket:
+                        port: 5001
+                      failureThreshold: 30
+                      periodSeconds: 2
+          EOF
+          cat /tmp/backend-cloudrun.yaml
+
       - name: Deploy backend service
         run: |
-          gcloud run deploy "${{ vars.BACKEND_CLOUD_RUN_SERVICE }}" \
-            --image "${BACKEND_IMAGE_URI}" \
-            --region "${{ vars.GCP_REGION }}" \
-            --platform managed \
-            --allow-unauthenticated \
-            --set-env-vars "NODE_ENV=production,PORT=8080,GOOGLE_CLOUD_PROJECT=${{ vars.GCP_PROJECT_ID }}"
+          gcloud run services replace /tmp/backend-cloudrun.yaml \
+            --region "${{ vars.GCP_REGION }}"
 
       - name: Capture backend URL
         id: backend-url
@@ -118,7 +215,7 @@ jobs:
   deploy-frontend:
     name: Deploy frontend to Cloud Run
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_CLOUD_RUN_DEPLOY == 'true'
-    needs: [frontend-checks, backend-checks, deploy-backend]
+    needs: [frontend-checks, backend-checks, ml-checks, deploy-backend]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository

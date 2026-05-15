@@ -15,6 +15,7 @@ from werkzeug.utils import secure_filename
 # Import ML model functions
 from ml_models.weekly_specials import get_weekly_specials_ml
 from ml_models.recommendations import get_recommendations_ml
+from ml_models.price_prediction import get_price_prediction_ml
 from ocr.extractor import process_receipt_internal, build_user_response
 
 app = Flask(__name__)
@@ -24,6 +25,21 @@ CORS(app)  # Enable CORS for all routes
 # You can change the port by setting ML_SERVICE_PORT environment variable
 # Example: ML_SERVICE_PORT=5002 python app.py
 ML_SERVICE_PORT = int(os.getenv('ML_SERVICE_PORT', 5001))
+
+
+def success_payload(**payload):
+    return jsonify({
+        'success': True,
+        **payload,
+    })
+
+
+def error_payload(message, error, status_code=500):
+    return jsonify({
+        'success': False,
+        'message': message,
+        'error': error,
+    }), status_code
 
 
 @app.route('/health', methods=['GET'])
@@ -58,18 +74,14 @@ def get_weekly_specials():
         # - ml_models/weekly_specials.py contains the ML logic
         weekly_specials = get_weekly_specials_ml(limit=limit, category=category)
 
-        return jsonify({
-            'success': True,
-            'data': weekly_specials,
-            'count': len(weekly_specials),
-            'week': get_current_week()
-        })
+        return success_payload(
+            data=weekly_specials,
+            count=len(weekly_specials),
+            week=get_current_week()
+        )
 
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return error_payload('Failed to fetch weekly specials', str(e))
 
 
 def get_current_week():
@@ -101,10 +113,7 @@ def get_recommendations():
         limit = int(data.get('limit', 5))
 
         if product_id is None:
-            return jsonify({
-                'success': False,
-                'error': 'product_id is required'
-            }), 400
+            return error_payload('Invalid request', 'product_id is required', 400)
 
         # Call ML model function from ml_models module
         # This demonstrates the integration pattern:
@@ -112,24 +121,54 @@ def get_recommendations():
         # - ml_models/recommendations.py contains the ML model logic
         recommendations = get_recommendations_ml(product_id=product_id, limit=limit)
 
-        return jsonify({
-            'success': True,
-            'message': 'Product recommendations using existing ML model',
-            'input_product_id': product_id,
-            'recommendations': recommendations,
-            'count': len(recommendations),
-            'model_info': {
+        return success_payload(
+            message='Product recommendations using existing ML model',
+            input_product_id=product_id,
+            recommendations=recommendations,
+            count=len(recommendations),
+            model_info={
                 'model_type': 'Association Rule Learning',
-                'model_location': 'ML/Recommendation_system/Recommendation-by-Simba/product_recommendation_model.joblib',
+                'model_location': os.getenv('RECOMMENDATION_MODEL_PATH', '/app/models/product_recommendation_model.joblib'),
                 'status': 'using_actual_model' if recommendations and recommendations[0].get('source') == 'product_recommendation_model.joblib' else 'fallback_mode'
             }
-        })
+        )
 
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return error_payload('Failed to get recommendations', str(e))
+
+
+@app.route('/api/ml/price-prediction', methods=['POST'])
+def get_price_prediction():
+    try:
+        data = request.get_json() or {}
+        product_id = data.get('product_id')
+        days_ahead = int(data.get('days_ahead', 7))
+        current_price = data.get('current_price')
+        price_history = data.get('price_history') or []
+
+        if product_id is None:
+            return error_payload('Invalid request', 'product_id is required', 400)
+
+        numeric_history = []
+        for value in price_history:
+            try:
+                numeric_history.append(float(value))
+            except (TypeError, ValueError):
+                continue
+
+        if current_price is None:
+            current_price = numeric_history[-1] if numeric_history else 0
+
+        prediction = get_price_prediction_ml(
+            product_id=str(product_id),
+            days_ahead=days_ahead,
+            current_price=float(current_price),
+            price_history=numeric_history,
+        )
+
+        return success_payload(**prediction)
+    except Exception as e:
+        return error_payload('Failed to get price prediction', str(e))
 
 
 @app.route('/api/ocr/receipt', methods=['POST'])
@@ -193,6 +232,6 @@ if __name__ == '__main__':
     print("  GET  /health - Health check")
     print("  GET  /api/weekly-specials - Get this week's top specials")
     print("  POST /api/ml/recommendations - Get product recommendations")
+    print("  POST /api/ml/price-prediction - Predict future prices")
     print("  POST /api/ocr/receipt - Process uploaded receipt image")
-    # print("  POST /api/ml/price-prediction - Predict future prices")
-    app.run(host='0.0.0.0', port=ML_SERVICE_PORT, debug=True)
+    app.run(host='0.0.0.0', port=ML_SERVICE_PORT, debug=False)
