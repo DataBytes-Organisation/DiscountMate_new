@@ -3,6 +3,17 @@ import cv2
 import pytesseract
 from pytesseract import Output
 from ocr.parser import build_receipt_data
+from ocr.matcher import load_products_from_csv, match_receipt_items
+
+
+PRODUCT_CSV_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "..",
+    "..",
+    "Data",
+    "Synthetic",
+    "synthetic_woolworths_10k.csv"
+)
 
 
 def validate_receipt_image(image_path):
@@ -107,6 +118,22 @@ def calculate_ocr_quality(processed_image, items):
     return quality
 
 
+def add_product_matches(receipt_data):
+    try:
+        products = load_products_from_csv(PRODUCT_CSV_PATH)
+        matched_items = match_receipt_items(receipt_data.get("items", []), products)
+
+        receipt_data["matched_items"] = matched_items
+        receipt_data["matching_status"] = "completed"
+
+    except Exception as e:
+        receipt_data["matched_items"] = []
+        receipt_data["matching_status"] = "failed"
+        receipt_data["matching_error"] = str(e)
+
+    return receipt_data
+
+
 def process_receipt_internal(image_path):
     valid, message = validate_receipt_image(image_path)
     if not valid:
@@ -158,6 +185,8 @@ def process_receipt_internal(image_path):
     if quality["avg_confidence"] < 65:
         warning = "Some items may not be extracted correctly due to image quality."
 
+    receipt_data = add_product_matches(receipt_data)
+
     return {
         "success": True,
         "message": "Receipt processed successfully.",
@@ -182,6 +211,9 @@ def build_user_response(result):
         "receipt": {
             "store_name": result["data"].get("store_name"),
             "items": result["data"].get("items", []),
+            "matched_items": result["data"].get("matched_items", []),
+            "matching_status": result["data"].get("matching_status"),
+            "matching_error": result["data"].get("matching_error"),
             "subtotal": result["data"].get("subtotal"),
             "total": result["data"].get("total"),
             "savings": result["data"].get("savings")

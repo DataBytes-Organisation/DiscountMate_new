@@ -1,51 +1,56 @@
-import React, { useMemo, useState } from "react";
-import {
-   View,
-   Text,
-   ScrollView,
-   Pressable,
-   useWindowDimensions,
-} from "react-native";
-import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { View, ScrollView, useWindowDimensions } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import { useShoppingLists } from "./ShoppingListsContext";
-import ShoppingListCard from "../../components/my-lists/ShoppingListCard";
-import ListAnalyticsPanel from "../../components/my-lists/ListAnalyticsPanel";
 import EditShoppingListModal from "../../components/my-lists/EditShoppingListModal";
+import MyListsHeroSection from "../../components/my-lists/MyListsHeroSection";
+import MyListsListsSection from "../../components/my-lists/MyListsListsSection";
+import MyListsBottomComparisonSections from "../../components/my-lists/MyListsBottomComparisonSections";
+import MyListsSelectedListDetailsSection from "../../components/my-lists/MyListsSelectedListDetailsSection";
 import FooterSection from "../../components/home/FooterSection";
 import type { ShoppingList } from "../../types/ShoppingList";
 
-type MobileTab = "lists" | "insights";
-
 export default function MyListsScreen() {
    const { width } = useWindowDimensions();
+   const { listId, create } = useLocalSearchParams<{ listId?: string; create?: string }>();
    const wide = width >= 900;
 
    const {
       lists,
       activeListId,
+      isLoading,
       setActiveList,
       createList,
       updateList,
       deleteList,
-      getListById,
+      refreshLists,
    } = useShoppingLists();
 
    const [selectedListId, setSelectedListId] = useState<string | null>(null);
-   const [mobileTab, setMobileTab] = useState<MobileTab>("lists");
+   const [recentCreatedListId, setRecentCreatedListId] = useState<string | null>(null);
    const [modalOpen, setModalOpen] = useState(false);
    const [editingList, setEditingList] = useState<ShoppingList | null>(null);
+   const consumedListIdRef = useRef<string | null>(null);
 
    const effectiveSelectedId = selectedListId ?? activeListId;
-   const selectedList = effectiveSelectedId ? getListById(effectiveSelectedId) ?? null : null;
+   const selectedList = useMemo(
+      () => lists.find((list) => list.id === effectiveSelectedId) ?? null,
+      [lists, effectiveSelectedId]
+   );
+   const showInitialLoading = isLoading && lists.length === 0;
 
    const sortedLists = useMemo(
       () =>
          [...lists].sort((a, b) => {
             if (a.id === activeListId) return -1;
             if (b.id === activeListId) return 1;
+            if (recentCreatedListId) {
+               if (a.id === recentCreatedListId) return -1;
+               if (b.id === recentCreatedListId) return 1;
+            }
             return a.name.localeCompare(b.name);
          }),
-      [lists, activeListId]
+      [lists, activeListId, recentCreatedListId]
    );
    const listColumnCount = useMemo(() => {
       if (width >= 1500) return 3;
@@ -80,16 +85,50 @@ export default function MyListsScreen() {
       setModalOpen(true);
    };
 
-   const handleSaveModal = (payload: {
+   useEffect(() => {
+      refreshLists();
+   }, [refreshLists]);
+
+   useEffect(() => {
+      if (!listId) return;
+      const requestedListId = Array.isArray(listId) ? listId[0] : listId;
+      if (!requestedListId) return;
+      if (consumedListIdRef.current === requestedListId) return;
+      if (!lists.some((list) => list.id === requestedListId)) return;
+      consumedListIdRef.current = requestedListId;
+      setSelectedListId(requestedListId);
+   }, [listId, lists]);
+
+   useEffect(() => {
+      if (create !== "1") return;
+      setEditingList(null);
+      setModalOpen(true);
+   }, [create]);
+
+   const handleSaveModal = async (payload: {
       name: string;
       description: string;
       accent: ShoppingList["accent"];
    }) => {
       if (editingList) {
          updateList(editingList.id, payload);
+         setRecentCreatedListId(null);
       } else {
-         createList(payload);
+         try {
+            const createdList = await createList(payload);
+            setRecentCreatedListId(createdList.id);
+            setSelectedListId(createdList.id);
+         } catch (error) {
+            console.error("Failed to create shopping list:", error);
+         }
       }
+   };
+
+   const handleDeleteList = (id: string) => {
+      deleteList(id);
+      setSelectedListId((current) => (current === id ? null : current));
+      setRecentCreatedListId((current) => (current === id ? null : current));
+      setEditingList((current) => (current?.id === id ? null : current));
    };
 
    return (
@@ -99,123 +138,85 @@ export default function MyListsScreen() {
             contentContainerStyle={{ paddingBottom: 0 }}
             nestedScrollEnabled
          >
-            <View className="px-4 md:px-8 py-10 bg-white border-b border-gray-100">
-               <View className="mb-6 items-center">
-                  <Text className="text-4xl font-bold text-gray-900 mb-2 text-center">My Lists</Text>
-                  <Text className="text-lg text-gray-600 text-center max-w-2xl">
-                     Create and organise lists, preview
-                     savings analytics.
-                  </Text>
-               </View>
-               <View className="flex-row flex-wrap items-center justify-center gap-3">
-                  <Pressable
-                     onPress={openCreate}
-                     className="flex-row items-center gap-2 px-6 py-3 rounded-2xl bg-primary_green"
-                  >
-                     <FontAwesome6 name="plus" size={14} color="#FFFFFF" />
-                     <Text className="text-base font-semibold text-white">New list</Text>
-                  </Pressable>
+            <MyListsHeroSection onCreate={openCreate} />
+
+            <View className={wide ? "md:pr-8" : "px-4 md:px-8 pt-6"}>
+               <View className={`${wide ? "flex-row items-start gap-6" : ""}`}>
+                  <MyListsListsSection
+                     lists={sortedLists}
+                     masonryColumns={masonryColumns}
+                     listColumnCount={listColumnCount}
+                     activeListId={activeListId}
+                     effectiveSelectedId={effectiveSelectedId}
+                     wide={wide}
+                     show
+                     forceSingleColumn={wide}
+                     containerClassName={
+                        wide
+                           ? "w-[260px] shrink-0 bg-white border-r border-gray-100 shadow-sm p-4 sticky top-0 h-[calc(100vh-64px)] overflow-y-auto"
+                           : ""
+                     }
+                     cardVariant={wide ? "compact" : "full"}
+                     hideManageActions={wide}
+                     isLoading={showInitialLoading}
+                     onSelectList={setSelectedListId}
+                     onSetActiveList={setActiveList}
+                     onEditList={openEdit}
+                     onDeleteList={handleDeleteList}
+                  />
+                  {wide ? (
+                     <View className="flex-1 min-w-0">
+                        <View className="px-4 md:px-8">
+                           {showInitialLoading ? (
+                              <ListDetailsSkeleton />
+                           ) : (
+                              <MyListsSelectedListDetailsSection
+                                 list={selectedList}
+                                 isActive={selectedList?.id === activeListId}
+                                 onEdit={() => {
+                                    if (selectedList) openEdit(selectedList);
+                                 }}
+                                 onDelete={() => {
+                                    if (selectedList) handleDeleteList(selectedList.id);
+                                 }}
+                                 onSetActive={() => {
+                                    if (selectedList) setActiveList(selectedList.id);
+                                 }}
+                              />
+                           )}
+                        </View>
+                        {showInitialLoading ? <ComparisonSkeleton /> : <MyListsBottomComparisonSections selectedList={selectedList} />}
+                     </View>
+                  ) : null}
                </View>
             </View>
 
-            <View className="px-4 md:px-8 pt-6">
-               {!wide && (
-                  <View className="flex-row rounded-2xl border border-gray-200 bg-white p-1 mb-5">
-                     <Pressable
-                        onPress={() => setMobileTab("lists")}
-                        className={`flex-1 py-2.5 rounded-xl items-center ${mobileTab === "lists" ? "bg-primary_green" : ""
-                           }`}
-                     >
-                        <Text
-                           className={`text-sm font-semibold ${mobileTab === "lists" ? "text-white" : "text-gray-700"
-                              }`}
-                        >
-                           Lists
-                        </Text>
-                     </Pressable>
-                     <Pressable
-                        onPress={() => setMobileTab("insights")}
-                        className={`flex-1 py-2.5 rounded-xl items-center ${mobileTab === "insights" ? "bg-primary_green" : ""
-                           }`}
-                     >
-                        <Text
-                           className={`text-sm font-semibold ${mobileTab === "insights" ? "text-white" : "text-gray-700"
-                              }`}
-                        >
-                           Insights
-                        </Text>
-                     </Pressable>
-                  </View>
-               )}
-
-               <View className={`${wide ? "flex-row gap-6 items-start" : ""}`}>
-                  <View
-                     className={`${wide ? "flex-1 min-w-0" : ""} ${!wide && mobileTab === "insights" ? "hidden" : ""
-                        }`}
-                  >
-                     <Text className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                        Your lists ({lists.length})
-                     </Text>
-                     {listColumnCount === 1 ? (
-                        <View className="gap-4">
-                           {sortedLists.map((list) => (
-                              <ShoppingListCard
-                                 key={list.id}
-                                 list={list}
-                                 variant="full"
-                                 isActive={list.id === activeListId}
-                                 isSelected={list.id === effectiveSelectedId}
-                                 onPressCard={() => {
-                                    setSelectedListId(list.id);
-                                    if (!wide) setMobileTab("insights");
-                                 }}
-                                 onSetActive={() => setActiveList(list.id)}
-                                 onEdit={() => openEdit(list)}
-                                 onDelete={() => deleteList(list.id)}
-                              />
-                           ))}
-                        </View>
+            {!wide ? (
+               <>
+                  <View className="px-4 md:px-8 pt-6">
+                     {showInitialLoading ? (
+                        <ListDetailsSkeleton />
                      ) : (
-                        <View className="flex-row items-start gap-4">
-                           {masonryColumns.map((column, columnIndex) => (
-                              <View key={`column-${columnIndex}`} className="flex-1 gap-4">
-                                 {column.map((list) => (
-                                    <ShoppingListCard
-                                       key={list.id}
-                                       list={list}
-                                       variant="full"
-                                       isActive={list.id === activeListId}
-                                       isSelected={list.id === effectiveSelectedId}
-                                       onPressCard={() => {
-                                          setSelectedListId(list.id);
-                                          if (!wide) setMobileTab("insights");
-                                       }}
-                                       onSetActive={() => setActiveList(list.id)}
-                                       onEdit={() => openEdit(list)}
-                                       onDelete={() => deleteList(list.id)}
-                                    />
-                                 ))}
-                              </View>
-                           ))}
-                        </View>
+                        <MyListsSelectedListDetailsSection
+                           list={selectedList}
+                           isActive={selectedList?.id === activeListId}
+                           onEdit={() => {
+                              if (selectedList) openEdit(selectedList);
+                           }}
+                           onDelete={() => {
+                              if (selectedList) handleDeleteList(selectedList.id);
+                           }}
+                           onSetActive={() => {
+                              if (selectedList) setActiveList(selectedList.id);
+                           }}
+                        />
                      )}
                   </View>
+                  {showInitialLoading ? <ComparisonSkeleton /> : <MyListsBottomComparisonSections selectedList={selectedList} />}
+               </>
+            ) : null}
 
-                  {wide ? (
-                     <View className="w-[300px] shrink-0">
-                        <ListAnalyticsPanel list={selectedList} />
-                     </View>
-                  ) : (
-                     mobileTab === "insights" && (
-                        <View className="mt-2">
-                           <ListAnalyticsPanel list={selectedList} />
-                        </View>
-                     )
-                  )}
-               </View>
-            </View>
-
-            <View className="mt-12">
+            <View>
                <FooterSection disableEdgeOffset />
             </View>
          </ScrollView>
@@ -226,6 +227,70 @@ export default function MyListsScreen() {
             editingList={editingList}
             onSave={handleSaveModal}
          />
+      </View>
+   );
+}
+
+function ListDetailsSkeleton() {
+   return (
+      <View className="bg-white rounded-3xl border border-gray-200 px-6 py-8 shadow-sm mt-8 mb-2">
+         <View className="flex-row items-start justify-between mb-6">
+            <View className="h-8 rounded-full bg-gray-200 w-1/3" />
+            <View className="h-10 rounded-xl bg-gray-100 w-32" />
+         </View>
+         <View className="h-4 rounded-full bg-gray-100 w-2/3 mb-6" />
+         <View className="flex-row flex-wrap gap-3 mb-6">
+            {[0, 1, 2].map((index) => (
+               <View
+                  key={`metric-skeleton-${index}`}
+                  className="min-w-[170px] flex-1 h-20 rounded-2xl bg-gray-100"
+               />
+            ))}
+         </View>
+         <View className="flex-row gap-10">
+            <View className="flex-1 gap-3">
+               {[0, 1, 2, 3].map((index) => (
+                  <View key={`item-skeleton-${index}`} className="h-14 rounded-xl bg-gray-100" />
+               ))}
+            </View>
+            <View className="w-[320px] gap-3">
+               <View className="h-7 rounded-full bg-gray-200 w-3/4" />
+               {[0, 1, 2].map((index) => (
+                  <View key={`category-skeleton-${index}`}>
+                     <View className="h-4 rounded-full bg-gray-100 w-2/3 mb-2" />
+                     <View className="h-3 rounded-full bg-gray-100 w-full" />
+                  </View>
+               ))}
+               <View className="h-40 rounded-2xl bg-gray-100 mt-4" />
+            </View>
+         </View>
+      </View>
+   );
+}
+
+function ComparisonSkeleton() {
+   return (
+      <View className="px-4 md:px-8 py-10 bg-[#F9FAFB]">
+         <View className="h-8 rounded-full bg-gray-200 w-1/3 mb-3" />
+         <View className="h-4 rounded-full bg-gray-100 w-1/2 mb-8" />
+         <View className="flex-row gap-6">
+            <View className="flex-[2] h-80 rounded-3xl bg-white border border-gray-200 p-6">
+               <View className="h-6 rounded-full bg-gray-200 w-1/3 mb-6" />
+               <View className="gap-4">
+                  {[0, 1, 2, 3].map((index) => (
+                     <View key={`comparison-list-skeleton-${index}`} className="h-14 rounded-xl bg-gray-100" />
+                  ))}
+               </View>
+            </View>
+            <View className="flex-1 h-80 rounded-3xl bg-white border border-gray-200 p-6">
+               <View className="h-6 rounded-full bg-gray-200 w-1/2 mb-6" />
+               <View className="gap-4">
+                  {[0, 1, 2].map((index) => (
+                     <View key={`store-total-skeleton-${index}`} className="h-20 rounded-2xl bg-gray-100" />
+                  ))}
+               </View>
+            </View>
+         </View>
       </View>
    );
 }
