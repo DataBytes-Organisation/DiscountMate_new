@@ -411,8 +411,6 @@ const signup = async (req, res) => {
             return res.status(400).json({ message: passwordValidationMessage });
         }
 
-        // Establish MongoDB connection and get the db object
-        const db = await connectToMongoDB(); // Await the connection to get the db object
         const db = await connectToMongoDB();
 
         if (password !== verifyPassword) {
@@ -516,8 +514,6 @@ const getProfile = async (req, res) => {
             { email },
             { projection: { encrypted_password: 0 } }
         );
-
-            const email = decoded.email;
 
         const activeAlerts = await getActiveAlertsCount(db, user, email);
 
