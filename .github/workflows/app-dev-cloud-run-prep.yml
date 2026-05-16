@@ -118,19 +118,20 @@ jobs:
         run: |
           BACKEND_IMAGE_URI="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/${{ vars.BACKEND_IMAGE_NAME }}:${{ github.sha }}"
           echo "BACKEND_IMAGE_URI=${BACKEND_IMAGE_URI}" >> "${GITHUB_ENV}"
-          docker build -t "${BACKEND_IMAGE_URI}" Backend
+          docker build --platform linux/amd64 -t "${BACKEND_IMAGE_URI}" Backend
 
       - name: Build ML image
         run: |
           ML_IMAGE_URI="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/${{ vars.ML_IMAGE_NAME }}:${{ github.sha }}"
           echo "ML_IMAGE_URI=${ML_IMAGE_URI}" >> "${GITHUB_ENV}"
-          docker build -t "${ML_IMAGE_URI}" Backend/ml-service
+          docker build --platform linux/amd64 -t "${ML_IMAGE_URI}" Backend/ml-service
 
       - name: Build reverse image search image
         run: |
           REVERSE_IMAGE_SEARCH_IMAGE_URI="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/${{ vars.REVERSE_IMAGE_SEARCH_IMAGE_NAME }}:${{ github.sha }}"
           echo "REVERSE_IMAGE_SEARCH_IMAGE_URI=${REVERSE_IMAGE_SEARCH_IMAGE_URI}" >> "${GITHUB_ENV}"
           docker build \
+            --platform linux/amd64 \
             -f Backend/ml-service/reverse_image_search/Dockerfile \
             -t "${REVERSE_IMAGE_SEARCH_IMAGE_URI}" \
             Backend/ml-service
@@ -153,29 +154,38 @@ jobs:
           FAISS_OBJECT_NAME: ${{ vars.FAISS_OBJECT_NAME }}
           RAG_BUCKET_NAME: ${{ vars.RAG_BUCKET_NAME }}
           RAG_OBJECT_PREFIX: ${{ vars.RAG_OBJECT_PREFIX }}
+          RUNTIME_MONGO_URI: ${{ secrets.MONGO_URI }}
+          RUNTIME_JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          RUNTIME_OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+          RUNTIME_HUGGING_FACE_TOKEN: ${{ secrets.HUGGING_FACE_TOKEN }}
         run: |
           cat <<EOF > /tmp/backend-cloudrun.yaml
           apiVersion: serving.knative.dev/v1
           kind: Service
           metadata:
             name: ${{ vars.BACKEND_CLOUD_RUN_SERVICE }}
+            annotations:
+              run.googleapis.com/invoker-iam-disabled: 'true'
           spec:
             template:
               metadata:
                 annotations:
                   run.googleapis.com/container-dependencies: '{"backend":["ml-service","reverse-image-search"]}'
               spec:
+                serviceAccountName: github-actions-prod@sit-26t1-discountmate-935cb94.iam.gserviceaccount.com
                 containers:
                   - name: backend
                     image: ${BACKEND_IMAGE_URI}
                     ports:
                       - name: http1
                         containerPort: 8080
+                    resources:
+                      limits:
+                        cpu: "1"
+                        memory: 1Gi
                     env:
                       - name: NODE_ENV
                         value: production
-                      - name: PORT
-                        value: "8080"
                       - name: GOOGLE_CLOUD_PROJECT
                         value: ${{ vars.GCP_PROJECT_ID }}
                       - name: ML_SERVICE_URL
@@ -205,9 +215,25 @@ jobs:
                         value: ${ANALYTICS_SERVICE_URL}
           EOF
           fi
+          if [ -n "${RUNTIME_MONGO_URI}" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: MONGO_URI
+                        value: ${RUNTIME_MONGO_URI}
+          EOF
+          fi
+          if [ -n "${RUNTIME_JWT_SECRET}" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: JWT_SECRET
+                        value: ${RUNTIME_JWT_SECRET}
+          EOF
+          fi
           cat <<EOF >> /tmp/backend-cloudrun.yaml
                   - name: ml-service
                     image: ${ML_IMAGE_URI}
+                    resources:
+                      limits:
+                        cpu: "2"
+                        memory: 4Gi
                     env:
                       - name: ML_SERVICE_PORT
                         value: "5001"
@@ -223,13 +249,37 @@ jobs:
                         value: ${RAG_BUCKET_NAME}
                       - name: RAG_OBJECT_PREFIX
                         value: ${RAG_OBJECT_PREFIX}
+          EOF
+          if [ -n "${RUNTIME_MONGO_URI}" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: MONGO_URI
+                        value: ${RUNTIME_MONGO_URI}
+          EOF
+          fi
+          if [ -n "${RUNTIME_OPEN_ROUTER_API_KEY}" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: OPEN_ROUTER_API_KEY
+                        value: ${RUNTIME_OPEN_ROUTER_API_KEY}
+          EOF
+          fi
+          if [ -n "${RUNTIME_HUGGING_FACE_TOKEN}" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: HUGGING_FACE_TOKEN
+                        value: ${RUNTIME_HUGGING_FACE_TOKEN}
+          EOF
+          fi
+          cat <<EOF >> /tmp/backend-cloudrun.yaml
                     startupProbe:
                       tcpSocket:
                         port: 5001
-                      failureThreshold: 30
+                      failureThreshold: 150
                       periodSeconds: 2
                   - name: reverse-image-search
                     image: ${REVERSE_IMAGE_SEARCH_IMAGE_URI}
+                    resources:
+                      limits:
+                        cpu: "2"
+                        memory: 4Gi
                     env:
                       - name: GOOGLE_CLOUD_PROJECT
                         value: ${{ vars.GCP_PROJECT_ID }}
@@ -242,10 +292,10 @@ jobs:
                     startupProbe:
                       tcpSocket:
                         port: 8001
-                      failureThreshold: 30
+                      failureThreshold: 150
                       periodSeconds: 2
           EOF
-          cat /tmp/backend-cloudrun.yaml
+          echo "Rendered backend Cloud Run manifest at /tmp/backend-cloudrun.yaml"
 
       - name: Deploy backend service
         run: |
@@ -287,6 +337,7 @@ jobs:
           FRONTEND_IMAGE_URI="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/${{ vars.FRONTEND_IMAGE_NAME }}:${{ github.sha }}"
           echo "FRONTEND_IMAGE_URI=${FRONTEND_IMAGE_URI}" >> "${GITHUB_ENV}"
           docker build \
+            --platform linux/amd64 \
             --build-arg EXPO_PUBLIC_API_URL="${FRONTEND_API_URL}" \
             -t "${FRONTEND_IMAGE_URI}" \
             Frontend
