@@ -30,6 +30,7 @@ const setupSwagger = require('./src/config/swagger');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+const isManagedCloudRuntime = Boolean(process.env.K_SERVICE || process.env.GAE_SERVICE);
 const allowedOrigins = (process.env.CORS_ORIGIN || "")
    .split(",")
    .map((value) => value.trim())
@@ -162,7 +163,11 @@ async function startServer() {
    }
 
    try {
-      await startReverseImageSearch();
+      if (isManagedCloudRuntime) {
+         console.log('Managed runtime detected. Using reverse image search sidecar via REVERSE_IMAGE_SEARCH_SERVICE_URL.');
+      } else {
+         await startReverseImageSearch();
+      }
    } catch (err) {
       console.error('Failed to start ReverseImageSearch sidecar:', err.message);
       process.exit(1);

@@ -126,17 +126,33 @@ jobs:
           echo "ML_IMAGE_URI=${ML_IMAGE_URI}" >> "${GITHUB_ENV}"
           docker build -t "${ML_IMAGE_URI}" Backend/ml-service
 
+      - name: Build reverse image search image
+        run: |
+          REVERSE_IMAGE_SEARCH_IMAGE_URI="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/${{ vars.REVERSE_IMAGE_SEARCH_IMAGE_NAME }}:${{ github.sha }}"
+          echo "REVERSE_IMAGE_SEARCH_IMAGE_URI=${REVERSE_IMAGE_SEARCH_IMAGE_URI}" >> "${GITHUB_ENV}"
+          docker build \
+            -f Backend/ml-service/reverse_image_search/Dockerfile \
+            -t "${REVERSE_IMAGE_SEARCH_IMAGE_URI}" \
+            Backend/ml-service
+
       - name: Push backend image
         run: docker push "${BACKEND_IMAGE_URI}"
 
       - name: Push ML image
         run: docker push "${ML_IMAGE_URI}"
 
+      - name: Push reverse image search image
+        run: docker push "${REVERSE_IMAGE_SEARCH_IMAGE_URI}"
+
       - name: Render backend Cloud Run manifest
         env:
           CORS_ORIGIN: ${{ vars.CORS_ORIGIN }}
           BASE_URL: ${{ vars.BASE_URL }}
           ANALYTICS_SERVICE_URL: ${{ vars.ANALYTICS_SERVICE_URL }}
+          FAISS_BUCKET_NAME: ${{ vars.FAISS_BUCKET_NAME }}
+          FAISS_OBJECT_NAME: ${{ vars.FAISS_OBJECT_NAME }}
+          RAG_BUCKET_NAME: ${{ vars.RAG_BUCKET_NAME }}
+          RAG_OBJECT_PREFIX: ${{ vars.RAG_OBJECT_PREFIX }}
         run: |
           cat <<EOF > /tmp/backend-cloudrun.yaml
           apiVersion: serving.knative.dev/v1
@@ -147,7 +163,7 @@ jobs:
             template:
               metadata:
                 annotations:
-                  run.googleapis.com/container-dependencies: '{"backend":["ml-service"]}'
+                  run.googleapis.com/container-dependencies: '{"backend":["ml-service","reverse-image-search"]}'
               spec:
                 containers:
                   - name: backend
@@ -164,6 +180,8 @@ jobs:
                         value: ${{ vars.GCP_PROJECT_ID }}
                       - name: ML_SERVICE_URL
                         value: http://127.0.0.1:5001
+                      - name: REVERSE_IMAGE_SEARCH_SERVICE_URL
+                        value: http://127.0.0.1:8001
                       - name: MONGO_URI_SECRET_NAME
                         value: mongo-uri
                       - name: JWT_SECRET_SECRET_NAME
@@ -193,9 +211,37 @@ jobs:
                     env:
                       - name: ML_SERVICE_PORT
                         value: "5001"
+                      - name: GOOGLE_CLOUD_PROJECT
+                        value: ${{ vars.GCP_PROJECT_ID }}
+                      - name: MONGO_URI_SECRET_NAME
+                        value: mongo-uri
+                      - name: OPEN_ROUTER_API_KEY_SECRET_NAME
+                        value: open-router-api-key
+                      - name: HUGGING_FACE_TOKEN_SECRET_NAME
+                        value: hugging-face-token
+                      - name: RAG_BUCKET_NAME
+                        value: ${RAG_BUCKET_NAME}
+                      - name: RAG_OBJECT_PREFIX
+                        value: ${RAG_OBJECT_PREFIX}
                     startupProbe:
                       tcpSocket:
                         port: 5001
+                      failureThreshold: 30
+                      periodSeconds: 2
+                  - name: reverse-image-search
+                    image: ${REVERSE_IMAGE_SEARCH_IMAGE_URI}
+                    env:
+                      - name: GOOGLE_CLOUD_PROJECT
+                        value: ${{ vars.GCP_PROJECT_ID }}
+                      - name: FAISS_GCP_PROJECT
+                        value: ${{ vars.GCP_PROJECT_ID }}
+                      - name: FAISS_BUCKET_NAME
+                        value: ${FAISS_BUCKET_NAME}
+                      - name: FAISS_OBJECT_NAME
+                        value: ${FAISS_OBJECT_NAME}
+                    startupProbe:
+                      tcpSocket:
+                        port: 8001
                       failureThreshold: 30
                       periodSeconds: 2
           EOF

@@ -4,19 +4,73 @@ This service provides endpoints for machine learning models and AI features
 """
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import pandas as pd
-import numpy as np
 from datetime import datetime, timedelta
 import os
-import sys
 import tempfile
 from werkzeug.utils import secure_filename
+import google.auth
+from google.cloud.secretmanager import SecretManagerServiceClient
 
 # Import ML model functions
 from ml_models.weekly_specials import get_weekly_specials_ml
 from ml_models.recommendations import get_recommendations_ml
 from ml_models.price_prediction import get_price_prediction_ml
 from ocr.extractor import process_receipt_internal, build_user_response
+
+
+def _resolve_project_id():
+    project_id = (
+        os.getenv("GOOGLE_CLOUD_PROJECT")
+        or os.getenv("GCLOUD_PROJECT")
+        or os.getenv("GCP_PROJECT")
+    )
+    if project_id:
+        return project_id
+
+    try:
+        _, detected_project = google.auth.default()
+    except Exception:
+        detected_project = None
+
+    return detected_project
+
+
+def _load_secret(secret_name):
+    project_id = _resolve_project_id()
+    if not project_id:
+        raise RuntimeError("GOOGLE_CLOUD_PROJECT is not set and could not be auto-detected")
+
+    client = SecretManagerServiceClient()
+    secret_version = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+    response = client.access_secret_version(request={"name": secret_version})
+    payload = response.payload.data.decode("utf-8").strip() if response.payload and response.payload.data else ""
+
+    if not payload:
+        raise RuntimeError(f"Secret {secret_name} is empty or unreadable")
+
+    return payload
+
+
+def ensure_runtime_secrets():
+    secret_mappings = [
+        ("MONGO_URI", "MONGO_URI_SECRET_NAME", "mongo-uri"),
+        ("OPEN_ROUTER_API_KEY", "OPEN_ROUTER_API_KEY_SECRET_NAME", "open-router-api-key"),
+        ("HUGGING_FACE_TOKEN", "HUGGING_FACE_TOKEN_SECRET_NAME", "hugging-face-token"),
+    ]
+
+    for env_var, secret_name_env, default_secret_name in secret_mappings:
+        if os.getenv(env_var, "").strip():
+            continue
+
+        secret_name = os.getenv(secret_name_env, default_secret_name).strip()
+        try:
+            os.environ[env_var] = _load_secret(secret_name)
+            print(f"[startup] loaded {env_var} from Secret Manager secret '{secret_name}'")
+        except Exception as exc:
+            print(f"[startup] WARNING: could not load {env_var} from Secret Manager secret '{secret_name}': {exc}")
+
+
+ensure_runtime_secrets()
 
 # ============================================================
 # Recipe RAG initialisation

@@ -19,6 +19,7 @@ uvicorn[standard]
 python-multipart
 requests==2.32.5
 google-cloud-storage
+google-cloud-secret-manager
 
 # RAG / Recipe chatbot - packages required for the RAG pipeline
 # the below packages worked with the RAG pipeline, but you may need to adjust versions based on compatibility with your specific models and code

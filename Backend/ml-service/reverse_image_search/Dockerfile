@@ -4,24 +4,22 @@ WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV ML_SERVICE_PORT=5001
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libgl1 \
         libglib2.0-0 \
-        tesseract-ocr \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
-COPY app.py ./app.py
-COPY ml_models ./ml_models
-COPY ocr ./ocr
-COPY recipe_rag ./recipe_rag
+COPY reverse_image_search ./reverse_image_search
+COPY ml_models/reverse_image_search_metadata.json ./ml_models/reverse_image_search_metadata.json
 
-EXPOSE 5001
+WORKDIR /app/reverse_image_search
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5001", "app:app"]
+EXPOSE 8001
+
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8001"]
