@@ -213,6 +213,24 @@ pipeline {
   components, so a monthly regressor could be added once sufficient data exists to identify
   these rhythms with confidence.
 
+- **Optimised Data Pathways:** The current model draws data from localised storage,
+  in its current setup, Git. However, data is now stored/kept in GCP. The pipeline
+  can be updated to pull data from there. Additionally, the current output is a
+  CSV file, however, the web platform will need to pull this somehow. A way to 
+  write to the GCP (and also overwrite eventually) will need to be set up.
+
+- **Pipeline Polling:** The pipeline will poll the data pathway Mondays at 2AM,
+  but this will need to be updated when a consistent data scrpaing timeline
+  is put in place. This reduces the load required to keep polling when nothing
+  is being updated.
+
+- **More Products:** Grid search currently operates on predefined SKUs defined
+  by the pipeline. Models should be trained and tested across all products,
+  or at least batches of products. Doing live training and testing will waste
+  the user's time, so a way to have all products ready for users to check
+  whenever they need will be useful. Potenitally could train on user's 
+  frequent searches, but this may be ineffient across all users.
+
 - **External regressors:** External economic factors such as fuel prices could be 
   incorporated as additional regressors. This would be particularly relevant
   for products sensitive to input costs. The feasibility depends on sourcing reliable,
