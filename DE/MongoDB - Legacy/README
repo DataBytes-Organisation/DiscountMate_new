@@ -9,7 +9,7 @@ A SOP outlining how MongoDB has been used within DiscountMate, including databas
 MongoDBUploadScript_Woolworths.ipynb  
 Notebook used during T1 2026 to upload weekly Woolworths prices to MongoDB.
 
-IGA_Preprocessing_Script_20260516
+IGA_Preprocessing_Script_20260516.ipynb
 Notebook used during T1 2026 to upload weekly IGA prices to MongoDB.
 
 Coles_Preprocessing_Script_20260516.ipynb
