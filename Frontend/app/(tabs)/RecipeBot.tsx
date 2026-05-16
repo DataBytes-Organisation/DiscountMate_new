@@ -28,11 +28,12 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Markdown from 'react-native-markdown-display';
 import { useCart } from './CartContext';
 import { useShoppingLists } from './ShoppingListsContext';
+import { API_ROOT_URL } from '../../constants/Api';
 
 // ----------------------------------------------------------
 // Configuration
 // ----------------------------------------------------------
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = API_ROOT_URL;
 const TOP_K = 3;
 const PRODUCT_CARD_STEP = 118;
 
