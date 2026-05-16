@@ -1,66 +1,19 @@
 {
   "env": {
     "es2022": true,
-    "node": true,
-    "browser": true
+    "node": true
   },
   "extends": [
     "eslint:recommended",
     "plugin:import/errors",
-    "plugin:import/warnings",
-    "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/jsx-runtime"
-  ],
-  "overrides": [
-    {
-      "files": ["*.ts", "*.tsx"],
-      "parser": "@typescript-eslint/parser",
-      "parserOptions": {
-        "project": "tsconfig.json",
-        "ecmaFeatures": {
-          "jsx": true
-        }
-      },
-      "plugins": ["@typescript-eslint"],
-      "rules": {
-        "@typescript-eslint/no-empty-function": "off",
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-unused-vars": "warn",
-        "@typescript-eslint/no-inferrable-types": [
-          "error",
-          {
-            "ignoreParameters": true
-          }
-        ]
-      }
-    },
-    {
-      "files": ["*.js", "*.jsx"],
-      "parserOptions": {
-        "ecmaVersion": "latest",
-        "sourceType": "module",
-        "ecmaFeatures": {
-          "jsx": true
-        }
-      },
-      "plugins": [],
-      "rules": {
-        "no-unused-vars": "warn",
-        "no-empty-function": "off"
-      }
-    }
+    "plugin:import/warnings"
   ],
   "parserOptions": {
     "ecmaVersion": "latest",
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
-    }
+    "sourceType": "script"
   },
   "plugins": [
-    "import",
-    "react"
+    "import"
   ],
   "rules": {
     "array-bracket-newline": ["error", "consistent"],
@@ -143,12 +96,9 @@
     "template-curly-spacing": ["warn", "never"]
   },
   "settings": {
-    "react": {
-      "version": "detect"
-    },
     "import/resolver": {
       "node": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+        "extensions": [".js", ".jsx"]
       }
     }
   }

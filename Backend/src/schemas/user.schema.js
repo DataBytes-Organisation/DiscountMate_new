@@ -31,13 +31,13 @@ const UserSchema = new Schema({
   },
   address: {
     type: String,
-    required: false, // Optional field
+    required: false,
     minlength: [5, 'Address must be at least 5 characters long'],
     maxlength: [200, 'Address cannot exceed 200 characters'],
   },
   phone_number: {
     type: String,
-    required: false, // Optional field
+    required: false,
     match: [/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number'],
   },
   role: {  // NEW: standardised permission model
@@ -50,10 +50,24 @@ const UserSchema = new Schema({
     type: String,
     required: false,
   },
-  //admin: { removed admin boolen- replaced by role
-    //type: Boolean,
-   // default: false, // Default is false for regular users
- // },
+
+  receipt_history: [
+    {
+      store_name: {
+        type: String,
+      },
+      items: [
+        {
+          item: String,
+          price: Number,
+        }
+      ],
+      uploaded_at: {
+        type: Date,
+        default: Date.now,
+      }
+    }
+  ],
 }, getSchemaOptions());
 
 UserSchema.virtual('profile', {

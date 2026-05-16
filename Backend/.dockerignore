@@ -1,0 +1,13 @@
+.DS_Store
+.env
+.env.*
+.git
+.gitignore
+analytics-service
+backups
+coverage
+ml-service
+node_modules
+npm-debug.log
+src/routers/uploads
+yarn-error.log
