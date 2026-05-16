@@ -6,66 +6,68 @@ from typing import TYPE_CHECKING
 import duckdb
 
 from common.cli import iter_dates
-from common.db import load_demo_slice
-from common.duckdb_utils import load_sql
-from common.paths import resolve_input_path
+from common.db import ensure_postgres_attached, open_etl_connection, postgres_table
+from common.duckdb_utils import fetch_scalar, render_sql_template
+from common.paths import resolve_input_paths
 
 if TYPE_CHECKING:
     from common.job_models import JobSummary
     from config.settings import AppSettings, RuntimeConfig
 
-
 SQL_ROOT = Path(__file__).resolve().parent
 WORKFLOW_SQL_DIR = SQL_ROOT / "workflow_sql"
-RUNNER = "products"
-TRANSFORM_SQL = load_sql(WORKFLOW_SQL_DIR / "transform.sql")
-QA_CHECK_SQL = load_sql(WORKFLOW_SQL_DIR / "qa_check.sql")
-
-def _fetch_scalar(conn: duckdb.DuckDBPyConnection, query: str) -> int:
-    row = conn.execute(query).fetchone()
-    if row is None:
-        raise RuntimeError(f"Expected a scalar result for query: {query}")
-    return int(row[0])
+WOOLWORTHS_RUNNER = "products"
+WOOLWORTHS_MODEL = "products_woolworths"
+WOOLWORTHS_TIMEZONE = "Australia/Melbourne"
 
 
-def _load_input_file(conn: duckdb.DuckDBPyConnection, input_path: Path) -> int:
+def _workflow_sql_context() -> dict[str, str]:
+    return {
+        "dim_categories_table": postgres_table("dim_categories"),
+        "dim_retailers_table": postgres_table("dim_retailers"),
+        "dim_products_table": postgres_table("dim_products"),
+        "fct_product_prices_table": postgres_table("fct_product_prices"),
+        "dim_product_canonical_key_expr": """
+            trim(regexp_replace(lower(coalesce(products.brand_name, '')), '[^a-z0-9]+', ' ', 'g'))
+            || '|'
+            || trim(regexp_replace(lower(coalesce(products.product_name, '')), '[^a-z0-9]+', ' ', 'g'))
+            || '|'
+            || CASE
+                WHEN products.pack_quantity IS NULL THEN ''
+                ELSE rtrim(
+                    regexp_replace(printf('%.3f', products.pack_quantity), '0+$', ''),
+                    '.'
+                )
+            END
+            || '|'
+            || coalesce(lower(products.pack_uom), '')
+        """.strip(),
+    }
+
+
+def _load_input_files(
+    conn: duckdb.DuckDBPyConnection,
+    input_paths: list[str],
+) -> int:
+    if not input_paths:
+        return 0
+
     conn.execute(
         """
-        CREATE OR REPLACE TABLE raw_data AS 
-        SELECT * FROM read_csv_auto(?, header=true, all_varchar=true)
+        CREATE OR REPLACE TABLE raw_input AS
+        SELECT * EXCLUDE (filename), filename AS source_file
+        FROM read_csv_auto(
+            ?,
+            header=true,
+            all_varchar=true,
+            union_by_name=true,
+            filename=true
+        )
         """,
-        [str(input_path)],
+        [input_paths],
     )
-    return _fetch_scalar(conn, "SELECT count(*) FROM raw_data")
 
-
-def _transform_woolworths(conn: duckdb.DuckDBPyConnection) -> int:
-    conn.execute(TRANSFORM_SQL)
-    return _fetch_scalar(conn, "SELECT count(*) FROM processed_data")
-
-def _run_quality_checks(conn: duckdb.DuckDBPyConnection) -> None:
-    conn.execute(QA_CHECK_SQL)
-    qa_results = conn.execute(
-        "SELECT check_name, passed, details FROM qa_results ORDER BY passed ASC, check_name ASC"
-    ).fetchall()
-    failed = [row for row in qa_results if not row[1]]
-    if failed:
-        formatted = "; ".join(f"{name}={details}" for name, _, details in failed)
-        raise RuntimeError(f"QA checks failed: {formatted}")
-    
-def _save_data(
-    conn: duckdb.DuckDBPyConnection,
-    settings: AppSettings,
-    run_date: str,
-) -> int:
-    return load_demo_slice(
-        conn=conn,
-        settings=settings,
-        duck_table="processed_data",
-        postgres_table="fct_product_prices",
-        retailer="Woolworths",
-        run_date=run_date,
-    )
+    return fetch_scalar(conn, "SELECT count(*) FROM raw_input")
 
 
 def run(
@@ -75,40 +77,70 @@ def run(
     runtime_config: RuntimeConfig,
     settings: AppSettings,
 ) -> JobSummary:
-
-    if model != "woolworths":
-        raise ValueError("This workflow supports only model='woolworths'.")
+    if model != WOOLWORTHS_MODEL:
+        raise ValueError(
+            f"The Woolworths workflow supports only model='{WOOLWORTHS_MODEL}'."
+        )
 
     counts = {
-        "raw_data": 0,
-        "processed_data": 0,
-        "fct_product_prices": 0,
+        "raw_input": 0,
+        "raw_input_normalized": 0,
     }
-
     processed_dates: list[str] = []
     skipped_dates: list[str] = []
+    input_paths: list[str] = []
 
-    conn = duckdb.connect()
+    conn = open_etl_connection(settings)
     try:
+        conn.execute(f"SET TimeZone = '{WOOLWORTHS_TIMEZONE}'")
         for run_date in iter_dates(start_date, end_date):
             run_date_value = run_date.isoformat()
-            input_path = resolve_input_path(
-                runtime_config, model, RUNNER, run_date
+            date_input_paths = resolve_input_paths(
+                conn,
+                runtime_config,
+                model,
+                WOOLWORTHS_RUNNER,
+                run_date,
             )
-
-            if not input_path.exists():
+            if not date_input_paths:
                 skipped_dates.append(run_date_value)
                 continue
-
-            counts["raw_data"] += _load_input_file(conn, input_path)
-            counts["processed_data"] += _transform_woolworths(conn)
-            _run_quality_checks(conn)
-            counts["fct_product_prices"] += _save_data(
-                conn, settings, run_date_value
-            )
-
+            input_paths.extend(date_input_paths)
             processed_dates.append(run_date_value)
 
+        if input_paths:
+            counts["raw_input"] = _load_input_files(conn, input_paths)
+            ensure_postgres_attached(conn, settings)
+            sql_context = _workflow_sql_context()
+            conn.execute(
+                render_sql_template(
+                    WORKFLOW_SQL_DIR / "transform.sql",
+                    **sql_context,
+                )
+            )
+            counts["raw_input_normalized"] = fetch_scalar(
+                conn,
+                "SELECT count(*) FROM raw_input_normalized",
+            )
+
+            conn.execute("BEGIN")
+            try:
+                conn.execute(
+                    render_sql_template(
+                        WORKFLOW_SQL_DIR / "sync_dim_products.sql",
+                        **sql_context,
+                    )
+                )
+                conn.execute(
+                    render_sql_template(
+                        WORKFLOW_SQL_DIR / "sync_fct_product_prices.sql",
+                        **sql_context,
+                    )
+                )
+                conn.execute("COMMIT")
+            except duckdb.Error:
+                conn.execute("ROLLBACK")
+                raise
     finally:
         conn.close()
 

@@ -69,9 +69,9 @@ Apply migrations:
 uv run alembic upgrade head
 ```
 
-## Run the example workflow
+## Run workflows
 
-The working example is exposed only through `--model example`. The retailer models remain scaffold placeholders for future implementation.
+The generic example is exposed through `--model example`. Woolworths product pricing is exposed through `--model products_woolworths`.
 
 Retailer selectors now use the composite format `products_<retailer>`, for example `products_aldi`.
 
@@ -150,7 +150,7 @@ uv run alembic revision -m "describe change"
 - `config/`: env-backed settings and runtime config templates
 - `common/`: shared CLI, path, DuckDB, normalization, and PostgreSQL helpers
 - `features/example/`: one working example workflow
-- `features/products/<retailer>/job.py`: scaffold jobs for teammates to imitate later
+- `features/products/<retailer>/job.py`: retailer product workflows
 - `migrations/`: Alembic migration files
 
 ## Container build
@@ -194,7 +194,7 @@ Do not commit:
 
 ## Notes
 
-- Only the example workflow is implemented in this phase
-- retailer `job.py` files under `features/products/` are scaffolds only
+- The example workflow remains as a starter reference
+- Woolworths product pricing uses the final silver product table sync pattern
 - local Bronze sample data is kept local
 - deployment, CI/CD, and the final warehouse schema are out of scope for this refactor
