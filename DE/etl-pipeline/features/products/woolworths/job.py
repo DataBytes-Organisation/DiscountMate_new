@@ -6,7 +6,12 @@ from typing import TYPE_CHECKING
 import duckdb
 
 from common.cli import iter_dates
-from common.db import ensure_postgres_attached, open_etl_connection, postgres_table
+from common.db import (
+    configure_bronze_storage,
+    ensure_postgres_attached,
+    open_etl_connection,
+    postgres_table,
+)
 from common.duckdb_utils import fetch_scalar, render_sql_template
 from common.paths import resolve_input_paths
 
@@ -93,6 +98,7 @@ def run(
     conn = open_etl_connection(settings)
     try:
         conn.execute(f"SET TimeZone = '{WOOLWORTHS_TIMEZONE}'")
+        configure_bronze_storage(conn, settings, runtime_config.paths.bronze_root)
         for run_date in iter_dates(start_date, end_date):
             run_date_value = run_date.isoformat()
             date_input_paths = resolve_input_paths(
