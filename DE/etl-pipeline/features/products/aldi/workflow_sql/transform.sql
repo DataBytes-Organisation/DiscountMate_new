@@ -1,18 +1,17 @@
-CREATE OR REPLACE TABLE aldi_silver_stage AS
+CREATE OR REPLACE TABLE raw_input_normalized AS
 WITH aldi_cleaned AS (
     SELECT
-        nullif(trim(coalesce(CAST(sku AS VARCHAR), CAST(aldi_sku AS VARCHAR))), '') AS source_product_id,
-        trim(CAST(name AS VARCHAR)) AS product_name,
+        nullif(trim(coalesce(CAST(sku AS VARCHAR), CAST(aldi_sku AS VARCHAR))), '') AS raw_product_id,
+        trim(CAST(name AS VARCHAR)) AS item_name,
         nullif(trim(CAST(brand_name AS VARCHAR)), '') AS brand_name,
         nullif(trim(CAST(product_url AS VARCHAR)), '') AS product_url,
         nullif(trim(CAST(image_url AS VARCHAR)), '') AS image_link_side,
-        NULL::VARCHAR AS image_link_back,
         TRY_CAST(price_dollars AS DECIMAL(10, 2)) AS price,
         coalesce(
             TRY_CAST(aldi_price_comparison AS DECIMAL(12, 4)) / 100,
             TRY_CAST(regexp_extract(aldi_price_comparison_display, '\\$([0-9]+(?:\\.[0-9]+)?)', 1) AS DECIMAL(12, 4))
         ) AS unit_price,
-        nullif(trim(CAST(aldi_selling_size AS VARCHAR)), '') AS pack_size,
+        nullif(trim(CAST(aldi_selling_size AS VARCHAR)), '') AS raw_size,
         CASE
             WHEN TRY_CAST(
                 regexp_extract(CAST(aldi_selling_size AS VARCHAR), '([0-9]+(?:\\.[0-9]+)?)', 1)
@@ -35,8 +34,7 @@ WITH aldi_cleaned AS (
         coalesce(
             try_strptime(CAST(scraped_at AS VARCHAR), '%m/%d/%Y %H:%M'),
             try_strptime(CAST(scraped_at AS VARCHAR), '%Y-%m-%dT%H:%M:%S.%f'),
-            TRY_CAST(scraped_at AS TIMESTAMP),
-            CAST('__RUN_DATE__ 00:00:00' AS TIMESTAMP)
+            TRY_CAST(scraped_at AS TIMESTAMP)
         ) AS recorded_at,
         CASE
             WHEN nullif(trim(CAST(aldi_price_was_price_display AS VARCHAR)), '') IS NOT NULL THEN TRUE
@@ -50,8 +48,8 @@ WITH aldi_cleaned AS (
             ),
             ''
         ) AS special_text,
-        current_timestamp AS loaded_at
-    FROM raw_aldi_input
+        source_file
+    FROM raw_input
 ),
 aldi_mapped AS (
     SELECT
@@ -73,13 +71,14 @@ aldi_mapped AS (
             WHEN lower(raw_top_category) = 'snacks & confectionery' THEN 'SNACKS & CONFECTIONARY'
             WHEN lower(raw_top_category) = 'limited time only' THEN 'SPECIALS'
             ELSE 'MISCELLANEOUS'
-        END AS standard_category_name,
-        trim(regexp_replace(lower(coalesce(product_name, '')), '[^a-z0-9]+', ' ', 'g')) AS normalized_product_name,
+        END AS category_name,
+        trim(regexp_replace(lower(coalesce(item_name, '')), '[^a-z0-9]+', ' ', 'g')) AS normalized_product_name,
         trim(regexp_replace(lower(coalesce(brand_name, '')), '[^a-z0-9]+', ' ', 'g')) AS normalized_brand_name
     FROM aldi_cleaned
-    WHERE product_name IS NOT NULL
-      AND trim(product_name) <> ''
+    WHERE item_name IS NOT NULL
+      AND trim(item_name) <> ''
       AND price IS NOT NULL
+      AND recorded_at IS NOT NULL
 ),
 aldi_match_ready AS (
     SELECT
@@ -88,7 +87,7 @@ aldi_match_ready AS (
             regexp_replace(
                 regexp_replace(
                     regexp_replace(
-                        lower(coalesce(product_name, '')),
+                        lower(coalesce(item_name, '')),
                         '\d+\s*x\s*\d+(?:\.\d+)?\s*(kg|g|ml|l)',
                         ' ',
                         'g'
@@ -105,19 +104,19 @@ aldi_match_ready AS (
         coalesce(
             TRY_CAST(
                 nullif(
-                    regexp_extract(lower(coalesce(pack_size, '')), '(\d+)\s*(pack|pk|ea|each)', 1),
+                    regexp_extract(lower(coalesce(raw_size, '')), '(\d+)\s*(pack|pk|ea|each)', 1),
                     ''
                 ) AS INTEGER
             ),
             TRY_CAST(
                 nullif(
-                    regexp_extract(lower(coalesce(product_name, '')), '(\d+)\s*x\s*\d+(?:\.\d+)?\s*(kg|g|ml|l)', 1),
+                    regexp_extract(lower(coalesce(item_name, '')), '(\d+)\s*x\s*\d+(?:\.\d+)?\s*(kg|g|ml|l)', 1),
                     ''
                 ) AS INTEGER
             ),
             TRY_CAST(
                 nullif(
-                    regexp_extract(lower(coalesce(product_name, '')), '(\d+)\s*(pack|pk|ea|each)', 1),
+                    regexp_extract(lower(coalesce(item_name, '')), '(\d+)\s*(pack|pk|ea|each)', 1),
                     ''
                 ) AS INTEGER
             )
@@ -138,48 +137,89 @@ aldi_match_ready AS (
             coalesce(
                 TRY_CAST(
                     nullif(
-                        regexp_extract(lower(coalesce(pack_size, '')), '\d+\s*x\s*(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 1),
+                        regexp_extract(lower(coalesce(raw_size, '')), '\d+\s*x\s*(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 1),
                         ''
                     ) AS DECIMAL(10, 3)
                 ),
                 TRY_CAST(
                     nullif(
-                        regexp_extract(lower(coalesce(pack_size, '')), '(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 1),
+                        regexp_extract(lower(coalesce(raw_size, '')), '(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 1),
                         ''
                     ) AS DECIMAL(10, 3)
                 ),
                 TRY_CAST(
                     nullif(
-                        regexp_extract(lower(coalesce(product_name, '')), '\d+\s*x\s*(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 1),
+                        regexp_extract(lower(coalesce(item_name, '')), '\d+\s*x\s*(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 1),
                         ''
                     ) AS DECIMAL(10, 3)
                 ),
                 TRY_CAST(
                     nullif(
-                        regexp_extract(lower(coalesce(product_name, '')), '(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 1),
+                        regexp_extract(lower(coalesce(item_name, '')), '(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 1),
                         ''
                     ) AS DECIMAL(10, 3)
                 )
             ) AS aldi_measure_value,
             lower(
                 coalesce(
-                    nullif(regexp_extract(lower(coalesce(pack_size, '')), '\d+\s*x\s*(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 2), ''),
-                    nullif(regexp_extract(lower(coalesce(pack_size, '')), '(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 2), ''),
-                    nullif(regexp_extract(lower(coalesce(product_name, '')), '\d+\s*x\s*(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 2), ''),
-                    nullif(regexp_extract(lower(coalesce(product_name, '')), '(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 2), '')
+                    nullif(regexp_extract(lower(coalesce(raw_size, '')), '\d+\s*x\s*(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 2), ''),
+                    nullif(regexp_extract(lower(coalesce(raw_size, '')), '(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 2), ''),
+                    nullif(regexp_extract(lower(coalesce(item_name, '')), '\d+\s*x\s*(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 2), ''),
+                    nullif(regexp_extract(lower(coalesce(item_name, '')), '(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 2), '')
                 )
             ) AS aldi_measure_uom
         FROM aldi_mapped
     )
 ),
+aldi_keyed AS (
+    SELECT
+        *,
+        CASE
+            WHEN pack_quantity IS NULL THEN ''
+            ELSE rtrim(
+                regexp_replace(printf('%.3f', pack_quantity), '0+$', ''),
+                '.'
+            )
+        END AS pack_quantity_key,
+        normalized_brand_name
+            || '|'
+            || normalized_product_name
+            || '|'
+            || CASE
+                WHEN pack_quantity IS NULL THEN ''
+                ELSE rtrim(
+                    regexp_replace(printf('%.3f', pack_quantity), '0+$', ''),
+                    '.'
+                )
+            END
+            || '|'
+            || coalesce(pack_uom, '') AS canonical_key
+    FROM aldi_match_ready
+),
 aldi_deduplicated AS (
     SELECT
         *,
+        coalesce(raw_product_id, canonical_key) AS source_row_key,
         row_number() OVER (
-            PARTITION BY coalesce(source_product_id, normalized_product_name), DATE(recorded_at)
-            ORDER BY recorded_at DESC, loaded_at DESC
+            PARTITION BY coalesce(raw_product_id, canonical_key), DATE(recorded_at)
+            ORDER BY recorded_at DESC, source_file DESC, item_name DESC
         ) AS row_num
-    FROM aldi_match_ready
+    FROM aldi_keyed
+),
+latest_static_master AS (
+    SELECT
+        product_id,
+        name,
+        brand,
+        brand_name,
+        size,
+        gtin,
+        row_number() OVER (
+            PARTITION BY product_id
+            ORDER BY scraped_at DESC, id DESC
+        ) AS master_rank
+    FROM {{ static_master_coles_products_table }}
+    WHERE nullif(regexp_replace(CAST(gtin AS VARCHAR), '[^0-9]', '', 'g'), '') IS NOT NULL
 ),
 coles_base AS (
     SELECT DISTINCT
@@ -271,13 +311,13 @@ coles_base AS (
                     nullif(regexp_extract(lower(coalesce(name, '')), '(\d+(?:\.\d+)?)\s*(kg|g|ml|l)', 2), '')
                 )
             ) AS coles_measure_uom
-        FROM raw_coles_master
-        WHERE nullif(regexp_replace(CAST(gtin AS VARCHAR), '[^0-9]', '', 'g'), '') IS NOT NULL
+        FROM latest_static_master
+        WHERE master_rank = 1
     )
 ),
 exact_full_candidates AS (
     SELECT
-        a.source_product_id,
+        a.source_row_key,
         c.gtin
     FROM aldi_deduplicated a
     JOIN coles_base c
@@ -300,15 +340,15 @@ exact_full_candidates AS (
 ),
 exact_full_best AS (
     SELECT
-        source_product_id,
+        source_row_key,
         min(gtin) AS gtin
     FROM exact_full_candidates
-    GROUP BY source_product_id
+    GROUP BY source_row_key
     HAVING count(DISTINCT gtin) = 1
 ),
 exact_core_size_candidates AS (
     SELECT
-        a.source_product_id,
+        a.source_row_key,
         c.gtin
     FROM aldi_deduplicated a
     JOIN coles_base c
@@ -326,15 +366,15 @@ exact_core_size_candidates AS (
 ),
 exact_core_size_best AS (
     SELECT
-        source_product_id,
+        source_row_key,
         min(gtin) AS gtin
     FROM exact_core_size_candidates
-    GROUP BY source_product_id
+    GROUP BY source_row_key
     HAVING count(DISTINCT gtin) = 1
 ),
 exact_core_pack_candidates AS (
     SELECT
-        a.source_product_id,
+        a.source_row_key,
         c.gtin
     FROM aldi_deduplicated a
     JOIN coles_base c
@@ -347,15 +387,15 @@ exact_core_pack_candidates AS (
 ),
 exact_core_pack_best AS (
     SELECT
-        source_product_id,
+        source_row_key,
         min(gtin) AS gtin
     FROM exact_core_pack_candidates
-    GROUP BY source_product_id
+    GROUP BY source_row_key
     HAVING count(DISTINCT gtin) = 1
 ),
 coles_fuzzy_candidates AS (
     SELECT
-        a.source_product_id,
+        a.source_row_key,
         c.gtin,
         jaro_winkler_similarity(a.normalized_core_product_name, c.normalized_core_product_name) AS name_similarity,
         1 - (
@@ -363,7 +403,7 @@ coles_fuzzy_candidates AS (
             / greatest(length(a.normalized_core_product_name), length(c.normalized_core_product_name), 1)
         ) AS levenshtein_ratio,
         row_number() OVER (
-            PARTITION BY a.source_product_id
+            PARTITION BY a.source_row_key
             ORDER BY
                 CASE
                     WHEN a.match_measure_value IS NOT NULL
@@ -383,7 +423,7 @@ coles_fuzzy_candidates AS (
                 ) DESC
         ) AS row_num,
         lead(jaro_winkler_similarity(a.normalized_core_product_name, c.normalized_core_product_name)) OVER (
-            PARTITION BY a.source_product_id
+            PARTITION BY a.source_row_key
             ORDER BY
                 CASE
                     WHEN a.match_measure_value IS NOT NULL
@@ -423,44 +463,72 @@ coles_fuzzy_candidates AS (
 ),
 coles_fuzzy_best AS (
     SELECT
-        source_product_id,
+        source_row_key,
         gtin
     FROM coles_fuzzy_candidates
     WHERE row_num = 1
       AND name_similarity >= 0.92
       AND levenshtein_ratio >= 0.68
       AND coalesce(name_similarity - next_name_similarity, 0.03) >= 0.03
+),
+matched AS (
+    SELECT
+        a.raw_product_id,
+        CASE
+            WHEN length(fx.gtin) <= 14 THEN fx.gtin
+            WHEN length(cs.gtin) <= 14 THEN cs.gtin
+            WHEN length(cp.gtin) <= 14 THEN cp.gtin
+            WHEN length(fz.gtin) <= 14 THEN fz.gtin
+            ELSE NULL
+        END AS match_gtin,
+        a.item_name,
+        a.item_name AS standardized_product_name,
+        a.brand_name,
+        a.category_name,
+        a.pack_quantity,
+        CASE a.pack_uom
+            WHEN 'each' THEN 'ea'
+            WHEN 'pk' THEN 'pack'
+            ELSE a.pack_uom
+        END AS pack_uom,
+        a.image_link_side,
+        a.product_url,
+        a.special_text,
+        a.price,
+        a.unit_price,
+        a.is_on_special,
+        a.recorded_at,
+        a.source_file,
+        a.canonical_key
+    FROM aldi_deduplicated a
+    LEFT JOIN exact_full_best fx
+        ON fx.source_row_key = a.source_row_key
+    LEFT JOIN exact_core_size_best cs
+        ON cs.source_row_key = a.source_row_key
+    LEFT JOIN exact_core_pack_best cp
+        ON cp.source_row_key = a.source_row_key
+    LEFT JOIN coles_fuzzy_best fz
+        ON fz.source_row_key = a.source_row_key
+    WHERE a.row_num = 1
 )
 SELECT
-    a.source_product_id,
-    a.product_name,
-    a.brand_name,
-    CASE
-        WHEN length(fx.gtin) <= 14 THEN fx.gtin
-        WHEN length(cs.gtin) <= 14 THEN cs.gtin
-        WHEN length(cp.gtin) <= 14 THEN cp.gtin
-        WHEN length(fz.gtin) <= 14 THEN fz.gtin
-        ELSE NULL
-    END AS gtin,
-    a.standard_category_name,
-    a.pack_quantity,
-    a.pack_uom,
-    a.price,
-    a.unit_price,
-    a.image_link_side,
-    a.image_link_back,
-    a.recorded_at,
-    a.product_name AS item_name,
-    a.special_text,
-    a.product_url,
-    a.is_on_special
-FROM aldi_deduplicated a
-LEFT JOIN exact_full_best fx
-    ON fx.source_product_id = a.source_product_id
-LEFT JOIN exact_core_size_best cs
-    ON cs.source_product_id = a.source_product_id
-LEFT JOIN exact_core_pack_best cp
-    ON cp.source_product_id = a.source_product_id
-LEFT JOIN coles_fuzzy_best fz
-    ON fz.source_product_id = a.source_product_id
-WHERE a.row_num = 1;
+    raw_product_id,
+    match_gtin AS gtin,
+    match_gtin,
+    item_name,
+    standardized_product_name,
+    brand_name,
+    category_name,
+    pack_quantity,
+    pack_uom,
+    image_link_side,
+    product_url,
+    special_text,
+    price,
+    unit_price,
+    is_on_special,
+    recorded_at,
+    source_file,
+    canonical_key,
+    coalesce(match_gtin, raw_product_id, canonical_key) AS source_product_key
+FROM matched;

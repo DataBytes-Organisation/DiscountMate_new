@@ -8,7 +8,7 @@ This repo now contains:
 - one implemented retailer workflow for Aldi product pricing
 - PostgreSQL migrations for the current `silver` warehouse tables
 
-The Aldi workflow reads raw Aldi Bronze CSV data, enriches it with conservative GTIN matching from a Coles master file, runs QA checks, and upserts the results into:
+The Aldi workflow reads raw Aldi Bronze CSV data, enriches it with conservative GTIN matching from `silver.static_master_coles_products`, and syncs the results into:
 
 - `silver.dim_categories`
 - `silver.dim_retailers`
@@ -99,18 +99,16 @@ The implemented retailer workflow is `products_aldi`.
 
 It uses:
 
-- an Aldi Bronze product file for the run date
-- a same-day filename fallback glob for Aldi files with timestamp suffixes
-- a Coles master CSV as the GTIN reference source
+- Aldi Bronze product files for the requested run dates
+- glob matching for Aldi files with timestamp suffixes
+- `silver.static_master_coles_products` as the GTIN reference source
 
 Runtime paths are configured in `config/config.yaml`:
 
 ```yaml
 models:
   products_aldi:
-    products: "{bronze_root}/aldi/aldi_all_products_{date_compact}.csv"
-    products_glob: "{bronze_root}/aldi/aldi_all_products_{date_compact}*.csv"
-    coles_master: "{bronze_root}/coles/Master_Coles_Scrape.csv"
+    products: "{bronze_root}/aldi/aldi_all_products_{date_compact}*.csv"
 ```
 
 Run Aldi for one day:
@@ -121,13 +119,12 @@ uv run main.py --model products_aldi --start-date 2026-04-19 --end-date 2026-04-
 
 How the Aldi pipeline works:
 
-1. Resolve the Aldi Bronze file and Coles master file from `config/config.yaml`.
-2. Load both CSVs into DuckDB.
-3. Transform raw Aldi data into `aldi_silver_stage`.
-4. Apply conservative GTIN matching against Coles master.
-5. Run SQL QA checks. The job stops if QA fails.
-6. Load the stage rows into a temporary Postgres table.
-7. Upsert into `silver.dim_products` and `silver.fct_product_prices`.
+1. Resolve matching Aldi Bronze files from `config/config.yaml`.
+2. Load the CSVs into DuckDB as `raw_input`.
+3. Attach PostgreSQL through DuckDB.
+4. Transform raw Aldi data into `raw_input_normalized`.
+5. Apply conservative GTIN matching against `silver.static_master_coles_products`.
+6. Sync into `silver.dim_products` and `silver.fct_product_prices`.
 
 The current Aldi implementation is intentionally conservative:
 
@@ -257,7 +254,7 @@ Do not commit:
 ## Notes
 
 - `example` is still useful as a starter workflow, but `products_aldi` is the implemented retailer pipeline in this repo
-- Aldi GTIN matching uses Coles master as a reference source and optimizes for precision over recall
+- Aldi GTIN matching uses `silver.static_master_coles_products` as a reference source and optimizes for precision over recall
 - retailer `job.py` files under `features/products/` other than Aldi remain expansion points
 - local Bronze sample data is kept local
 - deployment, CI/CD, and the final warehouse schema are out of scope for this refactor
