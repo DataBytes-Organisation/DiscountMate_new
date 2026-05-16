@@ -24,4 +24,4 @@ COPY recipe_rag ./recipe_rag
 
 EXPOSE 5001
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5001", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5001", "--timeout", "240", "app:app"]

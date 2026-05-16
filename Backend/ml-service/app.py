@@ -7,6 +7,7 @@ from flask_cors import CORS
 from datetime import datetime, timedelta
 import os
 import tempfile
+from threading import Lock
 from werkzeug.utils import secure_filename
 import google.auth
 from google.cloud.secretmanager import SecretManagerServiceClient
@@ -75,22 +76,42 @@ ensure_runtime_secrets()
 # ============================================================
 # Recipe RAG initialisation
 # ============================================================
-# Import the RAG class. Done here (not inside a route) so we
-# can build the global `rag` instance ONCE at startup.
 from recipe_rag.rag_pipeline import RecipeRAG
-# The `rag` global holds the embedding model + recipe index in
-# RAM for the lifetime of the Flask process. ~15-20s to construct.
-# Wrapped in try/except so the rest of the service still works
-# even if the index is missing or sentence-transformers is broken.
-try:
-    print("[startup] initialising Recipe RAG (this takes ~15s)...")
-    rag = RecipeRAG()
-    RAG_READY = True
-except Exception as e:
-    print(f"[startup] WARNING: RAG failed to initialise: {e}")
-    print("[startup] /api/recipe/* endpoints will return 503.")
-    rag = None
-    RAG_READY = False
+
+rag = None
+RAG_INIT_ERROR = None
+RAG_LOCK = Lock()
+
+
+def get_rag():
+    """Lazy-load RAG so basic ML endpoints can start quickly in Cloud Run."""
+    global rag, RAG_INIT_ERROR
+
+    if rag is not None:
+        return rag
+
+    with RAG_LOCK:
+        if rag is not None:
+            return rag
+        if RAG_INIT_ERROR is not None:
+            raise RuntimeError(f"RAG pipeline failed to initialise: {RAG_INIT_ERROR}")
+
+        try:
+            print("[recipe_rag] initialising Recipe RAG on first request...")
+            rag = RecipeRAG()
+            return rag
+        except Exception as exc:
+            RAG_INIT_ERROR = exc
+            print(f"[recipe_rag] WARNING: RAG failed to initialise: {exc}")
+            raise RuntimeError(f"RAG pipeline failed to initialise: {exc}") from exc
+
+
+def rag_not_ready_response(error):
+    return jsonify({
+        'success': False,
+        'ready': False,
+        'error': str(error),
+    }), 503
 
 
 
@@ -311,12 +332,15 @@ def recipe_stats():
     Diagnostic / health endpoint for the recipe RAG.
     Layman: "Is the recipe brain awake? How big is its memory?"
     """
-    if not RAG_READY:
-        return jsonify({
-            'success': False,
+    if rag is None:
+        payload = {
+            'success': True,
             'ready': False,
-            'error': 'RAG pipeline failed to initialise at startup'
-        }), 503
+            'loaded': False,
+        }
+        if RAG_INIT_ERROR is not None:
+            payload['error'] = str(RAG_INIT_ERROR)
+        return jsonify(payload)
 
     return jsonify({
         'success': True,
@@ -337,9 +361,6 @@ def recipe_search():
     Technical: cosine similarity over the precomputed embedding index.
     Use case: autocomplete, browse-by-keyword, debugging retrieval quality.
     """
-    if not RAG_READY:
-        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
-
     query = request.args.get('q', '').strip()
     top_k = int(request.args.get('top_k', 5))
 
@@ -347,7 +368,8 @@ def recipe_search():
         return jsonify({'success': False, 'error': 'Missing query parameter ?q='}), 400
 
     try:
-        results = rag.retriever.search(query, top_k=top_k)
+        current_rag = get_rag()
+        results = current_rag.retriever.search(query, top_k=top_k)
         # Strip the bulky `text` field; frontend doesn't need it for browse
         slim = [
             {
@@ -359,6 +381,8 @@ def recipe_search():
             for r in results
         ]
         return jsonify({'success': True, 'query': query, 'results': slim})
+    except RuntimeError as e:
+        return rag_not_ready_response(e)
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -388,9 +412,6 @@ def recipe_chat():
         "product_annotations": false
       }
     """
-    if not RAG_READY:
-        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
-
     data = request.get_json(silent=True) or {}
     session_id = data.get('session_id')
     message = (data.get('message') or '').strip()
@@ -402,9 +423,12 @@ def recipe_chat():
         return jsonify({'success': False, 'error': 'message is required'}), 400
 
     try:
-        result = rag.chat(session_id=session_id, user_query=message, top_k=top_k)
+        current_rag = get_rag()
+        result = current_rag.chat(session_id=session_id, user_query=message, top_k=top_k)
         # rag.chat() already returns a clean dict; just wrap with success flag
         return jsonify({'success': True, **result})
+    except RuntimeError as e:
+        return rag_not_ready_response(e)
     except Exception as e:
         # Defensive: any unexpected crash inside RAG returns 500 with a message
         # rather than dumping a stack trace to the user.
@@ -420,16 +444,17 @@ def recipe_reset():
     Technical: deletes the session_id key from rag.sessions dict, freeing
                memory and resetting the turn counter to zero.
     """
-    if not RAG_READY:
-        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
-
     data = request.get_json(silent=True) or {}
     session_id = data.get('session_id')
     if not session_id:
         return jsonify({'success': False, 'error': 'session_id is required'}), 400
 
-    rag.reset_session(session_id)
-    return jsonify({'success': True, 'session_id': session_id})
+    try:
+        current_rag = get_rag()
+        current_rag.reset_session(session_id)
+        return jsonify({'success': True, 'session_id': session_id})
+    except RuntimeError as e:
+        return rag_not_ready_response(e)
 
 
 @app.route('/api/recipe/products', methods=['GET'])
@@ -460,20 +485,20 @@ def recipe_products():
         ]
       }
     """
-    if not RAG_READY:
-        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
-
     context_id = request.args.get('context_id', '').strip()
     if not context_id:
         return jsonify({'success': False, 'error': 'context_id is required'}), 400
 
-    product_lookups = rag.get_context_products(context_id)
-    if product_lookups is None:
-        return jsonify({'success': False, 'error': 'Context not found or expired'}), 404
-
     try:
-        products_used = rag.mongo_resolver.fetch_for_display(product_lookups)
+        current_rag = get_rag()
+        product_lookups = current_rag.get_context_products(context_id)
+        if product_lookups is None:
+            return jsonify({'success': False, 'error': 'Context not found or expired'}), 404
+
+        products_used = current_rag.mongo_resolver.fetch_for_display(product_lookups)
         return jsonify({'success': True, 'products_used': products_used})
+    except RuntimeError as e:
+        return rag_not_ready_response(e)
     except Exception as e:
         print(f"[recipe_products] ERROR: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
