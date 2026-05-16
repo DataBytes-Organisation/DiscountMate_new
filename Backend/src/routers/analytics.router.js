@@ -1,6 +1,14 @@
 const express = require('express');
 const analyticsController = require('../controllers/analytics.controller');
-
+const ipThrottle = require('../middleware/ipThrottle.middleware');
+const { scraperSlowDown, suspiciousTrafficLogger } = require('../middleware/antiScraping.middleware');
+const validateRequest = require('../middleware/validateRequest.middleware');
+const {
+  salesSummaryValidation,
+  brandAnalysisValidation,
+  priceComparisonValidation,
+  dataCleaningValidation,
+} = require('../validators/analytics.validators');
 const router = express.Router();
 
 /**
@@ -27,10 +35,20 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Sales summary retrieved successfully
+ *       429:
+ *         description: Too many requests
  *       503:
  *         description: Analytics service unavailable
  */
-router.post('/sales-summary', analyticsController.getSalesSummary);
+router.post(
+  '/sales-summary',
+  suspiciousTrafficLogger,
+  scraperSlowDown,
+  ipThrottle,
+  salesSummaryValidation,
+  validateRequest,
+  analyticsController.getSalesSummary
+);
 
 /**
  * @swagger
@@ -55,8 +73,18 @@ router.post('/sales-summary', analyticsController.getSalesSummary);
  *     responses:
  *       200:
  *         description: Brand analysis retrieved successfully
+ *       429:
+ *         description: Too many requests
  */
-router.post('/brand-analysis', analyticsController.getBrandAnalysis);
+router.post(
+  '/brand-analysis',
+  suspiciousTrafficLogger,
+  scraperSlowDown,
+  ipThrottle,
+  brandAnalysisValidation,
+  validateRequest,
+  analyticsController.getBrandAnalysis
+);
 
 /**
  * @swagger
@@ -81,8 +109,18 @@ router.post('/brand-analysis', analyticsController.getBrandAnalysis);
  *     responses:
  *       200:
  *         description: Price comparison retrieved successfully
+ *       429:
+ *         description: Too many requests
  */
-router.post('/price-comparison', analyticsController.getPriceComparison);
+router.post(
+  '/price-comparison',
+  suspiciousTrafficLogger,
+  scraperSlowDown,
+  ipThrottle,
+  priceComparisonValidation,
+  validateRequest,
+  analyticsController.getPriceComparison
+);
 
 /**
  * @swagger
@@ -110,8 +148,17 @@ router.post('/price-comparison', analyticsController.getPriceComparison);
  *     responses:
  *       200:
  *         description: Data cleaned successfully
+ *       429:
+ *         description: Too many requests
  */
-router.post('/data-cleaning', analyticsController.cleanData);
+router.post(
+  '/data-cleaning',
+  suspiciousTrafficLogger,
+  scraperSlowDown,
+  ipThrottle,
+  dataCleaningValidation,
+  validateRequest,
+  analyticsController.cleanData
+);
 
 module.exports = router;
-

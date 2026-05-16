@@ -19,8 +19,8 @@ export default function CategoryTabs() {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{
-               paddingHorizontal: 32, // px-8
-               paddingVertical: 12,   // py-3
+               paddingHorizontal: 32,
+               paddingVertical: 12,
                alignItems: "center",
             }}
          >

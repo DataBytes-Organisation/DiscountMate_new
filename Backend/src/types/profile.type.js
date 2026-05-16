@@ -9,7 +9,6 @@ const Profile = {
   image: String,
   bio: String,
   avatarUrl: String,
-  location: String,
 };
 
 module.exports = { Profile };

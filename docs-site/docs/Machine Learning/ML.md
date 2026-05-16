@@ -1,6 +1,7 @@
 ---
-title: " "
-sidebar_label: "Overview"
+title: "Machine Learning"
+sidebar_label: "Machine Learning Overview"
+sidebar_position: 1
 ---
 
 # Section Overview

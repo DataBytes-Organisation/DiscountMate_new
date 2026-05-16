@@ -2,6 +2,8 @@ import React, { useMemo, useState, useEffect } from "react";
 import { View, Text, Image, Pressable, ActivityIndicator } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { API_URL } from "@/constants/Api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 interface ProductHeroSectionProps {
    productId?: string | string[];
@@ -18,9 +20,7 @@ type ApiProduct = {
    description?: string | null;
    brand?: string | null;
    current_price?: number | null;
-   best_price?: number | null;
    unit_price?: string | null;
-   best_unit_price?: string | null;
    is_on_special?: boolean | null;
    price_date?: string | null;
    unit_per_prod?: number | null;
@@ -31,6 +31,7 @@ type ApiProduct = {
 export default function ProductHeroSection({
    productId,
 }: ProductHeroSectionProps) {
+   const router = useRouter();
    const [isFavorited, setIsFavorited] = useState(false);
    const [product, setProduct] = useState<ApiProduct | null>(null);
    const [loading, setLoading] = useState(true);
@@ -105,8 +106,8 @@ export default function ProductHeroSection({
    }, [resolvedProductId]);
 
    const currentPrice = typeof product?.current_price === "number" ? product.current_price : 0;
-   const oldPrice = typeof product?.best_price === "number" ? product.best_price : 0;
-   const savings = oldPrice > 0 && currentPrice > 0 ? oldPrice - currentPrice : 0;
+   const oldPrice = 0;
+   const savings = 0;
    const percent =
       oldPrice > 0 && currentPrice > 0
          ? Math.round(((oldPrice - currentPrice) / oldPrice) * 100)
@@ -132,9 +133,22 @@ export default function ProductHeroSection({
          product?.unit_per_prod && product?.measurement
             ? `${product.unit_per_prod}${product.measurement}`
             : "Standard",
-      unitPriceLabel: product?.unit_price || product?.best_unit_price || null,
+      unitPriceLabel: (() => {
+         const u = product?.unit_price;
+         if (u == null) return null;
+         const s = String(u).trim();
+         return s.length ? s : null;
+      })(),
       availability: "Available for delivery & pickup",
       updated: product?.price_date ? String(product.price_date) : "recently",
+   };
+
+   const handleAddToList = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+         router.push("/(auth)/login");
+         return;
+      }
    };
 
    if (loading) {
@@ -334,7 +348,12 @@ export default function ProductHeroSection({
 
                {/* CTA */}
                <View className="flex-row gap-3">
-                  <Pressable className="flex-1 bg-primary_green py-4 rounded-xl items-center">
+                  <Pressable
+                     className="flex-1 bg-primary_green py-4 rounded-xl items-center"
+                     onPress={() => {
+                        void handleAddToList();
+                     }}
+                  >
                      <Text className="text-white text-lg font-semibold">
                         Add to List
                      </Text>

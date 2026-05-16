@@ -1,0 +1,28 @@
+[lint]
+extend-select = [
+    "N",
+    "F",
+    "W",
+    "E",
+    "I",
+    "UP",
+    "C4",
+    "FA",
+    "ISC",
+    "ICN",
+    "RET",
+    "SIM",
+    "TID",
+    "TC",
+    "PTH",
+    "TD",
+    "NPY",
+    "ANN",
+]
+ignore = [
+    "E501",
+    "SIM105",
+]
+
+[lint.pep8-naming]
+classmethod-decorators = ["classmethod", "pydantic.field_validator", "pydantic.model_validator"]

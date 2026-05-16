@@ -1,11 +1,13 @@
 // Frontend/components/product/ProductCard.tsx
 import React from "react";
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, type GestureResponderEvent } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import RetailerCard, { Retailer } from "./RetailerCard";
 import AddButton from "../common/AddButton";
 import { useRouter } from "expo-router";
 import { useCart } from "../../app/(tabs)/CartContext";
+import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 export type TrendTone = "green" | "red" | "orange" | "neutral";
 
 export type Product = {
@@ -42,57 +44,88 @@ function getTrendColorClass(tone: TrendTone): string {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const router = useRouter();
    const { addToCart } = useCart();
-   const { id, name, subtitle, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
+   const { getActiveList } = useShoppingLists();
+   const { id, name, subtitle, category, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
    const [imageError, setImageError] = React.useState(false);
-
-   // Find Coles retailer
-   const colesRetailer = retailers.find(r =>
-      r.storeKey === "coles" || r.name?.toLowerCase() === "coles"
-   ) || retailers[0];
 
    // Use retailers as-is for display
    const normalizedRetailers: Retailer[] = retailers;
 
-   // Calculate savings
-   const maxSavings = (() => {
-      if (!colesRetailer || !colesRetailer.originalPrice || !colesRetailer.price) {
-         return badge;
-      }
-
-      const original = parseFloat(colesRetailer.originalPrice.replace(/[^0-9.]/g, ""));
-      const current = parseFloat(colesRetailer.price.replace(/[^0-9.]/g, ""));
-
-      if (!isNaN(original) && !isNaN(current) && original > current) {
-         const savings = original - current;
-         return savings > 0 ? `Save $${savings.toFixed(2)}` : badge;
-      }
-
-      return badge;
-   })();
+   const maxSavings = badge;
 
    const trendIcon = getTrendIcon(trendTone);
    const trendColorClass = getTrendColorClass(trendTone);
 
    const handleOpenDetails = () => {
-      // Navigate to the dedicated product detail route: app/(product)/product/[id].tsx
-      // Pass only the ID; product page fetches the rest from the API
       router.push({
-         pathname: "/product/[id]",
+         pathname: "/(product)/product/[id]",
          params: { id },
       });
    };
 
-   const handleAddToCart = () => {
-      // Coles is the only retailer with value
-      const price = colesRetailer?.price
-         ? parseFloat(colesRetailer.price.replace(/[^0-9.]/g, ""))
-         : 0;
+   const handleAddToCart = async (event?: GestureResponderEvent) => {
+      event?.stopPropagation();
+
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+         router.push("/(auth)/login");
+         return;
+      }
+
+      if (!getActiveList()) {
+         router.push({
+            pathname: "/(tabs)/my-lists",
+            params: { create: "1" },
+         });
+         return;
+      }
+
+      const parseRetailerPrice = (priceText?: string) => {
+         if (!priceText || priceText === "-") return null;
+         const parsed = parseFloat(priceText.replace(/[^0-9.]/g, ""));
+         return !isNaN(parsed) && parsed > 0 ? parsed : null;
+      };
+
+      const pricedRetailers = retailers
+         .map((retailer) => ({
+            retailer,
+            price: parseRetailerPrice(retailer.price),
+         }))
+         .filter(
+            (entry): entry is { retailer: Retailer; price: number } =>
+               entry.price != null
+         );
+
+      const cheapestRetailer =
+         pricedRetailers.length > 0
+            ? pricedRetailers.reduce((lowest, current) =>
+               current.price < lowest.price ? current : lowest
+            )
+            : null;
+
+      const retailerPriceMap = retailers.reduce<{
+         coles?: number;
+         woolworths?: number;
+         iga?: number;
+      }>((acc, retailer) => {
+         const parsedPrice = parseRetailerPrice(retailer.price);
+         if (parsedPrice == null) return acc;
+
+         const key = retailer.storeKey?.toLowerCase();
+         if (key === "coles") acc.coles = parsedPrice;
+         if (key === "woolworths") acc.woolworths = parsedPrice;
+         if (key === "iga") acc.iga = parsedPrice;
+         return acc;
+      }, {});
 
       addToCart({
          id: id,
          name: name,
-         price: price,
-         store: colesRetailer?.name || "Coles",
+         price: cheapestRetailer?.price ?? 0,
+         store: cheapestRetailer?.retailer.name || "Unknown retailer",
+         image: link_image ?? undefined,
+         category,
+         retailerPrices: retailerPriceMap,
       });
    };
 
@@ -101,9 +134,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
          className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300"
          onPress={handleOpenDetails}
       >
-         <View className="p-5">
+         <View className="p-5 min-h-[340px]">
             {/* Top: icon/image + title + badges */}
-            <View className="flex-row items-start gap-4 mb-4">
+            <View className="flex-row items-start gap-4 mb-4 min-h-[150px]">
                <View className="w-24 h-24 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 items-center justify-center flex-shrink-0 overflow-hidden">
                   {link_image && !imageError ? (
                      <Image
@@ -124,7 +157,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   >
                      {name}
                   </Text>
-                  <Text className="text-xs text-gray-500 mb-3">
+                  <Text className="text-xs text-gray-500 mb-3 min-h-[68px]" numberOfLines={4}>
                      {subtitle}
                   </Text>
 

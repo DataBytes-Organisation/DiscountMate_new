@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, type ReactNode, useMemo } from "react";
+import { useShoppingLists } from "./ShoppingListsContext";
 
 type CartItem = {
    id: string;
@@ -6,6 +7,14 @@ type CartItem = {
    price: number;
    store?: string;
    quantity?: number;
+   image?: string;
+   category?: string;
+   categoryId?: string;
+   retailerPrices?: {
+      coles?: number;
+      woolworths?: number;
+      iga?: number;
+   };
 };
 
 type CartContextType = {
@@ -14,51 +23,57 @@ type CartContextType = {
    removeFromCart: (itemId: string) => void;
    updateQuantity: (itemId: string, quantity: number) => void;
    clearCart: () => void;
+   replaceCart: (items: CartItem[]) => void;
    getTotalItems: () => number;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+   const {
+      getActiveList,
+      addItemToActiveList,
+      removeItemFromActiveList,
+      updateActiveListItemQuantity,
+      clearActiveListItems,
+      replaceActiveListItems,
+   } = useShoppingLists();
+
+   const activeList = getActiveList();
+   const cartItems: CartItem[] = useMemo(
+      () =>
+         (activeList?.items ?? []).map((item) => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            store: item.store,
+            quantity: item.quantity,
+            image: item.image,
+            category: item.category,
+            categoryId: item.categoryId,
+            retailerPrices: item.retailerPrices,
+         })),
+      [activeList]
+   );
 
    const addToCart = (item: CartItem) => {
-      setCartItems((prevItems) => {
-         // Check if item already exists in cart
-         const existingItemIndex = prevItems.findIndex((cartItem) => cartItem.id === item.id);
-         if (existingItemIndex !== -1) {
-            // If item exists, increment its quantity
-            const updatedItems = [...prevItems];
-            const existingItem = updatedItems[existingItemIndex];
-            updatedItems[existingItemIndex] = {
-               ...existingItem,
-               quantity: (existingItem.quantity || 1) + 1,
-            };
-            return updatedItems;
-         }
-         // Add new item to cart with quantity 1
-         return [...prevItems, { ...item, quantity: 1 }];
-      });
+      addItemToActiveList(item);
    };
 
    const removeFromCart = (itemId: string) => {
-      setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+      removeItemFromActiveList(itemId);
    };
 
    const updateQuantity = (itemId: string, quantity: number) => {
-      if (quantity <= 0) {
-         removeFromCart(itemId);
-         return;
-      }
-      setCartItems((prevItems) =>
-         prevItems.map((item) =>
-            item.id === itemId ? { ...item, quantity } : item
-         )
-      );
+      updateActiveListItemQuantity(itemId, quantity);
    };
 
    const clearCart = () => {
-      setCartItems([]);
+      clearActiveListItems();
+   };
+
+   const replaceCart = (items: CartItem[]) => {
+      replaceActiveListItems(items);
    };
 
    const getTotalItems = () => {
@@ -73,6 +88,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             removeFromCart,
             updateQuantity,
             clearCart,
+            replaceCart,
             getTotalItems,
          }}
       >
@@ -84,7 +100,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 export const useCart = () => {
    const context = useContext(CartContext);
    if (context === undefined) {
-      throw new Error('useCart must be used within a CartProvider');
+      throw new Error("useCart must be used within a CartProvider");
    }
    return context;
 };

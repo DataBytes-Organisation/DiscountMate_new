@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Dime
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from './AuthContext';
 import { Picker } from '@react-native-picker/picker';
-import { API_URL } from '../../constants/Api';
+import { API_URL, buildRootUrl } from '../../constants/Api';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -98,7 +98,7 @@ export default function Login() {
       }
 
       try {
-         const response = await fetch('http://localhost:3000/verify-2fa', {
+         const response = await fetch(buildRootUrl('/verify-2fa'), {
             method: 'POST',
             headers: {
                'Content-Type': 'application/json',
@@ -502,9 +502,6 @@ const styles = StyleSheet.create({
       color: '#333',
       fontWeight: '500',
    },
-   required: {
-      color: '#ff0000',
-   },
    input: {
       width: '100%',
       height: 45,
@@ -518,12 +515,6 @@ const styles = StyleSheet.create({
    inputError: {
       borderColor: '#ff0000',
       borderWidth: 1,
-   },
-   errorText: {
-      color: '#ff0000',
-      fontSize: 12,
-      marginTop: 5,
-      marginLeft: 5,
    },
    checkboxContainer: {
       flexDirection: 'row',
