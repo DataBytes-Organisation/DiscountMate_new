@@ -71,7 +71,7 @@ Apply migrations:
 uv run alembic upgrade head
 ```
 
-## Run the example workflow
+## Run workflows
 
 Retailer selectors use the format `products_<retailer>`, for example `products_aldi`.
 
