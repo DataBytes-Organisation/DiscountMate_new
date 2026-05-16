@@ -1,0 +1,49 @@
+personas:
+  student_tertiary:
+    age_band: "18-24"
+    household_size: 1
+    budget: low
+    base_weights: {Snacks: 0.5, Beverages: 0.3, ReadyMeals: 0.2}
+    exclusions: []
+  young_professional:
+    age_band: "25-34"
+    household_size: 1
+    budget: medium
+    base_weights: {ReadyMeals: 0.5, Beverages: 0.3, Health: 0.2}
+    exclusions: []
+  parent_infant:
+    age_band: "25-40"
+    household_size: 3
+    budget: medium
+    base_weights: {Baby: 0.45, Bulk: 0.35, Snacks: 0.2}
+    exclusions: []
+  parent_school_age:
+    age_band: "30-45"
+    household_size: 4
+    budget: medium
+    base_weights: {Bulk: 0.4, ReadyMeals: 0.3, Snacks: 0.3}
+    exclusions: []
+  senior_living_alone:
+    age_band: "65+"
+    household_size: 1
+    budget: low
+    base_weights: {Beverages: 0.4, Health: 0.3, Bulk: 0.3}
+    exclusions: ["Energy Drink"]
+  health_conscious:
+    age_band: "18-60"
+    household_size: 1
+    budget: medium
+    base_weights: {Health: 0.6, ReadyMeals: 0.25, Beverages: 0.15}
+    exclusions: []
+  budget_shopper:
+    age_band: "18-65"
+    household_size: 1
+    budget: low
+    base_weights: {Snacks: 0.5, Bulk: 0.35, Beverages: 0.15}
+    exclusions: []
+context:
+  weekday_boost:
+    ReadyMeals: 0.10
+  weekend_boost:
+    Snacks: 0.10
+    
