@@ -1,10 +1,10 @@
 import React from "react";
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, type GestureResponderEvent } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 type AddButtonProps = {
    label?: string;
-   onPress?: () => void;
+   onPress?: (event: GestureResponderEvent) => void;
    className?: string;
 };
 

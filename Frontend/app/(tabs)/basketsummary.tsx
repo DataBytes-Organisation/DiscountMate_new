@@ -1,8 +1,9 @@
-import React, { Component, useEffect, useState } from 'react';
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import BasketSummaryItem from './basketsummaryitem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSegments } from 'expo-router';
+import { buildApiUrl } from '../../constants/Api';
 
 interface Basket {
   basketItemId: number;
@@ -13,12 +14,7 @@ interface Basket {
   shortDescription: string;
   quantity: number;
 }
-interface BasketSummaryItemState {
-  basket: Basket[];
-}
-interface BasketSummaryItemProps {}
-
-export default function basketsummary() {
+export default function BasketSummary() {
   // Explicitly type the state array to avoid "never[]" inference.
   const [basketData, setBasketData] = useState<any[]>([]);
   const segments = useSegments();
@@ -26,14 +22,13 @@ export default function basketsummary() {
   useEffect(() => {
     const fetchAndSetBasket = async () => {
       await getBasketItems();
-      console.log("Fetched basket in use effect:", basketData);
     };
     fetchAndSetBasket();
   }, [segments]);
 
   const getBasketItems = async () => {
     console.log('Getting basket items');
-    const url = 'http://localhost:3000/api/baskets/getbasket';
+    const url = buildApiUrl('/baskets/getbasket');
     const token = await AsyncStorage.getItem('authToken');
     if (!token) {
       return;
@@ -66,7 +61,7 @@ export default function basketsummary() {
   };
 
   const deleteItemFromBasket = async (productId: number) => {
-    const url = 'http://localhost:3000/api/baskets/deleteitemfrombasket';
+    const url = buildApiUrl('/baskets/deleteitemfrombasket');
     const token = await AsyncStorage.getItem('authToken');
     if (!token) {
       return;
@@ -90,7 +85,7 @@ export default function basketsummary() {
   };
 
   const updateQuantity = async (productId: number, quantity: number) => {
-    const url = 'http://localhost:3000/api/baskets/updatequantity';
+    const url = buildApiUrl('/baskets/updatequantity');
     const token = await AsyncStorage.getItem('authToken');
     const data = {
       quantity: quantity,

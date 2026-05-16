@@ -9,11 +9,12 @@ Python Flask service that provides ML/AI endpoints for the DiscountMate applicat
 3. [Architecture Overview](#architecture-overview)
 4. [Quick Start](#quick-start)
 5. [API Endpoints](#api-endpoints)
-6. [Integrating ML Models](#integrating-ml-models)
-7. [Testing](#testing)
-8. [Troubleshooting](#troubleshooting)
-9. [Next Steps](#next-steps)
-10. [Service Management with manage.sh](#service-management-with-managesh)
+6. [Reverse Image Search](#reverse-image-search)
+7. [Integrating ML Models](#integrating-ml-models)
+8. [Testing](#testing)
+9. [Troubleshooting](#troubleshooting)
+10. [Next Steps](#next-steps)
+11. [Service Management with manage.sh](#service-management-with-managesh)
 
 
 
@@ -40,19 +41,19 @@ That's it! All configuration files (babel.config.js, tailwind.config.js, postcss
 
 Before setting up the Flask service, ensure you have:
 
-- **Python 3.8+** installed
+- **Python 3.10-3.12** installed. Avoid Python 3.13 for now because some pinned ML dependencies may fail to install.
 - **python3-venv** package (for creating virtual environments)
 
 #### Installing Prerequisites
 
 **Windows:**
-1. Download Python 3.8+ from [python.org](https://www.python.org/downloads/)
+1. Download Python 3.10, 3.11, or 3.12 from [python.org](https://www.python.org/downloads/)
 2. During installation, check **"Add Python to PATH"**
 3. Verify installation:
    ```bash
    python --version
    ```
-4. Python's `venv` module is included by default with Python 3.8+
+4. Python's `venv` module is included by default with Python 3.10-3.12
 
 **macOS:**
 1. Python 3 is usually pre-installed. Check version:
@@ -155,7 +156,7 @@ MONGO_DB=your_database_name
 ### Analytics Service
 
 The `Backend/analytics-service` uses the **exact same setup process** as the ML service:
-- Same prerequisites (Python 3.8+, python3-venv)
+- Same prerequisites (Python 3.10-3.12, python3-venv)
 - Same installation steps (use `./start.sh` or manual setup)
 - Same virtual environment structure
 - Runs on port 5002 instead of 5001
@@ -167,18 +168,19 @@ Simply follow the same instructions in the `analytics-service` directory.
 ## Architecture Overview
 
 ```
-Frontend (React Native)
+Frontend (React Native / Web)
     ↓
-Node.js Backend (Express) - Port 3000
-    ↓
-Python ML Service (Flask) - Port 5001
-    ↓
-Your ML Models & Notebooks
+Node.js Backend (Express) - Port 8080
+    ├── → Python ML Service (Flask)         - Port 5001  [manual start]
+    └── → Reverse Image Search (FastAPI)    - Port 8001  [auto-spawned by Node.js]
+              ↓
+         FAISS index + DINOv2 (ml_models/)
 ```
 
 **Separation of Concerns:**
-- `app.py` - Handles HTTP requests/responses (API layer)
-- `ml_models/` - Contains ML logic and model integrations (business logic layer)
+- `app.py` - Flask API server (OCR, recommendations, weekly specials)
+- `ml_models/` - ML logic, trained models, and FAISS artifacts
+- `reverse_image_search/` - FastAPI sidecar; auto-started by `node server.js`
 
 
 
@@ -207,7 +209,7 @@ curl http://localhost:5001/health
 # Weekly specials
 curl 'http://localhost:5001/api/weekly-specials?limit=4'
 
-# Through Node.js backend
+# Through Node.js backend (port 3000 per .env.example; 8080 when no .env is set)
 curl 'http://localhost:3000/api/ml/weekly-specials?limit=4'
 ```
 
@@ -232,6 +234,96 @@ curl 'http://localhost:3000/api/ml/weekly-specials?limit=4'
 
 ### Price Prediction (To be implemented)
 - `POST /api/ml/price-prediction` - Predict future prices
+
+### Reverse Image Search (FastAPI — Port 8001)
+- `GET  /health` - Health check for the sidecar
+- `POST /reverse-image-search?top_k=5` - Upload a product image, get the top-K matching products
+  - `top_k`: integer 1–20 (default 5); returns HTTP 400 if out of range
+  - Maximum upload size: 10 MB; returns HTTP 413 if exceeded
+  - Body: `multipart/form-data` with field `file` (image/*)
+  - Response: ranked list of `{ rank, product_id, name, similarity_score, image_url, mongo_id, price_now, woolworths_price, iga_price }`
+- Via Node.js proxy: `POST /api/reverse-image-search` → forwarded to port 8001
+
+
+
+## Reverse Image Search
+
+The reverse image search feature lives in `reverse_image_search/` inside this service. It is a **FastAPI + Uvicorn** app (separate from the Flask `app.py`) that runs on **port 8001** and is **automatically spawned by `node server.js`** — you do not need to start it manually.
+
+### How it works
+
+1. User uploads a product image via the Node.js API (`POST /api/reverse-image-search`)
+2. Node.js proxies the image to the FastAPI sidecar on port 8001
+3. The sidecar extracts a 768-dim embedding using **DINOv2 ViT-B/14** with 5 test-time augmentations
+4. A prebuilt **FAISS HNSW index** is downloaded from Google Cloud Storage on startup and cached locally
+5. Results are deduplicated by product and ranked by similarity score
+6. Node.js enriches the results with live pricing from MongoDB before returning them
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `reverse_image_search/api.py` | FastAPI app — routes, request validation, response models |
+| `reverse_image_search/notebook_runtime.py` | Search engine — DINOv2 embedder, FAISS search, TTA augmentations |
+| `ml_models/reverse_image_search.faiss` | Local development cache for the downloaded FAISS HNSW index; ignored by Git |
+| `ml_models/reverse_image_search_metadata.json` | Product metadata for each indexed vector (~33 MB) |
+
+### FAISS index download
+
+The FAISS index is not stored in Git. On startup, `reverse_image_search/notebook_runtime.py` downloads it from Google Cloud Storage if the cache file is missing.
+
+Configure these values in `Backend/.env`:
+
+```env
+GOOGLE_CLOUD_PROJECT=your-gcp-project-id
+FAISS_GCP_PROJECT=
+FAISS_QUOTA_PROJECT=
+FAISS_BUCKET_NAME=discountmate-ml-models
+FAISS_OBJECT_NAME=reverse_image_search.faiss
+```
+
+`FAISS_GCP_PROJECT` is optional. Leave it blank unless the FAISS bucket lives in a different project from `GOOGLE_CLOUD_PROJECT`.
+`FAISS_QUOTA_PROJECT` is optional and defaults to the same project. Set it only if your local Google ADC quota/billing project should be different.
+
+Default cache paths:
+
+| Runtime | Cache path |
+|---------|------------|
+| Local machine | `Backend/ml-service/ml_models/reverse_image_search.faiss` |
+| Cloud Run / App Engine | `/tmp/reverse_image_search.faiss` |
+
+You can override the cache path with `LOCAL_FAISS_PATH`.
+
+For local GCS access, authenticate once:
+
+```bash
+gcloud auth login
+gcloud auth application-default login
+gcloud auth application-default set-quota-project your-gcp-project-id
+```
+
+### First-run note
+
+On first startup, DINOv2 (~330 MB) is downloaded from Torch Hub and the FAISS index is downloaded from GCS. This can take a few minutes. Subsequent runs use the local caches.
+
+### Rebuilding the index
+
+The FAISS index is built by the notebooks in `ML/ReverseImageSearch/`. Run those notebooks if you need to re-index products, then upload the rebuilt `reverse_image_search.faiss` file to `gs://discountmate-ml-models/reverse_image_search.faiss`.
+
+### Testing
+
+```bash
+# Health check (direct to sidecar)
+curl http://localhost:8001/health
+
+# Search by image (direct to sidecar)
+curl -X POST "http://localhost:8001/reverse-image-search?top_k=5" \
+  -F "file=@/path/to/product.jpg"
+
+# Search via Node.js proxy (includes MongoDB price enrichment)
+curl -X POST "http://localhost:3000/api/reverse-image-search" \
+  -F "file=@/path/to/product.jpg"
+```
 
 
 
@@ -342,7 +434,7 @@ curl -X POST http://localhost:5001/api/ml/recommendations \
 ### Test Through Node.js Backend
 
 ```bash
-curl 'http://localhost:3000/api/ml/weekly-specials?limit=4'
+curl 'http://localhost:8080/api/ml/weekly-specials?limit=4'
 ```
 
 ### Using Postman
@@ -427,6 +519,14 @@ where python  # Should show venv\Scripts\python.exe (Windows)
 - Ensure venv is activated (you should see `(venv)` in prompt)
 - Reinstall: `pip install -r requirements.txt`
 
+**Wrong Python used by reverse image search sidecar:**
+- `node server.js` automatically uses `Backend/ml-service/venv/bin/python` when that virtual environment exists.
+- If your machine has multiple Python installs and the sidecar starts with the wrong one, set `RIS_PYTHON` in `Backend/.env`:
+  ```env
+  RIS_PYTHON=/absolute/path/to/your/python
+  ```
+- This is optional and usually only needed for local machines with multiple Python versions.
+
 
 
 ## Next Steps
@@ -443,21 +543,24 @@ where python  # Should show venv\Scripts\python.exe (Windows)
 
 ## Running All Services
 
-For the full application, you need **3 services** running:
+For the full application, you need the following services running:
 
-### Terminal 1: Python ML Service
+### Terminal 1: Python ML Service (Flask — port 5001)
 ```bash
 cd Backend/ml-service
 ./start.sh
 ```
 ✅ Runs on: `http://localhost:5001`
+Provides: OCR, recommendations, weekly specials
 
-### Terminal 2: Node.js Backend
+### Terminal 2: Node.js Backend (port from `PORT` in `Backend/.env`; `.env.example` uses 3000)
 ```bash
 cd Backend
 node server.js
 ```
-✅ Runs on: `http://localhost:3000`
+✅ Runs on: `http://localhost:3000` when using the provided `.env.example` (code falls back to 8080 if `PORT` is unset)
+
+> **Note:** `node server.js` automatically spawns the Reverse Image Search FastAPI sidecar on port 8001 before Express starts accepting traffic. You do **not** need a separate terminal for it.
 
 ### Terminal 3: Frontend (if using Expo/React Native)
 ```bash
@@ -562,9 +665,11 @@ taskkill /PID <PID> /F
    ```
 
 **Common ports:**
-- Port 5001: ML Service (default)
+- Port 5001: ML Service / Flask (default)
 - Port 5002: Analytics Service (default)
-- Port 3000: Node.js Backend
+- Port 8001: Reverse Image Search / FastAPI (auto-spawned by Node.js)
+- Port 3000: Node.js Backend locally when `Backend/.env` has `PORT=3000` (the provided `.env.example` uses this)
+- Port 8080: Node.js Backend on GCP App Engine and when no `PORT` env var is set
 - Port 5000: Sometimes used by other Flask apps
 
 
@@ -573,14 +678,26 @@ taskkill /PID <PID> /F
 
 ```
 Backend/ml-service/
-├── app.py                    # Flask API server
-├── requirements.txt          # Python dependencies
+├── app.py                    # Flask API server (OCR, recommendations, weekly specials)
+├── requirements.txt          # Python dependencies (Flask + FastAPI/torch/faiss)
 ├── manage.sh                 # Service management script (background)
 ├── start.sh                  # Quick start script (foreground)
 ├── ml_models/
 │   ├── __init__.py
-│   ├── weekly_specials.py    # Simple demo (placeholder)
-│   └── recommendations.py    # Real model integration example
+│   ├── weekly_specials.py                    # Weekly specials logic
+│   ├── recommendations.py                    # Product recommendations (joblib model)
+│   ├── reverse_image_search.faiss            # Downloaded FAISS cache, ignored by Git
+│   └── reverse_image_search_metadata.json   # Product metadata for indexed vectors
+├── reverse_image_search/
+│   ├── __init__.py
+│   ├── api.py                # FastAPI app — routes, validation, response models
+│   └── notebook_runtime.py  # DINOv2 embedder, FAISS search, TTA augmentations
+├── ocr/
+│   ├── __init__.py
+│   ├── extractor.py
+│   ├── matcher.py
+│   ├── parser.py
+│   └── preprocess.py
 └── venv/                     # Virtual environment (gitignored)
 ```
 

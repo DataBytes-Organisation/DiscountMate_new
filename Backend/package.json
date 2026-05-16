@@ -4,7 +4,9 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "lint": "eslint ./src/"
+    "start": "node server.js",
+    "lint": "eslint ./src/",
+    "check:ci": "node --check server.js && node --check src/config/database.js && node --check src/config/swagger.js && node --check src/controllers/basket.controller.js"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +28,8 @@
     "env": "^0.0.2",
     "express": "^4.20.0",
     "express-rate-limit": "^8.1.0",
+    "express-slow-down": "^3.1.0",
+    "express-validator": "^7.3.2",
     "firebase": "^10.13.0",
     "firebase-admin": "^12.4.0",
     "helmet": "^8.1.0",

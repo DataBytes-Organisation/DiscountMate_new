@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.16.5",
     "duckdb>=1.5.1",
+    "jinja2>=3.1.6",
     "psycopg[binary]>=3.2.10",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.13.1",
@@ -14,6 +15,9 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "pyyaml>=6.0.3",
     "sqlalchemy>=2.0.43",
+    "duckdb-extensions>=1.5.1",
+    "duckdb-extension-httpfs>=1.5.1",
+    "duckdb-extension-postgres>=1.5.1",
 ]
 
 [dependency-groups]
