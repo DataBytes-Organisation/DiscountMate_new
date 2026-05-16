@@ -6,14 +6,8 @@ from ocr.parser import build_receipt_data
 from ocr.matcher import load_products_from_csv, match_receipt_items
 
 
-PRODUCT_CSV_PATH = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "Data",
-    "Synthetic",
-    "synthetic_woolworths_10k.csv"
-)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PRODUCT_CSV_PATH = os.path.join(BASE_DIR, "data", "products_small.csv")
 
 
 def validate_receipt_image(image_path):
@@ -89,7 +83,6 @@ def calculate_ocr_quality(processed_image, items):
 
     avg_confidence = sum(confidences) / len(confidences) if confidences else 0
 
-    likely_items = []
     ignore_items = {
         "subtotal", "total", "tax", "card", "cash",
         "change", "specials", "points", "rewards",
@@ -97,6 +90,7 @@ def calculate_ocr_quality(processed_image, items):
         "purchase", "aid", "auth", "ref", "trace"
     }
 
+    likely_items = []
     for item in items:
         item_name = item.get("item", "").strip().lower()
 
@@ -108,23 +102,25 @@ def calculate_ocr_quality(processed_image, items):
 
         likely_items.append(item)
 
-    quality = {
+    return {
         "avg_confidence": round(avg_confidence, 2),
         "word_count": len(valid_words),
         "parsed_item_count": len(items),
         "likely_item_count": len(likely_items)
     }
 
-    return quality
-
 
 def add_product_matches(receipt_data):
     try:
+        print("[OCR] Product CSV path:", PRODUCT_CSV_PATH)
+        print("[OCR] Product CSV exists:", os.path.exists(PRODUCT_CSV_PATH))
+
         products = load_products_from_csv(PRODUCT_CSV_PATH)
         matched_items = match_receipt_items(receipt_data.get("items", []), products)
 
         receipt_data["matched_items"] = matched_items
         receipt_data["matching_status"] = "completed"
+        receipt_data["matching_error"] = None
 
     except Exception as e:
         receipt_data["matched_items"] = []
@@ -223,10 +219,9 @@ def build_user_response(result):
 
 if __name__ == "__main__":
     image_path = os.path.join(
-        os.path.dirname(__file__),
-        "..",
+        BASE_DIR,
         "sample_data",
-        "receipt1.jpeg"
+        "receipt4.jpeg"
     )
 
     internal_result = process_receipt_internal(image_path)

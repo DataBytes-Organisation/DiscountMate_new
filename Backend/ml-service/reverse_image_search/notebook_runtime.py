@@ -88,10 +88,11 @@ def load_faiss_index_from_gcs() -> Path:
             raise RuntimeError(
                 "GCP project is not configured for local Google Cloud Storage access."
             )
-        credentials, detected_project = google.auth.default(
-            scopes=["https://www.googleapis.com/auth/devstorage.read_only"],
-            quota_project_id=FAISS_QUOTA_PROJECT,
-        )
+        auth_kwargs = {"scopes": ["https://www.googleapis.com/auth/devstorage.read_only"]}
+        if not _is_gcp_serverless() and FAISS_QUOTA_PROJECT:
+            auth_kwargs["quota_project_id"] = FAISS_QUOTA_PROJECT
+
+        credentials, detected_project = google.auth.default(**auth_kwargs)
         client = StorageClient(
             project=FAISS_GCP_PROJECT or detected_project,
             credentials=credentials,
