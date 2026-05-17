@@ -2,6 +2,8 @@ import React, { useMemo, useState, useEffect } from "react";
 import { View, Text, Image, Pressable, ActivityIndicator } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { API_URL } from "@/constants/Api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 interface ProductHeroSectionProps {
    productId?: string | string[];
@@ -29,6 +31,7 @@ type ApiProduct = {
 export default function ProductHeroSection({
    productId,
 }: ProductHeroSectionProps) {
+   const router = useRouter();
    const [isFavorited, setIsFavorited] = useState(false);
    const [product, setProduct] = useState<ApiProduct | null>(null);
    const [loading, setLoading] = useState(true);
@@ -138,6 +141,14 @@ export default function ProductHeroSection({
       })(),
       availability: "Available for delivery & pickup",
       updated: product?.price_date ? String(product.price_date) : "recently",
+   };
+
+   const handleAddToList = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+         router.push("/(auth)/login");
+         return;
+      }
    };
 
    if (loading) {
@@ -337,7 +348,12 @@ export default function ProductHeroSection({
 
                {/* CTA */}
                <View className="flex-row gap-3">
-                  <Pressable className="flex-1 bg-primary_green py-4 rounded-xl items-center">
+                  <Pressable
+                     className="flex-1 bg-primary_green py-4 rounded-xl items-center"
+                     onPress={() => {
+                        void handleAddToList();
+                     }}
+                  >
                      <Text className="text-white text-lg font-semibold">
                         Add to List
                      </Text>

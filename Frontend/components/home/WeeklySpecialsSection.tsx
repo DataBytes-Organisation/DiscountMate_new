@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import AddButton from "../common/AddButton";
 import { API_URL } from "@/constants/Api";
@@ -75,7 +76,13 @@ export default function WeeklySpecialsSection() {
       return `${Math.round(percentage)}% OFF`;
    };
 
-   const handleAddSpecial = (item: WeeklySpecial) => {
+   const handleAddSpecial = async (item: WeeklySpecial) => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+         router.push("/(auth)/login");
+         return;
+      }
+
       if (!getActiveList()) {
          router.push({
             pathname: "/(tabs)/my-lists",
@@ -203,7 +210,7 @@ export default function WeeklySpecialsSection() {
                                     label="Add to List"
                                     onPress={(event) => {
                                        event.stopPropagation();
-                                       handleAddSpecial(item);
+                                       void handleAddSpecial(item);
                                     }}
                                  />
                               </View>

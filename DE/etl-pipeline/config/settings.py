@@ -56,7 +56,7 @@ class AppSettings(BaseSettings):
 
 
 class ModelRuntimeConfig(BaseModel):
-    products: str
+    products: str | None = None
 
 
 class RuntimePaths(BaseModel):

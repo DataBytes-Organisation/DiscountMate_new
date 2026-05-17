@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
+import { buildApiUrl } from '../../constants/Api';
 
 // Add FAQ responses
 const quickResponses = {
@@ -211,7 +212,7 @@ const handleAIResponse = async (message: string): Promise<string> => {
 
       if (isProductQuery) {
          try {
-            const response = await axios.get('http://localhost:5002/products'); //Products Backend
+            const response = await axios.get(buildApiUrl('/products'));
             const responseData = response.data;
 
             // Handle consistent response structure: { items, page, pageSize, total, totalPages }
