@@ -4,7 +4,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useToast } from 'react-native-toast-notifications';
 import { useNavigation } from '@react-navigation/native';
-import { API_URL } from '../constants/Api';
+import { buildApiUrl } from '../constants/Api';
 
 export default function EditProfile() {
   const navigation = useNavigation();
@@ -33,7 +33,7 @@ export default function EditProfile() {
       if (!token) return;
 
       try {
-        const res = await axios.get(`${API_URL}/users/profile`, {
+        const res = await axios.get(buildApiUrl('/users/profile'), {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -65,7 +65,7 @@ export default function EditProfile() {
 
     try {
       await axios.put(
-        `${API_URL}/users/update-profile`,
+        buildApiUrl('/users/update-profile'),
         user,
         { headers: { Authorization: `Bearer ${token}` } }
       );
