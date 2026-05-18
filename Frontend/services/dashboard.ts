@@ -10,6 +10,11 @@ type DashboardPreferencesResponse = {
    message?: string;
 };
 
+type DashboardRepriceResponse = {
+   snapshotsCreated?: number;
+   message?: string;
+};
+
 export async function fetchDashboardSummary(
    range: DashboardRangeKey = "1y"
 ): Promise<DashboardSummary> {
@@ -107,5 +112,39 @@ export async function updateDashboardPreferences(payload: {
       selectedDashboardListId: String(data?.selected_dashboard_list_id || ""),
       selectedDashboardRetailer:
          (data?.selected_dashboard_retailer as DashboardRetailerKey) || "coles",
+   };
+}
+
+export async function repriceDashboardLists(
+   selectedRetailer: DashboardRetailerKey
+): Promise<{ snapshotsCreated: number }> {
+   const token = await AsyncStorage.getItem("authToken");
+   if (!token) {
+      throw new Error("You need to log in to refresh dashboard pricing.");
+   }
+
+   const response = await fetch(`${API_URL}/dashboard/reprice`, {
+      method: "POST",
+      headers: {
+         "Content-Type": "application/json",
+         Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+         selectedRetailer,
+      }),
+   });
+
+   const data: DashboardRepriceResponse = await response.json();
+   if (!response.ok) {
+      throw new Error(
+         await normalizeApiErrorMessage(
+            data?.message,
+            "Unable to refresh dashboard pricing."
+         )
+      );
+   }
+
+   return {
+      snapshotsCreated: Number(data?.snapshotsCreated || 0),
    };
 }
