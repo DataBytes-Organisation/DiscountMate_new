@@ -156,6 +156,9 @@ jobs:
           RAG_OBJECT_PREFIX: ${{ vars.RAG_OBJECT_PREFIX }}
           RUNTIME_MONGO_URI: ${{ secrets.MONGO_URI }}
           RUNTIME_JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          RUNTIME_SUPPORT_EMAIL: ${{ secrets.SUPPORT_EMAIL }}
+          RUNTIME_SUPPORT_EMAIL_USER: ${{ secrets.SUPPORT_EMAIL_USER }}
+          RUNTIME_SUPPORT_EMAIL_APP_PASSWORD: ${{ secrets.SUPPORT_EMAIL_APP_PASSWORD }}
           RUNTIME_OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
           RUNTIME_HUGGING_FACE_TOKEN: ${{ secrets.HUGGING_FACE_TOKEN }}
         run: |
@@ -225,6 +228,24 @@ jobs:
             cat <<EOF >> /tmp/backend-cloudrun.yaml
                       - name: JWT_SECRET
                         value: ${RUNTIME_JWT_SECRET}
+          EOF
+          fi
+          if [ -n "${RUNTIME_SUPPORT_EMAIL}" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: SUPPORT_EMAIL
+                        value: ${RUNTIME_SUPPORT_EMAIL}
+          EOF
+          fi
+          if [ -n "${RUNTIME_SUPPORT_EMAIL_USER}" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: SUPPORT_EMAIL_USER
+                        value: ${RUNTIME_SUPPORT_EMAIL_USER}
+          EOF
+          fi
+          if [ -n "${RUNTIME_SUPPORT_EMAIL_APP_PASSWORD}" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: SUPPORT_EMAIL_APP_PASSWORD
+                        value: ${RUNTIME_SUPPORT_EMAIL_APP_PASSWORD}
           EOF
           fi
           cat <<EOF >> /tmp/backend-cloudrun.yaml
