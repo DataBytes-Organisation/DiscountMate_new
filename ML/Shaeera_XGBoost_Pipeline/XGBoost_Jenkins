@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+
+    triggers {
+        pollSCM('0 2 * * 1')
+    }
+
+    environment {
+        DATA_PATH   = "${WORKSPACE}/data"
+        OUTPUT_PATH = "${WORKSPACE}/predictions"
+        VENV_PATH   = "${WORKSPACE}/.venv"
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+    }
+
+    stages {
+
+        stage('Setup') {
+            steps {
+                echo "XGBOOST PIPELINE TRIGGERED"
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    if [ ! -d "$VENV_PATH" ]; then
+                        python3 -m venv "$VENV_PATH"
+                    fi
+
+                    "$VENV_PATH/bin/pip" install --upgrade pip
+                    "$VENV_PATH/bin/pip" install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Run XGBoost Pipeline') {
+            steps {
+                sh '''
+                    "$VENV_PATH/bin/python" ML/Shaeera_XGBoost_Pipeline/xgboost_pipeline.py
+                '''
+            }
+        }
+
+        stage('Archive Results') {
+            steps {
+                archiveArtifacts artifacts: 'predictions/*.csv', allowEmptyArchive: true
+            }
+        }
+    }
+}
