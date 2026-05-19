@@ -15,30 +15,16 @@ import UserHubSidebar from "../../components/common/UserHubSidebar";
 import {
    fetchDashboardPreferences,
    fetchDashboardSummary,
+   repriceDashboardLists,
    updateDashboardPreferences,
 } from "../../services/dashboard";
-import { fetchSavedLists, repriceSavedList } from "../../services/lists";
+import { fetchSavedLists } from "../../services/lists";
 import { DashboardRangeKey, DashboardSummary } from "../../types/DashboardSummary";
 import {
    DashboardRetailerKey,
    SavedListSummary,
 } from "../../types/SavedList";
 import { SESSION_EXPIRED_MESSAGE } from "../../utils/authSession";
-
-const DASHBOARD_RETAILERS: Array<{
-   key: DashboardRetailerKey;
-   label: string;
-}> = [
-   { key: "coles", label: "Coles" },
-   { key: "woolworths", label: "Woolworths" },
-   { key: "aldi", label: "ALDI" },
-   { key: "iga", label: "IGA" },
-];
-
-function getRetailerLabel(retailerKey: DashboardRetailerKey | string | null | undefined) {
-   const match = DASHBOARD_RETAILERS.find((retailer) => retailer.key === retailerKey);
-   return match?.label || "Retailer";
-}
 
 const FALLBACK_SUMMARY: DashboardSummary = {
    user: {
@@ -196,7 +182,7 @@ export default function DashboardScreen() {
          icon: "chart-line",
          label: "Total Saved",
          value: formatCurrency(summary.metrics.totalSaved),
-         helper: summary.selectedList ? rangeLabel : "Selected list summary",
+         helper: summary.selectedList ? "Potential savings" : "Selected list summary",
          accent: "text-white",
          bg: "bg-primary_green",
          iconBg: "bg-white/15",
@@ -206,7 +192,12 @@ export default function DashboardScreen() {
          icon: "wallet",
          label: "Total Spent",
          value: formatCurrency(summary.metrics.totalSpent),
-         helper: summary.selectedList ? selectedListName : "Choose a saved list",
+         helper:
+            summary.metrics.shoppingLists > 1
+               ? `${summary.metrics.shoppingLists} grocery lists`
+               : summary.selectedList
+                 ? selectedListName
+                 : "Create a grocery list",
          accent: "text-gray-900",
          bg: "bg-white",
          iconBg: "bg-blue-50",
@@ -217,7 +208,7 @@ export default function DashboardScreen() {
          label: "Savings Rate",
          value: `${summary.metrics.savingsRate.toFixed(1)}%`,
          helper: summary.selectedList
-            ? `vs cheapest ${getRetailerLabel(summary.selectedList.selectedRetailer)}`
+            ? "vs highest comparable retailer"
             : "Retailer comparison",
          accent: "text-gray-900",
          bg: "bg-white",
@@ -261,6 +252,12 @@ export default function DashboardScreen() {
       minPoint,
       pointRange
    );
+   const hasComparableTrendData =
+      summary.metrics.totalSaved > 0 ||
+      summary.trend.saved.some((value) => value > 0) ||
+      summary.recentSnapshots.some(
+         (snapshot) => snapshot.comparisonStatus === "comparable"
+      );
 
    const handleApplySelection = async () => {
       if (!selectedListId) {
@@ -276,7 +273,7 @@ export default function DashboardScreen() {
             selectedDashboardListId: selectedListId,
             selectedDashboardRetailer: selectedRetailer,
          });
-         await repriceSavedList(selectedListId, selectedRetailer);
+         await repriceDashboardLists(selectedRetailer);
          await loadDashboard(selectedRange, false);
       } catch (err: any) {
          const message = err?.message || "Unable to apply dashboard list selection.";
@@ -290,7 +287,7 @@ export default function DashboardScreen() {
    };
 
    const handleRefreshPricing = async () => {
-      if (!summary.selectedList?.id) {
+      if (!summary.metrics.shoppingLists) {
          return;
       }
 
@@ -298,9 +295,8 @@ export default function DashboardScreen() {
       setError(null);
 
       try {
-         await repriceSavedList(
-            summary.selectedList.id,
-            summary.selectedList.selectedRetailer
+         await repriceDashboardLists(
+            summary.selectedList?.selectedRetailer || selectedRetailer
          );
          await loadDashboard(selectedRange, false);
       } catch (err: any) {
@@ -345,7 +341,7 @@ export default function DashboardScreen() {
                                  Dashboard
                               </Text>
                               <Text className="mt-1 text-sm text-gray-500">
-                                 Real spending and savings from your chosen saved list,
+                                 Real spending and savings from your grocery lists,
                                  backed by persisted retailer pricing snapshots.
                               </Text>
                            </View>
@@ -373,7 +369,7 @@ export default function DashboardScreen() {
                                        <Text className="font-semibold text-primary_green">
                                           {refreshing
                                              ? "Refreshing..."
-                                             : "Refresh list pricing"}
+                                             : "Refresh grocery list pricing"}
                                        </Text>
                                     </Pressable>
                                  )}
@@ -498,7 +494,7 @@ export default function DashboardScreen() {
                                  Spending & Savings
                               </Text>
                               <Text className="mt-1 text-sm text-gray-500">
-                                 {rangeLabel} snapshot history for the selected list
+                                 {rangeLabel} snapshot history from your grocery lists
                               </Text>
                            </View>
                         </View>
@@ -553,7 +549,7 @@ export default function DashboardScreen() {
                                        );
                                     })}
 
-                                    {savedPolyline ? (
+                                    {hasComparableTrendData && savedPolyline ? (
                                        <Polyline
                                           points={`${savedPolyline} ${chartWidth - 30},${graphBottom} 30,${graphBottom}`}
                                           fill="url(#savedAreaGradient)"
@@ -572,7 +568,7 @@ export default function DashboardScreen() {
                                        />
                                     ) : null}
 
-                                    {savedPolyline ? (
+                                    {hasComparableTrendData && savedPolyline ? (
                                        <Polyline
                                           points={savedPolyline}
                                           fill="none"
@@ -583,7 +579,8 @@ export default function DashboardScreen() {
                                        />
                                     ) : null}
 
-                                    {summary.trend.saved.map((point, index) => {
+                                    {hasComparableTrendData &&
+                                       summary.trend.saved.map((point, index) => {
                                        const x =
                                           summary.trend.saved.length === 1
                                              ? chartWidth / 2
@@ -621,11 +618,19 @@ export default function DashboardScreen() {
                                        <View className="h-2.5 w-2.5 rounded-full bg-[#3B82F6]" />
                                        <Text className="text-sm text-gray-500">Spent</Text>
                                     </View>
-                                    <View className="flex-row items-center gap-2">
-                                       <View className="h-2.5 w-2.5 rounded-full bg-primary_green" />
-                                       <Text className="text-sm text-gray-500">Saved</Text>
-                                    </View>
+                                    {hasComparableTrendData ? (
+                                       <View className="flex-row items-center gap-2">
+                                          <View className="h-2.5 w-2.5 rounded-full bg-primary_green" />
+                                          <Text className="text-sm text-gray-500">Saved</Text>
+                                       </View>
+                                    ) : null}
                                  </View>
+                                 {!hasComparableTrendData ? (
+                                    <Text className="mt-3 text-center text-xs text-gray-400">
+                                       Savings trend will appear when at least one grocery
+                                       list has comparable retailer pricing.
+                                    </Text>
+                                 ) : null}
                               </>
                            ) : (
                               <View className="min-h-[260px] items-center justify-center px-6">
@@ -638,7 +643,7 @@ export default function DashboardScreen() {
                                     No historical pricing snapshots yet
                                  </Text>
                                  <Text className="mt-2 text-center text-sm leading-6 text-gray-500">
-                                    Apply a saved list and refresh its retailer pricing to
+                                    Refresh your grocery list pricing to
                                     create the first real dashboard history for 30 days, 3
                                     months, and this year.
                                  </Text>
@@ -652,8 +657,7 @@ export default function DashboardScreen() {
                            Recent list snapshots
                         </Text>
                         <Text className="mt-1 text-sm text-gray-500">
-                           Most recent pricing snapshots for the selected list and
-                           retailer.
+                           Most recent pricing snapshots from your grocery lists.
                         </Text>
 
                         {summary.recentSnapshots.length === 0 ? (
@@ -674,16 +678,48 @@ export default function DashboardScreen() {
                                           {snapshot.listName}
                                        </Text>
                                        <Text className="mt-1 text-sm text-gray-500">
-                                          {snapshot.date} · {snapshot.selectedRetailer}
+                                          {snapshot.date} ·{" "}
+                                          {snapshot.comparisonLabel ||
+                                             "Cheapest vs highest retailer"}
                                        </Text>
+                                       {snapshot.comparisonStatus === "comparable" &&
+                                       snapshot.cheapestRetailer &&
+                                       snapshot.highestRetailer ? (
+                                             <Text className="mt-1 text-xs text-gray-400">
+                                                Cheapest {snapshot.cheapestRetailer}{" "}
+                                                {formatCurrency(
+                                                   snapshot.cheapestTotal || 0
+                                                )}{" "}
+                                                · Highest {snapshot.highestRetailer}{" "}
+                                                {formatCurrency(
+                                                   snapshot.highestTotal || 0
+                                                )}
+                                             </Text>
+                                          ) : snapshot.comparisonStatus ===
+                                            "comparable" ? (
+                                             <Text className="mt-1 text-xs text-gray-400">
+                                                Based on item-level comparable prices across
+                                                available stores
+                                             </Text>
+                                          ) : (
+                                             <Text className="mt-1 text-xs text-gray-400">
+                                                No comparable retailer data yet
+                                             </Text>
+                                          )}
                                     </View>
                                     <View className="flex-row flex-wrap gap-4">
                                        <Text className="text-sm font-semibold text-gray-700">
                                           Spend {formatCurrency(snapshot.selectedTotal)}
                                        </Text>
-                                       <Text className="text-sm font-semibold text-primary_green">
-                                          Save {formatCurrency(snapshot.totalSaved)}
-                                       </Text>
+                                       {snapshot.comparisonStatus === "comparable" ? (
+                                          <Text className="text-sm font-semibold text-primary_green">
+                                             Potential save {formatCurrency(snapshot.totalSaved)}
+                                          </Text>
+                                       ) : (
+                                          <Text className="text-sm font-semibold text-gray-400">
+                                             No comparable retailer data yet
+                                          </Text>
+                                       )}
                                     </View>
                                  </View>
                               ))}
