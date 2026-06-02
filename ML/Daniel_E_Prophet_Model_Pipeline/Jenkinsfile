@@ -1,0 +1,93 @@
+pipeline {
+    agent any
+
+    triggers {
+        // Poll git repo every minute for changes
+        pollSCM('0 2 * * 1') // Mondays at 2AM
+        // Checks the git repository for new commits every Monday at 2:00 AM.
+        // If new data or code has been pushed since the last run, the pipeline
+        // will trigger automatically.
+    }
+
+    environment {
+        // Paths are set relative to the Jenkins workspace.
+        // DATA_PATH expects a folder named 'data' containing all CSV files.
+        // OUTPUT_PATH is where weekly_predictions.csv will be written.
+        // VENV_PATH is the persistent Python virtual environment location.
+        // These do not need to be changed unless repo structure changes.
+        DATA_PATH   = "${WORKSPACE}/data"
+        OUTPUT_PATH = "${WORKSPACE}/predictions"
+        VENV_PATH   = "${WORKSPACE}/.venv"
+    }
+
+    options {
+        // Abort the entire job if it runs longer than 30 minutes
+        // Increase this value if you are running a large number of SKUs.
+        timeout(time: 30, unit: 'MINUTES')
+    }
+
+    stages {
+        stage('Setup') {
+            steps {
+                echo "==================================================="
+                echo "PROPHET PIPELINE - File Watch Triggered"
+                echo "==================================================="
+
+                sh '''
+                    FILE_COUNT=$(ls -1 "data/"*.csv 2>/dev/null | wc -l)
+                    echo "CSV files found: $FILE_COUNT"
+                    ls -lh "data/"*.csv
+                '''
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                echo "Setting up virtual environment..."
+                sh '''
+                    if [ ! -d "$VENV_PATH" ]; then
+                        echo "Creating new virtualenv at $VENV_PATH"
+                        python3 -m venv "$VENV_PATH"
+                    else
+                        echo "Reusing existing virtualenv"
+                    fi
+
+                    "$VENV_PATH/bin/pip" install --quiet --upgrade pip
+                    "$VENV_PATH/bin/pip" install --quiet -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Run Prophet Pipeline') {
+            steps {
+                echo "Running price forecasting pipeline..."
+                sh '''
+                    "$VENV_PATH/bin/python" prophet_pipeline.py
+                '''
+            }
+        }
+
+        stage('Archive Results') {
+            steps {
+                echo "Archiving predictions..."
+                sh '''
+                    echo "==================================================="
+                    echo "PIPELINE COMPLETE"
+                    echo "==================================================="
+                    wc -l "$OUTPUT_PATH/weekly_predictions.csv" || echo "No predictions file found"
+                '''
+
+                archiveArtifacts artifacts: 'predictions/*.csv', allowEmptyArchive: true
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✓ Prophet pipeline completed successfully"
+        }
+        failure {
+            echo "✗ Prophet pipeline failed — check console output above for per-SKU errors"
+        }
+    }
+}
