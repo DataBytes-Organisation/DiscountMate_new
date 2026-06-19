@@ -1,0 +1,228 @@
+# Robust analysis for smart_substitution_dataset_2.csv (handles missing date column gracefully)
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# === Load data ===
+df = pd.read_csv('smart_substitution_dataset_2.csv')
+
+# --- Helper: find a column by candidates or predicate ---
+def find_col(df, candidates):
+    cols_lower = {c.lower(): c for c in df.columns}
+    for cand in candidates:
+        if isinstance(cand, str):
+            key = cand.lower()
+            if key in cols_lower:
+                return cols_lower[key]
+        else:
+            # callable predicate on original column name
+            for orig in df.columns:
+                if cand(orig):
+                    return orig
+    return None
+
+# --- Prefer product_code for product id; else fall back to name or a product-like column ---
+product_col = None
+if 'product_code' in df.columns:
+    product_col = 'product_code'
+else:
+    product_col = find_col(df, [
+        'product_id', 'product', 'sku', 'item_id', 'item', 'productid', 'id',
+        lambda c: 'product' in c.lower()
+    ])
+    if product_col is None:
+        # Last resort: use name if present, otherwise fabricate a single product bucket
+        product_col = 'name' if 'name' in df.columns else '__product_fallback__'
+        if product_col == '__product_fallback__':
+            df[product_col] = 'ALL'
+
+# Ensure product code is string (helps value_counts and merges)
+df[product_col] = df[product_col].astype(str)
+
+# --- Detect price column ---
+price_col = find_col(df, [
+    'price','unit_price','sale_price','selling_price','amount','value',
+    lambda c: 'price' in c.lower()
+])
+if price_col is None:
+    # Best-effort numeric fallback
+    numeric_cols = df.select_dtypes(include='number').columns.tolist()
+    if not numeric_cols:
+        raise ValueError("Couldn't infer a price column. Please specify it.")
+    price_col = numeric_cols[0]
+
+df[price_col] = pd.to_numeric(df[price_col], errors='coerce')
+df = df.dropna(subset=[price_col])
+
+# --- Detect date column (optional) ---
+date_col = find_col(df, [
+    'date','timestamp','datetime','order_date','sale_date','created_at','time'
+])
+
+has_time_series = False
+if date_col is not None:
+    # Try to parse; require that a meaningful portion parses
+    parsed = pd.to_datetime(df[date_col], errors='coerce', infer_datetime_format=True)
+    if parsed.notna().sum() >= max(10, int(0.3 * len(df))):
+        df[date_col] = parsed
+        has_time_series = True
+    else:
+        date_col = None
+
+# === Common: Most common product (correctly) ===
+vc = df[product_col].value_counts(dropna=True)
+most_common_product = vc.idxmax()
+most_common_count = int(vc.max())
+
+names = []
+if 'name' in df.columns:
+    names = df.loc[df[product_col] == most_common_product, 'name'].dropna().unique().tolist()
+
+print("Most common product")
+print("-------------------")
+print(f"Product identifier column : {product_col}")
+print(f"Most common value         : {most_common_product}")
+print(f"Occurrences               : {most_common_count}")
+if names:
+    print("Name(s)                   :", "; ".join(names[:5]) + (" ..." if len(names) > 5 else ""))
+print()
+
+# === Branch A: Time-series analysis if date exists ===
+if has_time_series:
+    work = df.dropna(subset=[date_col]).copy()
+    work = work.sort_values(by=date_col)
+
+    # Focus on the most common product
+    product_df = work[work[product_col] == most_common_product].copy()
+    product_df = product_df.sort_values(by=date_col)
+
+    if len(product_df) >= 2:
+        # 1) Price trend
+        plt.figure(figsize=(10, 5))
+        plt.plot(product_df[date_col], product_df[price_col], marker='o', linestyle='-')
+        plt.title(f"Price Over Time – {product_col}={most_common_product}", fontsize=14)
+        plt.xlabel("Date", fontsize=12)
+        plt.ylabel("Price", fontsize=12)
+        plt.grid(True, linestyle='--', alpha=0.5)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
+
+        # 2) Detect price drops as "sales"
+        product_df['price_diff'] = product_df[price_col].diff()
+        sales_df = product_df[product_df['price_diff'] < 0].copy()
+
+        # 3) Monthly price-drop frequency
+        if not sales_df.empty:
+            sales_df['month'] = sales_df[date_col].dt.month
+            monthly_counts = sales_df['month'].value_counts().sort_index()
+            plt.figure(figsize=(8, 5))
+            monthly_counts.plot(kind='bar', edgecolor='black')
+            plt.title(f"Monthly Price-Drop Frequency – {product_col}={most_common_product}", fontsize=14)
+            plt.xlabel("Month")
+            plt.ylabel("Count of Price Drops")
+            plt.tight_layout()
+            plt.show()
+
+            # 4) Weekday price-drop frequency
+            sales_df['weekday'] = sales_df[date_col].dt.day_name()
+            weekday_counts = sales_df['weekday'].value_counts()
+            plt.figure(figsize=(8, 5))
+            weekday_counts.plot(kind='bar', edgecolor='black')
+            plt.title(f"Price-Drop Events by Weekday – {product_col}={most_common_product}", fontsize=14)
+            plt.xlabel("Weekday")
+            plt.ylabel("Count of Price Drops")
+            plt.tight_layout()
+            plt.show()
+
+            # 5) Distribution of days between drops
+            sales_df['days_between_drops'] = sales_df[date_col].diff().dt.days
+            plt.figure(figsize=(8, 5))
+            sales_df['days_between_drops'].dropna().hist(bins=10, edgecolor='black')
+            plt.title(f"Distribution of Days Between Price Drops – {product_col}={most_common_product}", fontsize=14)
+            plt.xlabel("Days Between Drops")
+            plt.ylabel("Frequency")
+            plt.tight_layout()
+            plt.show()
+
+            # 6) EOFY timing (AU) around 2025-06-30
+            eofy_date = pd.Timestamp("2025-06-30")
+            sales_df['days_from_eofy'] = (sales_df[date_col] - eofy_date).dt.days
+            plt.figure(figsize=(8, 5))
+            plt.hist(sales_df['days_from_eofy'], bins=20, edgecolor='black')
+            plt.title(f"Timing of Price Drops Around EOFY (30 Jun 2025) – {product_col}={most_common_product}", fontsize=14)
+            plt.xlabel("Days From EOFY")
+            plt.ylabel("Number of Price Drops")
+            plt.tight_layout()
+            plt.show()
+
+            # 7) Monthly drop magnitude
+            sales_df['drop_amount'] = -sales_df['price_diff']
+            sales_df['month'] = sales_df[date_col].dt.month
+            plt.figure(figsize=(10, 6))
+            sales_df.boxplot(column='drop_amount', by='month', grid=False)
+            plt.title(f"Monthly Price-Drop Magnitude – {product_col}={most_common_product}", fontsize=14)
+            plt.suptitle("")
+            plt.xlabel("Month")
+            plt.ylabel("Price Drop Amount")
+            plt.tight_layout()
+            plt.show()
+        else:
+            print("No price-drop events detected for the most common product in the available time series.\n")
+    else:
+        print("Not enough time-series points for the most common product to plot trends.\n")
+
+# === Branch B: Catalog-style analysis if no date column ===
+else:
+    print("No usable date column found. Running catalog-style analysis instead.\n")
+
+        # Ensure price column is numeric
+    df['price'] = pd.to_numeric(df['price'], errors='coerce')
+    df = df.dropna(subset=['price'])
+
+    # Zoomed-in histogram: only prices <= 50
+    plt.figure(figsize=(10,5))
+    df[df['price'] <= 50]['price'].hist(bins=50, edgecolor='black')
+    plt.title("Overall Price Distribution (Zoomed: Prices ≤ $50)", fontsize=14)
+    plt.xlabel("Price")
+    plt.ylabel("Frequency")
+    plt.tight_layout()
+    plt.show()
+
+    # Top categories by average price (if category present)
+    if 'category' in df.columns:
+        cat_price = df.groupby('category', dropna=False)[price_col].mean().sort_values(ascending=False).head(15)
+        plt.figure(figsize=(10, 6))
+        cat_price.plot(kind='bar', edgecolor='black')
+        plt.title("Top 15 Categories by Average Price", fontsize=14)
+        plt.xlabel("Category")
+        plt.ylabel("Average Price")
+        plt.tight_layout()
+        plt.show()
+
+    # Boxplot of price by top subcategories (if subcategory present)
+    if 'subcategory' in df.columns:
+        top_subcats = df['subcategory'].value_counts().head(8).index.tolist()
+        box_df = df[df['subcategory'].isin(top_subcats)]
+        if not box_df.empty:
+            plt.figure(figsize=(12, 6))
+            box_df.boxplot(column=price_col, by='subcategory', grid=False)
+            plt.title("Price Distribution by Top 8 Subcategories", fontsize=14)
+            plt.suptitle("")
+            plt.xlabel("Subcategory")
+            plt.ylabel("Price")
+            plt.tight_layout()
+            plt.show()
+
+# === Summary (print-friendly; save to CSV if you like) ===
+summary = pd.DataFrame({
+    'date_column': [date_col if date_col is not None else '(none)'],
+    'price_column': [price_col],
+    'product_column': [product_col],
+    'most_common_product': [most_common_product],
+    'most_common_count': [most_common_count],
+    'num_rows_total': [len(df)]
+})
+print("\nSummary\n-------")
+print(summary.to_string(index=False))
+
+
