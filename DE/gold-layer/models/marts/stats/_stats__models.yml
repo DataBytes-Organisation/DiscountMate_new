@@ -1,0 +1,109 @@
+version: 2
+
+models:
+  - name: vw_daily_retailer_stats
+    description: >
+      One row per retailer and observed Melbourne day, summarising catalogue
+      size, product churn, promotions, and daily product prices.
+    columns:
+      - name: stats_date
+        description: Melbourne reporting date containing retailer observations.
+        data_tests:
+          - not_null
+      - name: previous_stats_date
+        description: Previous date containing observations for this retailer.
+      - name: retailer_id
+        description: Stable retailer key forming part of the model grain.
+        data_tests:
+          - not_null
+      - name: retailer_name
+        description: Business-facing retailer name.
+        data_tests:
+          - not_null
+      - name: total_product_count
+        description: Distinct products observed for the retailer on this date.
+        data_tests:
+          - not_null
+      - name: new_product_count
+        description: Products first observed for this retailer on this date.
+        data_tests:
+          - not_null
+      - name: removed_product_count
+        description: Products on the previous observed date but not this date.
+        data_tests:
+          - not_null
+      - name: retained_product_count
+        description: Products present on both this and the previous observed date.
+        data_tests:
+          - not_null
+      - name: returning_product_count
+        description: Previously known products absent on the prior observed date.
+        data_tests:
+          - not_null
+      - name: category_count
+        description: Categories represented by products on this date.
+        data_tests:
+          - not_null
+      - name: on_special_product_count
+        description: Products whose latest daily observation is on special.
+        data_tests:
+          - not_null
+      - name: on_special_product_percentage
+        description: Percentage of current products whose latest observation is on special.
+        data_tests:
+          - not_null
+      - name: average_price
+        description: Average latest daily product price.
+        data_tests:
+          - not_null
+      - name: minimum_price
+        description: Minimum latest daily product price.
+        data_tests:
+          - not_null
+      - name: maximum_price
+        description: Maximum latest daily product price.
+        data_tests:
+          - not_null
+      - name: average_unit_price
+        description: Average non-null latest daily unit price.
+      - name: price_increased_product_count
+        description: Retained products priced above their previous observed-day price.
+        data_tests:
+          - not_null
+      - name: price_decreased_product_count
+        description: Retained products priced below their previous observed-day price.
+        data_tests:
+          - not_null
+      - name: price_unchanged_product_count
+        description: Retained products with the same previous observed-day price.
+        data_tests:
+          - not_null
+
+unit_tests:
+  - name: test_vw_daily_retailer_stats_classifies_product_changes
+    description: >
+      Verifies the business definitions of new, removed, retained, and returning
+      products across non-consecutive Melbourne dates, including latest daily prices.
+    model: vw_daily_retailer_stats
+    given:
+      - input: source('silver', 'dim_retailers')
+        rows:
+          - {id: 00000000-0000-0000-0000-000000000001, retailer_name: test retailer}
+      - input: source('silver', 'fct_product_prices')
+        rows:
+          - {id: 10000000-0000-0000-0000-000000000001, recorded_at: '2026-07-31 14:30:00+00', product_id: 20000000-0000-0000-0000-000000000001, category_id: 30000000-0000-0000-0000-000000000001, retailer_id: 00000000-0000-0000-0000-000000000001, price: 10.00, unit_price: 1.0000, is_on_special: false, created_at: '2026-07-31 14:30:00+00'}
+          - {id: 10000000-0000-0000-0000-000000000002, recorded_at: '2026-07-31 15:00:00+00', product_id: 20000000-0000-0000-0000-000000000002, category_id: 30000000-0000-0000-0000-000000000001, retailer_id: 00000000-0000-0000-0000-000000000001, price: 20.00, unit_price: 2.0000, is_on_special: true, created_at: '2026-07-31 15:00:00+00'}
+          - {id: 10000000-0000-0000-0000-000000000003, recorded_at: '2026-07-31 15:30:00+00', product_id: 20000000-0000-0000-0000-000000000004, category_id: 30000000-0000-0000-0000-000000000002, retailer_id: 00000000-0000-0000-0000-000000000001, price: 30.00, unit_price: 3.0000, is_on_special: false, created_at: '2026-07-31 15:30:00+00'}
+          - {id: 10000000-0000-0000-0000-000000000004, recorded_at: '2026-08-03 01:00:00+00', product_id: 20000000-0000-0000-0000-000000000001, category_id: 30000000-0000-0000-0000-000000000001, retailer_id: 00000000-0000-0000-0000-000000000001, price: 11.00, unit_price: 1.1000, is_on_special: false, created_at: '2026-08-03 01:00:00+00'}
+          - {id: 10000000-0000-0000-0000-000000000005, recorded_at: '2026-08-03 02:00:00+00', product_id: 20000000-0000-0000-0000-000000000001, category_id: 30000000-0000-0000-0000-000000000001, retailer_id: 00000000-0000-0000-0000-000000000001, price: 12.00, unit_price: 1.2000, is_on_special: false, created_at: '2026-08-03 02:00:00+00'}
+          - {id: 10000000-0000-0000-0000-000000000006, recorded_at: '2026-08-03 02:30:00+00', product_id: 20000000-0000-0000-0000-000000000003, category_id: 30000000-0000-0000-0000-000000000002, retailer_id: 00000000-0000-0000-0000-000000000001, price: 5.00, unit_price: 0.5000, is_on_special: true, created_at: '2026-08-03 02:30:00+00'}
+          - {id: 10000000-0000-0000-0000-000000000007, recorded_at: '2026-08-05 01:00:00+00', product_id: 20000000-0000-0000-0000-000000000001, category_id: 30000000-0000-0000-0000-000000000001, retailer_id: 00000000-0000-0000-0000-000000000001, price: 9.00, unit_price: 0.9000, is_on_special: false, created_at: '2026-08-05 01:00:00+00'}
+          - {id: 10000000-0000-0000-0000-000000000008, recorded_at: '2026-08-05 01:30:00+00', product_id: 20000000-0000-0000-0000-000000000002, category_id: 30000000-0000-0000-0000-000000000001, retailer_id: 00000000-0000-0000-0000-000000000001, price: 20.00, unit_price: 2.0000, is_on_special: true, created_at: '2026-08-05 01:30:00+00'}
+          - {id: 10000000-0000-0000-0000-000000000009, recorded_at: '2026-08-05 02:00:00+00', product_id: 20000000-0000-0000-0000-000000000003, category_id: 30000000-0000-0000-0000-000000000002, retailer_id: 00000000-0000-0000-0000-000000000001, price: 5.00, unit_price: 0.5000, is_on_special: false, created_at: '2026-08-05 02:00:00+00'}
+          - {id: 10000000-0000-0000-0000-000000000010, recorded_at: '2026-08-05 02:30:00+00', product_id: 20000000-0000-0000-0000-000000000005, category_id: 30000000-0000-0000-0000-000000000002, retailer_id: 00000000-0000-0000-0000-000000000001, price: 6.00, unit_price: 0.6000, is_on_special: true, created_at: '2026-08-05 02:30:00+00'}
+    expect:
+      rows:
+        - {stats_date: '2026-08-01', previous_stats_date: null, total_product_count: 3, new_product_count: 3, removed_product_count: 0, retained_product_count: 0, returning_product_count: 0, category_count: 2, on_special_product_count: 1, price_increased_product_count: 0, price_decreased_product_count: 0, price_unchanged_product_count: 0}
+        - {stats_date: '2026-08-03', previous_stats_date: '2026-08-01', total_product_count: 2, new_product_count: 1, removed_product_count: 2, retained_product_count: 1, returning_product_count: 0, category_count: 2, on_special_product_count: 1, price_increased_product_count: 1, price_decreased_product_count: 0, price_unchanged_product_count: 0}
+        - {stats_date: '2026-08-05', previous_stats_date: '2026-08-03', total_product_count: 4, new_product_count: 1, removed_product_count: 0, retained_product_count: 2, returning_product_count: 1, category_count: 2, on_special_product_count: 2, price_increased_product_count: 0, price_decreased_product_count: 1, price_unchanged_product_count: 1}
+
