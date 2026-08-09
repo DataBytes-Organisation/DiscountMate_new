@@ -10,6 +10,7 @@ type NotificationPreferencesResponse = {
          price_alerts?: boolean;
          weekly_summary?: boolean;
          in_browser_notifications?: boolean;
+         email_notifications?: boolean;
       };
    };
 };
@@ -54,6 +55,10 @@ function mapNotificationPreferences(
          weeklySummary:
             typeof alertTypes.weekly_summary === "boolean"
                ? alertTypes.weekly_summary
+               : true,
+         emailNotifications:
+            typeof alertTypes.email_notifications === "boolean"  
+               ? alertTypes.email_notifications
                : true,
       },
    };
@@ -117,6 +122,7 @@ export async function saveNotificationPreferences(
                in_browser_notifications:
                   preferences.alertTypes.browserNotifications,
                weekly_summary: preferences.alertTypes.weeklySummary,
+               email_notifications: preferences.alertTypes.emailNotifications,
             },
          },
       }),

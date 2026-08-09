@@ -3,5 +3,6 @@ export type NotificationPreferences = {
       priceAlerts: boolean;
       browserNotifications: boolean;
       weeklySummary: boolean;
+      emailNotifications: boolean;
    };
 };

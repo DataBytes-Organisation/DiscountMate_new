@@ -16,6 +16,7 @@ const FALLBACK_PREFERENCES: NotificationPreferences = {
       priceAlerts: true,
       browserNotifications: true,
       weeklySummary: true,
+      emailNotifications: true,
    },
 };
 
@@ -43,6 +44,12 @@ const ALERT_TYPE_ITEMS: Array<{
       subtitle: "Show notifications in the DiscountMate bell panel while you use the app.",
       icon: "desktop-outline",
    },
+   {
+      key: "emailNotifications",
+      title: "Email Notifications",
+      subtitle: "Receive email notifications for price updates and important information.",
+      icon: "mail-outline",
+   }
 ];
 
 function getDisplayName(firstName?: string, lastName?: string) {
