@@ -17,7 +17,7 @@ from ml_models.weekly_specials import get_weekly_specials_ml
 from ml_models.recommendations import get_recommendations_ml
 from ml_models.price_prediction import get_price_prediction_ml
 from ocr.extractor import process_receipt_internal, build_user_response
-
+from ml_models.trending_categories import get_trending_categories_ml
 
 def _resolve_project_id():
     project_id = (
@@ -186,7 +186,14 @@ def get_current_week():
     today = datetime.now()
     week_start = today - timedelta(days=today.weekday())
     return week_start.strftime('%Y-W%W')
-
+@app.route('/api/trending-categories', methods=['GET'])
+def get_trending_categories():
+    try:
+        limit = int(request.args.get('limit', 3))
+        trending = get_trending_categories_ml(limit=limit)
+        return success_payload(data=trending, count=len(trending))
+    except Exception as e:
+        return error_payload('Failed to fetch trending categories', str(e))
 
 @app.route('/api/ml/recommendations', methods=['POST'])
 def get_recommendations():
