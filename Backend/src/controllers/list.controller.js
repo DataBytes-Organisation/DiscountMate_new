@@ -82,23 +82,28 @@ async function repriceSavedList(req, res) {
             req.body?.selectedRetailer || user?.dashboard_preferences?.selected_dashboard_retailer
         );
 
-        if (pricingSummary.error) {
-            return res.status(409).json({ message: pricingSummary.error });
-        }
-
         const now = new Date();
         const snapshotDocument = applyOwnershipFields(
             {
+                shopping_list_id: String(list._id),
+                shopping_list_name: list.list_name || list.name || 'Shopping List',
                 saved_list_id: String(list._id),
-                saved_list_name: list.name || 'Saved List',
+                saved_list_name: list.list_name || list.name || 'Shopping List',
                 selected_retailer: pricingSummary.selectedRetailer,
                 retailer_totals: pricingSummary.retailerTotals,
+                comparison_status: pricingSummary.comparisonStatus,
+                comparable_retailer_count: pricingSummary.comparableRetailerCount,
+                available_retailers: pricingSummary.availableRetailers,
                 cheapest_retailer: pricingSummary.cheapestRetailer,
                 cheapest_total: pricingSummary.cheapestTotal,
+                highest_retailer: pricingSummary.highestRetailer,
+                highest_total: pricingSummary.highestTotal,
                 selected_total: pricingSummary.selectedTotal,
                 total_saved: pricingSummary.totalSaved,
                 savings_rate: pricingSummary.savingsRate,
+                comparison_label: pricingSummary.comparisonLabel,
                 item_count: pricingSummary.itemCount,
+                source: 'shopping_list_pricing',
                 createdAt: now,
                 updatedAt: now,
             },
@@ -123,14 +128,8 @@ async function repriceSavedList(req, res) {
                         selected_dashboard_retailer: selectedRetailer,
                         updatedAt: now,
                     },
-                    shoppingLists: await db.collection('saved_lists').countDocuments({
-                        $or: [
-                            { email },
-                            { user_email: email },
-                            { userEmail: email },
-                            { user_id: String(user._id) },
-                            { userId: String(user._id) },
-                        ],
+                    shoppingLists: await db.collection('shopping_lists').countDocuments({
+                        user_id: String(user._id),
                     }),
                     updatedAt: now,
                 },

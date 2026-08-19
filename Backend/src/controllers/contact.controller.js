@@ -2,7 +2,16 @@ const nodemailer = require('nodemailer');
 const { getDb } = require('../config/database');
 
 const SUPPORT_EMAIL =
-    process.env.SUPPORT_EMAIL || process.env.EMAIL || 'supportdiscountmate@gmail.com';
+    process.env.SUPPORT_EMAIL ||
+    process.env.SUPPORT_EMAIL_USER ||
+    process.env.EMAIL ||
+    'supportdiscountmate@gmail.com';
+const SUPPORT_EMAIL_USER =
+    process.env.SUPPORT_EMAIL_USER || process.env.EMAIL || SUPPORT_EMAIL;
+const SUPPORT_EMAIL_APP_PASSWORD =
+    process.env.SUPPORT_EMAIL_APP_PASSWORD ||
+    process.env.SUPPORT_EMAIL_PASS ||
+    process.env.PASS;
 
 function createReferenceNumber() {
     const date = new Date();
@@ -15,15 +24,15 @@ function createReferenceNumber() {
 }
 
 function createTransporter() {
-    if (!process.env.EMAIL || !process.env.PASS) {
+    if (!SUPPORT_EMAIL_USER || !SUPPORT_EMAIL_APP_PASSWORD) {
         return null;
     }
 
     return nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: process.env.EMAIL,
-            pass: process.env.PASS,
+            user: SUPPORT_EMAIL_USER,
+            pass: SUPPORT_EMAIL_APP_PASSWORD,
         },
     });
 }
@@ -172,7 +181,7 @@ const handleContactFormSubmission = async (req, res) => {
             emailStatus: 'sent',
         });
 
-        res.status(200).json(
+        return res.status(200).json(
             supportResponse({
                 referenceNumber,
                 replyToEmail: trimmedEmail,

@@ -1,0 +1,8 @@
+{
+  "label": "ETL Pipeline",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Technical documentation for the DiscountMate ETL pipeline and silver warehouse layer."
+  }
+}

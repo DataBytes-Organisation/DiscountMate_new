@@ -256,6 +256,8 @@ type ProductGridProps = {
    searchQuery?: string;
    priceRangeFilter?: { min: number | null; max: number | null };
    requireSearch?: boolean;
+   useScrollView?: boolean;
+   containerClassName?: string;
 };
 
 const ProductGrid: React.FC<ProductGridProps> = ({
@@ -263,6 +265,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
    searchQuery,
    priceRangeFilter,
    requireSearch = false,
+   useScrollView = true,
+   containerClassName = "flex-1 px-4 md:px-8 pt-4 pb-10",
 }) => {
    const [apiProducts, setApiProducts] = useState<ApiProduct[]>([]);
    const [loading, setLoading] = useState<boolean>(true);
@@ -386,11 +390,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
    const canGoPrev = safePage > 1;
    const canGoNext = safePage < totalPages;
 
-   return (
-      <ScrollView
-         className="flex-1 px-4 md:px-8 pt-4 pb-10"
-         contentContainerStyle={{ paddingBottom: 40 }}
-      >
+   const content = (
+      <>
          {/* Product Filter Section */}
          <ProductFilterSection productCount={loading ? 0 : overallProductCount} />
 
@@ -569,6 +570,16 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                )}
             </>
          )}
+      </>
+   );
+
+   if (!useScrollView) {
+      return <View className={containerClassName}>{content}</View>;
+   }
+
+   return (
+      <ScrollView className={containerClassName} contentContainerStyle={{ paddingBottom: 40 }}>
+         {content}
       </ScrollView>
    );
 };

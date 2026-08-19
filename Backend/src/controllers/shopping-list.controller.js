@@ -1,6 +1,12 @@
 const { ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 const { connectToMongoDB } = require('../config/database');
+const {
+    applyOwnershipFields,
+    calculateListPricingSnapshot,
+    formatSnapshotResponse,
+    normalizeDashboardRetailer,
+} = require('../utils/savedLists');
 
 const COLLECTION_NAME = 'shopping_lists';
 const ACCENTS = new Set(['emerald', 'amber', 'sky', 'violet', 'rose']);
@@ -70,7 +76,7 @@ function cleanRetailerPrices(retailerPrices) {
     if (!retailerPrices || typeof retailerPrices !== 'object') return undefined;
 
     const cleaned = {};
-    ['coles', 'woolworths', 'iga'].forEach((retailer) => {
+    ['aldi', 'coles', 'woolworths', 'iga'].forEach((retailer) => {
         const price = Number(retailerPrices[retailer]);
         if (Number.isFinite(price) && price > 0) {
             cleaned[retailer] = price;
@@ -391,10 +397,96 @@ async function setActiveShoppingList(req, res) {
     }
 }
 
+async function repriceShoppingList(req, res) {
+    try {
+        const { db, user } = await getAuthenticatedUser(req);
+        const _id = toObjectId(req.params.id);
+        const list = await db.collection(COLLECTION_NAME).findOne({
+            _id,
+            user_id: user._id.toString(),
+        });
+
+        if (!list) {
+            return res.status(404).json({ message: 'Shopping list not found' });
+        }
+
+        const selectedRetailer =
+            normalizeDashboardRetailer(req.body?.selectedRetailer) ||
+            normalizeDashboardRetailer(user?.dashboard_preferences?.selected_dashboard_retailer) ||
+            'coles';
+        const pricingSummary = await calculateListPricingSnapshot(db, list, selectedRetailer);
+
+        const now = new Date();
+        const email = String(user.email || '').trim().toLowerCase();
+        const listName = list.list_name || list.name || 'Shopping List';
+        const snapshotDocument = applyOwnershipFields(
+            {
+                shopping_list_id: String(list._id),
+                shopping_list_name: listName,
+                saved_list_id: String(list._id),
+                saved_list_name: listName,
+                selected_retailer: pricingSummary.selectedRetailer,
+                retailer_totals: pricingSummary.retailerTotals,
+                comparison_status: pricingSummary.comparisonStatus,
+                comparable_retailer_count: pricingSummary.comparableRetailerCount,
+                available_retailers: pricingSummary.availableRetailers,
+                cheapest_retailer: pricingSummary.cheapestRetailer,
+                cheapest_total: pricingSummary.cheapestTotal,
+                highest_retailer: pricingSummary.highestRetailer,
+                highest_total: pricingSummary.highestTotal,
+                selected_total: pricingSummary.selectedTotal,
+                total_saved: pricingSummary.totalSaved,
+                savings_rate: pricingSummary.savingsRate,
+                comparison_label: pricingSummary.comparisonLabel,
+                item_count: pricingSummary.itemCount,
+                source: 'shopping_list_pricing',
+                createdAt: now,
+                updatedAt: now,
+            },
+            user,
+            email
+        );
+
+        const insertResult = await db
+            .collection('list_pricing_snapshots')
+            .insertOne(snapshotDocument);
+
+        await db.collection('users').updateOne(
+            { _id: user._id },
+            {
+                $set: {
+                    dashboard_preferences: {
+                        selected_dashboard_list_id: String(list._id),
+                        selected_dashboard_retailer: pricingSummary.selectedRetailer,
+                        updatedAt: now,
+                    },
+                    shoppingLists: await db.collection(COLLECTION_NAME).countDocuments({
+                        user_id: user._id.toString(),
+                    }),
+                    updatedAt: now,
+                },
+            }
+        );
+
+        return res.status(200).json({
+            message: 'Shopping list repriced successfully',
+            snapshot: formatSnapshotResponse({
+                ...snapshotDocument,
+                _id: insertResult.insertedId,
+            }),
+        });
+    } catch (error) {
+        return res.status(error.status || 500).json({
+            message: error.message || 'Failed to reprice shopping list',
+        });
+    }
+}
+
 module.exports = {
     getShoppingLists,
     createShoppingList,
     updateShoppingList,
     deleteShoppingList,
     setActiveShoppingList,
+    repriceShoppingList,
 };

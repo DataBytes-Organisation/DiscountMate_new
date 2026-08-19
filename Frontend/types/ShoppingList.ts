@@ -10,6 +10,7 @@ export type ShoppingListLineItem = {
    category?: string;
    categoryId?: string;
    retailerPrices?: {
+      aldi?: number;
       coles?: number;
       woolworths?: number;
       iga?: number;

@@ -1,0 +1,8 @@
+{
+  "label": "Infrastructure",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "OpenTofu and Google Cloud infrastructure used by the Data Engineering platform."
+  }
+}

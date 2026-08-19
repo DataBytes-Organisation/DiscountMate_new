@@ -42,6 +42,14 @@ export type DashboardSummary = {
       date: string;
       listName: string;
       selectedRetailer: string;
+      comparisonStatus?: "comparable" | "single_retailer" | "no_pricing" | "unpriceable";
+      comparableRetailerCount?: number;
+      availableRetailers?: string[];
+      comparisonLabel?: string;
+      cheapestRetailer?: string | null;
+      cheapestTotal?: number;
+      highestRetailer?: string | null;
+      highestTotal?: number;
       selectedTotal: number;
       totalSaved: number;
    }>;
