@@ -1,6 +1,12 @@
 import re
 import pandas as pd
 
+# 1. LOAD DATA
+df = pd.read_csv(
+    "data/local_bronze/woolworths/woolworths_brands_20260406_104418.csv"
+)
+
+# 2. MAP OFFICIAL WOOLWORTHS CATEGORIES TO DISCOUNTMATE CATEGORIES
 CATEGORY_MAPPING = {
     "VEG / FRESHCUTS / HARD PRODUCE": "Fresh Food",
     "FRUIT": "Fresh Food",
@@ -68,9 +74,18 @@ CATEGORY_MAPPING = {
     "SEASONAL FOODS": "General Merchandise",
     "APPLIANCES": "General Merchandise",
     "MISCELLANEOUS GENERAL MERCHANDISE": "General Merchandise",
-    "PREPARED FOODS": "Pantry",
+    "PREPARED FOODS": "Pantry",  # corrected: soup etc is Pantry, not General Merchandise
 }
 
+df["discountmate_category"] = (
+    df["SapCategoryName"].map(CATEGORY_MAPPING).fillna("Other")
+)
+
+# 3. NAME-BASED KEYWORD RULES FOR ROWS STILL MISSING A CATEGORY
+# Keywords use WHOLE-WORD/PHRASE matching (see guess_category below) to avoid
+# substring false positives, e.g. "tea" no longer matches inside "Teams",
+# "coffee" alone no longer matches coffee tables/coffee-scented skincare,
+# "duck" alone no longer matches Duck Down pillows or rubber duck toys.
 KEYWORD_RULES = {
     "Personal Care & Health": [
         "shampoo", "toothpaste", "soap", "deodorant", "sunscreen", "vitamin",
@@ -94,7 +109,9 @@ KEYWORD_RULES = {
     "Beverages": [
         "juice", "soda", "drink", "cordial", "soft drink",
         "schweppes", "kombucha", "coca-cola", "coca cola", "sprite", "fanta",
-        "ginger beer", "energy drink", "tea", "coffee",
+        "ginger beer", "energy drink",
+        # "tea" and "coffee" require word-boundary matching (handled below)
+        "tea", "coffee",
     ],
     "Snacks & Confectionery": [
         "chocolate", "lolly", "lollies", "candy", "cracker", "chip",
@@ -136,20 +153,18 @@ KEYWORD_RULES = {
     ],
 }
 
+# Words that need whole-word matching (short/common words prone to substring
+# false positives, e.g. "tea" inside "Teams", "coffee" inside "coffee table").
 WORD_BOUNDARY_KEYWORDS = {"tea", "coffee"}
 
 
-def _keyword_matches(name: str, keyword: str) -> bool:
+def _keyword_matches(name, keyword):
     if keyword in WORD_BOUNDARY_KEYWORDS:
-        return re.search(r"\b" + re.escape(keyword) + r"\b", name) is not None
+        return re.search(r'\b' + re.escape(keyword) + r'\b', name) is not None
     return keyword in name
 
 
-def map_official_category(sap_category_name: str) -> str:
-    return CATEGORY_MAPPING.get(sap_category_name, "Other")
-
-
-def guess_category_from_name(name: str) -> str:
+def guess_category(name):
     name = str(name).lower()
     for category, keywords in KEYWORD_RULES.items():
         if any(_keyword_matches(name, word) for word in keywords):
@@ -157,14 +172,36 @@ def guess_category_from_name(name: str) -> str:
     return "Other"
 
 
-def categorise_products(df: pd.DataFrame) -> pd.DataFrame:
-    df["discountmate_category"] = (
-        df["SapCategoryName"].map(CATEGORY_MAPPING).fillna("Other")
-    )
+mask_other = df["discountmate_category"] == "Other"
+df.loc[mask_other, "discountmate_category"] = df.loc[mask_other, "Name"].apply(
+    guess_category
+)
 
-    mask_other = df["discountmate_category"] == "Other"
-    df.loc[mask_other, "discountmate_category"] = df.loc[
-        mask_other, "Name"
-    ].apply(guess_category_from_name)
+# 4. DIAGNOSTICS
+print(f"Rows unmapped initially (no SapCategoryName): {df['SapCategoryName'].isna().sum()}")
+print(f"Rows still classified as 'Other' after all rules: {(df['discountmate_category'] == 'Other').sum()}")
+print("\nFinal Grocery App Category Breakdown:")
+print(df["discountmate_category"].value_counts())
 
-    return df
+# 5. SAVE FULL CATEGORISED OUTPUT
+df.to_csv("data/local_bronze/woolworths/woolworths_categorised.csv", index=False)
+print("\nSaved categorised output to woolworths_categorised.csv")
+
+# 6. EXPORT REMAINING 'OTHER' ROWS FOR MANUAL REVIEW
+still_other = df[df["discountmate_category"] == "Other"]
+still_other[["Name", "PackageSize", "Price"]].sort_values("Name").to_csv(
+    "data/local_bronze/woolworths/still_other_review.csv", index=False
+)
+print(f"Exported {len(still_other)} unmapped products to still_other_review.csv for manual review.")
+
+# 7. VALIDATION - SPOT CHECK SAMPLES FROM EACH CATEGORY
+print("\n\n=== VALIDATION: Sample products from each category ===")
+categories = df["discountmate_category"].unique()
+
+for cat in categories:
+    if cat == "Other":
+        continue
+    cat_df = df[df["discountmate_category"] == cat]
+    sample = cat_df["Name"].sample(min(10, len(cat_df)), random_state=1)
+    print(f"\n--- {cat} ({len(cat_df)} total) ---")
+    print(sample.to_string())
