@@ -21,8 +21,40 @@ def load_aldi(path: str):
         df["retailer_id"] == "c4275d24-3945-4825-8399-e5a87e86557e"
     ].copy()
 
-    return aldi_df
+    validate_aldi_data(aldi_df)
 
+    return aldi_df
+def validate_aldi_data(df):
+    """Validate Aldi Silver Layer data before TVP processing."""
+
+    required_columns = [
+        "product_id",
+        "retailer_id",
+        "item_name",
+        "price",
+        "category_id",
+    ]
+
+    missing_columns = [
+        column for column in required_columns
+        if column not in df.columns
+    ]
+
+    if missing_columns:
+        raise ValueError(
+            f"Aldi data missing required columns: {missing_columns}"
+        )
+
+    if df.empty:
+        raise ValueError("No Aldi records found.")
+
+    if df["product_id"].isna().all():
+        raise ValueError("Aldi product_id contains no usable values.")
+
+    if df["price"].isna().all():
+        raise ValueError("Aldi current_price contains no usable values.")
+
+    return True
 
 def load_all_retailers(
     coles_path: str,
