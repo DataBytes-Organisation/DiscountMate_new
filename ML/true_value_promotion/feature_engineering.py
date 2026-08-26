@@ -57,3 +57,25 @@ def add_aldi_historical_pricing(aldi_df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return df
+def add_base_tvp_score(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calculate the base True Value Promotion score using the
+    scoring formula inherited from Sharon Roy's V1 TVP model.
+    """
+
+    result = df.copy()
+
+    # Cap dollar saving at $20 as defined in V1
+    result["saving_amount_capped"] = (
+        result["saving_amount"].clip(upper=20)
+    )
+
+    # V1 base promotion score
+    result["base_score"] = (
+        (result["saving_amount_capped"] * 0.2)
+        + (result["discount_percent"] * 0.8)
+    )
+
+    result["base_score"] = result["base_score"].round(2)
+
+    return result
