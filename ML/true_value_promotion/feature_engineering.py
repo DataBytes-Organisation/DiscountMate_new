@@ -79,3 +79,68 @@ def add_base_tvp_score(df: pd.DataFrame) -> pd.DataFrame:
     result["base_score"] = result["base_score"].round(2)
 
     return result
+def add_category_relative_score(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add the category-relative component of the inherited V1 TVP score.
+
+    Requires:
+    - discount_percent
+    - category_q25_discount
+    - category_median_discount
+    - category_q75_discount
+    """
+
+    result = df.copy()
+
+    def score(row):
+        dp = row["discount_percent"]
+        q25 = row["category_q25_discount"]
+        median = row["category_median_discount"]
+        q75 = row["category_q75_discount"]
+
+        if pd.isna(dp):
+            return 0
+        elif dp >= q75:
+            return 15
+        elif dp >= median:
+            return 10
+        elif dp >= q25:
+            return 5
+        else:
+            return 0
+
+    result["category_relative_score"] = result.apply(score, axis=1)
+
+    return result
+
+
+def add_final_tvp_score(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calculate final True Value score and customer-facing classification
+    using the inherited V1 TVP rules.
+    """
+
+    result = df.copy()
+
+    result["true_value_score"] = (
+        result["base_score"]
+        + result["category_relative_score"]
+    ).round(2)
+
+    def classify(score):
+        if score >= 70:
+            return "DiscountMate Recommends"
+        elif score >= 45:
+            return "Excellent Discount"
+        elif score >= 25:
+            return "Good Discount"
+        elif score > 0:
+            return "OK Discount"
+        else:
+            return "Low Impact"
+
+    result["discount_class"] = (
+        result["true_value_score"].apply(classify)
+    )
+
+    return result
