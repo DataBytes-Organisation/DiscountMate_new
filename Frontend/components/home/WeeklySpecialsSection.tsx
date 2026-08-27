@@ -45,85 +45,85 @@ export default function WeeklySpecialsSection() {
    }, []);
 
    const fetchWeeklySpecials = async () => {
-   try {
-      setLoading(true);
-      setError(null);
+      try {
+         setLoading(true);
+         setError(null);
 
-      const response = await fetch(`${API_URL}/products?limit=50`);
+         const response = await fetch(`${API_URL}/products?limit=50`);
 
-      if (!response.ok) {
-         throw new Error(`Products request failed: ${response.status}`);
-      }
+         if (!response.ok) {
+            throw new Error(`Products request failed: ${response.status}`);
+         }
 
-      const result = await response.json();
+         const result = await response.json();
 
-      const liveSpecials: WeeklySpecial[] = (result.items || [])
-         .filter((product: any) => {
-            const currentPrice = Number(product.current_price) || 0;
-            const bestPrice = Number(product.best_price) || 0;
+         const liveSpecials: WeeklySpecial[] = (result.items || [])
+            .filter((product: any) => {
+               const currentPrice = Number(product.current_price) || 0;
+               const bestPrice = Number(product.best_price) || 0;
 
-            return (
-               product.is_on_special === true &&
-               currentPrice > 0 &&
-               bestPrice > 0 &&
-               bestPrice < currentPrice
-            );
-         })
-         .filter(
-            (product: any, index: number, array: any[]) =>
-               index ===
-               array.findIndex(
-         (p: any) => p.product_name === product.product_name
+               return (
+                  product.is_on_special === true &&
+                  currentPrice > 0 &&
+                  bestPrice > 0 &&
+                  bestPrice < currentPrice
+               );
+            })
+            .filter(
+               (product: any, index: number, array: any[]) =>
+                  index ===
+                  array.findIndex(
+                     (p: any) => p.product_name === product.product_name
+                  )
             )
-           )
-         .slice(0, 4)
-         .map((product: any) => {
-            const originalPrice = Number(product.current_price);
-            const specialPrice = Number(product.best_price);
-            const savings = originalPrice - specialPrice;
-            const discountPercentage =
-               originalPrice > 0
-                  ? (savings / originalPrice) * 100
-                  : 0;
+            .slice(0, 4)
+            .map((product: any) => {
+               const originalPrice = Number(product.current_price);
+               const specialPrice = Number(product.best_price);
+               const savings = originalPrice - specialPrice;
+               const discountPercentage =
+                  originalPrice > 0
+                     ? (savings / originalPrice) * 100
+                     : 0;
 
-            const storeKey = String(product.store_chain || "")
-               .replace("_generic", "")
-               .toLowerCase();
+               const storeKey = String(product.store_chain || "")
+                  .replace("_generic", "")
+                  .toLowerCase();
 
-            const store =
-               storeKey === "coles"
-                  ? "Coles"
-                  : storeKey === "woolworths"
-                    ? "Woolworths"
-                    : storeKey === "iga"
-                      ? "IGA"
-                      : "Retailer";
+               const store =
+                  storeKey === "coles"
+                     ? "Coles"
+                     : storeKey === "woolworths"
+                       ? "Woolworths"
+                       : storeKey === "iga"
+                         ? "IGA"
+                         : "Retailer";
 
-            return {
-               id: product._id,
-               product_id: product._id,
-               product_name: product.product_name,
-               description: product.description || "",
-               price: specialPrice,
-               original_price: originalPrice,
-               discount_percentage: discountPercentage,
-               savings,
-               store,
-               store_key: storeKey,
-               category: product.category_name || "Other",
-               icon: "tag",
-               image_url: product.link_image || null,
-            };
-         });
+               return {
+                  id: product._id,
+                  product_id: product._id,
+                  product_name: product.product_name,
+                  description: product.description || "",
+                  price: specialPrice,
+                  original_price: originalPrice,
+                  discount_percentage: discountPercentage,
+                  savings,
+                  store,
+                  store_key: storeKey,
+                  category: product.category_name || "Other",
+                  icon: "tag",
+                  image_url: product.link_image || null,
+               };
+            });
 
-      setSpecials(liveSpecials);
-   } catch (err) {
-      console.error("Error fetching weekly specials:", err);
-      setError("Unable to load live weekly specials.");
-   } finally {
-      setLoading(false);
-   }
-};
+         setSpecials(liveSpecials);
+      } catch (err) {
+         console.error("Error fetching weekly specials:", err);
+         setError("Unable to load live weekly specials.");
+      } finally {
+         setLoading(false);
+      }
+   };
 
    const formatPrice = (price: number): string => {
       return `$${price.toFixed(2)}`;
@@ -178,7 +178,10 @@ export default function WeeklySpecialsSection() {
                   </Text>
                </View>
 
-               <Pressable className="px-8 py-4 rounded-xl bg-[#10B981]">
+               <Pressable
+                  className="px-8 py-4 rounded-xl bg-[#10B981]"
+                  onPress={() => router.push("/(specials)/specials")}
+               >
                   <Text className="text-white font-semibold">
                      View All Specials
                   </Text>
@@ -212,25 +215,36 @@ export default function WeeklySpecialsSection() {
             {!loading && !error && specials.length > 0 && (
                <View className="flex-row flex-wrap -mx-3">
                   {specials.map((item) => (
-                     <View key={item.id} className="w-full md:w-1/4 px-3 mb-6">
+                     <Pressable
+                        key={item.id}
+                        onPress={() =>
+                           router.push({
+                              pathname: "/(product)/product/[id]",
+                              params: {
+                                 id: item.product_id || String(item.id),
+                              },
+                           })
+                        }
+                        className="w-full md:w-1/4 px-3 mb-6"
+                     >
                         <View className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
                            {/* Image / icon area + badge */}
                            <View className="relative">
-                            <View className="w-full h-56 bg-gray-100 items-center justify-center">
-                           {item.image_url ? (
-                        <Image
-                            source={{ uri: item.image_url }}
-                            className="w-full h-56"
-                           resizeMode="contain"
-                            />
-                          ) : (
-                           <FontAwesome6
-                          name={item.icon || "circle-question"}
-                          size={32}
-                           color="#9CA3AF"
-                             />
-                            )}
-                           </View>  
+                              <View className="w-full h-56 bg-gray-100 items-center justify-center">
+                                 {item.image_url ? (
+                                    <Image
+                                       source={{ uri: item.image_url }}
+                                       className="w-full h-56"
+                                       resizeMode="contain"
+                                    />
+                                 ) : (
+                                    <FontAwesome6
+                                       name={item.icon || "circle-question"}
+                                       size={32}
+                                       color="#9CA3AF"
+                                    />
+                                 )}
+                              </View>
 
                               <View className="absolute top-4 right-4">
                                  <View className="px-4 py-2 rounded-full bg-red-500">
@@ -284,7 +298,7 @@ export default function WeeklySpecialsSection() {
                               </View>
                            </View>
                         </View>
-                     </View>
+                     </Pressable>
                   ))}
                </View>
             )}
