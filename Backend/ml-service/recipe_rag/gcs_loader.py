@@ -90,10 +90,11 @@ def _download_one(blob_name: str, dest_path: Path) -> None:
     temp_path = dest_path.with_name(f".{dest_path.name}.download")
 
     try:
-        credentials, detected_project = google.auth.default(
-            scopes=["https://www.googleapis.com/auth/devstorage.read_only"],
-            quota_project_id=RAG_GCP_PROJECT,
-        )
+        auth_kwargs = {"scopes": ["https://www.googleapis.com/auth/devstorage.read_only"]}
+        if not _is_gcp_serverless() and RAG_GCP_PROJECT:
+            auth_kwargs["quota_project_id"] = RAG_GCP_PROJECT
+
+        credentials, detected_project = google.auth.default(**auth_kwargs)
         client = StorageClient(
             project=RAG_GCP_PROJECT or detected_project,
             credentials=credentials,

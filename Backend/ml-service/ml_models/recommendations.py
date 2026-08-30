@@ -12,13 +12,15 @@ from typing import List, Dict, Optional
 import os
 
 # Path to the actual model file
-MODEL_PATH = os.path.join(
+DEFAULT_MODEL_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
     'ML',
     'Recommendation_system',
     'Recommendation-by-Simba',
     'product_recommendation_model.joblib'
 )
+
+MODEL_PATH = os.getenv('RECOMMENDATION_MODEL_PATH', '/app/models/product_recommendation_model.joblib')
 
 # Global variables to cache model and data (loaded once)
 _model = None
@@ -31,9 +33,13 @@ def _load_model():
     global _model
     if _model is None:
         if not os.path.exists(MODEL_PATH):
+            if os.path.exists(DEFAULT_MODEL_PATH):
+                _model = joblib.load(DEFAULT_MODEL_PATH)
+                return _model
+
             raise FileNotFoundError(
                 f"Model file not found at {MODEL_PATH}\n"
-                "Please ensure the model file exists or update MODEL_PATH"
+                "Please ensure the model file exists or update RECOMMENDATION_MODEL_PATH"
             )
         _model = joblib.load(MODEL_PATH)
     return _model
@@ -213,6 +219,5 @@ def _get_demo_recommendations(product_id: int, limit: int) -> List[Dict]:
         }
     ]
     return demo_recommendations[:limit]
-
 
 

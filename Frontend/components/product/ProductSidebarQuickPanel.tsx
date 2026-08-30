@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, TextInput, Image } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 interface ProductSidebarQuickPanelProps {
    productId?: string | string[];
@@ -9,6 +11,7 @@ interface ProductSidebarQuickPanelProps {
 export default function ProductSidebarQuickPanel({
    productId,
 }: ProductSidebarQuickPanelProps) {
+   const router = useRouter();
    const [monthlyQuantity, setMonthlyQuantity] = useState("4");
 
    const averagePrice = 4.80;
@@ -23,6 +26,14 @@ export default function ProductSidebarQuickPanel({
 
    const savings = calculateSavings(monthlyQuantity);
 
+   const handleAddToList = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+         router.push("/(auth)/login");
+         return;
+      }
+   };
+
    return (
       <View className="gap-6">
          {/* QUICK ACTIONS */}
@@ -32,7 +43,13 @@ export default function ProductSidebarQuickPanel({
             </Text>
 
             <View className="gap-3">
-               <QuickActionButton icon="list" label="Add to List" />
+               <QuickActionButton
+                  icon="list"
+                  label="Add to List"
+                  onPress={() => {
+                     void handleAddToList();
+                  }}
+               />
                <QuickActionButton icon="bell" label="Set Price Alert" />
                <QuickActionButton icon="share-nodes" label="Share Product" />
             </View>
@@ -172,12 +189,17 @@ export default function ProductSidebarQuickPanel({
 function QuickActionButton({
    icon,
    label,
+   onPress,
 }: {
    icon: string;
    label: string;
+   onPress?: () => void;
 }) {
    return (
-      <Pressable className="border border-gray-200 rounded-2xl py-3 px-3 flex-row items-center gap-3 bg-white">
+      <Pressable
+         className="border border-gray-200 rounded-2xl py-3 px-3 flex-row items-center gap-3 bg-white"
+         onPress={onPress}
+      >
          <FontAwesome6 name={icon as any} size={14} color="#4B5563" />
          <Text className="text-sm font-semibold text-gray-800">{label}</Text>
       </Pressable>

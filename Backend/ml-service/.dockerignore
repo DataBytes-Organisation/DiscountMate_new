@@ -1,0 +1,10 @@
+.DS_Store
+.env
+.env.*
+__pycache__/
+*.py[cod]
+*.log
+ml-service.log
+sample_data/
+venv/
+venv-py313-broken/

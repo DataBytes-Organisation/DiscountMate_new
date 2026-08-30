@@ -46,7 +46,7 @@ _BACKEND_ROOT = os.path.abspath(
 )
 _ENV_PATH = os.path.join(_BACKEND_ROOT, ".env")
 if os.path.exists(_ENV_PATH):
-    load_dotenv(_ENV_PATH, override=True)
+    load_dotenv(_ENV_PATH, override=False)
     print(f"[env] loaded {_ENV_PATH}")
 else:
     load_dotenv(override=True)

@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 interface RetailerPrice {
    name: string;
@@ -21,6 +23,7 @@ interface ProductPriceComparisonProps {
 export default function ProductPriceComparison({
    productId,
 }: ProductPriceComparisonProps) {
+   const router = useRouter();
    // Mock data matching the design
    const retailers: RetailerPrice[] = [
       {
@@ -64,6 +67,14 @@ export default function ProductPriceComparison({
          differenceFromCheapest: diff > 0 ? diff : 0,
       };
    });
+
+   const handleAddToList = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+         router.push("/(auth)/login");
+         return;
+      }
+   };
 
    return (
       <View className="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
@@ -159,7 +170,12 @@ export default function ProductPriceComparison({
 
                         {/* Bottom row: Add to List + View at Store */}
                         <View className="flex-row gap-3">
-                           <Pressable className="flex-1 bg-primary_green rounded-xl py-3 items-center">
+                           <Pressable
+                              className="flex-1 bg-primary_green rounded-xl py-3 items-center"
+                              onPress={() => {
+                                 void handleAddToList();
+                              }}
+                           >
                               <Text className="text-white font-semibold">
                                  Add to List
                               </Text>
@@ -255,7 +271,12 @@ export default function ProductPriceComparison({
 
                      {/* Bottom buttons */}
                      <View className="flex-row justify-end gap-3">
-                        <Pressable className="px-5 py-3 rounded-xl bg-primary_green items-center">
+                        <Pressable
+                           className="px-5 py-3 rounded-xl bg-primary_green items-center"
+                           onPress={() => {
+                              void handleAddToList();
+                           }}
+                        >
                            <Text className="text-sm font-semibold text-white">
                               Add to List
                            </Text>

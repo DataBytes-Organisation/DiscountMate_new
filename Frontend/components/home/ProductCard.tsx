@@ -2,6 +2,7 @@
 import React from "react";
 import { View, Text, Pressable, Image, type GestureResponderEvent } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import RetailerCard, { Retailer } from "./RetailerCard";
 import AddButton from "../common/AddButton";
 import { useRouter } from "expo-router";
@@ -62,8 +63,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       });
    };
 
-   const handleAddToCart = (event?: GestureResponderEvent) => {
+   const handleAddToCart = async (event?: GestureResponderEvent) => {
       event?.stopPropagation();
+
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+         router.push("/(auth)/login");
+         return;
+      }
 
       if (!getActiveList()) {
          router.push({

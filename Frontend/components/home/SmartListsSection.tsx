@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { View, Text, Pressable, Image, ScrollView } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 import type { ShoppingList } from "../../types/ShoppingList";
@@ -35,12 +36,26 @@ export default function SmartListsSection() {
    const router = useRouter();
    const { lists, isLoading, createList, refreshLists } = useShoppingLists();
    const [createModalOpen, setCreateModalOpen] = useState(false);
+   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
    useFocusEffect(
       useCallback(() => {
-         void refreshLists();
+         const resolveAuthAndLists = async () => {
+            const token = await AsyncStorage.getItem("authToken");
+            const authenticated = Boolean(token);
+            setIsAuthenticated(authenticated);
+            if (authenticated) {
+               void refreshLists();
+            }
+         };
+
+         void resolveAuthAndLists();
       }, [refreshLists])
    );
+
+   if (!isAuthenticated) {
+      return null;
+   }
 
    const openCreateList = () => {
       setCreateModalOpen(true);

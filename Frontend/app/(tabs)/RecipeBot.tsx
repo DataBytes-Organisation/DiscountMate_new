@@ -23,15 +23,17 @@ import {
    Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Markdown from 'react-native-markdown-display';
 import { useCart } from './CartContext';
 import { useShoppingLists } from './ShoppingListsContext';
+import { API_ROOT_URL } from '../../constants/Api';
 
 // ----------------------------------------------------------
 // Configuration
 // ----------------------------------------------------------
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = API_ROOT_URL;
 const TOP_K = 3;
 const PRODUCT_CARD_STEP = 118;
 
@@ -84,7 +86,13 @@ function RecipeProductCard({ product }: { product: ProductCard }) {
          params: { id: product.product_id },
       });
    };
-   const addProductToList = () => {
+   const addProductToList = async () => {
+      const token = await AsyncStorage.getItem('authToken');
+      if (!token) {
+         router.push('/(auth)/login');
+         return;
+      }
+
       if (!getActiveList()) {
          router.push('/(tabs)/my-lists');
          return;
@@ -118,7 +126,9 @@ function RecipeProductCard({ product }: { product: ProductCard }) {
          </TouchableOpacity>
          <Text style={cardStyles.price}>{displayPrice}</Text>
          <TouchableOpacity
-            onPress={addProductToList}
+            onPress={() => {
+               void addProductToList();
+            }}
             style={[
                cardStyles.addButton,
                added && cardStyles.addButtonAdded,
@@ -158,7 +168,13 @@ function RecipeProductCarousel({ products }: { products: ProductCard[] }) {
       });
    };
 
-   const addAllToList = () => {
+   const addAllToList = async () => {
+      const token = await AsyncStorage.getItem('authToken');
+      if (!token) {
+         router.push('/(auth)/login');
+         return;
+      }
+
       if (!getActiveList()) {
          router.push('/(tabs)/my-lists');
          return;
@@ -171,7 +187,9 @@ function RecipeProductCarousel({ products }: { products: ProductCard[] }) {
    return (
       <View style={styles.productCarouselBlock}>
          <TouchableOpacity
-            onPress={addAllToList}
+            onPress={() => {
+               void addAllToList();
+            }}
             style={[
                styles.addAllProductsButton,
                addedAll && styles.addAllProductsButtonAdded,

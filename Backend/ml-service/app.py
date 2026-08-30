@@ -4,38 +4,114 @@ This service provides endpoints for machine learning models and AI features
 """
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import pandas as pd
-import numpy as np
 from datetime import datetime, timedelta
 import os
-import sys
 import tempfile
+from threading import Lock
 from werkzeug.utils import secure_filename
+import google.auth
+from google.cloud.secretmanager import SecretManagerServiceClient
 
 # Import ML model functions
 from ml_models.weekly_specials import get_weekly_specials_ml
 from ml_models.recommendations import get_recommendations_ml
+from ml_models.price_prediction import get_price_prediction_ml
 from ocr.extractor import process_receipt_internal, build_user_response
+
+
+def _resolve_project_id():
+    project_id = (
+        os.getenv("GOOGLE_CLOUD_PROJECT")
+        or os.getenv("GCLOUD_PROJECT")
+        or os.getenv("GCP_PROJECT")
+    )
+    if project_id:
+        return project_id
+
+    try:
+        _, detected_project = google.auth.default()
+    except Exception:
+        detected_project = None
+
+    return detected_project
+
+
+def _load_secret(secret_name):
+    project_id = _resolve_project_id()
+    if not project_id:
+        raise RuntimeError("GOOGLE_CLOUD_PROJECT is not set and could not be auto-detected")
+
+    client = SecretManagerServiceClient()
+    secret_version = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+    response = client.access_secret_version(request={"name": secret_version})
+    payload = response.payload.data.decode("utf-8").strip() if response.payload and response.payload.data else ""
+
+    if not payload:
+        raise RuntimeError(f"Secret {secret_name} is empty or unreadable")
+
+    return payload
+
+
+def ensure_runtime_secrets():
+    secret_mappings = [
+        ("MONGO_URI", "MONGO_URI_SECRET_NAME", "mongo-uri"),
+        ("OPEN_ROUTER_API_KEY", "OPEN_ROUTER_API_KEY_SECRET_NAME", "open-router-api-key"),
+        ("HUGGING_FACE_TOKEN", "HUGGING_FACE_TOKEN_SECRET_NAME", "hugging-face-token"),
+    ]
+
+    for env_var, secret_name_env, default_secret_name in secret_mappings:
+        if os.getenv(env_var, "").strip():
+            continue
+
+        secret_name = os.getenv(secret_name_env, default_secret_name).strip()
+        try:
+            os.environ[env_var] = _load_secret(secret_name)
+            print(f"[startup] loaded {env_var} from Secret Manager secret '{secret_name}'")
+        except Exception as exc:
+            print(f"[startup] WARNING: could not load {env_var} from Secret Manager secret '{secret_name}': {exc}")
+
+
+ensure_runtime_secrets()
 
 # ============================================================
 # Recipe RAG initialisation
 # ============================================================
-# Import the RAG class. Done here (not inside a route) so we
-# can build the global `rag` instance ONCE at startup.
 from recipe_rag.rag_pipeline import RecipeRAG
-# The `rag` global holds the embedding model + recipe index in
-# RAM for the lifetime of the Flask process. ~15-20s to construct.
-# Wrapped in try/except so the rest of the service still works
-# even if the index is missing or sentence-transformers is broken.
-try:
-    print("[startup] initialising Recipe RAG (this takes ~15s)...")
-    rag = RecipeRAG()
-    RAG_READY = True
-except Exception as e:
-    print(f"[startup] WARNING: RAG failed to initialise: {e}")
-    print("[startup] /api/recipe/* endpoints will return 503.")
-    rag = None
-    RAG_READY = False
+
+rag = None
+RAG_INIT_ERROR = None
+RAG_LOCK = Lock()
+
+
+def get_rag():
+    """Lazy-load RAG so basic ML endpoints can start quickly in Cloud Run."""
+    global rag, RAG_INIT_ERROR
+
+    if rag is not None:
+        return rag
+
+    with RAG_LOCK:
+        if rag is not None:
+            return rag
+        if RAG_INIT_ERROR is not None:
+            raise RuntimeError(f"RAG pipeline failed to initialise: {RAG_INIT_ERROR}")
+
+        try:
+            print("[recipe_rag] initialising Recipe RAG on first request...")
+            rag = RecipeRAG()
+            return rag
+        except Exception as exc:
+            RAG_INIT_ERROR = exc
+            print(f"[recipe_rag] WARNING: RAG failed to initialise: {exc}")
+            raise RuntimeError(f"RAG pipeline failed to initialise: {exc}") from exc
+
+
+def rag_not_ready_response(error):
+    return jsonify({
+        'success': False,
+        'ready': False,
+        'error': str(error),
+    }), 503
 
 
 
@@ -46,6 +122,21 @@ CORS(app)  # Enable CORS for all routes
 # You can change the port by setting ML_SERVICE_PORT environment variable
 # Example: ML_SERVICE_PORT=5002 python app.py
 ML_SERVICE_PORT = int(os.getenv('ML_SERVICE_PORT', 5001))
+
+
+def success_payload(**payload):
+    return jsonify({
+        'success': True,
+        **payload,
+    })
+
+
+def error_payload(message, error, status_code=500):
+    return jsonify({
+        'success': False,
+        'message': message,
+        'error': error,
+    }), status_code
 
 
 @app.route('/health', methods=['GET'])
@@ -80,18 +171,14 @@ def get_weekly_specials():
         # - ml_models/weekly_specials.py contains the ML logic
         weekly_specials = get_weekly_specials_ml(limit=limit, category=category)
 
-        return jsonify({
-            'success': True,
-            'data': weekly_specials,
-            'count': len(weekly_specials),
-            'week': get_current_week()
-        })
+        return success_payload(
+            data=weekly_specials,
+            count=len(weekly_specials),
+            week=get_current_week()
+        )
 
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return error_payload('Failed to fetch weekly specials', str(e))
 
 
 def get_current_week():
@@ -123,10 +210,7 @@ def get_recommendations():
         limit = int(data.get('limit', 5))
 
         if product_id is None:
-            return jsonify({
-                'success': False,
-                'error': 'product_id is required'
-            }), 400
+            return error_payload('Invalid request', 'product_id is required', 400)
 
         # Call ML model function from ml_models module
         # This demonstrates the integration pattern:
@@ -134,24 +218,54 @@ def get_recommendations():
         # - ml_models/recommendations.py contains the ML model logic
         recommendations = get_recommendations_ml(product_id=product_id, limit=limit)
 
-        return jsonify({
-            'success': True,
-            'message': 'Product recommendations using existing ML model',
-            'input_product_id': product_id,
-            'recommendations': recommendations,
-            'count': len(recommendations),
-            'model_info': {
+        return success_payload(
+            message='Product recommendations using existing ML model',
+            input_product_id=product_id,
+            recommendations=recommendations,
+            count=len(recommendations),
+            model_info={
                 'model_type': 'Association Rule Learning',
-                'model_location': 'ML/Recommendation_system/Recommendation-by-Simba/product_recommendation_model.joblib',
+                'model_location': os.getenv('RECOMMENDATION_MODEL_PATH', '/app/models/product_recommendation_model.joblib'),
                 'status': 'using_actual_model' if recommendations and recommendations[0].get('source') == 'product_recommendation_model.joblib' else 'fallback_mode'
             }
-        })
+        )
 
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return error_payload('Failed to get recommendations', str(e))
+
+
+@app.route('/api/ml/price-prediction', methods=['POST'])
+def get_price_prediction():
+    try:
+        data = request.get_json() or {}
+        product_id = data.get('product_id')
+        days_ahead = int(data.get('days_ahead', 7))
+        current_price = data.get('current_price')
+        price_history = data.get('price_history') or []
+
+        if product_id is None:
+            return error_payload('Invalid request', 'product_id is required', 400)
+
+        numeric_history = []
+        for value in price_history:
+            try:
+                numeric_history.append(float(value))
+            except (TypeError, ValueError):
+                continue
+
+        if current_price is None:
+            current_price = numeric_history[-1] if numeric_history else 0
+
+        prediction = get_price_prediction_ml(
+            product_id=str(product_id),
+            days_ahead=days_ahead,
+            current_price=float(current_price),
+            price_history=numeric_history,
+        )
+
+        return success_payload(**prediction)
+    except Exception as e:
+        return error_payload('Failed to get price prediction', str(e))
 
 
 @app.route('/api/ocr/receipt', methods=['POST'])
@@ -218,12 +332,15 @@ def recipe_stats():
     Diagnostic / health endpoint for the recipe RAG.
     Layman: "Is the recipe brain awake? How big is its memory?"
     """
-    if not RAG_READY:
-        return jsonify({
-            'success': False,
+    if rag is None:
+        payload = {
+            'success': True,
             'ready': False,
-            'error': 'RAG pipeline failed to initialise at startup'
-        }), 503
+            'loaded': False,
+        }
+        if RAG_INIT_ERROR is not None:
+            payload['error'] = str(RAG_INIT_ERROR)
+        return jsonify(payload)
 
     return jsonify({
         'success': True,
@@ -244,9 +361,6 @@ def recipe_search():
     Technical: cosine similarity over the precomputed embedding index.
     Use case: autocomplete, browse-by-keyword, debugging retrieval quality.
     """
-    if not RAG_READY:
-        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
-
     query = request.args.get('q', '').strip()
     top_k = int(request.args.get('top_k', 5))
 
@@ -254,7 +368,8 @@ def recipe_search():
         return jsonify({'success': False, 'error': 'Missing query parameter ?q='}), 400
 
     try:
-        results = rag.retriever.search(query, top_k=top_k)
+        current_rag = get_rag()
+        results = current_rag.retriever.search(query, top_k=top_k)
         # Strip the bulky `text` field; frontend doesn't need it for browse
         slim = [
             {
@@ -266,6 +381,8 @@ def recipe_search():
             for r in results
         ]
         return jsonify({'success': True, 'query': query, 'results': slim})
+    except RuntimeError as e:
+        return rag_not_ready_response(e)
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -295,9 +412,6 @@ def recipe_chat():
         "product_annotations": false
       }
     """
-    if not RAG_READY:
-        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
-
     data = request.get_json(silent=True) or {}
     session_id = data.get('session_id')
     message = (data.get('message') or '').strip()
@@ -309,9 +423,12 @@ def recipe_chat():
         return jsonify({'success': False, 'error': 'message is required'}), 400
 
     try:
-        result = rag.chat(session_id=session_id, user_query=message, top_k=top_k)
+        current_rag = get_rag()
+        result = current_rag.chat(session_id=session_id, user_query=message, top_k=top_k)
         # rag.chat() already returns a clean dict; just wrap with success flag
         return jsonify({'success': True, **result})
+    except RuntimeError as e:
+        return rag_not_ready_response(e)
     except Exception as e:
         # Defensive: any unexpected crash inside RAG returns 500 with a message
         # rather than dumping a stack trace to the user.
@@ -327,16 +444,17 @@ def recipe_reset():
     Technical: deletes the session_id key from rag.sessions dict, freeing
                memory and resetting the turn counter to zero.
     """
-    if not RAG_READY:
-        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
-
     data = request.get_json(silent=True) or {}
     session_id = data.get('session_id')
     if not session_id:
         return jsonify({'success': False, 'error': 'session_id is required'}), 400
 
-    rag.reset_session(session_id)
-    return jsonify({'success': True, 'session_id': session_id})
+    try:
+        current_rag = get_rag()
+        current_rag.reset_session(session_id)
+        return jsonify({'success': True, 'session_id': session_id})
+    except RuntimeError as e:
+        return rag_not_ready_response(e)
 
 
 @app.route('/api/recipe/products', methods=['GET'])
@@ -367,20 +485,20 @@ def recipe_products():
         ]
       }
     """
-    if not RAG_READY:
-        return jsonify({'success': False, 'error': 'RAG not ready'}), 503
-
     context_id = request.args.get('context_id', '').strip()
     if not context_id:
         return jsonify({'success': False, 'error': 'context_id is required'}), 400
 
-    product_lookups = rag.get_context_products(context_id)
-    if product_lookups is None:
-        return jsonify({'success': False, 'error': 'Context not found or expired'}), 404
-
     try:
-        products_used = rag.mongo_resolver.fetch_for_display(product_lookups)
+        current_rag = get_rag()
+        product_lookups = current_rag.get_context_products(context_id)
+        if product_lookups is None:
+            return jsonify({'success': False, 'error': 'Context not found or expired'}), 404
+
+        products_used = current_rag.mongo_resolver.fetch_for_display(product_lookups)
         return jsonify({'success': True, 'products_used': products_used})
+    except RuntimeError as e:
+        return rag_not_ready_response(e)
     except Exception as e:
         print(f"[recipe_products] ERROR: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -391,11 +509,11 @@ if __name__ == '__main__':
     print("  GET  /health - Health check")
     print("  GET  /api/weekly-specials - Get this week's top specials")
     print("  POST /api/ml/recommendations - Get product recommendations")
+    print("  POST /api/ml/price-prediction - Predict future prices")
     print("  POST /api/ocr/receipt - Process uploaded receipt image")
-    # print("  POST /api/ml/price-prediction - Predict future prices")
     print("  GET  /api/recipe/stats - Recipe RAG diagnostics")
     print("  GET  /api/recipe/search?q=... - Recipe retrieval (no LLM)")
     print("  POST /api/recipe/chat - Recipe RAG chat (full LLM)")
     print("  POST /api/recipe/reset - Wipe a chat session")
     print("  GET  /api/recipe/products?context_id=... - Fetch product cards for a chat turn")
-    app.run(host='0.0.0.0', port=ML_SERVICE_PORT, debug=True)
+    app.run(host='0.0.0.0', port=ML_SERVICE_PORT, debug=False)

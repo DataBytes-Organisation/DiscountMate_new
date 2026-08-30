@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
@@ -412,22 +411,15 @@ const signup = async (req, res) => {
             return res.status(400).json({ message: passwordValidationMessage });
         }
 
-        // Establish MongoDB connection and get the db object
-        const db = await connectToMongoDB(); // Await the connection to get the db object
+        const db = await connectToMongoDB();
 
-        // Check if the passwords match
         if (password !== verifyPassword) {
             return res.status(400).json({ message: 'Passwords do not match' });
         }
 
-        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create the new user object to insert
         const user = {
-            // `account_user_name` is uniquely indexed in prod; if omitted, MongoDB
-            // indexes missing fields as null and will reject the 2nd insert.
-            // Use email as a stable unique username for now.
             account_user_name: normalizedEmail,
             email: normalizedEmail,
             encrypted_password: hashedPassword,
@@ -439,10 +431,8 @@ const signup = async (req, res) => {
             role: admin ? 'admin' : 'user',
         };
 
-        // Insert the user into the database (using native MongoDB method)
         const result = await db.collection('users').insertOne(user);
 
-        // Send a success response
         res.status(201).json({ message: 'User created successfully', userId: result.insertedId });
 
     } catch (error) {
@@ -472,10 +462,10 @@ const signinLimiter = rateLimit({
 // Signin Controller
 const signin = async (req, res) => {
     const { email, password } = req.body;
+
     try {
         const normalizedEmail = String(email || '').trim().toLowerCase();
         const db = await connectToMongoDB();
-
 
         if (!db) {
             return res.status(500).json({ message: 'Database not initialized' });
@@ -511,7 +501,6 @@ const signin = async (req, res) => {
     }
 };
 
-
 const getProfile = async (req, res) => {
     try {
         const email = getAuthEmail(req);
@@ -525,10 +514,6 @@ const getProfile = async (req, res) => {
             { email },
             { projection: { encrypted_password: 0 } }
         );
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
 
         const activeAlerts = await getActiveAlertsCount(db, user, email);
 
@@ -1100,6 +1085,7 @@ const updateProfileImage = async (req, res) => {
         const email = getAuthEmail(req);
 
         const db = await connectToMongoDB();
+
         if (!db) {
             return res.status(500).json({ message: 'Database connection failed' });
         }
@@ -1155,23 +1141,95 @@ const updateProfileImage = async (req, res) => {
     }
 };
 
+// Save OCR Receipt To User Profile
+const saveReceiptToProfile = async (req, res) => {
+
+    try {
+        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({
+                message: 'No token provided, please log in'
+            });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const email = decoded.email;
+
+        const { store_name, items } = req.body;
+
+        if (!store_name || !items || !Array.isArray(items)) {
+            return res.status(400).json({
+                message: 'Invalid receipt data. store_name and items are required.'
+            });
+        }
+
+        const db = await connectToMongoDB();
+
+        if (!db) {
+            return res.status(500).json({
+                message: 'Database connection failed'
+            });
+        }
+
+        const receiptData = {
+            store_name,
+            items,
+            uploaded_at: new Date()
+        };
+
+        const updateResult = await db.collection('users').updateOne(
+            { email },
+            {
+                $push: {
+                    receipt_history: receiptData
+                }
+            }
+        );
+
+        if (updateResult.modifiedCount === 1) {
+            return res.status(200).json({
+                message: 'Receipt saved to user profile successfully',
+                receipt: receiptData
+            });
+        }
+
+        return res.status(404).json({
+            message: 'User not found or receipt not saved'
+        });
+
+    } catch (error) {
+        console.error('Error saving receipt to profile:', error);
+
+        return res.status(500).json({
+            message: 'Internal Server Error'
+        });
+    }
+};
+
 // Get Profile Image
 const getProfileImage = async (req, res) => {
+
     try {
-      const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-      if (!token) {
-        return res.status(401).json({ message: 'No token provided' });
-      }
+        const token = req.headers.authorization &&
+                      req.headers.authorization.split(' ')[1];
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const email = decoded.email;
+        if (!token) {
+            return res.status(401).json({ message: 'No token provided' });
+        }
 
-      const db = await connectToMongoDB();
-      const user = await db.collection('users').findOne({ email });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const email = decoded.email;
 
-      if (!user || !user.profile_image) {
-        return res.status(404).json({ message: 'Profile image not found' });
-      }
+        const db = await connectToMongoDB();
+        const user = await db.collection('users').findOne({ email });
+
+        if (!user || !user.profile_image) {
+            return res.status(404).json({ message: 'Profile image not found' });
+        }
+
+        const filePath = path.join(__dirname, '../..', user.profile_image);
+        res.sendFile(filePath);
 
       const imageBuffer = deserializeProfileImage(user.profile_image);
       if (!imageBuffer) {
@@ -1181,10 +1239,13 @@ const getProfileImage = async (req, res) => {
       res.setHeader('Content-Type', user.profile_image.mime || 'application/octet-stream');
       return res.status(200).send(imageBuffer);
     } catch (error) {
-      console.error('Error fetching profile image:', error);
-      return res.status(500).json({ message: 'Internal Server Error' });
+        console.error('Error fetching profile image:', error);
+
+        return res.status(500).json({
+            message: 'Internal Server Error'
+        });
     }
-  };
+};
 
 module.exports = {
     signupLimiter,
@@ -1203,5 +1264,6 @@ module.exports = {
     updateSubscription,
     deleteAccount,
     updateProfileImage,
-    getProfileImage
+    getProfileImage,
+    saveReceiptToProfile,
 };
