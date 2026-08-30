@@ -5,6 +5,11 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node server.js",
+    "dev": "nodemon --watch server.js --watch src --ext js,json server.js",
+    "test": "node --test test/**/*.test.js",
+    "setup:app-db": "DOTENV_CONFIG_PATH=.env node -r dotenv/config scripts/ensure-app-database.js",
+    "migrate:app": "npm run setup:app-db && DOTENV_CONFIG_PATH=.env node -r dotenv/config ./node_modules/node-pg-migrate/bin/node-pg-migrate --migrations-dir migrations --database-url-var APP_DATABASE_URL up",
+    "migrate:app:down": "DOTENV_CONFIG_PATH=.env node -r dotenv/config ./node_modules/node-pg-migrate/bin/node-pg-migrate --migrations-dir migrations --database-url-var APP_DATABASE_URL down",
     "lint": "eslint ./src/",
     "check:ci": "node --check server.js && node --check src/config/database.js && node --check src/config/swagger.js && node --check src/controllers/basket.controller.js"
   },
@@ -15,7 +20,8 @@
     "@stylistic/eslint-plugin": "^2.9.0",
     "@types/node": "^22.7.7",
     "eslint": "^8.57.1",
-    "eslint-plugin-import": "^2.31.0"
+    "eslint-plugin-import": "^2.31.0",
+    "node-pg-migrate": "^9.0.0"
   },
   "dependencies": {
     "@google-cloud/secret-manager": "^5.6.0",
