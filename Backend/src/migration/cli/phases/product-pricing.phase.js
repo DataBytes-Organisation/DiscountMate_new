@@ -6,59 +6,13 @@ const {
 } = require('../lib/product-pricing-transform');
 
 const { recordReferenceFailures } = require('../lib/reference-audit');
-
-async function recordUnmapped(dataSource, runId, sourceId, reason, payload) {
-  if (!dataSource || !runId) return;
-
-  await dataSource.query(
-    `
-      WITH updated AS (
-        UPDATE migration.unmapped_documents
-        SET migration_run_id = $1,
-            payload = COALESCE(payload, '{}'::jsonb) || $4::jsonb
-        WHERE source_collection = 'product_pricings'
-          AND source_id IS NOT DISTINCT FROM $2
-          AND reason = $3
-          AND resolved_at IS NULL
-        RETURNING id
-      )
-      INSERT INTO migration.unmapped_documents (
-        migration_run_id,
-        source_collection,
-        source_id,
-        reason,
-        payload
-      )
-      SELECT $1, 'product_pricings', $2, $3, $4::jsonb
-      WHERE NOT EXISTS (SELECT 1 FROM updated)
-    `,
-    [runId, sourceId || null, reason, JSON.stringify(payload || {})],
-  );
-}
-
-async function updateRunProgress(dataSource, runId, summary) {
-  if (!dataSource || !runId) return;
-
-  await dataSource.query(
-    `
-      UPDATE migration.runs
-      SET last_scanned_source = $2,
-          source_count = $3,
-          target_count = $4,
-          skipped_count = $5,
-          failed_count = $6
-      WHERE id = $1
-    `,
-    [
-      runId,
-      summary.lastScannedSource,
-      summary.sourceCount,
-      summary.targetCount,
-      summary.skippedCount,
-      summary.failedCount,
-    ],
-  );
-}
+const {
+  recordBlocked,
+  recordFailed,
+  recordMigratedBatch,
+  recordRejected,
+  updateRunProgress,
+} = require('../lib/migration-audit');
 
 function createFilter(afterId) {
   if (!afterId) return {};
@@ -189,7 +143,7 @@ function resolvePricingRow(transformed, references) {
   };
 }
 
-async function persistPricingRows(dataSource, rows) {
+async function persistPricingRows(dataSource, runId, rows, transformedDocuments) {
   if (!rows.length) return 0;
 
   return dataSource.transaction(async (manager) => {
@@ -344,6 +298,35 @@ async function persistPricingRows(dataSource, rows) {
       [JSON.stringify(rows)],
     );
 
+    const sourceMappings = await manager.query(
+      `
+        SELECT source_record_id, price_fact_id
+        FROM app.product_price_source_records
+        WHERE source_system = 'mongodb'
+          AND source_collection = 'product_pricings'
+          AND source_record_id = ANY($1::text[])
+      `,
+      [transformedDocuments.map((transformed) => transformed.sourceId)],
+    );
+
+    const targetIdBySourceId = new Map(
+      sourceMappings.map((mapping) => [mapping.source_record_id, mapping.price_fact_id]),
+    );
+
+    await recordMigratedBatch(
+      manager,
+      runId,
+      transformedDocuments.map((transformed) => ({
+        sourceCollection: 'product_pricings',
+        sourceId: transformed.sourceId,
+        sourceChecksum: transformed.sourceChecksum,
+        targetSchema: 'silver',
+        targetTable: 'fct_product_prices',
+        targetId: targetIdBySourceId.get(transformed.sourceId),
+        warnings: transformed.warnings,
+      })),
+    );
+
     return written.length;
   });
 }
@@ -400,7 +383,7 @@ async function refreshProductPriceSnapshots(dataSource) {
         ) AS price_rank
       FROM silver.fct_product_prices fact
       JOIN silver.dim_retailers retailer ON retailer.id = fact.retailer_id
-      WHERE fact.price > 0
+      WHERE fact.price >= 0
     ),
     snapshots AS (
       SELECT
@@ -454,14 +437,15 @@ function createSummary(sourceCount, options) {
     sourceCount,
     scannedCount: 0,
     validCount: 0,
-    targetCount: 0,
-    skippedCount: 0,
+    migratedCount: 0,
+    rejectedCount: 0,
+    blockedCount: 0,
     failedCount: 0,
     warningCount: 0,
     expectedPriceCents: 0,
     expectedOnSpecialCount: 0,
     expectedRawUnitPriceCount: 0,
-    expectedNonPositiveCount: 0,
+    expectedZeroPriceCount: 0,
     expectedRetailerCounts: {},
     lastScannedSource: options.afterId,
     partial: Boolean(options.afterId),
@@ -473,22 +457,10 @@ function updateExpectedMetrics(summary, transformed) {
   summary.expectedPriceCents += Math.round(transformed.price.price * 100);
   if (transformed.price.isOnSpecial === true) summary.expectedOnSpecialCount += 1;
   if (transformed.price.rawUnitPrice !== null) summary.expectedRawUnitPriceCount += 1;
-  if (transformed.price.price <= 0) summary.expectedNonPositiveCount += 1;
+  if (transformed.price.price === 0) summary.expectedZeroPriceCount += 1;
   summary.expectedRetailerCounts[transformed.retailerKey] = (
     summary.expectedRetailerCounts[transformed.retailerKey] || 0
   ) + 1;
-}
-
-async function recordWarnings(dataSource, runId, transformed) {
-  for (const warning of transformed.warnings) {
-    await recordUnmapped(
-      dataSource,
-      runId,
-      transformed.sourceId,
-      warning.reason,
-      warning.detail,
-    );
-  }
 }
 
 async function removePreviouslyMigratedPricingFact(dataSource, sourceId) {
@@ -534,31 +506,34 @@ async function applyPricingBatch(context, documents) {
     const transformed = transformProductPricingDocument(document);
 
     if (!transformed.valid) {
-      summary.skippedCount += 1;
+      summary.rejectedCount += 1;
+
       if (
         !options.scanOnly
-        && transformed.errors.includes('product_pricing_non_positive_price')
+        && transformed.errors.includes('product_pricing_negative_price')
       ) {
         await removePreviouslyMigratedPricingFact(dataSource, transformed.sourceId);
       }
-      await recordUnmapped(
-        dataSource,
-        runId,
-        transformed.sourceId,
-        transformed.errors.join(','),
-        productPricingAuditPayload(document),
-      );
+      await recordRejected(dataSource, runId, {
+        sourceCollection: 'product_pricings',
+        sourceId: transformed.sourceId,
+        reasons: transformed.errors,
+        details: productPricingAuditPayload(document),
+      });
       continue;
     }
 
     summary.validCount += 1;
-    summary.warningCount += transformed.warnings.length;
-    updateExpectedMetrics(summary, transformed);
     transformedDocuments.push(transformed);
   }
 
   if (options.scanOnly) {
-    summary.targetCount += transformedDocuments.length;
+    summary.migratedCount += transformedDocuments.length;
+    summary.warningCount += transformedDocuments.reduce(
+      (count, transformed) => count + transformed.warnings.length,
+      0,
+    );
+    transformedDocuments.forEach((transformed) => updateExpectedMetrics(summary, transformed));
 
     return;
   }
@@ -570,8 +545,18 @@ async function applyPricingBatch(context, documents) {
     const resolved = resolvePricingRow(transformed, references);
 
     if (resolved.skip) {
-      summary.skippedCount += 1;
+      summary.blockedCount += 1;
       const retailerFailure = resolved.skip.reason === 'product_pricing_retailer_not_migrated';
+      await recordBlocked(dataSource, runId, {
+        sourceCollection: 'product_pricings',
+        sourceId: transformed.sourceId,
+        sourceChecksum: transformed.sourceChecksum,
+        primaryReasonCode: resolved.skip.reason,
+        details: resolved.skip.detail,
+        reasons: resolved.skip.reason === 'product_pricing_product_identity_conflict'
+          ? [{ reason: resolved.skip.reason, detail: resolved.skip.detail }]
+          : [],
+      });
       await recordReferenceFailures(dataSource, runId, [{
         sourceCollection: 'product_pricings',
         sourceId: transformed.sourceId,
@@ -585,13 +570,6 @@ async function applyPricingBatch(context, documents) {
         required: true,
         details: resolved.skip.detail,
       }]);
-      await recordUnmapped(
-        dataSource,
-        runId,
-        transformed.sourceId,
-        resolved.skip.reason,
-        resolved.skip.detail,
-      );
       continue;
     }
 
@@ -600,22 +578,27 @@ async function applyPricingBatch(context, documents) {
   }
 
   try {
-    summary.targetCount += await persistPricingRows(dataSource, rows);
-
-    for (const transformed of successfulTransforms) {
-      await recordWarnings(dataSource, runId, transformed);
-    }
+    summary.migratedCount += await persistPricingRows(
+      dataSource,
+      runId,
+      rows,
+      successfulTransforms,
+    );
+    summary.warningCount += successfulTransforms.reduce(
+      (count, transformed) => count + transformed.warnings.length,
+      0,
+    );
+    successfulTransforms.forEach((transformed) => updateExpectedMetrics(summary, transformed));
   } catch (error) {
     summary.failedCount += rows.length;
 
     for (const transformed of successfulTransforms) {
-      await recordUnmapped(
-        dataSource,
-        runId,
-        transformed.sourceId,
-        'unexpected_migration_error',
-        { name: error.name, message: error.message },
-      );
+      await recordFailed(dataSource, runId, {
+        sourceCollection: 'product_pricings',
+        sourceId: transformed.sourceId,
+        sourceChecksum: transformed.sourceChecksum,
+        error,
+      });
     }
 
     if (options.failFast) throw error;
@@ -702,7 +685,7 @@ async function reconcileProductPricing({ dataSource, runId, sourceSummary }) {
         COALESCE(sum(round(fact.price * 100)), 0)::bigint AS price_cents,
         count(*) FILTER (WHERE fact.is_on_special = true)::integer AS on_special_count,
         count(*) FILTER (WHERE source_record.raw_unit_price IS NOT NULL)::integer AS raw_unit_price_count,
-        count(*) FILTER (WHERE fact.price <= 0)::integer AS non_positive_count
+        count(*) FILTER (WHERE fact.price = 0)::integer AS zero_price_count
       FROM app.product_price_source_records source_record
       LEFT JOIN silver.fct_product_prices fact
         ON fact.id = source_record.price_fact_id
@@ -768,7 +751,7 @@ async function reconcileProductPricing({ dataSource, runId, sourceSummary }) {
           ) AS price_rank
         FROM silver.fct_product_prices fact
         JOIN silver.dim_retailers retailer ON retailer.id = fact.retailer_id
-        WHERE fact.price > 0
+        WHERE fact.price >= 0
       ),
       expected AS (
         SELECT
@@ -856,25 +839,25 @@ async function reconcileProductPricing({ dataSource, runId, sourceSummary }) {
   if (!sourceSummary.partial) {
     results.push(
       {
-        checkName: 'source_product_pricing_count_matches',
-        sourceValue: { validPrices: sourceSummary.validCount },
+        checkName: 'migrated_product_pricing_count_matches',
+        sourceValue: { migratedPrices: sourceSummary.migratedCount },
         targetValue: { facts: factCount, sourceIds: sourceIdCount },
-        passed: sourceSummary.validCount === factCount
-          && sourceSummary.validCount === sourceIdCount,
+        passed: sourceSummary.migratedCount === factCount
+          && sourceSummary.migratedCount === sourceIdCount,
       },
       {
         checkName: 'product_pricing_amounts_match',
         sourceValue: {
           priceCents: sourceSummary.expectedPriceCents,
-          nonPositive: sourceSummary.expectedNonPositiveCount,
+          zeroPrices: sourceSummary.expectedZeroPriceCount,
         },
         targetValue: {
           priceCents: targetPriceCents,
-          nonPositive: Number(facts.non_positive_count || 0),
+          zeroPrices: Number(facts.zero_price_count || 0),
         },
         passed: sourceSummary.expectedPriceCents === targetPriceCents
-          && sourceSummary.expectedNonPositiveCount
-            === Number(facts.non_positive_count || 0),
+          && sourceSummary.expectedZeroPriceCount
+            === Number(facts.zero_price_count || 0),
       },
       {
         checkName: 'product_pricing_flags_and_raw_units_match',

@@ -119,6 +119,10 @@ function optionalMoney(value) {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
 }
 
+function hasInvalidOptionalMoney(value) {
+  return value !== undefined && value !== null && value !== '' && optionalMoney(value) === null;
+}
+
 function decodeProfileImage(profileImage) {
   if (!profileImage?.mime || !profileImage?.content) {
     return null;
@@ -192,26 +196,64 @@ function checksumDocument(document) {
 
 function transformReceipt(receipt, sourceUserId, index, fallbackDate) {
   const storeName = cleanString(receipt?.store_name || receipt?.storeName, '');
+  const warnings = [];
 
   if (!storeName) {
     return {
-      warning: {
+      warnings: [{
         reason: 'receipt_missing_store_name',
         detail: { receiptIndex: index },
-      },
+      }],
     };
   }
 
   const rawItems = Array.isArray(receipt?.items) ? receipt.items : [];
   const retailerKey = normalizeRetailerKey(storeName);
-  const items = rawItems.map((item, itemIndex) => ({
-    lineNumber: itemIndex + 1,
-    itemName: cleanString(item?.item || item?.name || item?.product_name),
-    quantity: Math.max(0.001, finiteNumber(item?.quantity, 1)),
-    unitPrice: optionalMoney(item?.unit_price ?? item?.unitPrice),
-    lineTotal: optionalMoney(item?.price ?? item?.line_total ?? item?.lineTotal),
-    rawPayload: jsonSafe(item),
-  }));
+  const items = rawItems.map((item, itemIndex) => {
+    const rawQuantity = item?.quantity;
+    const rawUnitPrice = item?.unit_price ?? item?.unitPrice;
+    const rawLineTotal = item?.price ?? item?.line_total ?? item?.lineTotal;
+
+    if (
+      rawQuantity !== undefined
+      && (!Number.isFinite(Number(rawQuantity)) || Number(rawQuantity) <= 0)
+    ) {
+      warnings.push({
+        reason: 'receipt_item_invalid_quantity_normalized',
+        detail: { receiptIndex: index, itemIndex },
+      });
+    }
+
+    if (hasInvalidOptionalMoney(rawUnitPrice) || hasInvalidOptionalMoney(rawLineTotal)) {
+      warnings.push({
+        reason: 'receipt_item_invalid_amount_omitted',
+        detail: { receiptIndex: index, itemIndex },
+      });
+    }
+
+    return {
+      lineNumber: itemIndex + 1,
+      itemName: cleanString(item?.item || item?.name || item?.product_name),
+      quantity: Math.max(0.001, finiteNumber(rawQuantity, 1)),
+      unitPrice: optionalMoney(rawUnitPrice),
+      lineTotal: optionalMoney(rawLineTotal),
+      rawPayload: jsonSafe(item),
+    };
+  });
+
+  if ([receipt?.subtotal, receipt?.total, receipt?.savings].some(hasInvalidOptionalMoney)) {
+    warnings.push({
+      reason: 'receipt_invalid_amount_omitted',
+      detail: { receiptIndex: index },
+    });
+  }
+
+  if (!retailerKey) {
+    warnings.push({
+      reason: 'receipt_retailer_unrecognized',
+      detail: { receiptIndex: index },
+    });
+  }
 
   return {
     receipt: {
@@ -228,12 +270,7 @@ function transformReceipt(receipt, sourceUserId, index, fallbackDate) {
       rawPayload: jsonSafe(receipt),
       items,
     },
-    warning: retailerKey
-      ? null
-      : {
-        reason: 'receipt_retailer_unrecognized',
-        detail: { receiptIndex: index },
-      },
+    warnings,
   };
 }
 
@@ -278,8 +315,23 @@ function transformUserDocument(document, fallbackNow = new Date()) {
     ? document.receipt_history
     : []).entries()) {
     const transformed = transformReceipt(receipt, sourceId, index, createdAt);
-    if (transformed.warning) warnings.push(transformed.warning);
+    warnings.push(...(transformed.warnings || []));
     if (transformed.receipt) receipts.push(transformed.receipt);
+  }
+
+  for (const [field, value] of [
+    ['totalSaved', document?.totalSaved],
+    ['shoppingTrips', document?.shoppingTrips],
+    ['shoppingLists', document?.shoppingLists],
+  ]) {
+    const parsed = value === undefined || value === null || value === '' ? 0 : Number(value);
+
+    if (!Number.isFinite(parsed) || parsed < 0) {
+      warnings.push({
+        reason: 'invalid_user_metric_normalized',
+        detail: { field },
+      });
+    }
   }
 
   return {

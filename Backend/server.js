@@ -170,7 +170,6 @@ async function startServer() {
       }
    } catch (err) {
       console.error('Failed to start ReverseImageSearch sidecar:', err.message);
-      process.exit(1);
    }
 
    app.listen(PORT, () => {

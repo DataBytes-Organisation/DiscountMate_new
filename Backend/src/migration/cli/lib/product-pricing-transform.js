@@ -36,11 +36,16 @@ function normalizeMoney(value) {
 function normalizeNumericUnitPrice(value) {
   if (value === undefined || value === null || value === '') return null;
 
-  if (typeof value === 'string' && !/^-?\d+(?:\.\d+)?$/.test(value.trim())) {
-    return null;
+  let numericValue = value;
+
+  if (typeof value === 'string') {
+    const match = value.trim().match(/^(-?\d+(?:\.\d+)?)(?:\s+per\s+.+)?$/i);
+
+    if (!match) return null;
+    [, numericValue] = match;
   }
 
-  const parsed = Number(value);
+  const parsed = Number(numericValue);
 
   if (!Number.isFinite(parsed) || Math.abs(parsed) > 99999999.9999) return null;
 
@@ -57,12 +62,26 @@ function transformProductPricingDocument(document) {
 
   const retailerKey = normalizeRetailerKey(rawStoreChain);
   const recordedAt = toDate(document?.date ?? document?.recorded_at ?? document?.recordedAt);
-  const price = normalizeMoney(document?.price);
-  const bestPrice = normalizeMoney(document?.best_price ?? document?.bestPrice);
+  const rawPrice = document?.price;
+  const price = normalizeMoney(rawPrice);
+  const rawBestPrice = document?.best_price ?? document?.bestPrice;
+  const normalizedBestPrice = normalizeMoney(rawBestPrice);
+  const bestPrice = normalizedBestPrice !== null && normalizedBestPrice > 0
+    ? normalizedBestPrice
+    : null;
+
   const rawUnitPrice = cleanString(document?.unit_price ?? document?.unitPrice);
   const rawBestUnitPrice = cleanString(
     document?.best_unit_price ?? document?.bestUnitPrice,
   );
+
+  const normalizedUnitPrice = normalizeNumericUnitPrice(
+    document?.unit_price ?? document?.unitPrice,
+  );
+
+  const unitPrice = normalizedUnitPrice !== null && normalizedUnitPrice > 0
+    ? normalizedUnitPrice
+    : null;
 
   const errors = [];
   const warnings = [];
@@ -74,16 +93,28 @@ function transformProductPricingDocument(document) {
   if (!recordedAt) errors.push('missing_or_invalid_recorded_at');
   if (price === null) errors.push('missing_or_invalid_price');
 
-  if (price !== null && price <= 0) {
-    errors.push('product_pricing_non_positive_price');
+  if (price !== null && price < 0) {
+    errors.push('product_pricing_negative_price');
   }
 
-  const rawBestPrice = document?.best_price ?? document?.bestPrice;
+  if (price === 0) {
+    warnings.push({
+      reason: 'product_pricing_zero_price',
+      detail: { price: 0 },
+    });
+  }
 
   if (rawBestPrice !== undefined && rawBestPrice !== null && bestPrice === null) {
     warnings.push({
       reason: 'product_pricing_invalid_best_price',
-      detail: { hasBestPrice: true },
+      detail: { hasBestPrice: true, nonPositive: normalizedBestPrice !== null },
+    });
+  }
+
+  if (rawUnitPrice !== null && unitPrice === null) {
+    warnings.push({
+      reason: 'product_pricing_invalid_unit_price',
+      detail: { hasUnitPrice: true, nonPositive: normalizedUnitPrice !== null },
     });
   }
 
@@ -115,7 +146,7 @@ function transformProductPricingDocument(document) {
       recordedAt,
       price,
       bestPrice,
-      unitPrice: normalizeNumericUnitPrice(document?.unit_price ?? document?.unitPrice),
+      unitPrice,
       rawUnitPrice,
       rawBestUnitPrice,
       isOnSpecial: typeof document?.is_on_special === 'boolean'
@@ -139,6 +170,7 @@ function productPricingAuditPayload(document) {
     storeChain: cleanString(
       document?.store_chain ?? document?.storeChain ?? document?.retailer,
     ),
+    price: normalizeMoney(document?.price),
     hasPrice: document?.price !== undefined && document?.price !== null,
     availableFields: Object.keys(document || {}).sort(),
   };

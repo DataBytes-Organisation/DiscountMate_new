@@ -1,15 +1,16 @@
 const path = require('path');
 const { MongoClient } = require('mongodb');
 const { parseCliOptions, usage } = require('./lib/cli-options');
-const { resolveKnownReferenceFailures } = require('./lib/reference-audit');
-const {reconcileShoppingLists, runShoppingListsPhase } = require('./phases/shopping-lists.phase');
-const {reconcileAlertsNotifications, runAlertsNotificationsPhase } = require('./phases/alerts-notifications.phase');
+const { resolveKnownReferenceIssues } = require('./lib/reference-audit');
+const { reconcileOutcomeLedger } = require('./lib/migration-audit');
+const { reconcileShoppingLists, runShoppingListsPhase } = require('./phases/shopping-lists.phase');
+const { reconcileAlertsNotifications, runAlertsNotificationsPhase } = require('./phases/alerts-notifications.phase');
 const { reconcileSupportRequests, runSupportRequestsPhase } = require('./phases/support-requests.phase');
-const {reconcileCatalog, runCatalogPhase } = require('./phases/catalog.phase');
-const {reconcileProductPricing, runProductPricingPhase} = require('./phases/product-pricing.phase');
+const { reconcileCatalog, runCatalogPhase } = require('./phases/catalog.phase');
+const { reconcileProductPricing, runProductPricingPhase } = require('./phases/product-pricing.phase');
 const { reconcileUsers, runUsersPhase } = require('./phases/users.phase');
-
-const PHASES = {users: {
+const PHASES = {
+  users: {
     run: runUsersPhase,
     reconcile: reconcileUsers,
   },
@@ -44,9 +45,11 @@ if (process.env.NODE_ENV !== 'production') {
 function formatProgress(summary, reconciliation = null) {
   const progress = [
     `progress=${summary.scannedCount}/${summary.sourceCount}`,
-    `written=${summary.targetCount}`,
-    `skipped=${summary.skippedCount}`,
+    `migrated=${summary.migratedCount}`,
+    `rejected=${summary.rejectedCount}`,
+    `blocked=${summary.blockedCount}`,
     `failed=${summary.failedCount}`,
+    `warnings=${summary.warningCount}`,
   ];
 
   if (reconciliation) {
@@ -66,7 +69,9 @@ async function assertMigrationSchema(dataSource, phase) {
   const rows = await dataSource.query(`
         SELECT
             to_regclass('migration.runs') AS migration_runs,
-            to_regclass('migration.reference_resolution_failures') AS reference_failures,
+            to_regclass('migration.record_outcomes') AS record_outcomes,
+            to_regclass('migration.record_issues') AS record_issues,
+            to_regclass('migration.reference_resolution_issues') AS reference_issues,
             to_regclass('app.users') AS app_users,
             to_regclass('app.shopping_lists') AS app_shopping_lists,
             to_regclass('app.alert_segments') AS app_alert_segments,
@@ -83,7 +88,13 @@ async function assertMigrationSchema(dataSource, phase) {
             to_regclass('app.product_price_source_records') AS app_product_price_sources
     `);
 
-  if (!rows[0]?.migration_runs || !rows[0]?.reference_failures || !rows[0]?.app_users) {
+  if (
+    !rows[0]?.migration_runs
+    || !rows[0]?.record_outcomes
+    || !rows[0]?.record_issues
+    || !rows[0]?.reference_issues
+    || !rows[0]?.app_users
+  ) {
     throw new Error('PostgreSQL migration tables are missing. Run `npm run db:migrate` first.');
   }
 
@@ -174,6 +185,7 @@ async function createRun(dataSource, options) {
         afterId: options.afterId,
         failFast: options.failFast,
         reconcileOnly: options.reconcileOnly,
+        orchestrationId: process.env.MIGRATION_ORCHESTRATION_ID || null,
       }),
     ],
   );
@@ -181,13 +193,26 @@ async function createRun(dataSource, options) {
   return rows[0].id;
 }
 
+function determineRunStatus(summary, reconciliation, failure = null) {
+  if (failure || summary.failedCount > 0) return 'failed';
+  if (summary.blockedCount > 0 || !reconciliation?.passed) return 'completed_with_errors';
+
+  if (summary.rejectedCount > 0 || summary.warningCount > 0) {
+    return 'completed_with_warnings';
+  }
+
+  return 'completed';
+}
+
+function determineExitCode(summary, reconciliation) {
+  if (summary.failedCount > 0) return 1;
+  if (summary.blockedCount > 0 || !reconciliation?.passed) return 2;
+
+  return 0;
+}
+
 async function finishRun(dataSource, runId, summary, reconciliation, failure = null) {
-  const hasErrors = summary.skippedCount > 0 || summary.failedCount > 0;
-  const status = failure
-    ? 'failed'
-    : hasErrors || !reconciliation?.passed
-      ? 'completed_with_errors'
-      : 'completed';
+  const status = determineRunStatus(summary, reconciliation, failure);
 
   await dataSource.query(
     `
@@ -195,10 +220,12 @@ async function finishRun(dataSource, runId, summary, reconciliation, failure = n
             SET status = $2,
                 last_scanned_source = $3,
                 source_count = $4,
-                target_count = $5,
-                skipped_count = $6,
-                failed_count = $7,
-                error_summary = $8::jsonb,
+                migrated_count = $5,
+                rejected_count = $6,
+                blocked_count = $7,
+                failed_count = $8,
+                warning_count = $9,
+                error_summary = $10::jsonb,
                 completed_at = CURRENT_TIMESTAMP
             WHERE id = $1
         `,
@@ -207,9 +234,11 @@ async function finishRun(dataSource, runId, summary, reconciliation, failure = n
       status,
       summary.lastScannedSource,
       summary.sourceCount,
-      summary.targetCount,
-      summary.skippedCount,
+      summary.migratedCount,
+      summary.rejectedCount,
+      summary.blockedCount,
       summary.failedCount,
+      summary.warningCount,
       JSON.stringify(failure
         ? { name: failure.name, message: failure.message }
         : { reconciliationPassed: reconciliation?.passed ?? null }),
@@ -238,9 +267,11 @@ async function main() {
     sourceCount: 0,
     scannedCount: 0,
     validCount: 0,
-    targetCount: 0,
-    skippedCount: 0,
+    migratedCount: 0,
+    rejectedCount: 0,
+    blockedCount: 0,
     failedCount: 0,
+    warningCount: 0,
     lastScannedSource: options.afterId,
     partial: Boolean(options.afterId),
   };
@@ -248,7 +279,6 @@ async function main() {
   try {
     await mongoClient.connect();
     const mongoDb = mongoClient.db(options.sourceDb);
-
     const { AppDataSource } = require('../database/app-data-source');
     dataSource = AppDataSource;
     await dataSource.initialize();
@@ -267,21 +297,28 @@ async function main() {
       onProgress: printProgress,
     });
 
-    await resolveKnownReferenceFailures(dataSource);
+    await resolveKnownReferenceIssues(dataSource);
 
     const reconciliation = await phase.reconcile({
       dataSource,
       runId,
       sourceSummary: summary,
     });
+
+    const outcomeCheck = await reconcileOutcomeLedger(dataSource, runId, summary);
+
+    if (outcomeCheck) {
+      reconciliation.results.push(outcomeCheck);
+      reconciliation.passed = reconciliation.passed && outcomeCheck.passed;
+    }
     await finishRun(dataSource, runId, summary, reconciliation);
 
     printProgress(summary, reconciliation);
     process.stdout.write('\n');
 
-    if (!reconciliation.passed || summary.failedCount > 0) {
-      process.exitCode = 2;
-    }
+    const exitCode = determineExitCode(summary, reconciliation);
+
+    if (exitCode) process.exitCode = exitCode;
   } catch (error) {
     if (dataSource?.isInitialized && runId) {
       await finishRun(dataSource, runId, summary, null, error).catch(() => {});
@@ -303,4 +340,10 @@ if (require.main === module) {
   });
 }
 
-module.exports = { formatProgress, main, printProgress };
+module.exports = {
+  determineExitCode,
+  determineRunStatus,
+  formatProgress,
+  main,
+  printProgress,
+};

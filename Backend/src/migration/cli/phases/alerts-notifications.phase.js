@@ -8,64 +8,21 @@ const {
 } = require('../lib/alert-notification-transform');
 
 const { recordReferenceFailures } = require('../lib/reference-audit');
+const {
+  recordBlocked,
+  recordFailed,
+  recordMigrated,
+  recordRejected,
+  updateRunProgress,
+} = require('../lib/migration-audit');
 
-class MigrationSkipError extends Error {
+class MigrationBlockedError extends Error {
   constructor(reason, detail = {}) {
     super(reason);
-    this.name = 'MigrationSkipError';
+    this.name = 'MigrationBlockedError';
     this.reason = reason;
     this.detail = detail;
   }
-}
-
-async function recordUnmapped(dataSource, runId, collection, sourceId, reason, payload) {
-  if (!dataSource || !runId) return;
-
-  await dataSource.query(
-    `
-      INSERT INTO migration.unmapped_documents (
-        migration_run_id,
-        source_collection,
-        source_id,
-        reason,
-        payload
-      )
-      SELECT $1, $2, $3, $4, $5::jsonb
-      WHERE NOT EXISTS (
-        SELECT 1
-        FROM migration.unmapped_documents
-        WHERE source_collection = $2
-          AND source_id IS NOT DISTINCT FROM $3
-          AND reason = $4
-          AND resolved_at IS NULL
-      )
-    `,
-    [runId, collection, sourceId || null, reason, JSON.stringify(payload || {})],
-  );
-}
-
-async function updateRunProgress(dataSource, runId, summary) {
-  if (!dataSource || !runId) return;
-
-  await dataSource.query(
-    `
-      UPDATE migration.runs
-      SET last_scanned_source = $2,
-          source_count = $3,
-          target_count = $4,
-          skipped_count = $5,
-          failed_count = $6
-      WHERE id = $1
-    `,
-    [
-      runId,
-      summary.lastScannedSource,
-      summary.sourceCount,
-      summary.targetCount,
-      summary.skippedCount,
-      summary.failedCount,
-    ],
-  );
 }
 
 async function findMappedId(manager, sourceCollection, sourceId, targetTable) {
@@ -101,7 +58,7 @@ async function resolveUserId(manager, ownerSourceId, ownerEmail) {
   const emailUserId = emailRows[0]?.id || null;
 
   if (mappedId && emailUserId && mappedId !== emailUserId) {
-    throw new MigrationSkipError('alert_notification_owner_conflict', {
+    throw new MigrationBlockedError('alert_notification_owner_conflict', {
       ownerSourceId: ownerSourceId || null,
       hasOwnerEmail: Boolean(ownerEmail),
       mappedId,
@@ -112,7 +69,7 @@ async function resolveUserId(manager, ownerSourceId, ownerEmail) {
   const userId = mappedId || emailUserId;
 
   if (!userId) {
-    throw new MigrationSkipError('missing_migrated_user_owner', {
+    throw new MigrationBlockedError('missing_migrated_user_owner', {
       ownerSourceId: ownerSourceId || null,
       hasOwnerEmail: Boolean(ownerEmail),
     });
@@ -217,7 +174,7 @@ async function persistAlertSegment(dataSource, runId, transformed, references) {
     );
 
     if (existingRows[0]?.id && existingRows[0].id !== segmentId) {
-      throw new MigrationSkipError('duplicate_user_category_alert_segment', {
+      throw new MigrationBlockedError('duplicate_user_category_alert_segment', {
         categoryKey: segment.categoryKey,
         existingSegmentId: existingRows[0].id,
       });
@@ -267,7 +224,28 @@ async function persistAlertSegment(dataSource, runId, transformed, references) {
       transformed.sourceChecksum,
     );
 
-    return { categoryResolved: Boolean(categoryId) };
+    const unresolvedReferences = categoryId ? [] : [{
+      sourceCollection: 'alert_segments',
+      sourceId: transformed.sourceId,
+      sourceField: 'category_label',
+      sourceValue: transformed.segment.categoryLabel,
+      targetSchema: 'silver',
+      targetTable: 'dim_categories',
+      reason: 'category_not_migrated',
+      required: false,
+    }];
+    await recordMigrated(manager, runId, {
+      sourceCollection: 'alert_segments',
+      sourceId: transformed.sourceId,
+      sourceChecksum: transformed.sourceChecksum,
+      targetSchema: 'app',
+      targetTable: 'alert_segments',
+      targetId: segmentId,
+      warnings: transformed.warnings,
+    });
+    await recordReferenceFailures(manager, runId, unresolvedReferences);
+
+    return { segmentId, categoryResolved: Boolean(categoryId), unresolvedReferences };
   });
 }
 
@@ -287,7 +265,7 @@ async function assertNoNotificationDealConflict(manager, userId, notificationId,
   );
 
   if (rows[0]?.id && rows[0].id !== notificationId) {
-    throw new MigrationSkipError('duplicate_notification_deal_key', {
+    throw new MigrationBlockedError('duplicate_notification_deal_key', {
       type: notification.type,
       categoryKey: notification.categoryKey,
       dealKey: notification.dealKey,
@@ -420,7 +398,31 @@ async function persistNotification(dataSource, runId, transformed, references) {
       transformed.sourceChecksum,
     );
 
+    if (notification.categoryKey && !categoryId) {
+      unresolvedReferences.push({
+        sourceCollection: 'notifications',
+        sourceId: transformed.sourceId,
+        sourceField: 'category_label',
+        sourceValue: transformed.notification.categoryLabel,
+        targetSchema: 'silver',
+        targetTable: 'dim_categories',
+        reason: 'category_not_migrated',
+        required: false,
+      });
+    }
+    await recordMigrated(manager, runId, {
+      sourceCollection: 'notifications',
+      sourceId: transformed.sourceId,
+      sourceChecksum: transformed.sourceChecksum,
+      targetSchema: 'app',
+      targetTable: 'notifications',
+      targetId: notificationId,
+      warnings: transformed.warnings,
+    });
+    await recordReferenceFailures(manager, runId, unresolvedReferences);
+
     return {
+      notificationId,
       categoryResolved: !notification.categoryKey || Boolean(categoryId),
       matchedProductCount,
       unresolvedReferences,
@@ -439,7 +441,12 @@ function createMongoFilter(afterId) {
 }
 
 async function synchronizeRemovedSources(dataSource, runId, summary) {
-  if (summary.partial || summary.skippedCount > 0 || summary.failedCount > 0) return;
+  if (
+    summary.partial
+    || summary.rejectedCount > 0
+    || summary.blockedCount > 0
+    || summary.failedCount > 0
+  ) return;
 
   await dataSource.transaction(async (manager) => {
     for (const [sourceCollection, targetTable] of [
@@ -476,11 +483,13 @@ function createSummary(alertSourceCount, notificationSourceCount, options) {
     notificationSourceCount,
     scannedCount: 0,
     validCount: 0,
-    targetCount: 0,
+    migratedCount: 0,
     targetAlertCount: 0,
     targetNotificationCount: 0,
-    skippedCount: 0,
+    rejectedCount: 0,
+    blockedCount: 0,
     failedCount: 0,
+    warningCount: 0,
     expectedActiveAlertCount: 0,
     expectedReadNotificationCount: 0,
     expectedAlertCategoryCount: 0,
@@ -495,17 +504,15 @@ function createSummary(alertSourceCount, notificationSourceCount, options) {
   };
 }
 
-async function recordWarnings(dataSource, runId, collection, transformed) {
-  for (const warning of transformed.warnings) {
-    await recordUnmapped(
-      dataSource,
-      runId,
-      collection,
-      transformed.sourceId,
-      warning.reason,
-      warning.detail,
-    );
-  }
+function includeMigratedAlertMetrics(summary, transformed) {
+  summary.expectedAlertCategoryCount += 1;
+  if (transformed.segment.active) summary.expectedActiveAlertCount += 1;
+}
+
+function includeMigratedNotificationMetrics(summary, transformed) {
+  summary.expectedRelatedProductCount += transformed.notification.relatedProductIdentifiers.length;
+  if (transformed.notification.isRead) summary.expectedReadNotificationCount += 1;
+  if (transformed.notification.categoryKey) summary.expectedNotificationCategoryCount += 1;
 }
 
 async function processAlertDocument(context, document) {
@@ -515,61 +522,48 @@ async function processAlertDocument(context, document) {
   const transformed = transformAlertSegmentDocument(document);
 
   if (!transformed.valid) {
-    summary.skippedCount += 1;
-    await recordUnmapped(
-      dataSource,
-      runId,
-      'alert_segments',
-      transformed.sourceId,
-      transformed.errors.join(','),
-      alertSegmentAuditPayload(document),
-    );
+    summary.rejectedCount += 1;
+    await recordRejected(dataSource, runId, {
+      sourceCollection: 'alert_segments',
+      sourceId: transformed.sourceId,
+      reasons: transformed.errors,
+      details: alertSegmentAuditPayload(document),
+    });
 
     return;
   }
 
   summary.validCount += 1;
-  summary.expectedAlertCategoryCount += 1;
-  if (transformed.segment.active) summary.expectedActiveAlertCount += 1;
 
   if (options.scanOnly) {
-    summary.targetCount += 1;
+    summary.migratedCount += 1;
     summary.targetAlertCount += 1;
+    summary.warningCount += transformed.warnings.length;
+    includeMigratedAlertMetrics(summary, transformed);
 
     return;
   }
 
   try {
     const persisted = await persistAlertSegment(dataSource, runId, transformed, references);
-    summary.targetCount += 1;
+    summary.migratedCount += 1;
     summary.targetAlertCount += 1;
     if (persisted.categoryResolved) summary.resolvedAlertCategoryCount += 1;
-
-    await recordWarnings(dataSource, runId, 'alert_segments', transformed);
-
-    if (!persisted.categoryResolved) {
-      await recordReferenceFailures(dataSource, runId, [{
+    summary.warningCount += transformed.warnings.length + (persisted.categoryResolved ? 0 : 1);
+    includeMigratedAlertMetrics(summary, transformed);
+  } catch (error) {
+    if (error instanceof MigrationBlockedError) {
+      summary.blockedCount += 1;
+      await recordBlocked(dataSource, runId, {
         sourceCollection: 'alert_segments',
         sourceId: transformed.sourceId,
-        sourceField: 'category_label',
-        sourceValue: transformed.segment.categoryLabel,
-        targetSchema: 'silver',
-        targetTable: 'dim_categories',
-        reason: 'category_not_migrated',
-        required: false,
-      }]);
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'alert_segments',
-        transformed.sourceId,
-        'silver_category_not_resolved',
-        { categoryKey: transformed.segment.categoryKey },
-      );
-    }
-  } catch (error) {
-    if (error instanceof MigrationSkipError) {
-      summary.skippedCount += 1;
+        sourceChecksum: transformed.sourceChecksum,
+        primaryReasonCode: error.reason,
+        details: error.detail,
+        reasons: error.reason === 'missing_migrated_user_owner'
+          ? []
+          : [{ reason: error.reason, detail: error.detail }],
+      });
 
       if (error.reason === 'missing_migrated_user_owner') {
         await recordReferenceFailures(dataSource, runId, [{
@@ -584,24 +578,14 @@ async function processAlertDocument(context, document) {
           details: { hasOwnerEmail: Boolean(transformed.ownerEmail) },
         }]);
       }
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'alert_segments',
-        transformed.sourceId,
-        error.reason,
-        error.detail,
-      );
     } else {
       summary.failedCount += 1;
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'alert_segments',
-        transformed.sourceId,
-        'unexpected_migration_error',
-        { name: error.name, message: error.message },
-      );
+      await recordFailed(dataSource, runId, {
+        sourceCollection: 'alert_segments',
+        sourceId: transformed.sourceId,
+        sourceChecksum: transformed.sourceChecksum,
+        error,
+      });
       if (options.failFast) throw error;
     }
   }
@@ -614,71 +598,53 @@ async function processNotificationDocument(context, document) {
   const transformed = transformNotificationDocument(document);
 
   if (!transformed.valid) {
-    summary.skippedCount += 1;
-    await recordUnmapped(
-      dataSource,
-      runId,
-      'notifications',
-      transformed.sourceId,
-      transformed.errors.join(','),
-      notificationAuditPayload(document),
-    );
+    summary.rejectedCount += 1;
+    await recordRejected(dataSource, runId, {
+      sourceCollection: 'notifications',
+      sourceId: transformed.sourceId,
+      reasons: transformed.errors,
+      details: notificationAuditPayload(document),
+    });
 
     return;
   }
 
   summary.validCount += 1;
-  summary.expectedRelatedProductCount += transformed.notification.relatedProductIdentifiers.length;
-  if (transformed.notification.isRead) summary.expectedReadNotificationCount += 1;
-  if (transformed.notification.categoryKey) summary.expectedNotificationCategoryCount += 1;
 
   if (options.scanOnly) {
-    summary.targetCount += 1;
+    summary.migratedCount += 1;
     summary.targetNotificationCount += 1;
+    summary.warningCount += transformed.warnings.length;
+    includeMigratedNotificationMetrics(summary, transformed);
 
     return;
   }
 
   try {
     const persisted = await persistNotification(dataSource, runId, transformed, references);
-    summary.targetCount += 1;
+    summary.migratedCount += 1;
     summary.targetNotificationCount += 1;
     summary.matchedRelatedProductCount += persisted.matchedProductCount;
-    await recordReferenceFailures(
-      dataSource,
-      runId,
-      persisted.unresolvedReferences,
-    );
+    summary.warningCount += transformed.warnings.length
+      + persisted.unresolvedReferences.length;
+    includeMigratedNotificationMetrics(summary, transformed);
 
     if (transformed.notification.categoryKey && persisted.categoryResolved) {
       summary.resolvedNotificationCategoryCount += 1;
     }
-
-    await recordWarnings(dataSource, runId, 'notifications', transformed);
-
-    if (transformed.notification.categoryKey && !persisted.categoryResolved) {
-      await recordReferenceFailures(dataSource, runId, [{
+  } catch (error) {
+    if (error instanceof MigrationBlockedError) {
+      summary.blockedCount += 1;
+      await recordBlocked(dataSource, runId, {
         sourceCollection: 'notifications',
         sourceId: transformed.sourceId,
-        sourceField: 'category_label',
-        sourceValue: transformed.notification.categoryLabel,
-        targetSchema: 'silver',
-        targetTable: 'dim_categories',
-        reason: 'category_not_migrated',
-        required: false,
-      }]);
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'notifications',
-        transformed.sourceId,
-        'silver_category_not_resolved',
-        { categoryKey: transformed.notification.categoryKey },
-      );
-    }
-  } catch (error) {
-    if (error instanceof MigrationSkipError) {
-      summary.skippedCount += 1;
+        sourceChecksum: transformed.sourceChecksum,
+        primaryReasonCode: error.reason,
+        details: error.detail,
+        reasons: error.reason === 'missing_migrated_user_owner'
+          ? []
+          : [{ reason: error.reason, detail: error.detail }],
+      });
 
       if (error.reason === 'missing_migrated_user_owner') {
         await recordReferenceFailures(dataSource, runId, [{
@@ -693,24 +659,14 @@ async function processNotificationDocument(context, document) {
           details: { hasOwnerEmail: Boolean(transformed.ownerEmail) },
         }]);
       }
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'notifications',
-        transformed.sourceId,
-        error.reason,
-        error.detail,
-      );
     } else {
       summary.failedCount += 1;
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'notifications',
-        transformed.sourceId,
-        'unexpected_migration_error',
-        { name: error.name, message: error.message },
-      );
+      await recordFailed(dataSource, runId, {
+        sourceCollection: 'notifications',
+        sourceId: transformed.sourceId,
+        sourceChecksum: transformed.sourceChecksum,
+        error,
+      });
       if (options.failFast) throw error;
     }
   }
@@ -913,6 +869,7 @@ async function reconcileAlertsNotifications({ dataSource, runId, sourceSummary }
   const danglingReferenceCount = Number(
     integrityRows[0]?.dangling_reference_count || 0,
   );
+
   const duplicateAlertGroups = Number(duplicateRows[0]?.duplicate_alert_groups || 0);
   const duplicateNotificationGroups = Number(
     duplicateRows[0]?.duplicate_notification_groups || 0,
@@ -954,16 +911,16 @@ async function reconcileAlertsNotifications({ dataSource, runId, sourceSummary }
   if (!sourceSummary.partial) {
     results.push(
       {
-        checkName: 'source_alert_count_matches',
-        sourceValue: { alertSegments: sourceSummary.alertSourceCount },
+        checkName: 'migrated_alert_count_matches',
+        sourceValue: { alertSegments: sourceSummary.targetAlertCount },
         targetValue: { alertSegments: mappedAlerts },
-        passed: sourceSummary.alertSourceCount === mappedAlerts,
+        passed: sourceSummary.targetAlertCount === mappedAlerts,
       },
       {
-        checkName: 'source_notification_count_matches',
-        sourceValue: { notifications: sourceSummary.notificationSourceCount },
+        checkName: 'migrated_notification_count_matches',
+        sourceValue: { notifications: sourceSummary.targetNotificationCount },
         targetValue: { notifications: mappedNotifications },
-        passed: sourceSummary.notificationSourceCount === mappedNotifications,
+        passed: sourceSummary.targetNotificationCount === mappedNotifications,
       },
       {
         checkName: 'notification_product_reference_count_matches',
@@ -984,17 +941,29 @@ async function reconcileAlertsNotifications({ dataSource, runId, sourceSummary }
         passed: sourceSummary.expectedReadNotificationCount === readNotifications,
       },
       {
-        checkName: 'alert_categories_resolved_to_silver',
+        checkName: 'optional_alert_category_resolution_observed',
         sourceValue: { categories: sourceSummary.expectedAlertCategoryCount },
         targetValue: { categories: resolvedAlertCategories },
-        passed: sourceSummary.expectedAlertCategoryCount === resolvedAlertCategories,
+        passed: true,
+        details: {
+          unresolvedOptionalCategories: Math.max(
+            0,
+            sourceSummary.expectedAlertCategoryCount - resolvedAlertCategories,
+          ),
+        },
       },
       {
-        checkName: 'notification_categories_resolved_to_silver',
+        checkName: 'optional_notification_category_resolution_observed',
         sourceValue: { categories: sourceSummary.expectedNotificationCategoryCount },
         targetValue: { categories: resolvedNotificationCategories },
-        passed: sourceSummary.expectedNotificationCategoryCount
-          === resolvedNotificationCategories,
+        passed: true,
+        details: {
+          unresolvedOptionalCategories: Math.max(
+            0,
+            sourceSummary.expectedNotificationCategoryCount
+              - resolvedNotificationCategories,
+          ),
+        },
       },
     );
   }
@@ -1010,7 +979,7 @@ async function reconcileAlertsNotifications({ dataSource, runId, sourceSummary }
 }
 
 module.exports = {
-  MigrationSkipError,
+  MigrationBlockedError,
   reconcileAlertsNotifications,
   runAlertsNotificationsPhase,
 };

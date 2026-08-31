@@ -8,64 +8,21 @@ const {
 } = require('../lib/shopping-list-transform');
 
 const { recordReferenceFailures } = require('../lib/reference-audit');
+const {
+  recordBlocked,
+  recordFailed,
+  recordMigrated,
+  recordRejected,
+  updateRunProgress,
+} = require('../lib/migration-audit');
 
-class MigrationSkipError extends Error {
+class MigrationBlockedError extends Error {
   constructor(reason, detail = {}) {
     super(reason);
-    this.name = 'MigrationSkipError';
+    this.name = 'MigrationBlockedError';
     this.reason = reason;
     this.detail = detail;
   }
-}
-
-async function recordUnmapped(dataSource, runId, collection, sourceId, reason, payload) {
-  if (!dataSource || !runId) return;
-
-  await dataSource.query(
-    `
-      INSERT INTO migration.unmapped_documents (
-        migration_run_id,
-        source_collection,
-        source_id,
-        reason,
-        payload
-      )
-      SELECT $1, $2, $3, $4, $5::jsonb
-      WHERE NOT EXISTS (
-        SELECT 1
-        FROM migration.unmapped_documents
-        WHERE source_collection = $2
-          AND source_id IS NOT DISTINCT FROM $3
-          AND reason = $4
-          AND resolved_at IS NULL
-      )
-    `,
-    [runId, collection, sourceId || null, reason, JSON.stringify(payload || {})],
-  );
-}
-
-async function updateRunProgress(dataSource, runId, summary) {
-  if (!dataSource || !runId) return;
-
-  await dataSource.query(
-    `
-      UPDATE migration.runs
-      SET last_scanned_source = $2,
-          source_count = $3,
-          target_count = $4,
-          skipped_count = $5,
-          failed_count = $6
-      WHERE id = $1
-    `,
-    [
-      runId,
-      summary.lastScannedSource,
-      summary.sourceCount,
-      summary.targetCount,
-      summary.skippedCount,
-      summary.failedCount,
-    ],
-  );
 }
 
 async function findMappedId(manager, sourceCollection, sourceId, targetTable) {
@@ -101,7 +58,7 @@ async function resolveUserId(manager, ownerSourceId, ownerEmail = '') {
   const emailUserId = emailRows[0]?.id || null;
 
   if (mappedId && emailUserId && mappedId !== emailUserId) {
-    throw new MigrationSkipError('snapshot_owner_conflict', {
+    throw new MigrationBlockedError('snapshot_owner_conflict', {
       ownerSourceId,
       ownerEmail,
       mappedId,
@@ -112,7 +69,7 @@ async function resolveUserId(manager, ownerSourceId, ownerEmail = '') {
   const userId = mappedId || emailUserId;
 
   if (!userId) {
-    throw new MigrationSkipError('missing_migrated_user_owner', {
+    throw new MigrationBlockedError('missing_migrated_user_owner', {
       ownerSourceId: ownerSourceId || null,
       hasOwnerEmail: Boolean(ownerEmail),
     });
@@ -383,7 +340,19 @@ async function persistShoppingList(dataSource, runId, transformed, references) {
       transformed.sourceChecksum,
     );
 
+    await recordMigrated(manager, runId, {
+      sourceCollection: 'shopping_lists',
+      sourceId: transformed.sourceId,
+      sourceChecksum: transformed.sourceChecksum,
+      targetSchema: 'app',
+      targetTable: 'shopping_lists',
+      targetId: listId,
+      warnings: transformed.warnings,
+    });
+    await recordReferenceFailures(manager, runId, unresolvedReferences);
+
     return {
+      listId,
       itemCount: transformed.items.length,
       matchedProductCount,
       unresolvedReferences,
@@ -412,7 +381,7 @@ async function persistPricingSnapshot(dataSource, runId, transformed, references
     );
 
     if (listUserId && listUserId !== resolvedOwnerId) {
-      throw new MigrationSkipError('snapshot_list_owner_conflict', {
+      throw new MigrationBlockedError('snapshot_list_owner_conflict', {
         listSourceId: transformed.listSourceId,
       });
     }
@@ -560,7 +529,18 @@ async function persistPricingSnapshot(dataSource, runId, transformed, references
       transformed.sourceChecksum,
     );
 
-    return { preservedWithoutList: !mappedListId, unresolvedReferences };
+    await recordMigrated(manager, runId, {
+      sourceCollection: 'list_pricing_snapshots',
+      sourceId: transformed.sourceId,
+      sourceChecksum: transformed.sourceChecksum,
+      targetSchema: 'app',
+      targetTable: 'list_pricing_snapshots',
+      targetId: snapshotId,
+      warnings: transformed.warnings,
+    });
+    await recordReferenceFailures(manager, runId, unresolvedReferences);
+
+    return { snapshotId, preservedWithoutList: !mappedListId, unresolvedReferences };
   });
 }
 
@@ -654,7 +634,12 @@ async function synchronizeDerivedUserFields(dataSource, runId) {
 }
 
 async function synchronizeRemovedSources(dataSource, runId, summary) {
-  if (summary.partial || summary.skippedCount > 0 || summary.failedCount > 0) return;
+  if (
+    summary.partial
+    || summary.rejectedCount > 0
+    || summary.blockedCount > 0
+    || summary.failedCount > 0
+  ) return;
 
   await dataSource.transaction(async (manager) => {
     await manager.query(`
@@ -716,11 +701,13 @@ async function runShoppingListsPhase({ mongoDb, dataSource, runId, options, onPr
     snapshotSourceCount,
     scannedCount: 0,
     validCount: 0,
-    targetCount: 0,
+    migratedCount: 0,
     targetListCount: 0,
     targetSnapshotCount: 0,
-    skippedCount: 0,
+    rejectedCount: 0,
+    blockedCount: 0,
     failedCount: 0,
+    warningCount: 0,
     expectedItemCount: 0,
     matchedProductItemCount: 0,
     snapshotsWithoutListCount: 0,
@@ -741,22 +728,21 @@ async function runShoppingListsPhase({ mongoDb, dataSource, runId, options, onPr
     );
 
     if (!transformed.valid) {
-      summary.skippedCount += 1;
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'shopping_lists',
-        transformed.sourceId,
-        transformed.errors.join(','),
-        shoppingListAuditPayload(document),
-      );
+      summary.rejectedCount += 1;
+      await recordRejected(dataSource, runId, {
+        sourceCollection: 'shopping_lists',
+        sourceId: transformed.sourceId,
+        reasons: transformed.errors,
+        details: shoppingListAuditPayload(document),
+      });
     } else {
       summary.validCount += 1;
-      summary.expectedItemCount += transformed.items.length;
 
       if (options.scanOnly) {
-        summary.targetCount += 1;
+        summary.migratedCount += 1;
         summary.targetListCount += 1;
+        summary.warningCount += transformed.warnings.length;
+        summary.expectedItemCount += transformed.items.length;
       } else {
         try {
           const persisted = await persistShoppingList(
@@ -765,28 +751,25 @@ async function runShoppingListsPhase({ mongoDb, dataSource, runId, options, onPr
             transformed,
             references,
           );
-          summary.targetCount += 1;
+          summary.migratedCount += 1;
           summary.targetListCount += 1;
           summary.matchedProductItemCount += persisted.matchedProductCount;
-          await recordReferenceFailures(
-            dataSource,
-            runId,
-            persisted.unresolvedReferences,
-          );
-
-          for (const warning of transformed.warnings) {
-            await recordUnmapped(
-              dataSource,
-              runId,
-              'shopping_lists',
-              transformed.sourceId,
-              warning.reason,
-              warning.detail,
-            );
-          }
+          summary.warningCount += transformed.warnings.length
+            + persisted.unresolvedReferences.length;
+          summary.expectedItemCount += transformed.items.length;
         } catch (error) {
-          if (error instanceof MigrationSkipError) {
-            summary.skippedCount += 1;
+          if (error instanceof MigrationBlockedError) {
+            summary.blockedCount += 1;
+            await recordBlocked(dataSource, runId, {
+              sourceCollection: 'shopping_lists',
+              sourceId: transformed.sourceId,
+              sourceChecksum: transformed.sourceChecksum,
+              primaryReasonCode: error.reason,
+              details: error.detail,
+              reasons: error.reason === 'missing_migrated_user_owner'
+                ? []
+                : [{ reason: error.reason, detail: error.detail }],
+            });
 
             if (error.reason === 'missing_migrated_user_owner') {
               await recordReferenceFailures(dataSource, runId, [{
@@ -800,24 +783,14 @@ async function runShoppingListsPhase({ mongoDb, dataSource, runId, options, onPr
                 required: true,
               }]);
             }
-            await recordUnmapped(
-              dataSource,
-              runId,
-              'shopping_lists',
-              transformed.sourceId,
-              error.reason,
-              error.detail,
-            );
           } else {
             summary.failedCount += 1;
-            await recordUnmapped(
-              dataSource,
-              runId,
-              'shopping_lists',
-              transformed.sourceId,
-              'unexpected_migration_error',
-              { name: error.name, message: error.message },
-            );
+            await recordFailed(dataSource, runId, {
+              sourceCollection: 'shopping_lists',
+              sourceId: transformed.sourceId,
+              sourceChecksum: transformed.sourceChecksum,
+              error,
+            });
             if (options.failFast) throw error;
           }
         }
@@ -838,21 +811,20 @@ async function runShoppingListsPhase({ mongoDb, dataSource, runId, options, onPr
     const transformed = transformPricingSnapshotDocument(document);
 
     if (!transformed.valid) {
-      summary.skippedCount += 1;
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'list_pricing_snapshots',
-        transformed.sourceId,
-        transformed.errors.join(','),
-        pricingSnapshotAuditPayload(document),
-      );
+      summary.rejectedCount += 1;
+      await recordRejected(dataSource, runId, {
+        sourceCollection: 'list_pricing_snapshots',
+        sourceId: transformed.sourceId,
+        reasons: transformed.errors,
+        details: pricingSnapshotAuditPayload(document),
+      });
     } else {
       summary.validCount += 1;
 
       if (options.scanOnly) {
-        summary.targetCount += 1;
+        summary.migratedCount += 1;
         summary.targetSnapshotCount += 1;
+        summary.warningCount += transformed.warnings.length;
       } else {
         try {
           const persisted = await persistPricingSnapshot(
@@ -861,28 +833,27 @@ async function runShoppingListsPhase({ mongoDb, dataSource, runId, options, onPr
             transformed,
             references,
           );
-          summary.targetCount += 1;
+          summary.migratedCount += 1;
           summary.targetSnapshotCount += 1;
-          await recordReferenceFailures(
-            dataSource,
-            runId,
-            persisted.unresolvedReferences,
-          );
+          summary.warningCount += transformed.warnings.length
+            + persisted.unresolvedReferences.length;
 
           if (persisted.preservedWithoutList) {
             summary.snapshotsWithoutListCount += 1;
-            await recordUnmapped(
-              dataSource,
-              runId,
-              'list_pricing_snapshots',
-              transformed.sourceId,
-              'snapshot_list_not_migrated',
-              { listSourceId: transformed.listSourceId },
-            );
           }
         } catch (error) {
-          if (error instanceof MigrationSkipError) {
-            summary.skippedCount += 1;
+          if (error instanceof MigrationBlockedError) {
+            summary.blockedCount += 1;
+            await recordBlocked(dataSource, runId, {
+              sourceCollection: 'list_pricing_snapshots',
+              sourceId: transformed.sourceId,
+              sourceChecksum: transformed.sourceChecksum,
+              primaryReasonCode: error.reason,
+              details: error.detail,
+              reasons: error.reason === 'missing_migrated_user_owner'
+                ? []
+                : [{ reason: error.reason, detail: error.detail }],
+            });
 
             if (error.reason === 'missing_migrated_user_owner') {
               await recordReferenceFailures(dataSource, runId, [{
@@ -897,24 +868,14 @@ async function runShoppingListsPhase({ mongoDb, dataSource, runId, options, onPr
                 details: { hasOwnerEmail: Boolean(transformed.ownerEmail) },
               }]);
             }
-            await recordUnmapped(
-              dataSource,
-              runId,
-              'list_pricing_snapshots',
-              transformed.sourceId,
-              error.reason,
-              error.detail,
-            );
           } else {
             summary.failedCount += 1;
-            await recordUnmapped(
-              dataSource,
-              runId,
-              'list_pricing_snapshots',
-              transformed.sourceId,
-              'unexpected_migration_error',
-              { name: error.name, message: error.message },
-            );
+            await recordFailed(dataSource, runId, {
+              sourceCollection: 'list_pricing_snapshots',
+              sourceId: transformed.sourceId,
+              sourceChecksum: transformed.sourceChecksum,
+              error,
+            });
             if (options.failFast) throw error;
           }
         }
@@ -1029,6 +990,7 @@ async function reconcileShoppingLists({ dataSource, runId, sourceSummary }) {
   const danglingReferenceCount = Number(
     integrityRows[0]?.dangling_reference_count || 0,
   );
+
   const activeViolations = Number(activeRows[0]?.users_with_multiple_active || 0);
   const dashboardMismatches = Number(dashboardRows[0]?.mismatch_count || 0);
   const results = [
@@ -1067,16 +1029,16 @@ async function reconcileShoppingLists({ dataSource, runId, sourceSummary }) {
   if (!sourceSummary.partial) {
     results.push(
       {
-        checkName: 'source_list_count_matches',
-        sourceValue: { lists: sourceSummary.listSourceCount },
+        checkName: 'migrated_list_count_matches',
+        sourceValue: { lists: sourceSummary.targetListCount },
         targetValue: { lists: mappedLists },
-        passed: sourceSummary.listSourceCount === mappedLists,
+        passed: sourceSummary.targetListCount === mappedLists,
       },
       {
-        checkName: 'source_snapshot_count_matches',
-        sourceValue: { snapshots: sourceSummary.snapshotSourceCount },
+        checkName: 'migrated_snapshot_count_matches',
+        sourceValue: { snapshots: sourceSummary.targetSnapshotCount },
         targetValue: { snapshots: mappedSnapshots },
-        passed: sourceSummary.snapshotSourceCount === mappedSnapshots,
+        passed: sourceSummary.targetSnapshotCount === mappedSnapshots,
       },
       {
         checkName: 'embedded_item_count_matches',
@@ -1098,7 +1060,7 @@ async function reconcileShoppingLists({ dataSource, runId, sourceSummary }) {
 }
 
 module.exports = {
-  MigrationSkipError,
+  MigrationBlockedError,
   reconcileShoppingLists,
   runShoppingListsPhase,
 };

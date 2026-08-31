@@ -1,5 +1,4 @@
-const { CATEGORY_CATALOG, getCatalogEntryByKey} = require('../../../utils/alertSegments');
-
+const { CATEGORY_CATALOG, getCatalogEntryByKey } = require('../../../utils/alertSegments');
 const { checksumDocument } = require('./user-transform');
 const CATEGORY_KEY_BY_LABEL = new Map(
   CATEGORY_CATALOG.map((category) => [category.label.toLowerCase(), category.key]),
@@ -134,6 +133,19 @@ function transformNotificationDocument(document, fallbackNow = new Date()) {
       reason: 'notification_category_not_in_frontend_catalog',
       detail: { categoryKey, categoryLabel },
     });
+  }
+
+  for (const [field, value] of [
+    ['type', document?.type],
+    ['title', document?.title ?? document?.subject],
+    ['message', document?.message ?? document?.body],
+  ]) {
+    if (!cleanString(value, '')) {
+      warnings.push({
+        reason: 'notification_optional_text_defaulted',
+        detail: { field },
+      });
+    }
   }
 
   if (errors.length) {

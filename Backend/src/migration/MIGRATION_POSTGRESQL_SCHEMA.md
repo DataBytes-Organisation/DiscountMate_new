@@ -205,10 +205,11 @@ These tables are never frontend/API domain tables.
 
 | Table | Purpose | Fields |
 | --- | --- | --- |
-| `migration.runs` | One record per copy/reconciliation execution. | `id`; `migration_name`; `phase`; `source_database?`; `status`; `last_scanned_source?`; `source_count`; `target_count`; `skipped_count`; `failed_count`; `error_summary jsonb?`; `options jsonb?`; `started_at`; `completed_at?` |
+| `migration.runs` | One record per copy/reconciliation execution. | `id`; `migration_name`; `phase`; `source_database?`; `status`; `last_scanned_source?`; `source_count`; `migrated_count`; `rejected_count`; `blocked_count`; `failed_count`; `warning_count`; `error_summary jsonb?`; `options jsonb?`; `started_at`; `completed_at?` |
 | `migration.entity_id_map` | Stable mapping from a source identity to a PostgreSQL UUID. | `source_system`; `source_collection`; `source_id`; `target_schema`; `target_table`; `target_id`; `migration_run_id?`; `source_checksum?`; `migrated_at` |
-| `migration.unmapped_documents` | Redacted skip/warning/policy-action audit. | `id`; `migration_run_id?`; `source_collection`; `source_id?`; `reason`; `payload jsonb?`; `resolved_at?`; `created_at` |
-| `migration.reference_resolution_failures` | Detailed log when a source value cannot resolve to a PostgreSQL UUID. | `id`; `migration_run_id?`; `source_system`; `source_collection`; `source_id?`; `source_field`; `source_value?`; `target_schema`; `target_table`; `target_field`; `reason`; `required`; `details jsonb`; `resolved_target_id?`; `resolved_at?`; `created_at` |
+| `migration.record_outcomes` | Exactly one terminal result per scanned source document and run. | `id`; `migration_run_id`; `source_system`; `source_collection`; `source_id`; `source_checksum?`; `outcome`; `primary_reason_code?`; `target_schema?`; `target_table?`; `target_id?`; `details jsonb`; `created_at`; `updated_at` |
+| `migration.record_issues` | Validation, normalization, identity, and technical details attached to an outcome. | `id`; `record_outcome_id`; `issue_type`; `severity`; `reason_code`; `source_field?`; `details jsonb`; `created_at` |
+| `migration.reference_resolution_issues` | Required or optional source references that could not resolve to a PostgreSQL UUID. | `id`; `record_outcome_id?`; `migration_run_id?`; `source_system`; `source_collection`; `source_id?`; `source_field`; `source_value?`; `target_schema`; `target_table`; `target_field`; `reason_code`; `required`; `details jsonb`; `resolved_target_id?`; `resolved_at?`; `created_at` |
 | `migration.reconciliation_results` | Count, amount, uniqueness, and relationship checks performed after a phase. | `id`; `migration_run_id`; `entity_type`; `check_name`; `source_value jsonb?`; `target_value jsonb?`; `passed`; `details jsonb?`; `checked_at` |
 
 ## Public version ledgers
@@ -226,8 +227,8 @@ These tables are never frontend/API domain tables.
 | `legacy_*` | Retains an old Mongo/frontend identity when no UUID exists or while auditing. | Archived and removed after the decision/cutover. |
 | `raw_payload` | Allows exact source recovery during migration investigation. | Archived and removed. It should not be returned by controllers. |
 | `*_key` beside `*_id` | Preserves current API labels such as `coles` while UUID relationships are introduced. | Controller derives the API key/label from the UUID. |
-| copied `product_name`, `category_name`, `store_name`, `list_name` | Often an intentional historical snapshot/fallback, not automatically wasteful duplication. | Retained unless the product requirements say historical names must change with canonical records. |
-| `catalog_source_keys` | Resolves many old/external aliases to one Silver UUID. | Moved to `migration`; not deleted until no source migration/integration needs it. |
+| copied `product_name`, `category_name`, `store_name`, `list_name` | Historical snapshot/fallback,. | Retained unless the product requirements say historical names must change with canonical records. |
+| `catalog_source_keys` | Resolves many old/external aliases to one Silver UUID. | Moved to `migration`; not deleted until source migration/integration needs it. |
 
 `?` in the field lists means nullable. `created_at` and `updated_at` are
 `timestamptz` unless stated otherwise.
