@@ -60,6 +60,14 @@ function nonNegativeInteger(value, fallback = 0) {
   return Math.max(0, Math.floor(finiteNumber(value, fallback)));
 }
 
+function suppliedInvalidNumber(value, { allowZero = true } = {}) {
+  if (value === undefined || value === null || value === '') return false;
+
+  const parsed = Number(value);
+
+  return !Number.isFinite(parsed) || parsed < 0 || (!allowZero && parsed === 0);
+}
+
 function normalizeRetailerPrices(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
 
@@ -84,13 +92,45 @@ function transformListItem(item, listSourceId, index) {
   const legacyProductIdentifier = sourceIdentifier
     || `mongodb:shopping_lists:${listSourceId}:item:${index}`;
 
+  const warnings = [];
+  const rawQuantity = item?.quantity;
+  const rawUnitPrice = item?.price ?? item?.unit_price;
+
+  if (
+    rawQuantity !== undefined
+    && (
+      !Number.isFinite(Number(rawQuantity))
+      || Number(rawQuantity) < 1
+      || !Number.isInteger(Number(rawQuantity))
+    )
+  ) {
+    warnings.push({
+      reason: 'list_item_invalid_quantity_normalized',
+      detail: { itemIndex: index },
+    });
+  }
+
+  if (suppliedInvalidNumber(rawUnitPrice)) {
+    warnings.push({
+      reason: 'list_item_invalid_price_normalized',
+      detail: { itemIndex: index },
+    });
+  }
+
+  if (!sourceIdentifier) {
+    warnings.push({
+      reason: 'list_item_missing_product_identifier',
+      detail: { itemIndex: index },
+    });
+  }
+
   return {
     item: {
       lineNumber: index + 1,
       legacyProductIdentifier,
       productName: cleanString(item?.name ?? item?.product_name, 'Unnamed product'),
       quantity: Math.max(1, Math.floor(finiteNumber(item?.quantity, 1))),
-      unitPrice: nonNegativeMoney(item?.price ?? item?.unit_price),
+      unitPrice: nonNegativeMoney(rawUnitPrice),
       selectedRetailerKey: normalizeRetailerKey(item?.store),
       imageUrl: cleanString(item?.image ?? item?.link_image),
       legacyCategoryIdentifier: cleanString(item?.categoryId ?? item?.category_id),
@@ -98,12 +138,7 @@ function transformListItem(item, listSourceId, index) {
       retailerPrices: normalizeRetailerPrices(item?.retailerPrices),
       rawPayload: jsonSafe(item),
     },
-    warning: sourceIdentifier
-      ? null
-      : {
-        reason: 'list_item_missing_product_identifier',
-        detail: { itemIndex: index },
-      },
+    warnings,
   };
 }
 
@@ -122,7 +157,7 @@ function transformShoppingListDocument(document, activeSourceId = null, fallback
 
   const items = (Array.isArray(document?.items) ? document.items : []).map((item, index) => {
     const transformed = transformListItem(item, sourceId, index);
-    if (transformed.warning) warnings.push(transformed.warning);
+    warnings.push(...transformed.warnings);
 
     return transformed.item;
   });
@@ -134,6 +169,14 @@ function transformShoppingListDocument(document, activeSourceId = null, fallback
 
   const createdAt = resolveCreatedAt(document, fallbackNow);
   const updatedAt = toDate(document?.updated_at || document?.updatedAt, createdAt);
+
+  if (suppliedInvalidNumber(document?.total)) {
+    warnings.push({ reason: 'shopping_list_invalid_total_normalized', detail: {} });
+  }
+
+  if (suppliedInvalidNumber(document?.savings)) {
+    warnings.push({ reason: 'shopping_list_invalid_savings_normalized', detail: {} });
+  }
 
   return {
     valid: true,
@@ -184,6 +227,7 @@ function transformPricingSnapshotDocument(document, fallbackNow = new Date()) {
   ).toLowerCase();
 
   const errors = [];
+  const warnings = [];
 
   if (!sourceId) errors.push('missing_mongo_id');
   if (!listSourceId) errors.push('missing_shopping_list_reference');
@@ -197,7 +241,7 @@ function transformPricingSnapshotDocument(document, fallbackNow = new Date()) {
       ownerSourceId,
       ownerEmail,
       errors,
-      warnings: [],
+      warnings,
     };
   }
 
@@ -217,6 +261,29 @@ function transformPricingSnapshotDocument(document, fallbackNow = new Date()) {
   const comparisonStatus = normalizeComparisonStatus(document, availableRetailers);
   const createdAt = resolveCreatedAt(document, fallbackNow);
   const updatedAt = toDate(document?.updatedAt || document?.updated_at, createdAt);
+  const explicitComparisonStatus = cleanString(document?.comparison_status, '');
+
+  if (explicitComparisonStatus && !COMPARISON_STATUSES.has(explicitComparisonStatus)) {
+    warnings.push({
+      reason: 'pricing_snapshot_invalid_comparison_status_normalized',
+      detail: { comparisonStatus: explicitComparisonStatus },
+    });
+  }
+
+  for (const [field, value] of [
+    ['cheapest_total', document?.cheapest_total],
+    ['highest_total', document?.highest_total],
+    ['selected_total', document?.selected_total],
+    ['total_saved', document?.total_saved],
+    ['savings_rate', document?.savings_rate],
+  ]) {
+    if (suppliedInvalidNumber(value)) {
+      warnings.push({
+        reason: 'pricing_snapshot_invalid_amount_normalized',
+        detail: { field },
+      });
+    }
+  }
 
   return {
     valid: true,
@@ -226,7 +293,7 @@ function transformPricingSnapshotDocument(document, fallbackNow = new Date()) {
     ownerEmail,
     sourceChecksum: checksumDocument(document),
     errors,
-    warnings: [],
+    warnings,
     snapshot: {
       listName: cleanString(
         document?.shopping_list_name ?? document?.saved_list_name,

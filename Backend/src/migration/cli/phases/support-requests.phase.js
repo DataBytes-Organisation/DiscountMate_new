@@ -5,63 +5,21 @@ const {
   transformSupportRequestDocument,
 } = require('../lib/support-request-transform');
 
-class MigrationSkipError extends Error {
+const {
+  recordBlocked,
+  recordFailed,
+  recordMigrated,
+  recordRejected,
+  updateRunProgress,
+} = require('../lib/migration-audit');
+
+class MigrationBlockedError extends Error {
   constructor(reason, detail = {}) {
     super(reason);
-    this.name = 'MigrationSkipError';
+    this.name = 'MigrationBlockedError';
     this.reason = reason;
     this.detail = detail;
   }
-}
-
-async function recordUnmapped(dataSource, runId, sourceId, reason, payload) {
-  if (!dataSource || !runId) return;
-
-  await dataSource.query(
-    `
-      INSERT INTO migration.unmapped_documents (
-        migration_run_id,
-        source_collection,
-        source_id,
-        reason,
-        payload
-      )
-      SELECT $1, 'support_requests', $2, $3, $4::jsonb
-      WHERE NOT EXISTS (
-        SELECT 1
-        FROM migration.unmapped_documents
-        WHERE source_collection = 'support_requests'
-          AND source_id IS NOT DISTINCT FROM $2
-          AND reason = $3
-          AND resolved_at IS NULL
-      )
-    `,
-    [runId, sourceId || null, reason, JSON.stringify(payload || {})],
-  );
-}
-
-async function updateRunProgress(dataSource, runId, summary) {
-  if (!dataSource || !runId) return;
-
-  await dataSource.query(
-    `
-      UPDATE migration.runs
-      SET last_scanned_source = $2,
-          source_count = $3,
-          target_count = $4,
-          skipped_count = $5,
-          failed_count = $6
-      WHERE id = $1
-    `,
-    [
-      runId,
-      summary.lastScannedSource,
-      summary.sourceCount,
-      summary.targetCount,
-      summary.skippedCount,
-      summary.failedCount,
-    ],
-  );
 }
 
 async function findMappedId(manager, sourceId) {
@@ -121,10 +79,11 @@ async function persistSupportRequest(dataSource, runId, transformed) {
       'SELECT id FROM app.support_requests WHERE reference_number = $1',
       [transformed.request.referenceNumber],
     );
+
     const referenceId = referenceRows[0]?.id || null;
 
     if (mappedId && referenceId && mappedId !== referenceId) {
-      throw new MigrationSkipError('support_reference_number_conflict', {
+      throw new MigrationBlockedError('support_reference_number_conflict', {
         referenceNumber: transformed.request.referenceNumber,
         mappedId,
         referenceId,
@@ -219,18 +178,17 @@ async function persistSupportRequest(dataSource, runId, transformed) {
 
     await upsertIdMap(manager, runId, transformed, targetId);
 
-    await manager.query(
-      `
-        UPDATE migration.unmapped_documents
-        SET resolved_at = CURRENT_TIMESTAMP
-        WHERE source_collection = 'support_requests'
-          AND source_id = $1
-          AND resolved_at IS NULL
-      `,
-      [transformed.sourceId],
-    );
+    await recordMigrated(manager, runId, {
+      sourceCollection: 'support_requests',
+      sourceId: transformed.sourceId,
+      sourceChecksum: transformed.sourceChecksum,
+      targetSchema: 'app',
+      targetTable: 'support_requests',
+      targetId,
+      warnings: transformed.warnings,
+    });
 
-    return { hasAttachment: Boolean(transformed.attachment) };
+    return { targetId, hasAttachment: Boolean(transformed.attachment) };
   });
 }
 
@@ -245,7 +203,12 @@ function createMongoFilter(afterId) {
 }
 
 async function synchronizeRemovedSources(dataSource, runId, summary) {
-  if (summary.partial || summary.skippedCount > 0 || summary.failedCount > 0) return;
+  if (
+    summary.partial
+    || summary.rejectedCount > 0
+    || summary.blockedCount > 0
+    || summary.failedCount > 0
+  ) return;
 
   await dataSource.transaction(async (manager) => {
     await manager.query(
@@ -290,15 +253,18 @@ async function runSupportRequestsPhase({
     sourceCount,
     scannedCount: 0,
     validCount: 0,
-    targetCount: 0,
+    migratedCount: 0,
     expectedAttachmentCount: 0,
     targetAttachmentCount: 0,
-    skippedCount: 0,
+    rejectedCount: 0,
+    blockedCount: 0,
     failedCount: 0,
+    warningCount: 0,
     lastScannedSource: options.afterId,
     partial: Boolean(options.afterId),
     scanOnly: options.scanOnly,
   };
+
   const cursor = collection.find(filter).sort({ _id: 1 }).batchSize(options.batchSize);
 
   for await (const document of cursor) {
@@ -307,45 +273,51 @@ async function runSupportRequestsPhase({
     const transformed = transformSupportRequestDocument(document);
 
     if (!transformed.valid) {
-      summary.skippedCount += 1;
-      await recordUnmapped(
-        dataSource,
-        runId,
-        transformed.sourceId,
-        transformed.errors.join(','),
-        supportRequestAuditPayload(document),
-      );
+      summary.rejectedCount += 1;
+      await recordRejected(dataSource, runId, {
+        sourceCollection: 'support_requests',
+        sourceId: transformed.sourceId,
+        reasons: transformed.errors,
+        details: supportRequestAuditPayload(document),
+      });
     } else {
       summary.validCount += 1;
-      if (transformed.attachment) summary.expectedAttachmentCount += 1;
 
       if (options.scanOnly) {
-        summary.targetCount += 1;
-        if (transformed.attachment) summary.targetAttachmentCount += 1;
+        summary.migratedCount += 1;
+        summary.warningCount += transformed.warnings.length;
+
+        if (transformed.attachment) {
+          summary.expectedAttachmentCount += 1;
+          summary.targetAttachmentCount += 1;
+        }
       } else {
         try {
           const persisted = await persistSupportRequest(dataSource, runId, transformed);
-          summary.targetCount += 1;
-          if (persisted.hasAttachment) summary.targetAttachmentCount += 1;
+          summary.migratedCount += 1;
+          summary.warningCount += transformed.warnings.length;
+
+          if (persisted.hasAttachment) {
+            summary.expectedAttachmentCount += 1;
+            summary.targetAttachmentCount += 1;
+          }
         } catch (error) {
-          if (error instanceof MigrationSkipError) {
-            summary.skippedCount += 1;
-            await recordUnmapped(
-              dataSource,
-              runId,
-              transformed.sourceId,
-              error.reason,
-              error.detail,
-            );
+          if (error instanceof MigrationBlockedError) {
+            summary.blockedCount += 1;
+            await recordBlocked(dataSource, runId, {
+              sourceCollection: 'support_requests',
+              sourceId: transformed.sourceId,
+              sourceChecksum: transformed.sourceChecksum,
+              reasons: [{ reason: error.reason, detail: error.detail }],
+            });
           } else {
             summary.failedCount += 1;
-            await recordUnmapped(
-              dataSource,
-              runId,
-              transformed.sourceId,
-              'unexpected_migration_error',
-              { name: error.name, message: error.message },
-            );
+            await recordFailed(dataSource, runId, {
+              sourceCollection: 'support_requests',
+              sourceId: transformed.sourceId,
+              sourceChecksum: transformed.sourceChecksum,
+              error,
+            });
             if (options.failFast) throw error;
           }
         }
@@ -435,9 +407,11 @@ async function reconcileSupportRequests({ dataSource, runId, sourceSummary }) {
   const danglingReferenceCount = Number(
     integrityRows[0]?.dangling_reference_count || 0,
   );
+
   const duplicateReferenceGroups = Number(
     integrityRows[0]?.duplicate_reference_groups || 0,
   );
+
   const results = [
     {
       checkName: 'all_support_request_mappings_resolve',
@@ -462,10 +436,10 @@ async function reconcileSupportRequests({ dataSource, runId, sourceSummary }) {
   if (!sourceSummary.partial) {
     results.push(
       {
-        checkName: 'source_support_request_count_matches',
-        sourceValue: { supportRequests: sourceSummary.sourceCount },
+        checkName: 'migrated_support_request_count_matches',
+        sourceValue: { supportRequests: sourceSummary.migratedCount },
         targetValue: { supportRequests: mappedCount },
-        passed: sourceSummary.sourceCount === mappedCount,
+        passed: sourceSummary.migratedCount === mappedCount,
       },
       {
         checkName: 'source_support_attachment_count_matches',
@@ -487,7 +461,7 @@ async function reconcileSupportRequests({ dataSource, runId, sourceSummary }) {
 }
 
 module.exports = {
-  MigrationSkipError,
+  MigrationBlockedError,
   reconcileSupportRequests,
   runSupportRequestsPhase,
 };

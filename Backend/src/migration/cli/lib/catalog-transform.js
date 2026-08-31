@@ -107,12 +107,28 @@ function transformCategoryDocument(document, fallbackNow = new Date()) {
   const categoryName = cleanString(document?.category_name ?? document?.categoryName, '');
   const categoryCode = cleanString(document?.category_code ?? document?.categoryCode);
   const errors = [];
+  const warnings = [];
 
   if (!sourceId) errors.push('missing_mongo_id');
   if (!categoryName) errors.push('missing_category_name');
 
   if (errors.length) {
-    return { valid: false, sourceId, errors, warnings: [] };
+    return { valid: false, sourceId, errors, warnings };
+  }
+
+  const rawDisplayOrder = document?.display_order ?? document?.displayOrder;
+  const displayOrder = normalizeOptionalInteger(rawDisplayOrder);
+
+  if (
+    rawDisplayOrder !== undefined
+    && rawDisplayOrder !== null
+    && rawDisplayOrder !== ''
+    && displayOrder === null
+  ) {
+    warnings.push({
+      reason: 'catalog_category_invalid_display_order_omitted',
+      detail: { hasDisplayOrder: true },
+    });
   }
 
   const createdAt = resolveCreatedAt(document, fallbackNow);
@@ -123,16 +139,14 @@ function transformCategoryDocument(document, fallbackNow = new Date()) {
     sourceId,
     sourceChecksum: checksumDocument(document),
     errors,
-    warnings: [],
+    warnings,
     aliases: categoryAliases(sourceId, categoryCode),
     category: {
       categoryName,
       categoryCode,
       description: cleanString(document?.description),
       iconUrl: cleanString(document?.icon_url ?? document?.iconUrl),
-      displayOrder: normalizeOptionalInteger(
-        document?.display_order ?? document?.displayOrder,
-      ),
+      displayOrder,
       isActive: document?.is_active !== false && document?.isActive !== false,
       createdAt,
       updatedAt,

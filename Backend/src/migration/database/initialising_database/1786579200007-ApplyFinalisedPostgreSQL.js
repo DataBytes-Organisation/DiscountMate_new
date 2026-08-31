@@ -155,15 +155,15 @@ class ApplyFinalisedPostgreSQL1786579200007 {
     const guards = await queryRunner.query(`
       SELECT
         (SELECT count(*)::integer
-         FROM migration.reference_resolution_failures
-         WHERE resolved_at IS NULL AND required = true) AS required_reference_failures,
+         FROM migration.reference_resolution_issues
+         WHERE resolved_at IS NULL AND required = true) AS required_reference_issues,
         (SELECT count(*)::integer
          FROM migration.runs
          WHERE status = 'running') AS running_migrations
     `);
 
-    if (Number(guards[0]?.required_reference_failures || 0) > 0) {
-      throw new Error('Finalised PostgreSQL blocked: required reference failures remain unresolved.');
+    if (Number(guards[0]?.required_reference_issues || 0) > 0) {
+      throw new Error('Finalised PostgreSQL blocked: required reference issues remain unresolved.');
     }
 
     if (Number(guards[0]?.running_migrations || 0) > 0) {

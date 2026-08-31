@@ -8,64 +8,22 @@ const {
 } = require('../lib/catalog-transform');
 
 const { recordReferenceFailures } = require('../lib/reference-audit');
+const {
+  recordBlocked,
+  recordFailed,
+  recordMigrated,
+  recordMigratedBatch,
+  recordRejected,
+  updateRunProgress,
+} = require('../lib/migration-audit');
 
-class MigrationSkipError extends Error {
+class MigrationBlockedError extends Error {
   constructor(reason, detail = {}) {
     super(reason);
-    this.name = 'MigrationSkipError';
+    this.name = 'MigrationBlockedError';
     this.reason = reason;
     this.detail = detail;
   }
-}
-
-async function recordUnmapped(dataSource, runId, collection, sourceId, reason, payload) {
-  if (!dataSource || !runId) return;
-
-  await dataSource.query(
-    `
-      INSERT INTO migration.unmapped_documents (
-        migration_run_id,
-        source_collection,
-        source_id,
-        reason,
-        payload
-      )
-      SELECT $1, $2, $3, $4, $5::jsonb
-      WHERE NOT EXISTS (
-        SELECT 1
-        FROM migration.unmapped_documents
-        WHERE source_collection = $2
-          AND source_id IS NOT DISTINCT FROM $3
-          AND reason = $4
-          AND resolved_at IS NULL
-      )
-    `,
-    [runId, collection, sourceId || null, reason, JSON.stringify(payload || {})],
-  );
-}
-
-async function updateRunProgress(dataSource, runId, summary) {
-  if (!dataSource || !runId) return;
-
-  await dataSource.query(
-    `
-      UPDATE migration.runs
-      SET last_scanned_source = $2,
-          source_count = $3,
-          target_count = $4,
-          skipped_count = $5,
-          failed_count = $6
-      WHERE id = $1
-    `,
-    [
-      runId,
-      summary.lastScannedSource,
-      summary.sourceCount,
-      summary.targetCount,
-      summary.skippedCount,
-      summary.failedCount,
-    ],
-  );
 }
 
 function createProductFilter(afterId) {
@@ -113,12 +71,12 @@ async function findCategoryCandidates(manager, transformed) {
   ]);
 }
 
-async function persistCategory(dataSource, transformed) {
+async function persistCategory(dataSource, runId, transformed) {
   return dataSource.transaction(async (manager) => {
     const candidates = await findCategoryCandidates(manager, transformed);
 
     if (candidates.size > 1) {
-      throw new MigrationSkipError('catalog_category_identity_conflict', {
+      throw new MigrationBlockedError('catalog_category_identity_conflict', {
         candidateCategoryIds: Array.from(candidates),
       });
     }
@@ -214,6 +172,16 @@ async function persistCategory(dataSource, transformed) {
       `,
       [JSON.stringify(aliases), categoryId, transformed.sourceChecksum],
     );
+
+    await recordMigrated(manager, runId, {
+      sourceCollection: 'categories',
+      sourceId: transformed.sourceId,
+      sourceChecksum: transformed.sourceChecksum,
+      targetSchema: 'silver',
+      targetTable: 'dim_categories',
+      targetId: categoryId,
+      warnings: transformed.warnings,
+    });
 
     return { categoryId, matchedExisting: candidates.size === 1 };
   });
@@ -554,7 +522,7 @@ async function upsertProductSourceKeys(manager, successes) {
   );
 }
 
-async function persistProductBatch(dataSource, transformedProducts, categoryBySourceId) {
+async function persistProductBatch(dataSource, runId, transformedProducts, categoryBySourceId) {
   return dataSource.transaction(async (manager) => {
     const candidates = await loadProductCandidates(manager, transformedProducts);
     const assigned = assignProductIds(transformedProducts, candidates);
@@ -563,6 +531,20 @@ async function persistProductBatch(dataSource, transformedProducts, categoryBySo
 
     await upsertProductRows(manager, prepared.rows);
     await upsertProductSourceKeys(manager, successes);
+
+    await recordMigratedBatch(
+      manager,
+      runId,
+      successes.map((success) => ({
+        sourceCollection: 'products',
+        sourceId: success.transformed.sourceId,
+        sourceChecksum: success.transformed.sourceChecksum,
+        targetSchema: 'silver',
+        targetTable: 'dim_products',
+        targetId: success.productId,
+        warnings: success.transformed.warnings,
+      })),
+    );
 
     return {
       successes,
@@ -573,19 +555,6 @@ async function persistProductBatch(dataSource, transformedProducts, categoryBySo
   });
 }
 
-async function recordWarnings(dataSource, runId, collection, transformed) {
-  for (const warning of transformed.warnings) {
-    await recordUnmapped(
-      dataSource,
-      runId,
-      collection,
-      transformed.sourceId,
-      warning.reason,
-      warning.detail,
-    );
-  }
-}
-
 function createSummary(categorySourceCount, productSourceCount, options) {
   return {
     sourceCount: categorySourceCount + productSourceCount,
@@ -593,10 +562,11 @@ function createSummary(categorySourceCount, productSourceCount, options) {
     productSourceCount,
     scannedCount: 0,
     validCount: 0,
-    targetCount: 0,
+    migratedCount: 0,
     targetCategoryCount: 0,
     targetProductCount: 0,
-    skippedCount: 0,
+    rejectedCount: 0,
+    blockedCount: 0,
     failedCount: 0,
     warningCount: 0,
     matchedExistingCategoryCount: 0,
@@ -619,53 +589,50 @@ async function runCategoryDocuments(context, documents) {
     const transformed = transformCategoryDocument(document);
 
     if (!transformed.valid) {
-      summary.skippedCount += 1;
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'categories',
-        transformed.sourceId,
-        transformed.errors.join(','),
-        categoryAuditPayload(document),
-      );
+      summary.rejectedCount += 1;
+      await recordRejected(dataSource, runId, {
+        sourceCollection: 'categories',
+        sourceId: transformed.sourceId,
+        reasons: transformed.errors,
+        details: categoryAuditPayload(document),
+      });
       continue;
     }
 
     summary.validCount += 1;
-    summary.expectedCategoryAliasCount += transformed.aliases.length;
 
     if (options.scanOnly) {
-      summary.targetCount += 1;
+      summary.migratedCount += 1;
       summary.targetCategoryCount += 1;
+      summary.warningCount += transformed.warnings.length;
+      summary.expectedCategoryAliasCount += transformed.aliases.length;
       continue;
     }
 
     try {
-      const persisted = await persistCategory(dataSource, transformed);
-      summary.targetCount += 1;
+      const persisted = await persistCategory(dataSource, runId, transformed);
+      summary.migratedCount += 1;
       summary.targetCategoryCount += 1;
+      summary.warningCount += transformed.warnings.length;
+      summary.expectedCategoryAliasCount += transformed.aliases.length;
       if (persisted.matchedExisting) summary.matchedExistingCategoryCount += 1;
     } catch (error) {
-      if (error instanceof MigrationSkipError) {
-        summary.skippedCount += 1;
-        await recordUnmapped(
-          dataSource,
-          runId,
-          'categories',
-          transformed.sourceId,
-          error.reason,
-          error.detail,
-        );
+      if (error instanceof MigrationBlockedError) {
+        summary.blockedCount += 1;
+        await recordBlocked(dataSource, runId, {
+          sourceCollection: 'categories',
+          sourceId: transformed.sourceId,
+          sourceChecksum: transformed.sourceChecksum,
+          reasons: [{ reason: error.reason, detail: error.detail }],
+        });
       } else {
         summary.failedCount += 1;
-        await recordUnmapped(
-          dataSource,
-          runId,
-          'categories',
-          transformed.sourceId,
-          'unexpected_migration_error',
-          { name: error.name, message: error.message },
-        );
+        await recordFailed(dataSource, runId, {
+          sourceCollection: 'categories',
+          sourceId: transformed.sourceId,
+          sourceChecksum: transformed.sourceChecksum,
+          error,
+        });
         if (options.failFast) throw error;
       }
     }
@@ -682,44 +649,62 @@ async function applyProductBatch(context, batch) {
     const transformed = transformProductDocument(document);
 
     if (!transformed.valid) {
-      summary.skippedCount += 1;
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'products',
-        transformed.sourceId,
-        transformed.errors.join(','),
-        productAuditPayload(document),
-      );
+      summary.rejectedCount += 1;
+      await recordRejected(dataSource, runId, {
+        sourceCollection: 'products',
+        sourceId: transformed.sourceId,
+        reasons: transformed.errors,
+        details: productAuditPayload(document),
+      });
       continue;
     }
 
     summary.validCount += 1;
-    summary.warningCount += transformed.warnings.length;
-    summary.expectedProductAliasCount += transformed.aliases.length;
     valid.push(transformed);
   }
 
   if (options.scanOnly) {
-    summary.targetCount += valid.length;
+    summary.migratedCount += valid.length;
     summary.targetProductCount += valid.length;
+    summary.warningCount += valid.reduce(
+      (count, transformed) => count + transformed.warnings.length,
+      0,
+    );
+    summary.expectedProductAliasCount += valid.reduce(
+      (count, transformed) => count + transformed.aliases.length,
+      0,
+    );
 
     return;
   }
 
   try {
-    const persisted = await persistProductBatch(dataSource, valid, categoryBySourceId);
-    summary.targetCount += persisted.successes.length;
+    const persisted = await persistProductBatch(dataSource, runId, valid, categoryBySourceId);
+    summary.migratedCount += persisted.successes.length;
     summary.targetProductCount += persisted.successes.length;
     summary.matchedExistingProductCount += persisted.matchedExistingCount;
     summary.insertedProductCount += persisted.insertedCount;
-
-    for (const success of persisted.successes) {
-      await recordWarnings(dataSource, runId, 'products', success.transformed);
-    }
+    summary.warningCount += persisted.successes.reduce(
+      (count, success) => count + success.transformed.warnings.length,
+      0,
+    );
+    summary.expectedProductAliasCount += persisted.successes.reduce(
+      (count, success) => count + success.transformed.aliases.length,
+      0,
+    );
 
     for (const skip of persisted.skips) {
-      summary.skippedCount += 1;
+      summary.blockedCount += 1;
+      await recordBlocked(dataSource, runId, {
+        sourceCollection: 'products',
+        sourceId: skip.transformed.sourceId,
+        sourceChecksum: skip.transformed.sourceChecksum,
+        primaryReasonCode: skip.reason,
+        details: skip.detail,
+        reasons: skip.reason === 'catalog_product_identity_conflict'
+          ? [{ reason: skip.reason, detail: skip.detail }]
+          : [],
+      });
       await recordReferenceFailures(dataSource, runId, [{
         sourceCollection: 'products',
         sourceId: skip.transformed.sourceId,
@@ -737,27 +722,17 @@ async function applyProductBatch(context, batch) {
         required: true,
         details: skip.detail,
       }]);
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'products',
-        skip.transformed.sourceId,
-        skip.reason,
-        skip.detail,
-      );
     }
   } catch (error) {
     summary.failedCount += valid.length;
 
     for (const transformed of valid) {
-      await recordUnmapped(
-        dataSource,
-        runId,
-        'products',
-        transformed.sourceId,
-        'unexpected_migration_error',
-        { name: error.name, message: error.message },
-      );
+      await recordFailed(dataSource, runId, {
+        sourceCollection: 'products',
+        sourceId: transformed.sourceId,
+        sourceChecksum: transformed.sourceChecksum,
+        error,
+      });
     }
 
     if (options.failFast) throw error;
@@ -893,6 +868,7 @@ async function reconcileCatalog({ dataSource, runId, sourceSummary }) {
   const danglingReferenceCount = Number(
     integrityRows[0]?.dangling_reference_count || 0,
   );
+
   const duplicateGtinGroups = Number(duplicateRows[0]?.duplicate_gtin_groups || 0);
   const duplicateCanonicalGroups = Number(
     duplicateRows[0]?.duplicate_canonical_groups || 0,
@@ -922,26 +898,26 @@ async function reconcileCatalog({ dataSource, runId, sourceSummary }) {
   if (!sourceSummary.partial) {
     results.push(
       {
-        checkName: 'source_category_count_matches',
-        sourceValue: { categories: sourceSummary.categorySourceCount },
+        checkName: 'migrated_category_count_matches',
+        sourceValue: { categories: sourceSummary.targetCategoryCount },
         targetValue: { mongoIds: categoryMongoIds, categories: mappedCategories },
-        passed: sourceSummary.categorySourceCount === categoryMongoIds,
+        passed: sourceSummary.targetCategoryCount === categoryMongoIds,
       },
       {
-        checkName: 'source_product_count_matches',
-        sourceValue: { products: sourceSummary.productSourceCount },
+        checkName: 'migrated_product_count_matches',
+        sourceValue: { products: sourceSummary.targetProductCount },
         targetValue: { mongoIds: productMongoIds, products: mappedProducts },
-        passed: sourceSummary.productSourceCount === productMongoIds,
+        passed: sourceSummary.targetProductCount === productMongoIds,
       },
       {
         checkName: 'frontend_catalog_aliases_preserved',
         sourceValue: {
-          categoryCodes: sourceSummary.categorySourceCount,
-          productCodes: sourceSummary.productSourceCount,
+          categoryCodes: sourceSummary.targetCategoryCount,
+          productCodes: sourceSummary.targetProductCount,
         },
         targetValue: { categoryCodes, productCodes },
-        passed: sourceSummary.categorySourceCount === categoryCodes
-          && sourceSummary.productSourceCount === productCodes,
+        passed: sourceSummary.targetCategoryCount === categoryCodes
+          && sourceSummary.targetProductCount === productCodes,
       },
       {
         checkName: 'catalog_alias_counts_match',
@@ -962,7 +938,7 @@ async function reconcileCatalog({ dataSource, runId, sourceSummary }) {
 }
 
 module.exports = {
-  MigrationSkipError,
+  MigrationBlockedError,
   reconcileCatalog,
   runCatalogPhase,
 };

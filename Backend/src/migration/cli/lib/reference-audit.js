@@ -1,3 +1,5 @@
+const { normalizeSourceId } = require('./migration-audit');
+
 function normalizeFailure(failure) {
   return {
     sourceSystem: failure.sourceSystem || 'mongodb',
@@ -10,7 +12,7 @@ function normalizeFailure(failure) {
     targetSchema: failure.targetSchema,
     targetTable: failure.targetTable,
     targetField: failure.targetField || 'id',
-    reason: failure.reason || 'target_not_found',
+    reasonCode: failure.reasonCode || failure.reason || 'target_not_found',
     required: Boolean(failure.required),
     details: failure.details || {},
   };
@@ -20,10 +22,12 @@ async function recordReferenceFailure(dataSource, runId, failure) {
   if (!dataSource || !runId) return;
 
   const normalized = normalizeFailure(failure);
+  const sourceId = normalizeSourceId(normalized.sourceId);
 
   await dataSource.query(
     `
-      INSERT INTO migration.reference_resolution_failures (
+      INSERT INTO migration.reference_resolution_issues (
+        record_outcome_id,
         migration_run_id,
         source_system,
         source_collection,
@@ -33,23 +37,31 @@ async function recordReferenceFailure(dataSource, runId, failure) {
         target_schema,
         target_table,
         target_field,
-        reason,
+        reason_code,
         required,
         details
       )
-      SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb
+      SELECT (
+        SELECT outcome.id
+        FROM migration.record_outcomes outcome
+        WHERE outcome.migration_run_id = $1
+          AND outcome.source_system = $2
+          AND outcome.source_collection = $3
+          AND outcome.source_id = $4
+      ), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb
       WHERE NOT EXISTS (
         SELECT 1
-        FROM migration.reference_resolution_failures existing
-        WHERE existing.source_system = $2
+        FROM migration.reference_resolution_issues existing
+        WHERE existing.migration_run_id = $1
+          AND existing.source_system = $2
           AND existing.source_collection = $3
-          AND existing.source_id IS NOT DISTINCT FROM $4
+          AND existing.source_id = $4
           AND existing.source_field = $5
           AND existing.source_value IS NOT DISTINCT FROM $6
           AND existing.target_schema = $7
           AND existing.target_table = $8
           AND existing.target_field = $9
-          AND existing.reason = $10
+          AND existing.reason_code = $10
           AND existing.resolved_at IS NULL
       )
     `,
@@ -57,13 +69,13 @@ async function recordReferenceFailure(dataSource, runId, failure) {
       runId,
       normalized.sourceSystem,
       normalized.sourceCollection,
-      normalized.sourceId,
+      sourceId,
       normalized.sourceField,
       normalized.sourceValue,
       normalized.targetSchema,
       normalized.targetTable,
       normalized.targetField,
-      normalized.reason,
+      normalized.reasonCode,
       normalized.required,
       JSON.stringify(normalized.details),
     ],
@@ -76,11 +88,11 @@ async function recordReferenceFailures(dataSource, runId, failures = []) {
   }
 }
 
-async function resolveKnownReferenceFailures(dataSource) {
+async function resolveKnownReferenceIssues(dataSource) {
   if (!dataSource) return;
 
   await dataSource.query(`
-    UPDATE migration.reference_resolution_failures failure
+    UPDATE migration.reference_resolution_issues failure
     SET resolved_target_id = source_key.entity_id,
         resolved_at = CURRENT_TIMESTAMP
     FROM app.catalog_source_keys source_key
@@ -95,7 +107,7 @@ async function resolveKnownReferenceFailures(dataSource) {
   `);
 
   await dataSource.query(`
-    UPDATE migration.reference_resolution_failures failure
+    UPDATE migration.reference_resolution_issues failure
     SET resolved_target_id = retailer.id,
         resolved_at = CURRENT_TIMESTAMP
     FROM silver.dim_retailers retailer
@@ -106,7 +118,7 @@ async function resolveKnownReferenceFailures(dataSource) {
   `);
 
   await dataSource.query(`
-    UPDATE migration.reference_resolution_failures failure
+    UPDATE migration.reference_resolution_issues failure
     SET resolved_target_id = category.id,
         resolved_at = CURRENT_TIMESTAMP
     FROM silver.dim_categories category
@@ -117,7 +129,7 @@ async function resolveKnownReferenceFailures(dataSource) {
   `);
 
   await dataSource.query(`
-    UPDATE migration.reference_resolution_failures failure
+    UPDATE migration.reference_resolution_issues failure
     SET resolved_target_id = map.target_id,
         resolved_at = CURRENT_TIMESTAMP
     FROM migration.entity_id_map map
@@ -133,5 +145,5 @@ module.exports = {
   normalizeFailure,
   recordReferenceFailure,
   recordReferenceFailures,
-  resolveKnownReferenceFailures,
+  resolveKnownReferenceIssues,
 };

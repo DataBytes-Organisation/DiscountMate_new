@@ -125,10 +125,11 @@ const AUDIT_ONLY_TABLES = [
   'app.catalog_source_keys',
   'app.product_price_source_records',
   'migration.entity_id_map',
-  'migration.reference_resolution_failures',
+  'migration.record_issues',
+  'migration.record_outcomes',
+  'migration.reference_resolution_issues',
   'migration.reconciliation_results',
   'migration.runs',
-  'migration.unmapped_documents',
 ];
 
 function splitTableName(tableName) {
@@ -175,7 +176,7 @@ async function loadColumns(dataSource) {
 
 async function loadUnresolvedReferences(dataSource) {
   const exists = await dataSource.query(
-    'SELECT to_regclass(\'migration.reference_resolution_failures\') AS table_name',
+    'SELECT to_regclass(\'migration.reference_resolution_issues\') AS table_name',
   );
 
   if (!exists[0]?.table_name) {
@@ -187,13 +188,13 @@ async function loadUnresolvedReferences(dataSource) {
       target_schema || '.' || target_table AS target,
       source_collection,
       source_field,
-      reason,
+      reason_code AS reason,
       required,
       count(*)::integer AS count
-    FROM migration.reference_resolution_failures
+    FROM migration.reference_resolution_issues
     WHERE resolved_at IS NULL
-    GROUP BY target_schema, target_table, source_collection, source_field, reason, required
-    ORDER BY required DESC, target, source_collection, source_field, reason
+    GROUP BY target_schema, target_table, source_collection, source_field, reason_code, required
+    ORDER BY required DESC, target, source_collection, source_field, reason_code
   `);
 }
 

@@ -1,5 +1,4 @@
 const { checksumDocument } = require('./user-transform');
-
 const ALLOWED_EMAIL_STATUSES = new Set(['sent', 'failed', 'not_configured']);
 const ALLOWED_MIME_TYPES = new Set(['image/png', 'image/jpeg', 'application/pdf']);
 const ALLOWED_STATUSES = new Set(['received', 'in_progress', 'resolved', 'closed']);
@@ -60,11 +59,13 @@ function transformAttachment(attachment) {
 
   if (!originalName) errors.push('missing_attachment_original_name');
   if (!ALLOWED_MIME_TYPES.has(mimeType)) errors.push('unsupported_attachment_mime_type');
+
   if (!Number.isInteger(declaredSize) || declaredSize < 0) {
     errors.push('invalid_attachment_size');
   } else if (declaredSize > MAX_ATTACHMENT_BYTES) {
     errors.push('attachment_too_large');
   }
+
   if (!data) {
     errors.push('invalid_attachment_base64');
   } else if (Number.isInteger(declaredSize) && data.length !== declaredSize) {
@@ -96,10 +97,12 @@ function transformSupportRequestDocument(document, fallbackNow = new Date()) {
     document?.supportEmail ?? document?.support_email,
     '',
   )?.toLowerCase();
+
   const emailStatus = cleanString(
     document?.emailStatus ?? document?.email_status,
     '',
   )?.toLowerCase();
+
   const status = cleanString(document?.status, 'received')?.toLowerCase();
   const errors = [];
 
@@ -114,13 +117,17 @@ function transformSupportRequestDocument(document, fallbackNow = new Date()) {
   if (!ALLOWED_STATUSES.has(status)) errors.push('invalid_support_status');
 
   const transformedAttachment = transformAttachment(document?.attachment);
-  errors.push(...transformedAttachment.errors);
+  const warnings = transformedAttachment.errors.map((reason) => ({
+    reason,
+    detail: { attachmentOmitted: true },
+  }));
 
   if (errors.length) {
     return {
       valid: false,
       sourceId,
       errors,
+      warnings,
     };
   }
 
@@ -132,6 +139,7 @@ function transformSupportRequestDocument(document, fallbackNow = new Date()) {
     sourceId,
     sourceChecksum: checksumDocument(document),
     errors,
+    warnings,
     request: {
       referenceNumber,
       userId: null,

@@ -3,18 +3,20 @@ class AddReferenceResolutionAudit1786579200006 {
 
   async up(queryRunner) {
     await queryRunner.query(`
-      CREATE TABLE migration.reference_resolution_failures (
+      CREATE TABLE migration.reference_resolution_issues (
         id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        record_outcome_id uuid
+          REFERENCES migration.record_outcomes(id) ON DELETE SET NULL,
         migration_run_id uuid REFERENCES migration.runs(id) ON DELETE SET NULL,
         source_system text NOT NULL DEFAULT 'mongodb',
         source_collection text NOT NULL,
-        source_id text,
+        source_id text NOT NULL,
         source_field text NOT NULL,
         source_value text,
         target_schema text NOT NULL,
         target_table text NOT NULL,
         target_field text NOT NULL DEFAULT 'id',
-        reason text NOT NULL,
+        reason_code text NOT NULL,
         required boolean NOT NULL DEFAULT false,
         details jsonb NOT NULL DEFAULT '{}'::jsonb,
         resolved_target_id uuid,
@@ -24,8 +26,8 @@ class AddReferenceResolutionAudit1786579200006 {
     `);
 
     await queryRunner.query(`
-      CREATE INDEX idx_reference_resolution_failures_open
-      ON migration.reference_resolution_failures (
+      CREATE INDEX idx_reference_resolution_issues_open
+      ON migration.reference_resolution_issues (
         target_schema,
         target_table,
         source_collection,
@@ -35,13 +37,13 @@ class AddReferenceResolutionAudit1786579200006 {
     `);
 
     await queryRunner.query(`
-      CREATE INDEX idx_reference_resolution_failures_run
-      ON migration.reference_resolution_failures (migration_run_id, required, reason)
+      CREATE INDEX idx_reference_resolution_issues_run
+      ON migration.reference_resolution_issues (migration_run_id, required, reason_code)
     `);
   }
 
   async down(queryRunner) {
-    await queryRunner.query('DROP TABLE IF EXISTS migration.reference_resolution_failures');
+    await queryRunner.query('DROP TABLE IF EXISTS migration.reference_resolution_issues');
   }
 }
 

@@ -1,5 +1,7 @@
 const { spawnSync } = require('child_process');
+const { randomUUID } = require('crypto');
 const path = require('path');
+const { printOrchestrationSummary } = require('./lib/orchestration-summary');
 const BACKEND_ROOT = path.resolve(__dirname, '..', '..', '..');
 const NPM_COMMAND = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const STEPS = [
@@ -23,20 +25,25 @@ function usage() {
     'The command runs schema setup and every independently rerunnable data phase',
     'in dependency order. Each data phase performs its own reconciliation, and the',
     'runner stops immediately if a step reports a failure or mismatch. Normal',
-    'output is limited to step progress and migration counts.',
+    'output includes step progress followed by one aggregate migration total.',
   ].join('\n');
 }
 
-function runStep(label, scriptName, stepNumber, scriptArgs = []) {
+function runStep(
+  label,
+  scriptName,
+  stepNumber,
+  scriptArgs = [],
+  environmentOverrides = {},
+) {
   console.log(`[${stepNumber}/${STEPS.length}] ${label}`);
   const quietStep = scriptName === 'db:migrate' || scriptName === 'db:silver:setup';
-
   const result = spawnSync(
     NPM_COMMAND,
     ['--silent', 'run', scriptName, ...(scriptArgs.length ? ['--', ...scriptArgs] : [])],
     {
       cwd: BACKEND_ROOT,
-      env: process.env,
+      env: { ...process.env, ...environmentOverrides },
       stdio: quietStep ? ['ignore', 'pipe', 'pipe'] : 'inherit',
       maxBuffer: 16 * 1024 * 1024,
       shell: false,
@@ -53,6 +60,7 @@ function runStep(label, scriptName, stepNumber, scriptArgs = []) {
       .map((output) => output.toString().trim())
       .filter(Boolean)
       .join('\n');
+
     const error = new Error(
       `${scriptName} exited with status ${result.status}${detail ? `\n${detail}` : ''}`,
     );
@@ -61,29 +69,44 @@ function runStep(label, scriptName, stepNumber, scriptArgs = []) {
   }
 }
 
-function main(args) {
+async function main(args) {
   if (args.includes('--help') || args.includes('-h')) {
     console.log(usage());
 
-    return;
+    return 0;
   }
 
   if (args.length) {
     throw new Error(`Unknown option: ${args[0]}\n\n${usage()}`);
   }
 
-  STEPS.forEach(([label, scriptName], index) => {
-    runStep(label, scriptName, index + 1);
+  const orchestrationId = randomUUID();
+  let failure = null;
+
+  try {
+    STEPS.forEach(([label, scriptName], index) => {
+      runStep(label, scriptName, index + 1, [], {
+        MIGRATION_ORCHESTRATION_ID: orchestrationId,
+      });
+    });
+  } catch (error) {
+    failure = error;
+  }
+
+  await printOrchestrationSummary(orchestrationId, 'migration').catch((error) => {
+    console.error(`Migration totals unavailable: ${error.message}`);
   });
+
+  if (failure) throw failure;
+
+  return 0;
 }
 
 if (require.main === module) {
-  try {
-    main(process.argv.slice(2));
-  } catch (error) {
+  main(process.argv.slice(2)).catch((error) => {
     console.error(`Complete migration failed: ${error.message}`);
     process.exitCode = error.exitCode || 1;
-  }
+  });
 }
 
 module.exports = { STEPS, main, runStep, usage };
