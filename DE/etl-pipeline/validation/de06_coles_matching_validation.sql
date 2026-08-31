@@ -5,27 +5,31 @@ Ticket:
 DE-06 – Product Matching & Deduplication (Silver Layer)
 
 Purpose:
-Provide reusable validation queries for DE-06 Product Matching &
-Deduplication. These queries validate the quality of the current
-Coles product matching implementation before any changes are made
-to the production ETL pipeline.
+Provide reusable, read-only validation queries for the Coles product
+matching and deduplication implementation.
 
-Execution:
-Run after the Coles ETL pipeline has populated the Silver Layer.
+The queries validate:
+- GTIN coverage;
+- duplicate canonical products;
+- same-name product variants;
+- pack-size preservation;
+- brand preservation;
+- products without GTIN.
 
 Expected tables:
 - silver.dim_products
 - silver.fct_product_prices
 - silver.static_master_coles_products
 
-This script is read-only.
-No production data is modified.
+This script does not modify production data.
 */
+
 
 ---------------------------------------------------
 -- 1. GTIN Coverage
 ---------------------------------------------------
--- Determines whether GTIN-based matching can be used.
+-- Determines whether GTIN-based matching can currently
+-- be validated in the Silver product dimension.
 
 SELECT
     COUNT(*) AS total_products,
@@ -37,11 +41,16 @@ SELECT
     ) AS gtin_coverage_percent
 FROM silver.dim_products;
 
+
 ---------------------------------------------------
 -- 2. Duplicate Canonical Products
 ---------------------------------------------------
--- Checks whether duplicate products already exist
--- in the canonical product dimension.
+-- Detects duplicate canonical products using the
+-- business identity:
+-- product name + brand + pack quantity + pack unit.
+--
+-- Expected result:
+-- zero rows.
 
 SELECT
     product_name,
@@ -56,32 +65,45 @@ GROUP BY
     pack_quantity,
     pack_uom
 HAVING COUNT(*) > 1
-ORDER BY duplicate_count DESC;
+ORDER BY
+    duplicate_count DESC,
+    product_name;
+
 
 ---------------------------------------------------
 -- 3. Products Sharing the Same Name
 ---------------------------------------------------
 -- Shows products that share the same product name
 -- but differ by brand and/or pack size.
+--
+-- These records are not automatically merged because
+-- name similarity alone is insufficient product identity.
 
 SELECT
     product_name,
     COUNT(*) AS product_count,
     COUNT(DISTINCT brand_name) AS brand_variants,
     COUNT(
-        DISTINCT CAST(pack_quantity AS TEXT)
+        DISTINCT
+        CAST(pack_quantity AS TEXT)
         || ' '
         || COALESCE(pack_uom, '')
     ) AS pack_variants
 FROM silver.dim_products
-GROUP BY product_name
+GROUP BY
+    product_name
 HAVING COUNT(*) > 1
-ORDER BY product_count DESC;
+ORDER BY
+    product_count DESC,
+    product_name;
+
 
 ---------------------------------------------------
 -- 4. Full Cream Milk Validation
 ---------------------------------------------------
--- Manual validation example.
+-- Representative validation example.
+-- Products with different brands or pack sizes should
+-- remain separate canonical products.
 
 SELECT
     product_name,
@@ -96,10 +118,13 @@ ORDER BY
     pack_quantity,
     pack_uom;
 
+
 ---------------------------------------------------
 -- 5. Extra Virgin Olive Oil Validation
 ---------------------------------------------------
--- Manual validation example.
+-- Representative validation example.
+-- Products with different brands or pack sizes should
+-- remain separate canonical products.
 
 SELECT
     product_name,
@@ -114,22 +139,28 @@ ORDER BY
     pack_quantity,
     pack_uom;
 
+
 ---------------------------------------------------
 -- 6. Same Product Name with Different Pack Sizes
 ---------------------------------------------------
--- Validates that products with different pack sizes
--- remain separate canonical products.
+-- Validates that different pack sizes remain separate.
+--
+-- These are potential near-duplicate candidates only.
+-- They must not be automatically merged without stronger
+-- product identity evidence.
 
 SELECT
     product_name,
     brand_name,
     COUNT(
-        DISTINCT CAST(pack_quantity AS TEXT)
+        DISTINCT
+        CAST(pack_quantity AS TEXT)
         || ' '
         || COALESCE(pack_uom, '')
     ) AS pack_variants,
     STRING_AGG(
-        DISTINCT CAST(pack_quantity AS TEXT)
+        DISTINCT
+        CAST(pack_quantity AS TEXT)
         || ' '
         || COALESCE(pack_uom, ''),
         ' | '
@@ -140,19 +171,21 @@ GROUP BY
     product_name,
     brand_name
 HAVING COUNT(
-        DISTINCT CAST(pack_quantity AS TEXT)
-        || ' '
-        || COALESCE(pack_uom, '')
-    ) > 1
+    DISTINCT
+    CAST(pack_quantity AS TEXT)
+    || ' '
+    || COALESCE(pack_uom, '')
+) > 1
 ORDER BY
     pack_variants DESC,
     product_name;
 
+
 ---------------------------------------------------
 -- 7. Same Product Name with Different Brands
 ---------------------------------------------------
--- Validates that products with the same name but
--- different brands remain separate.
+-- Validates that products with the same product name
+-- but different brands remain separate.
 
 SELECT
     product_name,
@@ -163,17 +196,19 @@ SELECT
     ) AS example_brands
 FROM silver.dim_products
 WHERE product_name IS NOT NULL
-GROUP BY product_name
+GROUP BY
+    product_name
 HAVING COUNT(DISTINCT brand_name) > 1
 ORDER BY
     brand_variants DESC,
     product_name;
 
+
 ---------------------------------------------------
 -- 8. Products Without GTIN
 ---------------------------------------------------
--- Lists sample products that currently rely entirely
--- on canonical matching.
+-- Lists products that currently rely on the
+-- deterministic fallback identity because GTIN is NULL.
 
 SELECT
     product_name,
@@ -188,14 +223,60 @@ ORDER BY
 LIMIT 50;
 
 
--- ## Validation Results
+---------------------------------------------------
+-- 9. Near-Duplicate Review Candidates
+---------------------------------------------------
+-- Identifies cases where the same product name and
+-- brand occur with multiple pack identities.
+--
+-- These are FLAGGED for review rather than automatically
+-- merged by fuzzy matching.
 
--- Validation was performed against the Silver layer after loading the Coles dataset.
+SELECT
+    product_name,
+    brand_name,
+    COUNT(*) AS candidate_count,
+    STRING_AGG(
+        DISTINCT
+        CAST(pack_quantity AS TEXT)
+        || ' '
+        || COALESCE(pack_uom, ''),
+        ' | '
+    ) AS pack_variants
+FROM silver.dim_products
+WHERE
+    product_name IS NOT NULL
+    AND brand_name IS NOT NULL
+GROUP BY
+    product_name,
+    brand_name
+HAVING COUNT(*) > 1
+ORDER BY
+    candidate_count DESC,
+    product_name;
 
--- ### Findings
 
--- - 14,578 products were loaded into `silver.dim_products`.
--- - No duplicate products were found for the combination of product name, brand name, pack quantity, and pack unit.
--- - Products sharing the same name (for example, Full Cream Milk and Extra Virgin Olive Oil) are correctly separated by brand and pack size.
--- - Multiple pack-size variants are preserved as separate canonical products.
--- - GTIN values are currently not populated in `silver.dim_products`, so GTIN-first matching could not be validated using the current Silver dataset.
+---------------------------------------------------
+-- 10. Validation Summary
+---------------------------------------------------
+-- Overall duplicate check.
+--
+-- Expected result:
+-- duplicate_group_count = 0.
+
+SELECT
+    COUNT(*) AS duplicate_group_count
+FROM (
+    SELECT
+        product_name,
+        brand_name,
+        pack_quantity,
+        pack_uom
+    FROM silver.dim_products
+    GROUP BY
+        product_name,
+        brand_name,
+        pack_quantity,
+        pack_uom
+    HAVING COUNT(*) > 1
+) AS duplicate_groups;

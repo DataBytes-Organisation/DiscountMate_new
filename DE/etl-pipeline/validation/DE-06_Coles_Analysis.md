@@ -1,152 +1,290 @@
-# DE-06 – Coles Product Matching Analysis
+# DE-06 – Coles Product Matching & Deduplication
 
-## Purpose
+## 1. Overview
 
-Analyse the current Coles product matching flow in the ETL pipeline and validate the existing implementation before making any production SQL changes.
+This document describes the Coles implementation for DE-06 Product
+Matching & Deduplication in the Silver-layer ETL pipeline.
 
-This work supports **DE-06 – Product Matching & Deduplication (Silver Layer)**.
+The objective is to ensure that repeated observations of the same Coles
+product are reduced to a deterministic canonical product identity before
+the product data is synchronised into `silver.dim_products`.
 
----
+The implementation focuses on:
 
-## Platform Context
-
-Retailer Websites
-↓
-DE/ingestion-pipeline
-↓
-Bronze CSV Files
-↓
-DE/etl-pipeline
-↓
-transform.sql (normalisation)
-↓
-canonical_key generation
-↓
-sync_dim_products.sql
-↓
-silver.dim_products
-↓
-Analytics / ML / Backend
-
-The ETL pipeline is responsible for schema mapping, validation, product matching, deduplication, and loading into the Silver layer.
+- deterministic product identity generation;
+- duplicate removal during the ETL transform step;
+- preservation of legitimate product variants;
+- deterministic conflict handling;
+- validation of the resulting canonical identities.
 
 ---
 
-## Relevant Silver Tables
+## 2. Product Matching Strategy
 
-| Table | Purpose |
-|-------|---------|
-| silver.dim_products | Canonical product dimension |
-| silver.fct_product_prices | Historical price observations |
-| silver.dim_retailers | Retailer reference table |
-| silver.dim_categories | Category reference table |
-| silver.static_master_coles_products | Coles GTIN reference table |
+The implementation uses a hierarchical approach.
 
----
+### Primary identifier – GTIN
 
-## Current Matching Flow
+GTIN is the preferred product identifier when it is available in the
+source data and populated in the Silver product dimension.
 
-The current Coles workflow performs the following:
+For the current Coles dataset, GTIN values are not populated in
+`silver.dim_products`. Therefore, GTIN-first matching cannot currently
+be validated against the available Coles Silver data.
 
-1. Normalise retailer product data (`transform.sql`)
-2. Generate canonical_key
-3. Read latest Coles GTIN reference
-4. Join categories
-5. Match by GTIN
-6. Match by canonical_key
-7. Detect unmatched products
-8. Generate new product identities
-9. Resolve GTIN conflicts
-10. Sync into silver.dim_products
+This is treated as a data-availability limitation rather than an
+assumption that another identifier is a GTIN.
 
----
+### Deterministic fallback identity
 
-## Canonical Key
+When GTIN is unavailable, the Coles transform generates a canonical
+identity using:
 
-The canonical key is generated during `transform.sql` using:
+1. normalised brand name;
+2. normalised product name;
+3. normalised pack quantity;
+4. normalised pack unit.
 
-- Normalised brand name
-- Normalised product name
-- Pack quantity
-- Pack unit
+The resulting key is:
 
-It is later used by `sync_dim_products.sql` as the fallback matching mechanism after GTIN matching.
+    brand_name_key
+    + product_name_key
+    + pack_quantity_key
+    + pack_uom
 
----
+Example:
 
-## Existing Matching Logic
+    mount franklin|lightly sparkling|1.25|l
 
-### GTIN Matching
-
-Matches products when GTIN exists.
-
-### Canonical Matching
-
-Matches products using the generated canonical key.
-
-### Duplicate Handling
-
-Duplicate canonical keys within the same ETL batch are assigned a shared product identity before insertion.
+This approach makes equivalent textual representations more consistent
+while preserving meaningful product differences such as brand and pack
+size.
 
 ---
 
-## Initial Data Investigation
+## 3. Normalisation
 
-The raw Coles MongoDB collection was inspected.
+Product names and brands are normalised before the canonical key is
+created.
 
-Available fields include:
+The transformation:
 
-- product_code
-- item_name
-- category
-- item_price
-- unit_price
-- timestamp
+- converts text to lowercase;
+- removes non-alphanumeric characters;
+- replaces them with spaces;
+- trims unnecessary whitespace.
 
-GTIN, canonical_key, pack_quantity and normalised brand fields are not present in the raw collection, indicating these attributes are generated or enriched during the ETL process.
+Pack quantities are converted to a numeric representation and formatted
+into a stable key.
 
----
+Pack units are standardised, including examples such as:
 
-## DE-06 Requirements
+- gram / grams → `g`
+- kg / kilo / kilos → `kg`
+- ml → `ml`
+- litre / liter / ltr / lt → `l`
+- each → `ea`
+- pk → `pack`
 
-| Requirement | Status |
-|------------|--------|
-| GTIN-first matching | Implemented |
-| Canonical fallback | Implemented |
-|Name + Brand + Pack similarity | Partially implemented through canonical_key; needs validation
-| Near duplicate handling | Needs validation |
-| Cross-retailer validation | Pending |
-
----
-
-## Potential Gaps Requiring Validation
-
-- Unit normalisation (1L vs 1000ml)
-- Pack wording (6 pack vs 6pk)
-- Brand spelling differences
-- Missing GTIN
-- Similar names with different pack sizes
-- Near duplicates across retailers
+This reduces formatting differences between observations of the same
+product.
 
 ---
 
-## Validation Plan
+## 4. ETL Deduplication Logic
 
-- Validate current canonical matching using real Coles data.
-- Identify any edge cases.
-- Propose one targeted improvement only if supported by evidence.
-- Test the updated logic before opening a Pull Request.
+The DE-06 deduplication logic is implemented in:
+
+    features/products/coles/workflow_sql/transform.sql
+
+The transform first constructs the canonical product key and then
+deduplicates observations using:
+
+    raw_product_id
+    + canonical_key
+    + source_file
+
+`recorded_at` is deliberately excluded from the deduplication partition.
+
+This prevents repeated observations of the same product within one source
+file from creating multiple normalized records.
+
+Historical source files remain separate so that valid observations from
+different scrape batches are not incorrectly collapsed.
 
 ---
 
-## Validation Results
+## 5. Deterministic Conflict Handling
 
-Validation was performed against the Silver layer after loading the Coles dataset.
+When multiple observations have the same:
 
-### Findings
+    raw_product_id
+    + canonical_key
+    + source_file
 
-- 14,578 products were loaded into `silver.dim_products`.
-- No duplicate products were found for the combination of product name, brand name, pack quantity, and pack unit.
-- Products sharing the same name (for example, Full Cream Milk and Extra Virgin Olive Oil) are correctly separated by brand and pack size.
-- Multiple pack-size variants are preserved as separate canonical products.
-- GTIN values are currently not populated in `silver.dim_products`, so GTIN-first matching could not be validated using the current Silver dataset.
+the transform uses:
+
+    recorded_at DESC
+    price ASC
+
+as the deterministic ordering.
+
+Therefore:
+
+1. the most recent observation is preferred;
+2. if timestamps are identical, the lower price is selected as the
+   deterministic tie-breaker.
+
+This ensures repeatable ETL behaviour and avoids nondeterministic
+duplicate selection.
+
+---
+
+## 6. Legitimate Variants Are Preserved
+
+The implementation does not merge products solely because they have a
+similar name.
+
+Brand and pack information remain part of the canonical identity.
+
+For example, products such as:
+
+    Coles Full Cream Milk 1L
+    Coles Full Cream Milk 2L
+
+remain separate because their pack quantities differ.
+
+Similarly, products with the same product name but different brands are
+kept as separate canonical products.
+
+This prevents incorrect price histories from being combined.
+
+---
+
+## 7. Near-Duplicate Handling
+
+The current implementation uses deterministic normalisation rather than
+automatic fuzzy matching.
+
+This is intentional.
+
+Automatic fuzzy matching could incorrectly merge commercially different
+products, particularly when products differ by:
+
+- pack size;
+- brand;
+- product variant;
+- flavour;
+- formulation.
+
+Potential near-duplicate candidates are therefore identified through
+validation queries and can be reviewed before any future fuzzy matching
+rule is introduced.
+
+This provides a safer production approach for DiscountMate because an
+incorrect product merge could associate the wrong price history with a
+product.
+
+---
+
+## 8. Validation
+
+The Coles validation script is:
+
+    validation/de06_coles_matching_validation.sql
+
+The validation checks:
+
+1. GTIN coverage;
+2. duplicate canonical products;
+3. products sharing the same name;
+4. representative product matching cases;
+5. pack-size variants;
+6. brand variants;
+7. products without GTIN.
+
+The validation script is read-only and does not modify production data.
+
+---
+
+## 9. Validation Evidence
+
+The available Coles validation evidence shows:
+
+- 14,578 products were loaded into `silver.dim_products` during the
+  validation run;
+- no duplicate products were found for the combination of product name,
+  brand name, pack quantity and pack unit;
+- products sharing the same name are separated by brand and/or pack size;
+- multiple pack-size variants are preserved as separate canonical
+  products;
+- GTIN values were not populated in the available Silver dataset, so
+  GTIN-first matching could not be exercised against this dataset.
+
+The current ETL transform was also executed successfully for the Coles
+dataset over the requested date range.
+
+Latest pipeline execution:
+
+    model=products_coles
+    start_date=2026-01-01
+    end_date=2026-05-04
+    raw_input_rows=232439
+    raw_input_normalized_rows=186723
+
+The pipeline completed successfully.
+
+---
+
+## 10. Cross-Retailer Consideration
+
+The canonical-key design is intentionally retailer-independent:
+
+    brand + product name + pack quantity + pack unit
+
+This allows the same identity strategy to be applied across retailers
+while retaining retailer-specific source processing.
+
+The current Coles implementation has been validated independently against
+the Coles dataset.
+
+A full two-retailer end-to-end validation requires executing the same
+identity checks against another retailer's populated Silver data. No
+cross-retailer result is claimed here where execution evidence is not
+available.
+
+---
+
+## 11. Acceptance Criteria Status
+
+| Acceptance criterion | Status | Evidence |
+|---|---|---|
+| Matching products use a deterministic canonical identity | PASS | Normalised brand + product name + pack quantity + pack unit |
+| Duplicate observations are removed during ETL | PASS | `raw_product_id + canonical_key + source_file` deduplication |
+| Near-duplicates are identified safely | PASS | Validation queries identify same-name/brand/pack candidates |
+| Different brands remain separate | PASS | Brand is included in canonical identity |
+| Different pack sizes remain separate | PASS | Pack quantity and pack unit are included |
+| Deterministic conflict handling | PASS | `recorded_at DESC`, then `price ASC` |
+| No duplicate canonical products in Coles validation | PASS | Validation evidence |
+| GTIN-first matching | LIMITED | GTIN is not populated in the available Coles Silver data |
+| Automatic fuzzy merging | NOT USED | Intentionally avoided to prevent false product merges |
+| Coles ETL execution | PASS | Pipeline completed successfully |
+
+---
+
+## 12. Engineering Decision
+
+For the current Coles data, deterministic matching is preferred over
+automatic fuzzy matching because it provides:
+
+- reproducibility;
+- explainability;
+- predictable ETL behaviour;
+- protection against incorrect product merges;
+- compatibility with downstream price-history analysis.
+
+GTIN-based matching can be enabled when a reliable GTIN field becomes
+available in the source-to-Silver data flow.
+
+Future fuzzy matching can be introduced as a separate candidate-review
+layer rather than directly merging products in the production transform.
