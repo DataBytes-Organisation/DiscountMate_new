@@ -382,13 +382,17 @@ class DiscountMateLangGraphWorkflow:
             if request.context.product_id:
                 arguments.setdefault("product_id", request.context.product_id)
         elif tool_call.tool == "search_products":
-            if not arguments.get("product_name"):
+            if arguments.get("product_name"):
+                arguments["product_name"] = self._extract_product_name(arguments["product_name"])
+            else:
                 product_name = self._extract_product_name(request.message)
                 if product_name:
                     arguments["product_name"] = product_name
             arguments.setdefault("limit", 5)
 
         if tool_call.tool == "compare_prices":
+            if arguments.get("product_name"):
+                arguments["product_name"] = self._extract_product_name(arguments["product_name"])
             if not arguments.get("product_id") and not arguments.get("product_name"):
                 product_name = self._extract_product_name(request.message)
                 if product_name:
@@ -502,6 +506,8 @@ class DiscountMateLangGraphWorkflow:
     def _extract_product_name(self, message: str) -> str:
         text = message.strip()
         text = re.sub(r"\b(at|from)\s+(coles|woolworths|woolies|iga)\b", " ", text, flags=re.I)
+        text = re.sub(r"\b(and|or)\s+(coles|woolworths|woolies|iga)\b", " ", text, flags=re.I)
+        text = re.sub(r"\b(coles|woolworths|woolies|iga)\b", " ", text, flags=re.I)
         text = re.sub(
             r"\b(can you|could you|please|show me|find me|find|search|look up|"
             r"compare|price|prices|cheapest|current|cost|deal|deals|specials?|"
