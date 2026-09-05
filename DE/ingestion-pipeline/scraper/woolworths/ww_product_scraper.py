@@ -37,7 +37,7 @@ def _search_direct(
     brand: str,
     page_number: int,
     page_size: int,
-    cookies: dict[str, str],
+    cookie_string: str,
 ) -> tuple[dict[str, Any] | None, str]:
     response = request_with_debug(
         client,
@@ -50,9 +50,10 @@ def _search_direct(
             "User-Agent": USER_AGENT,
             "Accept": "application/json",
             "Referer": "https://www.woolworths.com.au/",
+            "Cookie": cookie_string,
         },
         params={"searchTerm": brand, "pageSize": page_size, "pageNumber": page_number},
-        cookies=cookies or None,
+        
     )
     if response.status_code == 403:
         return None, "BLOCKED_403"
