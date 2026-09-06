@@ -7,23 +7,31 @@ import {
    ScrollView,
    ActivityIndicator,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import FooterSection from "../../components/home/FooterSection";
+import GoogleSignInButton from "../../components/auth/GoogleSignInButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../../constants/Api";
 
 export default function LoginPage() {
    const router = useRouter();
+   const { registered } = useLocalSearchParams<{ registered?: string }>();
    const [email, setEmail] = useState("");
    const [password, setPassword] = useState("");
    const [rememberMe, setRememberMe] = useState(false);
    const [isSubmitting, setIsSubmitting] = useState(false);
+   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
    const [error, setError] = useState<string | null>(null);
    const [isEmailFocused, setIsEmailFocused] = useState(false);
    const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+   const [showRegisteredBanner, setShowRegisteredBanner] = useState(
+      registered === "1"
+   );
 
    const handleLogin = async () => {
+      if (isSubmitting || isGoogleSubmitting) return;
       setError(null);
       if (!email || !password) {
          setError("Please enter both email and password.");
@@ -51,7 +59,7 @@ export default function LoginPage() {
             }
             router.push("/(tabs)");
          }
-      } catch (err) {
+      } catch {
          setError("Unable to reach the server. Please try again.");
       } finally {
          setIsSubmitting(false);
@@ -66,13 +74,11 @@ export default function LoginPage() {
 
          <ScrollView
             contentContainerStyle={{
-               paddingHorizontal: 16,
-               paddingVertical: 32,
                flexGrow: 1,
-               justifyContent: "center",
             }}
             showsVerticalScrollIndicator={false}
          >
+            <View className="w-full flex-1 justify-center px-4 py-8">
             <View className="w-full max-w-[520px] self-center bg-white rounded-3xl border border-gray-100 px-6 py-8 shadow-2xl">
                {/* Brand badge */}
                <View className="items-center">
@@ -93,6 +99,21 @@ export default function LoginPage() {
 
                {/* Form */}
                <View className="mt-8 gap-4">
+                  {showRegisteredBanner ? (
+                     <View className="flex-row items-start gap-2 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-3">
+                        <Ionicons
+                           name="checkmark-circle"
+                           size={18}
+                           color="#059669"
+                        />
+                        <Text className="flex-1 text-sm text-emerald-800">
+                           Account created! Please sign in to continue.
+                        </Text>
+                        <Pressable onPress={() => setShowRegisteredBanner(false)}>
+                           <Ionicons name="close" size={16} color="#059669" />
+                        </Pressable>
+                     </View>
+                  ) : null}
                   <View className="gap-2">
                      <Text className="text-sm font-semibold text-gray-800">
                         Email Address
@@ -112,6 +133,7 @@ export default function LoginPage() {
                            placeholder="Enter your email"
                            placeholderTextColor="#9CA3AF"
                            autoCapitalize="none"
+                           editable={!isSubmitting && !isGoogleSubmitting}
                            keyboardType="email-address"
                            className="flex-1 text-gray-900 outline-none"
                            onFocus={() => setIsEmailFocused(true)}
@@ -140,6 +162,7 @@ export default function LoginPage() {
                            placeholder="Enter your password"
                            placeholderTextColor="#9CA3AF"
                            secureTextEntry
+                           editable={!isSubmitting && !isGoogleSubmitting}
                            className="flex-1 text-gray-900 outline-none"
                            onFocus={() => setIsPasswordFocused(true)}
                            onBlur={() => setIsPasswordFocused(false)}
@@ -152,6 +175,7 @@ export default function LoginPage() {
                      <Pressable
                         onPress={() => setRememberMe(!rememberMe)}
                         className="flex-row items-center gap-2"
+                        disabled={isSubmitting || isGoogleSubmitting}
                      >
                         <View
                            className={[
@@ -187,7 +211,7 @@ export default function LoginPage() {
                      className={`mt-2 bg-primary_green rounded-xl h-12 items-center justify-center shadow-md shadow-primary_green/30 ${isSubmitting ? "opacity-80" : ""
                         }`}
                      onPress={handleLogin}
-                     disabled={isSubmitting}
+                     disabled={isSubmitting || isGoogleSubmitting}
                   >
                      {isSubmitting ? (
                         <ActivityIndicator color="#FFFFFF" />
@@ -206,19 +230,12 @@ export default function LoginPage() {
                      <View className="flex-1 h-px bg-gray-200" />
                   </View>
 
-                  <View className="flex-row gap-3 mt-2">
-                     <Pressable className="flex-1 flex-row items-center justify-center gap-2 h-11 rounded-xl border border-gray-200 bg-white">
-                        <FontAwesome6 name="google" size={18} color="#DB4437" />
-                        <Text className="text-sm font-semibold text-gray-800">
-                           Google
-                        </Text>
-                     </Pressable>
-                     <Pressable className="flex-1 flex-row items-center justify-center gap-2 h-11 rounded-xl border border-gray-200 bg-white">
-                        <FontAwesome6 name="facebook" size={18} color="#1877F2" />
-                        <Text className="text-sm font-semibold text-gray-800">
-                           Facebook
-                        </Text>
-                     </Pressable>
+                  <View className="mt-2">
+                     <GoogleSignInButton
+                        disabled={isSubmitting}
+                        onBusyChange={setIsGoogleSubmitting}
+                        onError={setError}
+                     />
                   </View>
 
                   <View className="flex-row justify-center items-center mt-6">
@@ -233,6 +250,8 @@ export default function LoginPage() {
                   </View>
                </View>
             </View>
+            </View>
+            <FooterSection disableEdgeOffset />
          </ScrollView>
       </View>
    );

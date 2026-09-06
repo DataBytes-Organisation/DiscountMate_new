@@ -112,7 +112,7 @@ export default function SubscriptionScreen() {
                const message = err?.message || "Unable to load subscription.";
                setError(message);
                if (message === SESSION_EXPIRED_MESSAGE) {
-                  router.replace("/login");
+                  router.replace("/(auth)/login");
                }
             }
          } finally {
@@ -176,7 +176,7 @@ export default function SubscriptionScreen() {
          const message = err?.message || "Unable to update subscription.";
          setError(message);
          if (message === SESSION_EXPIRED_MESSAGE) {
-            router.replace("/login");
+            router.replace("/(auth)/login");
          }
       } finally {
          setSavingPlan(null);

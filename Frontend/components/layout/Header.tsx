@@ -87,7 +87,7 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
    const handleLogout = async () => {
       await AsyncStorage.removeItem("authToken");
       setShowMenu(false);
-      router.push("/login");
+      router.push("/(auth)/login");
    };
 
    const handleProfile = () => {

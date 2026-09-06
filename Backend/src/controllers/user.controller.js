@@ -10,6 +10,10 @@ const {
     getSavedListById,
     normalizeDashboardRetailer,
 } = require('../utils/savedLists');
+const {
+    createDiscountMateSession,
+    passwordMatchesUser,
+} = require('../services/google-auth.service');
 
 const PASSWORD_SPECIAL_CHARACTER_REGEX = /[^A-Za-z0-9\s]/;
 const AU_POSTCODE_REGEX = /^\d{4}$/;
@@ -476,25 +480,13 @@ const signin = async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.encrypted_password);
+        const isMatch = await passwordMatchesUser(password, user, bcrypt.compare);
 
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        const role = user.role || (user.admin ? 'admin' : 'user');
-        const token = jwt.sign(
-            { email: normalizedEmail, role, admin: role === 'admin' },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-
-        return res.status(200).json({
-            message: 'Signin successful',
-            token,
-            role,
-            admin: role === 'admin',
-        });
+        return res.status(200).json(createDiscountMateSession(user));
     } catch (error) {
         console.error('Error signing in user:', error);
         return res.status(500).json({ message: 'Error signing in user' });
