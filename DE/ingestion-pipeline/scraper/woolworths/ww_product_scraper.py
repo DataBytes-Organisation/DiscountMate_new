@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import time
 from typing import TYPE_CHECKING, Any
 
 import httpx
@@ -8,9 +7,6 @@ import httpx
 from util import (
     RunContext,
     RunResult,
-    emit_scrape_block,
-    emit_scrape_run_failed,
-    emit_scrape_summary,
     get_state_dir,
     legacy_timestamp,
     load_brand_queries,
@@ -194,24 +190,7 @@ def _save_checkpoint(
         _save_progress(progress_path, brand_index, len(all_products))
 
 
-def _record_status(http_counts: dict[str, int], status: str, source: str) -> None:
-    if status in ("SUCCESS", "SUCCESS_SCRAPERAPI"):
-        http_counts["http_200"] += 1
-    elif status == "RATE_LIMITED_429":
-        http_counts["http_429"] += 1
-    elif status in ("BLOCKED_403", "SCRAPERAPI_CREDITS_EXHAUSTED"):
-        http_counts["http_403"] += 1
-        emit_scrape_block(
-            source,
-            "http_403_blocked" if status == "BLOCKED_403" else "scraperapi_credits_exhausted",
-        )
-    elif status.startswith("HTTP_5") or status.startswith("SCRAPERAPI_HTTP_5"):
-        http_counts["http_5xx"] += 1
-
-
 def run(context: RunContext) -> RunResult:
-    _run_start = time.monotonic()
-    _http_counts = {"http_200": 0, "http_403": 0, "http_429": 0, "http_5xx": 0}
     settings = context.settings.ww
     state_dir = get_state_dir(
         context.settings.app.output_dir, context.source, context.runner
@@ -248,7 +227,7 @@ def run(context: RunContext) -> RunResult:
                             settings.page_size,
                             cookies,
                         )
-                        _record_status(_http_counts, status, context.source)
+                        context.stats.record_status(status, context.source)
 
                         if (
                             payload is None
@@ -264,7 +243,7 @@ def run(context: RunContext) -> RunResult:
                                 settings.page_size,
                                 settings.scraperapi_key,
                             )
-                            _record_status(_http_counts, status, context.source)
+                            context.stats.record_status(status, context.source)
                             fallback_hits += 1
 
                         if payload is None:
@@ -281,15 +260,8 @@ def run(context: RunContext) -> RunResult:
                                     all_products,
                                     brand_index,
                                 )
-                                emit_scrape_run_failed(context.source)
-                                emit_scrape_summary(
-                                    source=context.source,
-                                    run_id=context.run_id,
-                                    status="failed",
-                                    rows_scraped=len(all_products),
-                                    duration_s=time.monotonic() - _run_start,
-                                    http_counts=_http_counts,
-                                    block_detected=True,
+                                context.stats.emit_failure(
+                                    context.source, context.run_id, len(all_products)
                                 )
                                 raise RuntimeError("ScraperAPI credits exhausted")
                             break
@@ -347,30 +319,13 @@ def run(context: RunContext) -> RunResult:
                     all_products,
                     max(current_brand_index, 0),
                 )
-                emit_scrape_run_failed(context.source)
-                emit_scrape_summary(
-                    source=context.source,
-                    run_id=context.run_id,
-                    status="failed",
-                    rows_scraped=len(all_products),
-                    duration_s=time.monotonic() - _run_start,
-                    http_counts=_http_counts,
-                    block_detected=_http_counts["http_403"] > 0,
-                )
+                context.stats.emit_failure(context.source, context.run_id, len(all_products))
                 raise
 
     remove_file_if_exists(checkpoint_path)
     remove_file_if_exists(progress_path)
 
-    emit_scrape_summary(
-        source=context.source,
-        run_id=context.run_id,
-        status="success",
-        rows_scraped=len(all_products),
-        duration_s=time.monotonic() - _run_start,
-        http_counts=_http_counts,
-        block_detected=_http_counts["http_403"] > 0,
-    )
+    context.stats.emit_success(context.source, context.run_id, len(all_products))
 
     return RunResult(
         records=all_products,
@@ -380,4 +335,3 @@ def run(context: RunContext) -> RunResult:
             "record_count": len(all_products),
         },
     )
-    
