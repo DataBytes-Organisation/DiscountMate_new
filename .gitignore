@@ -22,3 +22,4 @@ ML/ReverseImageSearch/Scraped_images/
 Backend/ml-service/ml_models/reverse_image_search.faiss
 __pycache__/
 Backend/ml-service/sample_data/
+.venv/
