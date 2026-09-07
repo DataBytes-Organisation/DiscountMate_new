@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import time
 import xml.etree.ElementTree as ET
 from typing import Any, cast
 
@@ -10,9 +9,6 @@ import httpx
 from util import (
     RunContext,
     RunResult,
-    emit_scrape_block,
-    emit_scrape_run_failed,
-    emit_scrape_summary,
     flatten_json,
     legacy_timestamp,
     request_with_debug,
@@ -168,21 +164,7 @@ def _extract_records(
     return records
 
 
-def _record_http_status(http_counts: dict[str, int], status_code: int, source: str) -> None:
-    if status_code == 200:
-        http_counts["http_200"] += 1
-    elif status_code == 403:
-        http_counts["http_403"] += 1
-        emit_scrape_block(source, "http_403_blocked")
-    elif status_code == 429:
-        http_counts["http_429"] += 1
-    elif status_code >= 500:
-        http_counts["http_5xx"] += 1
-
-
 def run(context: RunContext) -> RunResult:
-    _run_start = time.monotonic()
-    _http_counts = {"http_200": 0, "http_403": 0, "http_429": 0, "http_5xx": 0}
     settings = context.settings.aldi
     headers = COMMON_HEADERS
     all_records: list[dict[str, Any]] = []
@@ -222,7 +204,12 @@ def run(context: RunContext) -> RunResult:
                         )
                         try:
                             response.raise_for_status()
-                            _record_http_status(_http_counts, response.status_code, context.source)
+                            status_str = (
+                                "SUCCESS"
+                                if response.status_code == 200
+                                else f"HTTP_{response.status_code}"
+                            )
+                            context.stats.record_status(status_str, context.source)
                             batch = _extract_records(
                                 category_id, category_url, response.json()
                             )
@@ -240,8 +227,16 @@ def run(context: RunContext) -> RunResult:
                             offset += settings.page_size
                             sleep_if_needed(settings.delay_seconds)
                         except httpx.HTTPStatusError as e:
-                            _record_http_status(_http_counts, e.response.status_code, context.source)
-                            if e.response.status_code == 400:
+                            status_code = e.response.status_code
+                            status_str = (
+                                "BLOCKED_403"
+                                if status_code == 403
+                                else "RATE_LIMITED_429"
+                                if status_code == 429
+                                else f"HTTP_{status_code}"
+                            )
+                            context.stats.record_status(status_str, context.source)
+                            if status_code == 400:
                                 context.logger.warning(
                                     "Skipping url: %s, (limit=%s, offset=%s).\n Error: %s",
                                     category_url,
@@ -252,27 +247,10 @@ def run(context: RunContext) -> RunResult:
                                 break
                             raise e
     except Exception:
-        emit_scrape_run_failed(context.source)
-        emit_scrape_summary(
-            source=context.source,
-            run_id=context.run_id,
-            status="failed",
-            rows_scraped=len(all_records),
-            duration_s=time.monotonic() - _run_start,
-            http_counts=_http_counts,
-            block_detected=_http_counts["http_403"] > 0,
-        )
+        context.stats.emit_failure(context.source, context.run_id, len(all_records))
         raise
 
-    emit_scrape_summary(
-        source=context.source,
-        run_id=context.run_id,
-        status="success",
-        rows_scraped=len(all_records),
-        duration_s=time.monotonic() - _run_start,
-        http_counts=_http_counts,
-        block_detected=_http_counts["http_403"] > 0,
-    )
+    context.stats.emit_success(context.source, context.run_id, len(all_records))
 
     return RunResult(
         records=all_records,
