@@ -23,11 +23,12 @@ from .common import (
     utc_timestamp,
     write_csv_rows,
 )
-from .runtime import RunContext, RunResult
+from .runtime import RunContext, RunResult, RunStats
 
 __all__ = [
     "RunContext",
     "RunResult",
+    "RunStats",
     "append_jsonl",
     "ensure_dir",
     "flatten_json",

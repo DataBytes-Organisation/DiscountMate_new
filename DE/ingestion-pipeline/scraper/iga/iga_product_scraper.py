@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import time
 import uuid
 from typing import TYPE_CHECKING, Any
 
@@ -11,9 +10,6 @@ from util import (
     RunContext,
     RunResult,
     append_jsonl,
-    emit_scrape_block,
-    emit_scrape_run_failed,
-    emit_scrape_summary,
     flatten_json,
     get_state_dir,
     legacy_timestamp,
@@ -140,8 +136,6 @@ def _load_or_create_state_run_id(run_progress_path: Path, default_run_id: str) -
 
 
 def run(context: RunContext) -> RunResult:
-    _run_start = time.monotonic()
-    _http_counts = {"http_200": 0, "http_403": 0, "http_429": 0, "http_5xx": 0}
     settings = context.settings.iga
     state_dir = get_state_dir(
         context.settings.app.output_dir, context.source, context.runner
@@ -224,15 +218,7 @@ def run(context: RunContext) -> RunResult:
                             skip,
                             session_id,
                         )
-                        if status == "SUCCESS":
-                            _http_counts["http_200"] += 1
-                        elif status == "RATE_LIMITED_429":
-                            _http_counts["http_429"] += 1
-                        elif status == "BLOCKED_403":
-                            _http_counts["http_403"] += 1
-                            emit_scrape_block(context.source, "http_403_blocked")
-                        elif status.startswith("HTTP_5"):
-                            _http_counts["http_5xx"] += 1
+                        context.stats.record_status(status, context.source)
 
                         if payload is None or status != "SUCCESS":
                             brand_progress[brand_key] = {
@@ -332,16 +318,7 @@ def run(context: RunContext) -> RunResult:
                 raise
             except Exception:
                 autosave(current_brand_index)
-                emit_scrape_run_failed(context.source)
-                emit_scrape_summary(
-                    source=context.source,
-                    run_id=state_run_id,
-                    status="failed",
-                    rows_scraped=len(seen_skus),
-                    duration_s=time.monotonic() - _run_start,
-                    http_counts=_http_counts,
-                    block_detected=_http_counts["http_403"] > 0,
-                )
+                context.stats.emit_failure(context.source, state_run_id, len(seen_skus))
                 raise
 
     records = read_jsonl(snapshot_jsonl_path)
@@ -350,15 +327,7 @@ def run(context: RunContext) -> RunResult:
     run_progress["updated_at"] = legacy_timestamp()
     save_json_file(run_progress_path, run_progress)
 
-    emit_scrape_summary(
-        source=context.source,
-        run_id=state_run_id,
-        status="success",
-        rows_scraped=len(records),
-        duration_s=time.monotonic() - _run_start,
-        http_counts=_http_counts,
-        block_detected=_http_counts["http_403"] > 0,
-    )
+    context.stats.emit_success(context.source, state_run_id, len(records))
 
     return RunResult(
         records=records,
