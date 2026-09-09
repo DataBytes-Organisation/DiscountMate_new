@@ -196,7 +196,9 @@ Install:
 
 - Node.js 20+
 - npm
-- Python 3.10 or 3.11
+- Python 3.10 or 3.11. Do not use Python 3.14 with the currently pinned
+  analytics and ML dependencies; NumPy 1.26.2 and Pandas 2.1.4 are not
+  compatible with that runtime.
 - Docker Desktop
 - Google Cloud CLI, only required for deployment tasks
 - Firebase CLI, only required for Firebase hosting/domain tasks
@@ -215,14 +217,70 @@ git remote add upstream https://github.com/DataBytes-Organisation/DiscountMate_n
 git fetch upstream
 ```
 
+### Current Docker Compose scope
+
+The repository currently provides a Docker Compose configuration for the local
+PostgreSQL service only:
+
+```text
+DE/etl-pipeline/docker-compose.yml
+```
+
+There is not yet a root-level `compose.yaml` that starts the frontend, backend,
+ML, analytics, PostgreSQL, and MongoDB services together. Do not run
+`docker compose up` from the repository root and expect the complete application
+to start. Until the root Compose stack is implemented and verified, use the
+hybrid startup sequence documented below.
+
+## Local Database Setup
+
+### PostgreSQL
+
+Start PostgreSQL from the repository root:
+
+```bash
+cd DE/etl-pipeline
+docker compose up -d postgres
+docker compose ps
+cd ../..
+```
+
+PostgreSQL is exposed locally on port `5433`. Confirm that it is ready:
+
+```bash
+docker compose -f DE/etl-pipeline/docker-compose.yml \
+  exec postgres pg_isready -U postgres -d discountmate
+```
+
+The backend uses separate PostgreSQL databases for the read-only data
+engineering catalogue and application-owned comparison data:
+
+```text
+DE_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5433/discountmate
+APP_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5433/discountmate_app
+```
+
+### MongoDB
+
+Mongo-backed authentication, products, saved lists, and related features need a
+valid `MONGO_URI`. Developers can use an approved MongoDB Atlas database or a
+separately provisioned local MongoDB instance. A new local MongoDB container is
+empty until the required data is imported; Docker does not automatically copy
+the shared development data to a new machine.
+
 ## Backend Local Setup
 
 ```bash
 cd Backend
 npm ci
-cp .env.example .env
-npm start
+test -f .env || cp .env.example .env
+npm run migrate:app
+npm run dev
 ```
+
+If `Backend/.env` already exists, do not overwrite it. Review it against
+`Backend/.env.example` instead. `npm run migrate:app` creates the local App
+database when needed and then applies the JavaScript migrations.
 
 Default local backend:
 
@@ -254,6 +312,12 @@ JWT_SECRET=<local jwt secret>
 CORS_ORIGIN=http://localhost:8081
 ML_SERVICE_URL=http://localhost:5001
 REVERSE_IMAGE_SEARCH_SERVICE_URL=http://localhost:8001
+ANALYTICS_SERVICE_URL=http://localhost:5002
+DE_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5433/discountmate
+APP_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5433/discountmate_app
+COMPARISON_V2_ENABLED=true
+MONGO_REQUIRED_AT_STARTUP=false
+REVERSE_IMAGE_SEARCH_REQUIRED_AT_STARTUP=false
 ```
 
 Support email variables:
@@ -304,13 +368,19 @@ EXPO_PUBLIC_API_URL=https://webdev-backend-518391291595.australia-southeast1.run
 
 ## ML Service Local Setup
 
+Create the virtual environment with Python 3.10 or 3.11 explicitly. On macOS,
+do not assume that `python3` points to a compatible version.
+
 ```bash
 cd Backend/ml-service
-python -m venv venv
+python3.10 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 python app.py
 ```
+
+If Python 3.11 is installed instead, replace `python3.10` with `python3.11`.
 
 Default local ML service:
 
@@ -335,6 +405,40 @@ RAG_BUCKET_NAME=discountmate-ml-models
 RAG_OBJECT_PREFIX=recipe_rag/
 OPEN_ROUTER_API_KEY=<secret>
 HUGGING_FACE_TOKEN=<secret>
+```
+
+## Analytics Service Local Setup
+
+The analytics service uses the same Python compatibility range as the ML
+service. Create its environment explicitly with Python 3.10 or 3.11:
+
+```bash
+cd Backend/analytics-service
+python3.10 -m venv venv
+source venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python app.py
+```
+
+If an existing `venv` was created with Python 3.14 and dependency installation
+failed, preserve it for inspection and recreate it:
+
+```bash
+mv venv venv-py314-broken
+python3.10 -m venv venv
+```
+
+Default local analytics service:
+
+```text
+http://localhost:5002
+```
+
+Health check:
+
+```bash
+curl http://localhost:5002/health
 ```
 
 ## Reverse Image Search Local Setup
@@ -369,7 +473,19 @@ gcloud auth application-default set-quota-project sit-26t1-discountmate-935cb94
 
 ## Running the Full App Locally
 
-Use three terminals.
+Complete the database and dependency setup above before using this sequence.
+PostgreSQL runs in Docker, while the application services currently run as
+local processes.
+
+First, start PostgreSQL and apply the App migrations:
+
+```bash
+docker compose -f DE/etl-pipeline/docker-compose.yml up -d postgres
+
+cd Backend
+npm run migrate:app
+cd ..
+```
 
 Terminal 1, ML service:
 
@@ -379,14 +495,27 @@ source venv/bin/activate
 python app.py
 ```
 
-Terminal 2, backend:
+Terminal 2, analytics service:
+
+```bash
+cd Backend/analytics-service
+source venv/bin/activate
+python app.py
+```
+
+Terminal 3, backend:
 
 ```bash
 cd Backend
-npm start
+npm run dev
 ```
 
-Terminal 3, frontend:
+The backend starts without reverse-image search when
+`REVERSE_IMAGE_SEARCH_REQUIRED_AT_STARTUP=false`. To enable image search, start
+the FastAPI service described in the preceding section and provide its FAISS
+assets and Google Cloud credentials.
+
+Terminal 4, frontend:
 
 ```bash
 cd Frontend
@@ -398,6 +527,64 @@ Then open:
 ```text
 http://localhost:8081
 ```
+
+### Local service addresses
+
+| Service | Local address |
+| --- | --- |
+| Frontend | `http://localhost:8081` |
+| Backend | `http://localhost:3000` |
+| API documentation | `http://localhost:3000/api-docs` |
+| ML service | `http://localhost:5001` |
+| Analytics service | `http://localhost:5002` |
+| Reverse image search | `http://localhost:8001` |
+| PostgreSQL | `127.0.0.1:5433` |
+| MongoDB | Address configured by `MONGO_URI` |
+
+### Verify the running services
+
+Run each command separately so a slow endpoint does not prevent later checks:
+
+```bash
+curl http://localhost:5001/health
+curl http://localhost:5002/health
+curl http://localhost:3000/
+curl --max-time 20 "http://localhost:3000/api/products?limit=1"
+docker compose -f DE/etl-pipeline/docker-compose.yml ps
+```
+
+The product endpoint performs MongoDB pricing joins and can be slower than the
+basic health checks. Start with `limit=1` when validating a new environment.
+
+### Testing from a physical phone or tablet
+
+`localhost` always refers to the device making the request. A physical phone
+therefore cannot reach a backend running at `http://localhost:3000` on a
+developer laptop. Connect both devices to the same network, find the laptop's
+LAN address, and set the frontend API URL to that address, for example:
+
+```text
+EXPO_PUBLIC_API_URL=http://192.168.1.20:3000/api
+```
+
+The backend CORS configuration must also allow the frontend origin. Restart or
+rebuild the frontend after changing `EXPO_PUBLIC_API_URL`, because Expo exposes
+this value to the client at build time. Do not expose local development ports to
+an untrusted network.
+
+### Stop the local application
+
+Stop each foreground Node.js or Python service with `Ctrl+C`. Then stop the
+PostgreSQL container while preserving that container and its current data:
+
+```bash
+docker compose -f DE/etl-pipeline/docker-compose.yml stop postgres
+```
+
+The current PostgreSQL Compose file does not mount a named data volume. Running
+`docker compose down` removes the database container and can therefore remove
+its locally stored database. Export required data before removing the container,
+or add a persistent volume as part of the future root Compose implementation.
 
 ## CI/CD Workflow
 

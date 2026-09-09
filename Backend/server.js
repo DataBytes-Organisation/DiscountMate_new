@@ -21,6 +21,12 @@ const dashboardRoutes = require('./src/routers/dashboard.router');
 const notificationRoutes = require('./src/routers/notification.router');
 const alertSegmentRoutes = require('./src/routers/alertSegment.router');
 const listRoutes = require('./src/routers/list.router');
+const comparisonRoutes = require('./src/comparison/routers/comparison.router');
+const { closePostgresPools } = require('./src/config/postgres');
+const {
+   initializeMongoDependency,
+   initializeReverseImageSearchDependency,
+} = require('./src/services/startupDependencies');
 
 if (process.env.NODE_ENV !== 'production') {
    require('dotenv').config({ path: path.join(__dirname, '.env') });
@@ -152,25 +158,42 @@ async function ensureJwtSecret() {
 async function startServer() {
    try {
       await ensureJwtSecret();
-      await ensureMongoUri();
-
-      // Require AFTER MONGO_URI is set
-      const { connectToMongoDB } = require('./src/config/database');
-      await connectToMongoDB();
    } catch (err) {
-      console.error("Failed to initialize MongoDB:", err);
+      console.error("Failed to initialize authentication secrets:", err);
       process.exit(1);
+      return;
+   }
+
+   try {
+      const mongoStatus = await initializeMongoDependency({
+         initialize: async () => {
+            await ensureMongoUri();
+            // Require AFTER MONGO_URI is set.
+            const { connectToMongoDB } = require('./src/config/database');
+            await connectToMongoDB();
+         },
+      });
+      app.locals.mongoAvailable = mongoStatus.available;
+   } catch (err) {
+      console.error("Failed to initialize required MongoDB:", err);
+      process.exit(1);
+      return;
    }
 
    try {
       if (isManagedCloudRuntime) {
          console.log('Managed runtime detected. Using reverse image search sidecar via REVERSE_IMAGE_SEARCH_SERVICE_URL.');
+         app.locals.reverseImageSearchAvailable = true;
       } else {
-         await startReverseImageSearch();
+         const reverseImageStatus = await initializeReverseImageSearchDependency({
+            initialize: startReverseImageSearch,
+         });
+         app.locals.reverseImageSearchAvailable = reverseImageStatus.available;
       }
    } catch (err) {
-      console.error('Failed to start ReverseImageSearch sidecar:', err.message);
+      console.error('Failed to start required ReverseImageSearch sidecar:', err.message);
       process.exit(1);
+      return;
    }
 
    app.listen(PORT, () => {
@@ -194,6 +217,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/alert-segments', alertSegmentRoutes);
 app.use('/api/lists', listRoutes);
+app.use('/api/comparisons', comparisonRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -209,9 +233,10 @@ app.use((err, req, res, next) => {
 // Start the server
 startServer();
 
-function shutdown(signal) {
+async function shutdown(signal) {
    console.log(`Received ${signal}. Shutting down...`);
    stopReverseImageSearch();
+   await closePostgresPools();
    process.exit(0);
 }
 process.on('SIGINT',  () => shutdown('SIGINT'));

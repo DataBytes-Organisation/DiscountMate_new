@@ -364,7 +364,9 @@ export default function BasketComparisonSection({
                                     <Pressable
                                        onPress={() => {
                                           if (targetListId) {
-                                             updateListItemQuantity(targetListId, item.id, item.qty - 1);
+                                             void updateListItemQuantity(targetListId, item.id, item.qty - 1).catch((error) => {
+                                                console.error("Failed to update quantity:", error);
+                                             });
                                           } else {
                                              updateQuantity(item.id, item.qty - 1);
                                           }
@@ -379,7 +381,9 @@ export default function BasketComparisonSection({
                                     <Pressable
                                        onPress={() => {
                                           if (targetListId) {
-                                             updateListItemQuantity(targetListId, item.id, item.qty + 1);
+                                             void updateListItemQuantity(targetListId, item.id, item.qty + 1).catch((error) => {
+                                                console.error("Failed to update quantity:", error);
+                                             });
                                           } else {
                                              updateQuantity(item.id, item.qty + 1);
                                           }

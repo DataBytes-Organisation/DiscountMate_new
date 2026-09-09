@@ -5,7 +5,6 @@ WITH cleaned AS (
             trim(
                 coalesce(
                     CAST(iga_product_id AS VARCHAR),
-                    CAST(iga_productid AS VARCHAR),
                     CAST(sku AS VARCHAR),
                     CAST(iga_sku AS VARCHAR)
                 )
@@ -34,7 +33,6 @@ WITH cleaned AS (
             trim(
                 coalesce(
                     CAST(brand_name AS VARCHAR),
-                    CAST(brandname AS VARCHAR),
                     CAST(iga_brand AS VARCHAR)
                 )
             ),
@@ -44,7 +42,6 @@ WITH cleaned AS (
             trim(
                 coalesce(
                     CAST(primary_image_url AS VARCHAR),
-                    CAST(primaryimageurl AS VARCHAR),
                     CAST(iga_image_default AS VARCHAR),
                     CAST(iga_image_cell AS VARCHAR),
                     CAST(iga_image_details AS VARCHAR),
@@ -56,10 +53,7 @@ WITH cleaned AS (
         NULLIF(trim(CAST(iga_categories AS VARCHAR)), '') AS raw_categories,
         NULLIF(
             trim(
-                coalesce(
-                    CAST(iga_default_category AS VARCHAR),
-                    CAST(iga_defaultcategory AS VARCHAR)
-                )
+                CAST(iga_default_category AS VARCHAR)
             ),
             ''
         ) AS raw_default_category,
@@ -67,9 +61,7 @@ WITH cleaned AS (
             trim(
                 coalesce(
                     CAST(price_label AS VARCHAR),
-                    CAST(pricelabel AS VARCHAR),
-                    CAST(iga_price_label AS VARCHAR),
-                    CAST(iga_pricelabel AS VARCHAR)
+                    CAST(iga_price_label AS VARCHAR)
                 )
             ),
             ''
@@ -78,9 +70,7 @@ WITH cleaned AS (
             trim(
                 coalesce(
                     CAST(price_source AS VARCHAR),
-                    CAST(pricesource AS VARCHAR),
                     CAST(iga_price_source AS VARCHAR),
-                    CAST(iga_pricesource AS VARCHAR),
                     ''
                 )
             )
@@ -90,7 +80,6 @@ WITH cleaned AS (
                 trim(
                     coalesce(
                         CAST(iga_product_id AS VARCHAR),
-                        CAST(iga_productid AS VARCHAR),
                         CAST(sku AS VARCHAR),
                         CAST(iga_sku AS VARCHAR)
                     )
@@ -101,7 +90,6 @@ WITH cleaned AS (
                 || trim(
                     coalesce(
                         CAST(iga_product_id AS VARCHAR),
-                        CAST(iga_productid AS VARCHAR),
                         CAST(sku AS VARCHAR),
                         CAST(iga_sku AS VARCHAR)
                     )
@@ -110,9 +98,7 @@ WITH cleaned AS (
         TRY_CAST(
             coalesce(
                 CAST(price_numeric AS VARCHAR),
-                CAST(pricenumeric AS VARCHAR),
-                CAST(iga_price_numeric AS VARCHAR),
-                CAST(iga_pricenumeric AS VARCHAR)
+                CAST(iga_price_numeric AS VARCHAR)
             ) AS DOUBLE
         ) AS price,
         COALESCE(
@@ -120,9 +106,7 @@ WITH cleaned AS (
                 regexp_extract(
                     coalesce(
                         CAST(price_per_unit AS VARCHAR),
-                        CAST(priceperunit AS VARCHAR),
                         CAST(iga_price_per_unit AS VARCHAR),
-                        CAST(iga_priceperunit AS VARCHAR),
                         ''
                     ),
                     '\\$([0-9]+\\.?[0-9]*)',
@@ -133,17 +117,13 @@ WITH cleaned AS (
                 TRY_CAST(
                     coalesce(
                         CAST(price_numeric AS VARCHAR),
-                        CAST(pricenumeric AS VARCHAR),
-                        CAST(iga_price_numeric AS VARCHAR),
-                        CAST(iga_pricenumeric AS VARCHAR)
+                        CAST(iga_price_numeric AS VARCHAR)
                     ) AS DOUBLE
                 ) / NULLIF(
                     TRY_CAST(
                         coalesce(
                             CAST(iga_unit_of_size_size AS VARCHAR),
-                            CAST(iga_unitofsize_size AS VARCHAR),
-                            CAST(iga_unit_of_measure_size AS VARCHAR),
-                            CAST(iga_unitofmeasure_size AS VARCHAR)
+                            CAST(iga_unit_of_measure_size AS VARCHAR)
                         ) AS DOUBLE
                     ),
                     0
@@ -152,20 +132,15 @@ WITH cleaned AS (
             )
         ) AS unit_price,
         TRY_CAST(
-            coalesce(
-                CAST(scraped_at AS VARCHAR),
-                CAST(scrapedat AS VARCHAR)
-            ) AS TIMESTAMP
+            CAST(scraped_at AS VARCHAR) AS TIMESTAMP
         ) AS recorded_at,
         CASE
             WHEN lower(
                 trim(
-                    coalesce(
-                        CAST(price_source AS VARCHAR),
-                        CAST(pricesource AS VARCHAR),
-                        CAST(iga_price_source AS VARCHAR),
-                        CAST(iga_pricesource AS VARCHAR),
-                        ''
+                coalesce(
+                    CAST(price_source AS VARCHAR),
+                    CAST(iga_price_source AS VARCHAR),
+                    ''
                     )
                 )
             ) = 'tpr' THEN TRUE
@@ -174,19 +149,15 @@ WITH cleaned AS (
         TRY_CAST(
             coalesce(
                 CAST(iga_unit_of_size_size AS VARCHAR),
-                CAST(iga_unitofsize_size AS VARCHAR),
-                CAST(iga_unit_of_measure_size AS VARCHAR),
-                CAST(iga_unitofmeasure_size AS VARCHAR)
+                CAST(iga_unit_of_measure_size AS VARCHAR)
             ) AS DOUBLE
         ) AS pack_quantity_raw,
         lower(
             trim(
-                coalesce(
-                    CAST(iga_unit_of_size_type AS VARCHAR),
-                    CAST(iga_unitofsize_type AS VARCHAR),
-                    CAST(iga_unit_of_measure_type AS VARCHAR),
-                    CAST(iga_unitofmeasure_type AS VARCHAR),
-                    ''
+            coalesce(
+                CAST(iga_unit_of_size_type AS VARCHAR),
+                CAST(iga_unit_of_measure_type AS VARCHAR),
+                ''
                 )
             )
         ) AS pack_uom_raw,
@@ -196,8 +167,7 @@ WITH cleaned AS (
                     TRY(
                         json_extract_string(
                             coalesce(
-                                CAST(iga_default_category AS VARCHAR),
-                                CAST(iga_defaultcategory AS VARCHAR)
+                                CAST(iga_default_category AS VARCHAR)
                             ),
                             '$[0].category'
                         )
