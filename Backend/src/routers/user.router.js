@@ -1,5 +1,6 @@
 const express = require('express');
 const userController = require('../controllers/user.controller');
+const googleAuthController = require('../controllers/google-auth.controller');
 const multer = require('multer');
 const verifyToken = require('../middleware/auth.middleware');
 const validateRequest = require('../middleware/validateRequest.middleware');
@@ -26,6 +27,7 @@ const router = express.Router();
 
 router.post('/signup', userController.signupLimiter, signupValidation, validateRequest, userController.signup);
 router.post('/signin', userController.signinLimiter, signinValidation, validateRequest, userController.signin);
+router.post('/auth/google', googleAuthController.googleSigninLimiter, googleAuthController.googleSignIn);
 
 router.get('/profile', verifyToken, userController.getProfile);
 router.put('/profile', verifyToken, userController.updateProfile);

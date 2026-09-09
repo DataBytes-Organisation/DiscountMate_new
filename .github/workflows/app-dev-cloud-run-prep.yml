@@ -21,6 +21,9 @@ jobs:
       CI: "true"
       EXPO_NO_TELEMETRY: "1"
       EXPO_PUBLIC_API_URL: "http://localhost:3000/api"
+      EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: "ci-web-client-id"
+      EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: "ci-ios-client-id"
+      EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID: "ci-android-client-id"
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -161,6 +164,7 @@ jobs:
           RUNTIME_SUPPORT_EMAIL_APP_PASSWORD: ${{ secrets.SUPPORT_EMAIL_APP_PASSWORD }}
           RUNTIME_OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
           RUNTIME_HUGGING_FACE_TOKEN: ${{ secrets.HUGGING_FACE_TOKEN }}
+          GOOGLE_OAUTH_CLIENT_IDS: ${{ vars.GOOGLE_OAUTH_CLIENT_IDS }}
         run: |
           cat <<EOF > /tmp/backend-cloudrun.yaml
           apiVersion: serving.knative.dev/v1
@@ -191,6 +195,8 @@ jobs:
                         value: production
                       - name: GOOGLE_CLOUD_PROJECT
                         value: ${{ vars.GCP_PROJECT_ID }}
+                      - name: GOOGLE_OAUTH_CLIENT_IDS
+                        value: "${GOOGLE_OAUTH_CLIENT_IDS}"
                       - name: ML_SERVICE_URL
                         value: http://127.0.0.1:5001
                       - name: REVERSE_IMAGE_SEARCH_SERVICE_URL
@@ -354,12 +360,18 @@ jobs:
       - name: Build frontend image
         env:
           FRONTEND_API_URL: ${{ vars.BACKEND_PUBLIC_API_URL != '' && vars.BACKEND_PUBLIC_API_URL || format('{0}/api', needs.deploy-backend.outputs.service_url) }}
+          GOOGLE_WEB_CLIENT_ID: ${{ vars.GOOGLE_WEB_CLIENT_ID }}
+          GOOGLE_IOS_CLIENT_ID: ${{ vars.GOOGLE_IOS_CLIENT_ID }}
+          GOOGLE_ANDROID_CLIENT_ID: ${{ vars.GOOGLE_ANDROID_CLIENT_ID }}
         run: |
           FRONTEND_IMAGE_URI="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/${{ vars.FRONTEND_IMAGE_NAME }}:${{ github.sha }}"
           echo "FRONTEND_IMAGE_URI=${FRONTEND_IMAGE_URI}" >> "${GITHUB_ENV}"
           docker build \
             --platform linux/amd64 \
             --build-arg EXPO_PUBLIC_API_URL="${FRONTEND_API_URL}" \
+            --build-arg EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID="${GOOGLE_WEB_CLIENT_ID}" \
+            --build-arg EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID="${GOOGLE_IOS_CLIENT_ID}" \
+            --build-arg EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID="${GOOGLE_ANDROID_CLIENT_ID}" \
             -t "${FRONTEND_IMAGE_URI}" \
             Frontend
 

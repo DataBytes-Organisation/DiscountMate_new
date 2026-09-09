@@ -1,11 +1,12 @@
 {
   "expo": {
     "name": "DiscountMate",
-    "slug": "DiscountMate",
+    "slug": "discountmate",
+    "owner": "discountmateapps-team",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "com.discountmate.app",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -13,9 +14,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.discountmate.app"
     },
     "android": {
+      "package": "com.discountmate.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -31,6 +34,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b79970a1-ad9d-4898-839f-1c24a90912a5"
+      }
     }
   }
 }

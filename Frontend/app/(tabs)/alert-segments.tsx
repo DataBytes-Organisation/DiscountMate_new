@@ -96,7 +96,7 @@ export default function AlertSegmentsScreen() {
                const message = err?.message || "Unable to load alert segments.";
                setError(message);
                if (message === SESSION_EXPIRED_MESSAGE) {
-                  router.replace("/login");
+                  router.replace("/(auth)/login");
                }
             }
          } finally {
@@ -159,7 +159,7 @@ export default function AlertSegmentsScreen() {
          setData(previousData);
          setError(message);
          if (message === SESSION_EXPIRED_MESSAGE) {
-            router.replace("/login");
+            router.replace("/(auth)/login");
          }
       } finally {
          setSavingKey(null);
