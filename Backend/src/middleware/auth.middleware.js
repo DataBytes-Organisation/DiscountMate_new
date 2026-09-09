@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const { logSecurityEvent } = require('../utils/securityLogger');
@@ -9,6 +8,7 @@ const verifyToken = async (req, res, next) => {
         ? req.headers.authorization.split(' ')[1] // Extract the token part after "Bearer"
         : null; // If no token is found, set it to null
 
+    // CS-15-T3: Log requests to protected routes without a token.
     if (!token) {
             logSecurityEvent({
                 event: 'INVALID_TOKEN_USAGE',
@@ -56,9 +56,22 @@ const verifyToken = async (req, res, next) => {
         if (err.name === "TokenExpiredError") {
             return res.status(401).json({message: "Token Has Expired"});
         }
-        return res.status(401).json({ message: "Invalid Token"});
-    }
 
+        // CS-15-T3: Log malformed or invalid authentication tokens.
+        logSecurityEvent({
+            event: 'AUTH_TOKEN_INVALID',
+            ip: req.ip,
+            method: req.method,
+            route: req.originalUrl,
+            details: {
+                errorType: err.name,
+            },
+        });
+
+        return res.status(401).json({
+            message: 'Invalid Token',
+        });
+    }
 };
 
 module.exports = verifyToken;

@@ -27,6 +27,11 @@ const os = require('os');
 const path = require('path');
 const fs = require('fs');
 
+// Import the central security logger for CS-15-T3.
+const {
+   logSecurityEvent,
+} = require('./src/utils/securityLogger');
+
 const {
    SecretManagerServiceClient,
 } = require('@google-cloud/secret-manager');
@@ -434,9 +439,15 @@ app.use(inputSanitisation);
  */
 app.use('/uploads', express.static(uploadsDir));
 
-// Initialize Swagger API documentation.
-setupSwagger(app);
-
+/*
+ * CS-15-T2: Disable Swagger documentation in production.
+ *
+ * Swagger remains available during local development,
+ * but is not exposed on the deployed production backend.
+ */
+if (!isProduction) {
+   setupSwagger(app);
+}
 /*
  * Load the MongoDB connection string.
  *
@@ -640,6 +651,17 @@ app.use('/api/lists', listRoutes);
 app.get('/', (req, res) => {
    res.send('Welcome to the DiscountMate API!');
 });
+/*
+ * CS-15-T1: Handle requests to unknown routes without
+ * exposing internal application information.
+ */
+app.use((req, res) => {
+   return res.status(404).json({
+      success: false,
+      message: 'Resource not found.',
+   });
+});
+
 
 /*
  * Global error handling middleware.
@@ -653,11 +675,14 @@ app.use((err, req, res, next) => {
     * in the trusted DiscountMate frontend allowlist.
     */
    if (err.code === 'CORS_NOT_ALLOWED') {
-      console.warn('Untrusted CORS origin blocked', {
-         origin: req.get('Origin'),
+      logSecurityEvent({
+         event: 'CORS_REJECTED',
          ip: req.ip,
          method: req.method,
-         path: req.originalUrl,
+         route: req.originalUrl,
+         details: {
+            origin: req.get('Origin'),
+         },
       });
 
       return res.status(403).json({
@@ -675,10 +700,11 @@ app.use((err, req, res, next) => {
       err.type === 'parameters.too.many' ||
       err.status === 413
    ) {
-      console.warn('Oversized payload blocked', {
+      logSecurityEvent({
+         event: 'OVERSIZED_PAYLOAD_BLOCKED',
          ip: req.ip,
          method: req.method,
-         path: req.originalUrl,
+         route: req.originalUrl,
       });
 
       return res.status(413).json({
@@ -691,10 +717,11 @@ app.use((err, req, res, next) => {
     * Handle files that exceed the upload limit configured by Multer.
     */
    if (err.code === 'LIMIT_FILE_SIZE') {
-      console.warn('Oversized file upload blocked', {
+      logSecurityEvent({
+         event: 'OVERSIZED_FILE_BLOCKED',
          ip: req.ip,
          method: req.method,
-         path: req.originalUrl,
+         route: req.originalUrl,
       });
 
       return res.status(413).json({
@@ -707,6 +734,13 @@ app.use((err, req, res, next) => {
     * Handle malformed JSON without returning a generic server error.
     */
    if (err.type === 'entity.parse.failed') {
+      logSecurityEvent({
+         event: 'MALFORMED_JSON_BLOCKED',
+         ip: req.ip,
+         method: req.method,
+         route: req.originalUrl,
+      });
+
       return res.status(400).json({
          success: false,
          message: 'Invalid JSON request.',
@@ -723,14 +757,12 @@ app.use((err, req, res, next) => {
          err.message === 'The input exceeded the depth'
       )
    ) {
-      console.warn(
-         'Excessively nested payload blocked',
-         {
-            ip: req.ip,
-            method: req.method,
-            path: req.originalUrl,
-         }
-      );
+      logSecurityEvent({
+         event: 'EXCESSIVE_NESTING_BLOCKED',
+         ip: req.ip,
+         method: req.method,
+         route: req.originalUrl,
+      });
 
       return res.status(400).json({
          success: false,
@@ -740,16 +772,28 @@ app.use((err, req, res, next) => {
    }
 
    /*
-    * Log unexpected errors internally without exposing detailed server
-    * information to the user.
+    * CS-15-T1: Log full unexpected error details internally.
+    *
+    * Detailed error information is kept in server logs and
+    * is not returned to the client.
     */
-   console.error(err.stack);
+   logSecurityEvent({
+      event: 'UNEXPECTED_SERVER_ERROR',
+      ip: req.ip,
+      method: req.method,
+      route: req.originalUrl,
+      details: {
+         message: err.message,
+         stack: err.stack,
+      },
+   });
 
    return res.status(500).json({
       success: false,
-      message: 'Something went wrong!',
+      message: 'Internal server error.',
    });
 });
+
 
 // Start the DiscountMate backend server.
 startServer();

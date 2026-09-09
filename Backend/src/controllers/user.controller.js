@@ -498,7 +498,7 @@ const verifyEmail = async (req, res) => {
     }
 };
 
-// Only allows for one request every 5 minutes per IP
+// Only allows for one signup request burst every 5 minutes per IP.
 const signupLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
     limit: 5,
@@ -507,13 +507,26 @@ const signupLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-// Only allows for one signin request burst per five-minute window per IP
+// Limit repeated signin attempts per IP.
 const signinLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
     limit: 5,
-    message: 'Too many requests. Please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
+
+    // CS-15-T3: Log when the signin rate limit is exceeded.
+    handler: (req, res) => {
+        logSecurityEvent({
+            event: 'AUTH_RATE_LIMIT_EXCEEDED',
+            ip: req.ip,
+            method: req.method,
+            route: req.originalUrl,
+        });
+
+        return res.status(429).json({
+            message: 'Too many requests. Please try again later.',
+        });
+    },
 });
 
 // Signin Controller
@@ -521,46 +534,73 @@ const signin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const normalizedEmail = String(email || '').trim().toLowerCase();
+        const normalizedEmail = String(email || '')
+            .trim()
+            .toLowerCase();
+
         const db = await connectToMongoDB();
 
         if (!db) {
-            return res.status(500).json({ message: 'Database not initialized' });
+            return res.status(500).json({
+                message: 'Database not initialized',
+            });
         }
 
-        const user = await db.collection('users').findOne({ email: normalizedEmail });
+        const user = await db
+            .collection('users')
+            .findOne({ email: normalizedEmail });
+
+        // CS-15-T3: Log failed signin attempts where the account is not found.
         if (!user) {
             logSecurityEvent({
-                event: 'AUTHENTICATION_FAILURE',
+                event: 'LOGIN_FAILED',
                 ip: req.ip,
                 method: req.method,
                 route: req.originalUrl,
-                details: [`${normalizedEmail} not found.`],
+                details: {
+                    reason: 'invalid_credentials',
+                },
             });
 
-            return res.status(400).json({ message: 'Invalid credentials' });
+            return res.status(400).json({
+                message: 'Invalid credentials',
+            });
         }
 
-        const isMatch = await bcrypt.compare(password, user.encrypted_password);
+        const isMatch = await bcrypt.compare(
+            password,
+            user.encrypted_password
+        );
 
         if (!isMatch) {
+            const attempts =
+                (user.failedLoginAttempts || 0) + 1;
+
+            await db.collection('users').updateOne(
+                { email: normalizedEmail },
+                {
+                    $set: {
+                        failedLoginAttempts: attempts,
+                    },
+                }
+            );
+
+            // CS-15-T3: Record failed authentication attempts.
             logSecurityEvent({
-                event: 'AUTHENTICATION_FAILURE',
+                event: 'LOGIN_FAILED',
                 ip: req.ip,
                 method: req.method,
                 route: req.originalUrl,
-                details: [`${normalizedEmail} unsuccessfully attempted to sign in.`],
+                details: {
+                    reason: 'invalid_credentials',
+                    failedAttempts: attempts,
+                },
             });
 
-            const attempts = (user.failedLoginAttempts || 0) + 1; // Wrong password, so increase this user's failed attempt count by 1
-            await db.collection('users').updateOne(
-                { email: normalizedEmail },
-                { $set: { failedLoginAttempts: attempts } }
-            );
-
-            // send alert email once attempts reach 3
+            // Send an alert email once failed attempts reach 3.
             if (attempts >= 3) {
                 const transporter = createEmailTransporter();
+
                 if (transporter) {
                     transporter.sendMail({
                         from: process.env.SUPPORT_EMAIL_USER,
@@ -571,33 +611,43 @@ const signin = async (req, res) => {
                 }
             }
 
-            return res.status(400).json({ message: 'Invalid credentials' });
+            return res.status(400).json({
+                message: 'Invalid credentials',
+            });
         }
 
-        // Block login until the user has confirmed their email
+        // Block login until the user has confirmed their email.
         if (user.isEmailVerified === false) {
-            return res.status(403).json({ message: 'Please verify your email before logging in' });
+            return res.status(403).json({
+                message:
+                    'Please verify your email before logging in',
+            });
         }
 
-        // Successful login, so reset the failed attempt count back to 0
+        // Successful login, so reset the failed attempt count.
         await db.collection('users').updateOne(
             { email: normalizedEmail },
-            { $set: { failedLoginAttempts: 0 } }
+            {
+                $set: {
+                    failedLoginAttempts: 0,
+                },
+            }
         );
 
-        logSecurityEvent({
-            event: 'AUTHENTICATION_SUCCESS',
-            ip: req.ip,
-            method: req.method,
-            route: req.originalUrl,
-            details: [`${normalizedEmail} signed in successfully.`],
-        });
-        
-        const role = user.role || (user.admin ? 'admin' : 'user');
+        const role =
+            user.role ||
+            (user.admin ? 'admin' : 'user');
+
         const token = jwt.sign(
-            { email: normalizedEmail, role, admin: role === 'admin' },
+            {
+                email: normalizedEmail,
+                role,
+                admin: role === 'admin',
+            },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            {
+                expiresIn: '1h',
+            }
         );
 
         return res.status(200).json({
@@ -607,8 +657,14 @@ const signin = async (req, res) => {
             admin: role === 'admin',
         });
     } catch (error) {
-        console.error('Error signing in user:', error);
-        return res.status(500).json({ message: 'Error signing in user' });
+        console.error(
+            'Error signing in user:',
+            error
+        );
+
+        return res.status(500).json({
+            message: 'Error signing in user',
+        });
     }
 };
 
