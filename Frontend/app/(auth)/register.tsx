@@ -656,7 +656,7 @@ export default function RegisterScreen() {
                            onChangeText={setConfirmPassword}
                         />
                         <Text className="text-sm text-gray-500">
-                           Use at least 8 characters with a mix of letters and numbers.
+                           Use at least 8 characters, including at least one special character (e.g. !@#$%).
                         </Text>
                      </View>
 

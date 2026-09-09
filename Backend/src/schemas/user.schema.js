@@ -46,6 +46,18 @@ const UserSchema = new Schema({
     default: 'user', //NEW; auto assigns user
     required: [true, 'Role is required'],
   },
+  isEmailVerified: {
+    type: Boolean,
+    default: false, // has user confirmed email
+  },
+  emailVerificationToken: {
+    type: String,
+    required: false, // code sent to email
+  },
+  failedLoginAttempts: {
+    type: Number,
+    default: 0, // wrong password count
+  },
   profileID: {
     type: String,
     required: false,

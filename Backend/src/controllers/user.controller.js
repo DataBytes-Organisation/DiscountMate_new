@@ -1,5 +1,6 @@
 require('dotenv').config();
 const axios = require('axios');
+const nodemailer = require('nodemailer'); // used to send real emails
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { rateLimit } = require('express-rate-limit');
@@ -10,6 +11,7 @@ const {
     getSavedListById,
     normalizeDashboardRetailer,
 } = require('../utils/savedLists');
+const { logSecurityEvent } = require('../utils/securityLogger');
 
 const PASSWORD_SPECIAL_CHARACTER_REGEX = /[^A-Za-z0-9\s]/;
 const AU_POSTCODE_REGEX = /^\d{4}$/;
@@ -44,7 +46,7 @@ function getAuthEmail(req) {
 function handleControllerError(res, error, fallbackMessage, logPrefix) {
     if (error?.statusCode === 401) {
         return res.status(401).json({
-            message: error.message || 'Invalid token, please log in again',
+            message: 'Invalid token, please log in again',
         });
     }
 
@@ -52,6 +54,7 @@ function handleControllerError(res, error, fallbackMessage, logPrefix) {
     return res.status(500).json({ message: fallbackMessage });
 }
 
+// Validates password meets minimum length and special character rules
 function validatePasswordStrength(password) {
     if (String(password || '').length < 8) {
         return 'Password must be at least 8 characters long';
@@ -62,6 +65,29 @@ function validatePasswordStrength(password) {
     }
 
     return null;
+}
+
+const crypto = require('crypto');
+
+// Creates a random code we send users so they can confirm their email address is real
+function generateVerificationToken() {
+    return crypto.randomBytes(20).toString('hex');
+}
+
+// Sets up the connection needed to send emails from the app.
+// Returns null if the email credentials haven't been configured yet
+function createEmailTransporter() {
+    if (!process.env.SUPPORT_EMAIL_USER || !process.env.SUPPORT_EMAIL_APP_PASSWORD) {
+        return null;
+    }
+
+    return nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.SUPPORT_EMAIL_USER,
+            pass: process.env.SUPPORT_EMAIL_APP_PASSWORD,
+        },
+    });
 }
 
 function normalizeAustralianPhoneNumber(value) {
@@ -419,6 +445,9 @@ const signup = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+// Generate a random code to confirm this user's email address later
+        const verificationToken = generateVerificationToken();
+
         const user = {
             account_user_name: normalizedEmail,
             email: normalizedEmail,
@@ -427,13 +456,17 @@ const signup = async (req, res) => {
             user_lname,
             address,
             phone_number,
-            admin: admin || false,
-            role: admin ? 'admin' : 'user',
+            admin: false, // CS-12: always force false, ignore any client-supplied admin field
+            role: 'user', // CS-12: always force 'user', ignore any client-supplied role field
+            isEmailVerified: false, // new users start unverified until they confirm their email
+            emailVerificationToken: verificationToken, // stored so we can check it later when they verify
         };
 
         const result = await db.collection('users').insertOne(user);
 
-        res.status(201).json({ message: 'User created successfully', userId: result.insertedId });
+        // Temporary: sending the token back in the response so we can test manually.
+        // Once email sending is added, this token will be emailed to the user instead.
+        res.status(201).json({ message: 'User created successfully', userId: result.insertedId, verificationToken,});
 
     } catch (error) {
         console.error('Error signing up user:', error);
@@ -441,7 +474,31 @@ const signup = async (req, res) => {
     }
 };
 
-// Only allows for one request every 5 minutes per IP
+// Confirms a user's email using the token generated at signup
+const verifyEmail = async (req, res) => {
+    const { token } = req.query;
+
+    try {
+        const db = await connectToMongoDB();
+        const user = await db.collection('users').findOne({ emailVerificationToken: token });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid verification link' });
+        }
+
+        await db.collection('users').updateOne(
+            { _id: user._id },
+            { $set: { isEmailVerified: true } }
+        );
+
+        return res.status(200).json({ message: 'Email verified successfully' });
+    } catch (error) {
+        console.error('Error verifying email:', error);
+        return res.status(500).json({ message: 'Error verifying email' });
+    }
+};
+
+// Only allows for one signup request burst every 5 minutes per IP.
 const signupLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
     limit: 5,
@@ -450,13 +507,26 @@ const signupLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-// Only allows for one signin request burst per five-minute window per IP
+// Limit repeated signin attempts per IP.
 const signinLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
     limit: 5,
-    message: 'Too many requests. Please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
+
+    // CS-15-T3: Log when the signin rate limit is exceeded.
+    handler: (req, res) => {
+        logSecurityEvent({
+            event: 'AUTH_RATE_LIMIT_EXCEEDED',
+            ip: req.ip,
+            method: req.method,
+            route: req.originalUrl,
+        });
+
+        return res.status(429).json({
+            message: 'Too many requests. Please try again later.',
+        });
+    },
 });
 
 // Signin Controller
@@ -464,29 +534,120 @@ const signin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const normalizedEmail = String(email || '').trim().toLowerCase();
+        const normalizedEmail = String(email || '')
+            .trim()
+            .toLowerCase();
+
         const db = await connectToMongoDB();
 
         if (!db) {
-            return res.status(500).json({ message: 'Database not initialized' });
+            return res.status(500).json({
+                message: 'Database not initialized',
+            });
         }
 
-        const user = await db.collection('users').findOne({ email: normalizedEmail });
+        const user = await db
+            .collection('users')
+            .findOne({ email: normalizedEmail });
+
+        // CS-15-T3: Log failed signin attempts where the account is not found.
         if (!user) {
-            return res.status(400).json({ message: 'Invalid credentials' });
+            logSecurityEvent({
+                event: 'LOGIN_FAILED',
+                ip: req.ip,
+                method: req.method,
+                route: req.originalUrl,
+                details: {
+                    reason: 'invalid_credentials',
+                },
+            });
+
+            return res.status(400).json({
+                message: 'Invalid credentials',
+            });
         }
 
-        const isMatch = await bcrypt.compare(password, user.encrypted_password);
+        const isMatch = await bcrypt.compare(
+            password,
+            user.encrypted_password
+        );
 
         if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid credentials' });
+            const attempts =
+                (user.failedLoginAttempts || 0) + 1;
+
+            await db.collection('users').updateOne(
+                { email: normalizedEmail },
+                {
+                    $set: {
+                        failedLoginAttempts: attempts,
+                    },
+                }
+            );
+
+            // CS-15-T3: Record failed authentication attempts.
+            logSecurityEvent({
+                event: 'LOGIN_FAILED',
+                ip: req.ip,
+                method: req.method,
+                route: req.originalUrl,
+                details: {
+                    reason: 'invalid_credentials',
+                    failedAttempts: attempts,
+                },
+            });
+
+            // Send an alert email once failed attempts reach 3.
+            if (attempts >= 3) {
+                const transporter = createEmailTransporter();
+
+                if (transporter) {
+                    transporter.sendMail({
+                        from: process.env.SUPPORT_EMAIL_USER,
+                        to: normalizedEmail,
+                        subject: 'Unusual login activity',
+                        text: `${attempts} failed login attempts detected on your account.`,
+                    });
+                }
+            }
+
+            return res.status(400).json({
+                message: 'Invalid credentials',
+            });
         }
 
-        const role = user.role || (user.admin ? 'admin' : 'user');
+        // Block login until the user has confirmed their email.
+        if (user.isEmailVerified === false) {
+            return res.status(403).json({
+                message:
+                    'Please verify your email before logging in',
+            });
+        }
+
+        // Successful login, so reset the failed attempt count.
+        await db.collection('users').updateOne(
+            { email: normalizedEmail },
+            {
+                $set: {
+                    failedLoginAttempts: 0,
+                },
+            }
+        );
+
+        const role =
+            user.role ||
+            (user.admin ? 'admin' : 'user');
+
         const token = jwt.sign(
-            { email: normalizedEmail, role, admin: role === 'admin' },
+            {
+                email: normalizedEmail,
+                role,
+                admin: role === 'admin',
+            },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            {
+                expiresIn: '1h',
+            }
         );
 
         return res.status(200).json({
@@ -496,8 +657,14 @@ const signin = async (req, res) => {
             admin: role === 'admin',
         });
     } catch (error) {
-        console.error('Error signing in user:', error);
-        return res.status(500).json({ message: 'Error signing in user' });
+        console.error(
+            'Error signing in user:',
+            error
+        );
+
+        return res.status(500).json({
+            message: 'Error signing in user',
+        });
     }
 };
 
@@ -751,7 +918,7 @@ const getAddressSuggestions = async (req, res) => {
     } catch (error) {
         if (error?.statusCode === 401) {
             return res.status(401).json({
-                message: error.message || 'Invalid token, please log in again',
+                message: 'Invalid token, please log in again',
             });
         }
 
@@ -1127,7 +1294,7 @@ const updateProfileImage = async (req, res) => {
     } catch (error) {
         if (error?.statusCode === 401) {
             return res.status(401).json({
-                message: error.message || 'Invalid token, please log in again',
+                message: 'Invalid token, please log in again',
             });
         }
 
@@ -1145,16 +1312,7 @@ const updateProfileImage = async (req, res) => {
 const saveReceiptToProfile = async (req, res) => {
 
     try {
-        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-
-        if (!token) {
-            return res.status(401).json({
-                message: 'No token provided, please log in'
-            });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const email = decoded.email;
+        const email = getAuthEmail(req);
 
         const { store_name, items } = req.body;
 
@@ -1199,6 +1357,12 @@ const saveReceiptToProfile = async (req, res) => {
         });
 
     } catch (error) {
+        if (error?.statusCode === 401) {
+            return res.status(401).json({
+                message: 'Invalid token, please log in again',
+            });
+        }
+
         console.error('Error saving receipt to profile:', error);
 
         return res.status(500).json({
@@ -1211,15 +1375,7 @@ const saveReceiptToProfile = async (req, res) => {
 const getProfileImage = async (req, res) => {
 
     try {
-        const token = req.headers.authorization &&
-                      req.headers.authorization.split(' ')[1];
-
-        if (!token) {
-            return res.status(401).json({ message: 'No token provided' });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const email = decoded.email;
+        const email = getAuthEmail(req);
 
         const db = await connectToMongoDB();
         const user = await db.collection('users').findOne({ email });
@@ -1239,6 +1395,12 @@ const getProfileImage = async (req, res) => {
       res.setHeader('Content-Type', user.profile_image.mime || 'application/octet-stream');
       return res.status(200).send(imageBuffer);
     } catch (error) {
+        if (error?.statusCode === 401) {
+            return res.status(401).json({
+                message: 'Invalid token, please log in again',
+            });
+        }
+
         console.error('Error fetching profile image:', error);
 
         return res.status(500).json({
@@ -1252,6 +1414,7 @@ module.exports = {
     signinLimiter,
     signup,
     signin,
+    verifyEmail,  // added for email confirmation feature
     getProfile,
     updateProfile,
     changePassword,
