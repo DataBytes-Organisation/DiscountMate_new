@@ -170,68 +170,90 @@ def run(context: RunContext) -> RunResult:
     all_records: list[dict[str, Any]] = []
     category_count = 0
 
-    with context.tracer.start_as_current_span("aldi.products") as span:
-        span.set_attribute("source", context.source)
-        span.set_attribute("runner", context.runner)
+    try:
+        with context.tracer.start_as_current_span("aldi.products") as span:
+            span.set_attribute("source", context.source)
+            span.set_attribute("runner", context.runner)
 
-        with httpx.Client(
-            timeout=settings.timeout_seconds, follow_redirects=True
-        ) as client:
-            for category_url in _category_urls(client, context, settings.sitemap_url):
-                category_id = _category_id(category_url)
-                if not category_id:
-                    continue
+            with httpx.Client(
+                timeout=settings.timeout_seconds, follow_redirects=True
+            ) as client:
+                for category_url in _category_urls(client, context, settings.sitemap_url):
+                    category_id = _category_id(category_url)
+                    if not category_id:
+                        continue
 
-                category_count += 1
-                offset = 0
-                while True:
-                    response = request_with_debug(
-                        client,
-                        context.logger,
-                        "aldi",
-                        "GET",
-                        settings.api_url,
-                        request_context=f"category_id={category_id} offset={offset}",
-                        headers=headers,
-                        params={
-                            "currency": settings.currency,
-                            "limit": settings.page_size,
-                            "offset": offset,
-                            "sort": "relevance",
-                            "categoryTree": category_id,
-                        },
-                    )
-                    try:
-                        response.raise_for_status()
-                        batch = _extract_records(
-                            category_id, category_url, response.json()
+                    category_count += 1
+                    offset = 0
+                    while True:
+                        response = request_with_debug(
+                            client,
+                            context.logger,
+                            "aldi",
+                            "GET",
+                            settings.api_url,
+                            request_context=f"category_id={category_id} offset={offset}",
+                            headers=headers,
+                            params={
+                                "currency": settings.currency,
+                                "limit": settings.page_size,
+                                "offset": offset,
+                                "sort": "relevance",
+                                "categoryTree": category_id,
+                            },
                         )
-                        if not batch:
-                            break
-                        all_records.extend(batch)
-                        context.logger.info(
-                            "Fetched %s ALDI records for category=%s offset=%s",
-                            len(batch),
-                            category_id,
-                            offset,
-                        )
-                        if len(batch) < settings.page_size:
-                            break
-                        offset += settings.page_size
-                        sleep_if_needed(settings.delay_seconds)
-                    except httpx.HTTPStatusError as e:
-                        if e.response.status_code == 400:
-                            context.logger.warning(
-                                "Skipping url: %s, (limit=%s, offset=%s).\n Error: %s",
-                                category_url,
-                                settings.page_size,
-                                offset,
-                                e.response.text,
+                        try:
+                            response.raise_for_status()
+                            status_str = (
+                                "SUCCESS"
+                                if response.status_code == 200
+                                else f"HTTP_{response.status_code}"
                             )
-                            break
-                        raise e
+                            context.stats.record_status(status_str, context.source)
+                            batch = _extract_records(
+                                category_id, category_url, response.json()
+                            )
+                            if not batch:
+                                break
+                            all_records.extend(batch)
+                            context.logger.info(
+                                "Fetched %s ALDI records for category=%s offset=%s",
+                                len(batch),
+                                category_id,
+                                offset,
+                            )
+                            if len(batch) < settings.page_size:
+                                break
+                            offset += settings.page_size
+                            sleep_if_needed(settings.delay_seconds)
+                        except httpx.HTTPStatusError as e:
+                            status_code = e.response.status_code
+                            status_str = (
+                                "BLOCKED_403"
+                                if status_code == 403
+                                else "RATE_LIMITED_429"
+                                if status_code == 429
+                                else f"HTTP_{status_code}"
+                            )
+                            context.stats.record_status(status_str, context.source)
+                            if status_code == 400:
+                                context.logger.warning(
+                                    "Skipping url: %s, (limit=%s, offset=%s).\n Error: %s",
+                                    category_url,
+                                    settings.page_size,
+                                    offset,
+                                    e.response.text,
+                                )
+                                break
+                            raise e
+    except Exception:
+        context.stats.emit_failure(context.source, context.run_id, len(all_records))
+        raise
+
+    context.stats.emit_success(context.source, context.run_id, len(all_records))
 
     return RunResult(
         records=all_records,
         metadata={"category_count": category_count, "record_count": len(all_records)},
     )
+    

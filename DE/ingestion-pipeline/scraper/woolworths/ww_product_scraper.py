@@ -227,6 +227,8 @@ def run(context: RunContext) -> RunResult:
                             settings.page_size,
                             cookies,
                         )
+                        context.stats.record_status(status, context.source)
+
                         if (
                             payload is None
                             and settings.scraperapi_key
@@ -241,6 +243,7 @@ def run(context: RunContext) -> RunResult:
                                 settings.page_size,
                                 settings.scraperapi_key,
                             )
+                            context.stats.record_status(status, context.source)
                             fallback_hits += 1
 
                         if payload is None:
@@ -256,6 +259,9 @@ def run(context: RunContext) -> RunResult:
                                     progress_path,
                                     all_products,
                                     brand_index,
+                                )
+                                context.stats.emit_failure(
+                                    context.source, context.run_id, len(all_products)
                                 )
                                 raise RuntimeError("ScraperAPI credits exhausted")
                             break
@@ -313,10 +319,13 @@ def run(context: RunContext) -> RunResult:
                     all_products,
                     max(current_brand_index, 0),
                 )
+                context.stats.emit_failure(context.source, context.run_id, len(all_products))
                 raise
 
     remove_file_if_exists(checkpoint_path)
     remove_file_if_exists(progress_path)
+
+    context.stats.emit_success(context.source, context.run_id, len(all_products))
 
     return RunResult(
         records=all_products,
