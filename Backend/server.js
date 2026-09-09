@@ -95,13 +95,15 @@ app.disable('x-powered-by');
 // Use the configured port or fall back to port 8080.
 const PORT = process.env.PORT || 8080;
 
-// Check whether the backend is running in production.
-const isProduction = process.env.NODE_ENV === 'production';
-
 // Detect managed environments such as Google Cloud Run or App Engine.
 const isManagedCloudRuntime = Boolean(
    process.env.K_SERVICE || process.env.GAE_SERVICE
 );
+
+// Treat Google Cloud deployments as production.
+const isProduction =
+   process.env.NODE_ENV === 'production' ||
+   isManagedCloudRuntime;
 
 /*
  * CS-10-T3: Read the trusted frontend origins from the environment.

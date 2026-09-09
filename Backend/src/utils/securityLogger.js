@@ -55,4 +55,67 @@ const logSecurityEvent = ({
    }
 };
 
-module.exports = { logSecurityEvent };
+const monitorSecurityEvent = ({ event, ip }) => {
+    if (!ip) return;
+
+    const monitoredEvents = [
+        'INVALID_TOKEN_USAGE',
+        'AUTHENTICATION_FAILURE',
+    ];
+
+    if (!monitoredEvents.includes(event)) {
+        return;
+    }
+
+    const now = Date.now();
+
+    if (!eventHistory.has(ip)) {
+        eventHistory.set(ip, []);
+    }
+
+    const events = eventHistory.get(ip);
+
+    const recentEvents = events.filter(
+        timestamp => now - timestamp < WINDOW_MS
+    );
+
+    recentEvents.push(now);
+    eventHistory.set(ip, recentEvents);
+
+    if (recentEvents.length >= THRESHOLD) {
+        writeSecurityLog({
+            event: 'SUSPICIOUS_ACTIVITY',
+            ip,
+            details: [
+                `${recentEvents.length} ${event} events within 5 minutes`,
+            ],
+        });
+
+        eventHistory.set(ip, []);
+    }
+};
+
+const logSecurityEvent = ({
+    event,
+    ip,
+    method,
+    route,
+    details = [],
+}) => {
+    // Write the original event
+    writeSecurityLog({
+        event,
+        ip,
+        method,
+        route,
+        details,
+    });
+
+    // Monitor it for suspicious repeated activity
+    monitorSecurityEvent({
+        event,
+        ip,
+    });
+};
+
+module.exports = { logSecurityEvent }; // export function

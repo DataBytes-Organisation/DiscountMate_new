@@ -11,9 +11,7 @@ const {
     getSavedListById,
     normalizeDashboardRetailer,
 } = require('../utils/savedLists');
-const {
-    logSecurityEvent,
-} = require('../utils/securityLogger');
+const { logSecurityEvent } = require('../utils/securityLogger');
 
 const PASSWORD_SPECIAL_CHARACTER_REGEX = /[^A-Za-z0-9\s]/;
 const AU_POSTCODE_REGEX = /^\d{4}$/;
@@ -48,7 +46,7 @@ function getAuthEmail(req) {
 function handleControllerError(res, error, fallbackMessage, logPrefix) {
     if (error?.statusCode === 401) {
         return res.status(401).json({
-            message: error.message || 'Invalid token, please log in again',
+            message: 'Invalid token, please log in again',
         });
     }
 
@@ -458,8 +456,8 @@ const signup = async (req, res) => {
             user_lname,
             address,
             phone_number,
-            admin: admin || false,
-            role: admin ? 'admin' : 'user',
+            admin: false, // CS-12: always force false, ignore any client-supplied admin field
+            role: 'user', // CS-12: always force 'user', ignore any client-supplied role field
             isEmailVerified: false, // new users start unverified until they confirm their email
             emailVerificationToken: verificationToken, // stored so we can check it later when they verify
         };
@@ -920,7 +918,7 @@ const getAddressSuggestions = async (req, res) => {
     } catch (error) {
         if (error?.statusCode === 401) {
             return res.status(401).json({
-                message: error.message || 'Invalid token, please log in again',
+                message: 'Invalid token, please log in again',
             });
         }
 
@@ -1296,7 +1294,7 @@ const updateProfileImage = async (req, res) => {
     } catch (error) {
         if (error?.statusCode === 401) {
             return res.status(401).json({
-                message: error.message || 'Invalid token, please log in again',
+                message: 'Invalid token, please log in again',
             });
         }
 
@@ -1314,16 +1312,7 @@ const updateProfileImage = async (req, res) => {
 const saveReceiptToProfile = async (req, res) => {
 
     try {
-        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-
-        if (!token) {
-            return res.status(401).json({
-                message: 'No token provided, please log in'
-            });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const email = decoded.email;
+        const email = getAuthEmail(req);
 
         const { store_name, items } = req.body;
 
@@ -1368,6 +1357,12 @@ const saveReceiptToProfile = async (req, res) => {
         });
 
     } catch (error) {
+        if (error?.statusCode === 401) {
+            return res.status(401).json({
+                message: 'Invalid token, please log in again',
+            });
+        }
+
         console.error('Error saving receipt to profile:', error);
 
         return res.status(500).json({
@@ -1380,15 +1375,7 @@ const saveReceiptToProfile = async (req, res) => {
 const getProfileImage = async (req, res) => {
 
     try {
-        const token = req.headers.authorization &&
-                      req.headers.authorization.split(' ')[1];
-
-        if (!token) {
-            return res.status(401).json({ message: 'No token provided' });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const email = decoded.email;
+        const email = getAuthEmail(req);
 
         const db = await connectToMongoDB();
         const user = await db.collection('users').findOne({ email });
@@ -1408,6 +1395,12 @@ const getProfileImage = async (req, res) => {
       res.setHeader('Content-Type', user.profile_image.mime || 'application/octet-stream');
       return res.status(200).send(imageBuffer);
     } catch (error) {
+        if (error?.statusCode === 401) {
+            return res.status(401).json({
+                message: 'Invalid token, please log in again',
+            });
+        }
+
         console.error('Error fetching profile image:', error);
 
         return res.status(500).json({
