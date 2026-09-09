@@ -2,8 +2,8 @@ import React from "react";
 import { View, Text, Pressable, Modal, ScrollView, Image } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { useCart } from "../../app/(tabs)/CartContext";
-import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
+import { useCart } from "../../context/CartContext";
+import { useShoppingLists } from "../../context/ShoppingListsContext";
 
 type CartPopoverProps = {
    visible: boolean;

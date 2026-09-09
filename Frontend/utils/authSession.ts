@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const SESSION_EXPIRED_MESSAGE = "Your session expired. Please log in again.";
 
 export function isAuthErrorMessage(message?: string | null): boolean {
-   return /jwt expired|invalid token|no token provided|unauthorized/i.test(
+   return /jwt expired|token has expired|token expired|invalid token|no token provided|unauthorized/i.test(
       String(message || "")
    );
 }

@@ -236,14 +236,15 @@ function ProfileBasicInfoSection({
             </View>
          </View>
 
-         <View className="px-5 py-5 md:px-6 md:py-6">
-            <View className="flex-row flex-wrap -mx-2">
-               {fields.map((field) => {
+         {React.createElement(
+            View,
+            { className: "px-5 py-5 md:px-6 md:py-6" },
+            <View key="fields" className="flex-row flex-wrap -mx-2">{fields.map((field) => {
                   const value = info[field.key];
                   const hasFieldError = fieldErrors[field.key];
 
-                  return (
-                     <View key={field.key} className="w-full lg:w-1/2 px-2 mb-4">
+	                  return (
+	                     <View key={field.key} className="w-full lg:w-1/2 px-2 mb-4">
                         <View className="gap-2">
                            <Text className="text-sm font-semibold text-[#6B7280]">
                               {field.label}
@@ -347,10 +348,9 @@ function ProfileBasicInfoSection({
                         </View>
                      </View>
                   );
-               })}
-            </View>
+	               })}</View>,
 
-            <View className="mb-4">
+            <View key="email" className="mb-4">
                <View className="gap-2">
                   <Text className="text-sm font-semibold text-[#6B7280]">
                      Email Address
@@ -371,10 +371,10 @@ function ProfileBasicInfoSection({
                      </View>
                   </View>
                </View>
-            </View>
+            </View>,
 
-            {(isEditing || String(info.postcode || "").trim()) && (
-               <View className="mb-4">
+            (isEditing || String(info.postcode || "").trim()) ? (
+               <View key="postcode" className="mb-4">
                   <View className="gap-2">
                      <Text className="text-sm font-semibold text-[#6B7280]">
                         Postcode
@@ -409,9 +409,9 @@ function ProfileBasicInfoSection({
                      )}
                   </View>
                </View>
-            )}
+            ) : null,
 
-            <View className="flex-row items-center gap-3 mt-2">
+            <View key="actions" className="flex-row items-center gap-3 mt-2">
                {isEditing ? (
                   <>
                      <Pressable
@@ -505,7 +505,7 @@ function ProfileBasicInfoSection({
                   </Pressable>
                )}
             </View>
-         </View>
+         )}
       </View>
    );
 }

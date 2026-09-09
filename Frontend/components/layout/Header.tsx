@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Pressable, Image, useWindowDimensions } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCart } from "../../app/(tabs)/CartContext";
-import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
+import { useCart } from "../../context/CartContext";
+import { useShoppingLists } from "../../context/ShoppingListsContext";
 import CartPopover from "./CartPopover";
 import { useUserProfile } from "../../context/UserProfileContext";
 import { useNotificationCenter } from "../../context/NotificationCenterContext";
@@ -51,10 +51,16 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
    const [showMenu, setShowMenu] = useState(false);
    const [showCartPopover, setShowCartPopover] = useState(false);
    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+   const profileRefreshAttempted = useRef(false);
    const { cartItems, getTotalItems } = useCart();
    const { isLoading } = useShoppingLists();
    const { width } = useWindowDimensions();
-   const { profile } = useUserProfile();
+   const {
+      profile,
+      loading: profileLoading,
+      refreshProfile,
+      setCachedProfile,
+   } = useUserProfile();
    const {
       unreadCount,
       panelOpen,
@@ -78,16 +84,32 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
    useEffect(() => {
       const resolveAuthState = async () => {
          const token = await AsyncStorage.getItem("authToken");
-         setIsAuthenticated(Boolean(token));
+         const hasToken = Boolean(token);
+         setIsAuthenticated(hasToken);
+
+         if (!hasToken) {
+            profileRefreshAttempted.current = false;
+         }
+
+         if (
+            hasToken &&
+            !profile &&
+            !profileLoading &&
+            !profileRefreshAttempted.current
+         ) {
+            profileRefreshAttempted.current = true;
+            await refreshProfile();
+         }
       };
 
       void resolveAuthState();
-   }, []);
+   }, [profile, profileLoading, refreshProfile]);
 
    const handleLogout = async () => {
       await AsyncStorage.removeItem("authToken");
+      setCachedProfile(null);
       setShowMenu(false);
-      router.push("/login");
+      router.push("/(auth)/login");
    };
 
    const handleProfile = () => {

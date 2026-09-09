@@ -1,6 +1,6 @@
-requests
-urllib3
-pandas
-opencv-python
-ultralytics
-paddleocr
+requests==2.34.2
+urllib3==2.7.0
+pandas==3.0.3
+opencv-python==4.13.0.92
+ultralytics==8.4.60
+paddleocr==3.6.0

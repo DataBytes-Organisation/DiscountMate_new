@@ -14,7 +14,7 @@ import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { REVERSE_IMAGE_SEARCH_API_URL } from "@/constants/Api";
-import { useImageSearch } from "../../app/(tabs)/ImageSearchContext";
+import { useImageSearch } from "../../context/ImageSearchContext";
 
 export default function SearchBar() {
    const [isFocused, setIsFocused] = useState(false);

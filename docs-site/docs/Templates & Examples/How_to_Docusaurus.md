@@ -17,7 +17,7 @@ However if you wish to create another section beyond what is already built out t
 
 Alternatively copy in full one of the exiting folder and delete out anything you don’t need keeping the `\img\` folder and the `_category_.json` folder.
 
-![New Section](img\newsections.png "adding new folder")
+![New Section](img/newsections.png "adding new folder")
 
 ## Creating Markdowns 
 Once here right click 'add new file' and then add your .md or .mdx files. Alternatively navigate here and copy the template.
@@ -33,7 +33,7 @@ If you need more complex features then check out the .mdx format. There is a che
 It's recommended that you copy the markdown template from templates folder. once copied to your relevant section change the name and the meta details at the top of the file. 
 Start writing and utilising any of the pre-filled formatting. Once done delete anything you've not used and clean the document up. Alternatively, have two windows open and copy relevant markdown styling formats over to your markdown as needed.
 
-![New Section](img\markdownformat.png "editing markdowns")
+![New Section](img/markdownformat.png "editing markdowns")
 
 ## Running Docusaurus Locally
 
@@ -190,7 +190,6 @@ remote:      https://github.com/<org>/<repo>/pull/new/feature/MLdocumentation
 2. Give the PR a clear title (e.g. *"Docs: ML deployment walkthrough"*).
 3. In the description, summarise what you added and call out anything reviewers should specifically look at.
 4. Click **Create pull request**.
-
 
 
 

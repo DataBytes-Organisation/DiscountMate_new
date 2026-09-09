@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { useCart } from "../../app/(tabs)/CartContext";
+import { useCart } from "../../context/CartContext";
 
 type StoreKey = "coles" | "woolworths" | "aldi";
 

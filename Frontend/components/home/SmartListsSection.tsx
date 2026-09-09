@@ -3,7 +3,7 @@ import { View, Text, Pressable, Image, ScrollView } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
+import { useShoppingLists } from "../../context/ShoppingListsContext";
 import type { ShoppingList } from "../../types/ShoppingList";
 import { accentDot, accentRing } from "../my-lists/accentStyles";
 import EditShoppingListModal from "../my-lists/EditShoppingListModal";

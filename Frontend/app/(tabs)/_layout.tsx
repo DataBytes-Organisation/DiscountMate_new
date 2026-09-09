@@ -3,7 +3,7 @@ import { View, ScrollView } from "react-native";
 import { Slot, useSegments } from "expo-router";
 import AppHeader from "../../components/layout/Header";
 import SearchBar from "../../components/layout/SearchBar";
-import { CartProvider } from "./CartContext";
+import { CartProvider } from "../../context/CartContext";
 import RecipeBot from "./RecipeBot";
 
 export default function TabsLayout() {

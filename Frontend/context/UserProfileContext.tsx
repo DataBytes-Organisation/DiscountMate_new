@@ -1,7 +1,15 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import React, {
+   createContext,
+   ReactNode,
+   useCallback,
+   useContext,
+   useEffect,
+   useState,
+} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchProfile } from "../services/profile";
 import { UserProfile } from "../types/UserProfile";
+import { SESSION_EXPIRED_MESSAGE } from "../utils/authSession";
 
 type ProfileUpdater =
    | UserProfile
@@ -21,7 +29,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
    const [profile, setProfile] = useState<UserProfile | null>(null);
    const [loading, setLoading] = useState(true);
 
-   const refreshProfile = async (): Promise<UserProfile | null> => {
+   const refreshProfile = useCallback(async (): Promise<UserProfile | null> => {
       const token = await AsyncStorage.getItem("authToken");
       if (!token) {
          setProfile(null);
@@ -34,14 +42,16 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
          const nextProfile = await fetchProfile();
          setProfile(nextProfile);
          return nextProfile;
-      } catch (error) {
-         console.error("Error refreshing user profile:", error);
-         setProfile(null);
-         return null;
+	      } catch (error) {
+	         if (error instanceof Error && error.message !== SESSION_EXPIRED_MESSAGE) {
+	            console.error("Error refreshing user profile:", error);
+	         }
+	         setProfile(null);
+	         return null;
       } finally {
          setLoading(false);
       }
-   };
+   }, []);
 
    const setCachedProfile = (nextProfile: ProfileUpdater) => {
       setProfile((current) =>

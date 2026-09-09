@@ -15,7 +15,7 @@ Due to the large memory footprint, the catalogues themselves are not stored in a
 cd Catalogue_scraping_2025
 "catalogue_scraper_main.py"
 ```
-![catalogue scraper](img\running_catalogue_scraper.png "catalogue scraper")
+![catalogue scraper](img/running_catalogue_scraper.png "catalogue scraper")
 
 :::
 
@@ -48,7 +48,7 @@ Roboflow projects are public be default. You can access the both annotation sets
 - [Roboflow Model 1 Set](https://universe.roboflow.com/steven-cnmfv/discountmate-t3-2025)
 - [Roboflow Model 2 Set](https://universe.roboflow.com/deakincapstonediscountmatecomputervision/model-2-post-crop-ocv-ocr)
 
-![Roboflow Examples](img\roboflowsets.png "Roboflow Examples")
+![Roboflow Examples](img/roboflowsets.png "Roboflow Examples")
 
 ### Model 1 — Page → Tile detection
 
@@ -79,7 +79,7 @@ base_model_results = model.train(
 
 The final weights are stored at `Catalogue_Scraping_2025/weights_yolo/YOLO_Model_1_Full_Crop.pt`. A separate Roboflow-hosted page detector, downloaded directly from roboflow, was also evaluated, but the locally-trained Model 1 produced cleaner tile crops on the catalogues and is the one used in the final production run.
 
-![YOLO Model 1 Examples](img\yolomodel1_example.png "YOLO Examples")
+![YOLO Model 1 Examples](img/yolomodel1_example.png "YOLO Examples")
 
 ### Model 2 — Tile → Sub-region detection
 
@@ -120,7 +120,7 @@ results = model.train(
 
 The sub region boxes were done in such a way so as to allow the OCR extraction to be directly associated to that region. Running global extraction over the entire tile could have unit price values being inserted into the actual price attribute. See some examples below. 
 
-![YOLO Model 2 Examples](img\yolo2examples.png "YOLO 2 Examples")
+![YOLO Model 2 Examples](img/yolo2examples.PNG "YOLO 2 Examples")
 
 ### General training notes
 
@@ -185,7 +185,7 @@ Each strategy was tried against three image variants of every crop: the raw BGR 
 PaddleOCR became the **primary OCR engine** in production. Tesseract and the zoned parser remained available as fallbacks in some experiments but were eventually removed in the final pipeline due to the inference time required to process several OCR methods on 100s of thousands of crops. PaddleOCR appeared to perform ideally in benchmarking, however in some cases it still misses decimal points or confuses the order of the numbers.
 
 **OCR Benchmarking Examples**
-![OCR Benchmarking](img\paddlebenchmarking.png "OCR Examples")
+![OCR Benchmarking](img/paddlebenchmarking.png "OCR Examples")
 
 ### Known limitation —  price recognition
 
@@ -261,7 +261,7 @@ Because each batch runs in its own process, peak memory is bounded by the size o
 
 **High-level flow Schematic:**
 
-![OCR Pipeline](img\ocr_pipeline.png "OCR Pipeline")
+![OCR Pipeline](img/ocr_pipeline.png "OCR Pipeline")
 
 ### 3.3 Output dataset
 
@@ -271,7 +271,7 @@ After roughly 3,000 catalogues had been processed end-to-end, the resulting `Cat
 gs://discount-mate-data/OCR Historic Data Extraction/Catalogue_OCR_database.csv
 ```
 
-![OCR GCP](img\ocr_gcp.png "OCR GCP")
+![OCR GCP](img/ocr_gcp.png "OCR GCP")
 
 ### 3.4 Status, automation gaps, and recommended next steps
 
@@ -285,5 +285,4 @@ Both the scraper (`catalogue_scraper_main.py`) and the OCR pipeline (`Catalogue_
 4. **Cloud-side storage.** Move the OCR output from a flat CSV on GCS to a queryable Postgres table within GCP.
 
 ---
-
 

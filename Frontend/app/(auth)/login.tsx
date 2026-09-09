@@ -12,9 +12,11 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../../constants/Api";
+import { useUserProfile } from "../../context/UserProfileContext";
 
 export default function LoginPage() {
    const router = useRouter();
+   const { refreshProfile } = useUserProfile();
    const [email, setEmail] = useState("");
    const [password, setPassword] = useState("");
    const [rememberMe, setRememberMe] = useState(false);
@@ -48,6 +50,7 @@ export default function LoginPage() {
          } else {
             if (data?.token) {
                await AsyncStorage.setItem("authToken", data.token);
+               await refreshProfile();
             }
             router.push("/(tabs)");
          }
@@ -237,4 +240,3 @@ export default function LoginPage() {
       </View>
    );
 }
-
