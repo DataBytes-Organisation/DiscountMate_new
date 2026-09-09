@@ -6,7 +6,32 @@
   "scripts": {
     "start": "node server.js",
     "lint": "eslint ./src/",
-    "check:ci": "node --check server.js && node --check src/config/database.js && node --check src/config/swagger.js && node --check src/controllers/basket.controller.js"
+    "check:ci": "node --check server.js && node --check src/config/database.js && node --check src/config/swagger.js && node --check src/controllers/basket.controller.js && npm run check:retailers && npm run check:migration",
+    "check:retailers": "node --check src/migration/shared/retailer-identity.js",
+    "check:migration": "node --check src/migration/database/app-data-source.js && node --check src/migration/database/finalised-data-source.js && node --check src/migration/database/entities.js && node --check src/migration/database/initialising_database/1786579200001-CreateMigrationInfrastructure.js && node --check src/migration/database/initialising_database/1786579200002-CreateUserDomain.js && node --check src/migration/database/initialising_database/1786579200003-CreateShoppingListDomain.js && node --check src/migration/database/initialising_database/1786579200004-CreateAlertsAndNotificationsDomain.js && node --check src/migration/database/initialising_database/1786579200005-CreateCatalogPricingCompatibility.js && node --check src/migration/database/initialising_database/1786579200006-AddReferenceResolutionAudit.js && node --check src/migration/database/initialising_database/1786579200007-ApplyFinalisedPostgreSQL.js && node --check src/migration/database/initialising_database/1786579200008-CreateSupportDomain.js && node --check src/migration/database/persistence/user.entities.js && node --check src/migration/database/persistence/subscription.entities.js && node --check src/migration/database/persistence/receipt.entities.js && node --check src/migration/database/persistence/list.entities.js && node --check src/migration/database/persistence/alert.entities.js && node --check src/migration/database/persistence/notification.entities.js && node --check src/migration/database/persistence/support.entities.js && node --check src/migration/cli/mongo-to-postgres.js && node --check src/migration/cli/run-all-migrations.js && node --check src/migration/cli/run-all-reconciliations.js && node --check src/migration/cli/silver-schema.js && node --check src/migration/cli/finalised-schema-preview.js && node --check src/migration/cli/phases/users.phase.js && node --check src/migration/cli/phases/shopping-lists.phase.js && node --check src/migration/cli/phases/alerts-notifications.phase.js && node --check src/migration/cli/phases/support-requests.phase.js && node --check src/migration/cli/phases/catalog.phase.js && node --check src/migration/cli/phases/product-pricing.phase.js && node --check src/migration/cli/lib/cli-options.js && node --check src/migration/cli/lib/migration-audit.js && node --check src/migration/cli/lib/orchestration-summary.js && node --check src/migration/cli/lib/reference-audit.js && node --check src/migration/cli/lib/user-transform.js && node --check src/migration/cli/lib/shopping-list-transform.js && node --check src/migration/cli/lib/alert-notification-transform.js && node --check src/migration/cli/lib/support-request-transform.js && node --check src/migration/cli/lib/catalog-transform.js && node --check src/migration/cli/lib/product-pricing-transform.js",
+    "db:migrate": "typeorm migration:run -d src/migration/database/app-data-source.js",
+    "db:migrate:show": "typeorm migration:show -d src/migration/database/app-data-source.js",
+    "db:migrate:revert": "typeorm migration:revert -d src/migration/database/app-data-source.js",
+    "db:silver:setup": "node src/migration/cli/silver-schema.js setup",
+    "db:silver:status": "node src/migration/cli/silver-schema.js status",
+    "db:finalised:preview": "node src/migration/cli/finalised-schema-preview.js",
+    "db:finalised:apply": "typeorm migration:run -d src/migration/database/finalised-data-source.js",
+    "db:finalised:revert": "typeorm migration:revert -d src/migration/database/finalised-data-source.js",
+    "db:finalised:show": "typeorm migration:show -d src/migration/database/finalised-data-source.js",
+    "migrate:all": "node src/migration/cli/run-all-migrations.js",
+    "reconcile:all": "node src/migration/cli/run-all-reconciliations.js",
+    "migrate:users": "node src/migration/cli/mongo-to-postgres.js --phase users",
+    "reconcile:users": "node src/migration/cli/mongo-to-postgres.js --phase users --reconcile-only",
+    "migrate:shopping-lists": "node src/migration/cli/mongo-to-postgres.js --phase shopping-lists",
+    "reconcile:shopping-lists": "node src/migration/cli/mongo-to-postgres.js --phase shopping-lists --reconcile-only",
+    "migrate:alerts-notifications": "node src/migration/cli/mongo-to-postgres.js --phase alerts-notifications",
+    "reconcile:alerts-notifications": "node src/migration/cli/mongo-to-postgres.js --phase alerts-notifications --reconcile-only",
+    "migrate:support-requests": "node src/migration/cli/mongo-to-postgres.js --phase support-requests",
+    "reconcile:support-requests": "node src/migration/cli/mongo-to-postgres.js --phase support-requests --reconcile-only",
+    "migrate:catalog": "node src/migration/cli/mongo-to-postgres.js --phase catalog --batch-size 500",
+    "reconcile:catalog": "node src/migration/cli/mongo-to-postgres.js --phase catalog --batch-size 500 --reconcile-only",
+    "migrate:product-pricing": "node src/migration/cli/mongo-to-postgres.js --phase product-pricing --batch-size 1000",
+    "reconcile:product-pricing": "node src/migration/cli/mongo-to-postgres.js --phase product-pricing --batch-size 1000 --reconcile-only"
   },
   "keywords": [],
   "author": "",
@@ -41,7 +66,8 @@
     "nodemon": "^3.1.9",
     "pg": "^8.12.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "typeorm": "^0.3.31"
   },
   "packageManager": "yarn@1.22.22"
 }
