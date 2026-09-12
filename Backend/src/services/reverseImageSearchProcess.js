@@ -43,10 +43,22 @@ function checkHealth() {
   return new Promise((resolve) => {
     const req = http.request(
       { hostname: RIS_HOST, port: RIS_PORT, path: '/health', method: 'GET', timeout: 3000 },
-      (res) => { res.resume(); resolve(res.statusCode === 200); }
+      (res) => {
+        let body = '';
+        res.setEncoding('utf8');
+        res.on('data', (chunk) => { body += chunk; });
+        res.on('end', () => {
+          if (res.statusCode !== 200) return resolve(null);
+          try {
+            return resolve(JSON.parse(body));
+          } catch {
+            return resolve({ ready: true });
+          }
+        });
+      }
     );
-    req.on('error',   () => resolve(false));
-    req.on('timeout', () => { req.destroy(); resolve(false); });
+    req.on('error',   () => resolve(null));
+    req.on('timeout', () => { req.destroy(); resolve(null); });
     req.end();
   });
 }
@@ -94,9 +106,13 @@ function startReverseImageSearch() {
           `[ReverseImageSearch] Did not become healthy within ${timeoutMs / 1000} s.`
         ));
       }
-      checkHealth().then((ok) => {
-        if (ok) {
-          console.log('[ReverseImageSearch] Sidecar is healthy and ready.');
+      checkHealth().then((health) => {
+        if (health) {
+          if (health.ready === false) {
+            console.warn(`[ReverseImageSearch] Sidecar is running but search is unavailable: ${health.error || 'model is not ready'}`);
+          } else {
+            console.log('[ReverseImageSearch] Sidecar is healthy and ready.');
+          }
           _proc.on('exit', (code) => {
             console.error(`[ReverseImageSearch] Sidecar exited unexpectedly (code ${code}). Restart the server to recover.`);
             _proc = null;

@@ -73,11 +73,13 @@ BASE_URL=http://localhost:3000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=a_long_random_string
 
-# Google Cloud (required for FAISS index download on first run)
-GOOGLE_CLOUD_PROJECT=your-gcp-project-id
-FAISS_BUCKET_NAME=discountmate-ml-models
-FAISS_OBJECT_NAME=reverse_image_search.faiss
+# Local model artifacts (no GCS access required)
+MODEL_ARTIFACT_SOURCE=local
+LOCAL_FAISS_PATH=/absolute/path/to/reverse_image_search.faiss
+LOCAL_RAG_INDEX_DIR=/absolute/path/to/recipe_rag/index
 ```
+
+`LOCAL_RAG_INDEX_DIR` must contain `recipe_index.npz`, `recipe_metadata.json`, `product_index.npz`, and `product_metadata.json`. You can omit either path override to use the ignored default directories under `Backend/ml-service/`.
 
 Generate `JWT_SECRET` with Node.js:
 
@@ -141,7 +143,7 @@ cd Backend
 node server.js
 ```
 
-> `node server.js` automatically downloads the FAISS index from GCS on first run (cached at `Backend/ml-service/ml_models/reverse_image_search.faiss`) and spawns the Reverse Image Search FastAPI sidecar on port 8001 before accepting any requests. No separate terminal is needed for the sidecar.
+> `node server.js` automatically spawns the Reverse Image Search FastAPI sidecar on port 8001. In local artifact mode, a missing index leaves the sidecar running in a degraded state instead of blocking the Node backend.
 
 **Terminal 3 — Frontend**
 ```bash
@@ -169,14 +171,14 @@ curl -X POST "http://localhost:3000/api/reverse-image-search" \
   -F "file=@/path/to/any-product-image.jpg"
 ```
 
-All four commands should return HTTP 200. If the sidecar health check fails, wait up to 5 minutes for the first-run DINOv2 and FAISS downloads to complete.
+The service health commands should return HTTP 200. Reverse-image health includes a `ready` field; `false` means the sidecar is running but its local artifact is unavailable. Search requests return HTTP 503 until a valid artifact is configured.
 
 ### First-run note
 
-The first `node server.js` run triggers two large downloads automatically:
+The first `node server.js` run may download DINOv2 (~330 MB) from PyTorch Hub into the Torch Hub cache directory. Model index behavior depends on `MODEL_ARTIFACT_SOURCE`:
 
-1. **DINOv2 model** (~330 MB) — downloaded from PyTorch Hub into the Torch Hub cache directory
-2. **FAISS index** — downloaded from GCS to `Backend/ml-service/ml_models/reverse_image_search.faiss`
+- `local`: load FAISS and Recipe RAG indexes only from the configured device paths.
+- `gcs`: use cached local indexes first, then download missing artifacts from GCS.
 
 Subsequent runs use the local caches and start in seconds.
 
@@ -290,13 +292,14 @@ Set these in `Backend/.env` for local development. In production, `MONGO_URI` an
 | `JWT_SECRET` | Backend | Yes (local) | — | Secret key for signing JWTs. Loaded from Secret Manager in production. | `some-long-random-value` |
 | `MONGO_URI_SECRET_NAME` | Backend | No | `mongo-uri` | Secret Manager name for `MONGO_URI` | `mongo-uri` |
 | `JWT_SECRET_SECRET_NAME` | Backend | No | `jwt-secret` | Secret Manager name for `JWT_SECRET` | `jwt-secret` |
-| `GOOGLE_CLOUD_PROJECT` | Backend + Sidecar | Yes | — | GCP project ID. Required for Secret Manager (production) and GCS (all envs). | `my-project-123` |
+| `GOOGLE_CLOUD_PROJECT` | Backend + Sidecar | Conditional | — | Required for Secret Manager in production and for model artifacts in `gcs` mode. | `my-project-123` |
 | `UPLOAD_DIR` | Backend | No | `<os.tmpdir>/uploads` | Temporary directory for uploaded images | `/tmp/uploads` |
 
 ### Reverse image search sidecar
 
 | Variable | Service | Required | Default | Description | Example |
 |---|---|---|---|---|---|
+| `MODEL_ARTIFACT_SOURCE` | Sidecar + ML Service | No | `gcs` | `local` loads only device files; `gcs` downloads missing cached artifacts | `local` |
 | `FAISS_BUCKET_NAME` | Sidecar | No | `discountmate-ml-models` | GCS bucket containing the FAISS index | `discountmate-ml-models` |
 | `FAISS_OBJECT_NAME` | Sidecar | No | `reverse_image_search.faiss` | GCS object path for the FAISS index file | `reverse_image_search.faiss` |
 | `FAISS_GCP_PROJECT` | Sidecar | No | — | GCP project that owns the FAISS bucket, if different from `GOOGLE_CLOUD_PROJECT` | `other-project-456` |
@@ -311,6 +314,7 @@ Set these in `Backend/.env` for local development. In production, `MONGO_URI` an
 | `ML_SERVICE_PORT` | ML Service | No | `5001` | Port for the Flask service | `5001` |
 | `MONGO_URI` | ML Service | No | — | MongoDB connection string for model endpoints that query the database | `mongodb+srv://...` |
 | `MONGO_DB` | ML Service | No | — | MongoDB database name | `discountmate` |
+| `LOCAL_RAG_INDEX_DIR` | ML Service | No | `recipe_rag/index` (local) or `/tmp/recipe_rag` (GCP) | Directory containing the four Recipe RAG index artifacts | `/data/recipe_rag` |
 
 ---
 
@@ -319,6 +323,8 @@ Set these in `Backend/.env` for local development. In production, `MONGO_URI` an
 ### FAISS index download fails at startup
 
 **Symptom:** `node server.js` exits with `Failed to download FAISS index from gs://discountmate-ml-models/...` and the sidecar never becomes healthy.
+
+This section applies only when `MODEL_ARTIFACT_SOURCE=gcs`. For local development, select `local` and provide `LOCAL_FAISS_PATH`; a missing file disables reverse-image search without stopping the backend.
 
 **Resolution:**
 

@@ -76,7 +76,8 @@ ensure_runtime_secrets()
 # ============================================================
 # Recipe RAG initialisation
 # ============================================================
-from recipe_rag.rag_pipeline import RecipeRAG
+from recipe_rag.gcs_loader import MODEL_ARTIFACT_SOURCE
+from recipe_rag.rag_pipeline import INDEX_DIR, RecipeRAG
 
 rag = None
 RAG_INIT_ERROR = None
@@ -337,6 +338,8 @@ def recipe_stats():
             'success': True,
             'ready': False,
             'loaded': False,
+            'model_source': MODEL_ARTIFACT_SOURCE,
+            'index_dir': INDEX_DIR,
         }
         if RAG_INIT_ERROR is not None:
             payload['error'] = str(RAG_INIT_ERROR)
@@ -345,6 +348,8 @@ def recipe_stats():
     return jsonify({
         'success': True,
         'ready': True,
+        'model_source': MODEL_ARTIFACT_SOURCE,
+        'index_dir': INDEX_DIR,
         'recipe_count': len(rag.retriever.recipes),
         'active_sessions': len(rag.sessions),
         'max_turns_per_session': rag.max_turns,
