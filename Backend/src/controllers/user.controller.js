@@ -253,6 +253,8 @@ function getDefaultNotificationPreferences() {
             price_alerts: true,
             weekly_summary: true,
             in_browser_notifications: true,
+            email_notifications: true,
+            push_notifications: true,
         },
     };
 }
@@ -388,6 +390,8 @@ function normalizeNotificationPreferences(preferences) {
                         : typeof alertTypes.browserNotifications === 'boolean'
                             ? alertTypes.browserNotifications
                             : defaults.alert_types.in_browser_notifications,
+            email_notifications: typeof alertTypes.email_notifications === 'boolean' ? alertTypes.email_notifications : true,
+            push_notifications: typeof alertTypes.push_notifications === 'boolean' ? alertTypes.push_notifications : true,
         },
     };
 }
@@ -831,6 +835,32 @@ const updateNotificationPreferences = async (req, res) => {
     }
 };
 
+const registerPushToken = async (req, res) => {
+    try {
+        const token = req.body?.token;
+        if (!token) return res.status(400).json({ message: 'Push token is required' });
+        const db = await connectToMongoDB();
+        await db.collection('users').updateOne({ email: req.user.email }, { $addToSet: { push_tokens: String(token) } });
+        return res.status(200).json({ message: 'Push token registered.' });
+    } catch (error) {
+        console.error('Error registering push token:', error);
+        return res.status(500).json({ message: 'Failed to register push token' });
+    }
+};
+
+const removePushToken = async (req, res) => {
+    try {
+        const token = req.body?.token;
+        if (!token) return res.status(400).json({ message: 'Push token is required' });
+        const db = await connectToMongoDB();
+        await db.collection('users').updateOne({ email: req.user.email }, { $pull: { push_tokens: String(token) } });
+        return res.status(200).json({ message: 'Push token removed.' });
+    } catch (error) {
+        console.error('Error removing push token:', error);
+        return res.status(500).json({ message: 'Failed to remove push token' });
+    }
+};
+
 const getSubscription = async (req, res) => {
     try {
         const email = getAuthEmail(req);
@@ -1266,4 +1296,6 @@ module.exports = {
     updateProfileImage,
     getProfileImage,
     saveReceiptToProfile,
+    registerPushToken,
+    removePushToken,
 };
