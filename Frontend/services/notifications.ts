@@ -11,6 +11,7 @@ type NotificationPreferencesResponse = {
          weekly_summary?: boolean;
          in_browser_notifications?: boolean;
          email_notifications?: boolean;
+         push_notifications?: boolean;
       };
    };
 };
@@ -59,6 +60,10 @@ function mapNotificationPreferences(
          emailNotifications:
             typeof alertTypes.email_notifications === "boolean"  
                ? alertTypes.email_notifications
+               : true,
+         pushNotifications:
+            typeof alertTypes.push_notifications === "boolean"
+               ? alertTypes.push_notifications
                : true,
       },
    };
@@ -123,6 +128,7 @@ export async function saveNotificationPreferences(
                   preferences.alertTypes.browserNotifications,
                weekly_summary: preferences.alertTypes.weeklySummary,
                email_notifications: preferences.alertTypes.emailNotifications,
+               push_notifications: preferences.alertTypes.pushNotifications,
             },
          },
       }),

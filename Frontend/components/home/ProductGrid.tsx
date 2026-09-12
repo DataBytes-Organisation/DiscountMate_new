@@ -5,7 +5,7 @@ import ProductCard, { Product } from "./ProductCard";
 import ProductFilterSection from "../common/ProductFilterSection";
 import { API_URL } from "@/constants/Api";
 
-type ApiProduct = {
+export type ApiProduct = {
    _id: string;
    product_name?: string | null;
    product_code?: string | null;
@@ -128,7 +128,7 @@ function parseProductsPayload(
 }
 
 /** One API page per UI page: `GET /products?page=&limit=` (matches backend pagination). */
-async function fetchProductsPage(
+export async function fetchProductsPage(
    page: number,
    limit: number,
    category: string | undefined,

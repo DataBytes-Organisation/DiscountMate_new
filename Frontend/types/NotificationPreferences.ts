@@ -4,5 +4,6 @@ export type NotificationPreferences = {
       browserNotifications: boolean;
       weeklySummary: boolean;
       emailNotifications: boolean;
+      pushNotifications: boolean;
    };
 };

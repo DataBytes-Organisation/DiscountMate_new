@@ -13,11 +13,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useUserProfile } from "../../context/UserProfileContext";
+import { unregisterPushToken } from "../../hooks/usePushNotificationRegistration";
 
 type HubSectionKey =
    | "dashboard"
    | "notifications"
    | "alerts"
+   | "price-alerts"
    | "profile"
    | "subscription"
    | "support"
@@ -42,6 +44,7 @@ const NAV_ITEMS: Array<{
    { key: "dashboard", label: "Dashboard", icon: "chart-column", route: "/(tabs)/dashboard" },
    { key: "notifications", label: "Notifications", icon: "bell", route: "/(tabs)/notifications" },
    { key: "alerts", label: "Manage Alert Segments", icon: "tags", route: "/(tabs)/alert-segments" },
+   { key: "price-alerts", label: "Price Alerts", icon: "bell-concierge", route: "/(tabs)/price-alerts" },
    { key: "profile", label: "Profile Management", icon: "pen-to-square", route: "/(tabs)/profile" },
    { key: "subscription", label: "Subscription", icon: "star", route: "/(tabs)/subscription" },
    { key: "support", label: "Support", icon: "headset", route: "/contact" },
@@ -81,6 +84,7 @@ export default function UserHubSidebar({
    const sectionAlignClass = compactSidebar ? "items-start" : "items-center";
 
    const handleLogout = async () => {
+      await unregisterPushToken().catch(() => undefined);
       await AsyncStorage.removeItem("authToken");
       router.push("/login");
    };
