@@ -189,21 +189,21 @@ product.
 
 ## 8. Validation
 
-The Coles validation script is:
-
-    validation/de06_coles_matching_validation.sql
-
-The validation checks:
+The validation covers:
 
 1. GTIN coverage;
 2. duplicate canonical products;
 3. products sharing the same name;
-4. representative product matching cases;
-5. pack-size variants;
-6. brand variants;
-7. products without GTIN.
+4. representative Full Cream Milk matching cases;
+5. representative Extra Virgin Olive Oil matching cases;
+6. pack-size variants;
+7. brand variants;
+8. products without GTIN;
+9. near-duplicate review candidates;
+10. overall duplicate validation.
 
-The validation script is read-only and does not modify production data.
+The validation documentation contains read-only SQL queries that do not
+modify production data.
 
 ---
 
