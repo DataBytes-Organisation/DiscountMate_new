@@ -21,6 +21,8 @@ const dashboardRoutes = require('./src/routers/dashboard.router');
 const notificationRoutes = require('./src/routers/notification.router');
 const alertSegmentRoutes = require('./src/routers/alertSegment.router');
 const listRoutes = require('./src/routers/list.router');
+const priceAlertRoutes = require('./src/routers/priceAlert.router');
+const { checkPriceAlerts } = require('./src/utils/priceAlerts');
 
 if (process.env.NODE_ENV !== 'production') {
    require('dotenv').config({ path: path.join(__dirname, '.env') });
@@ -162,6 +164,11 @@ async function startServer() {
       process.exit(1);
    }
 
+   if (process.env.NODE_ENV !== 'test' && process.env.PRICE_ALERT_CHECKS_ENABLED !== 'false') {
+      const minutes = Number(process.env.PRICE_ALERT_CHECK_MINUTES) || 15;
+      setInterval(() => checkPriceAlerts().catch((err) => console.error('Price alert check failed:', err.message)), minutes * 60 * 1000);
+   }
+
    try {
       if (isManagedCloudRuntime) {
          console.log('Managed runtime detected. Using reverse image search sidecar via REVERSE_IMAGE_SEARCH_SERVICE_URL.');
@@ -169,8 +176,8 @@ async function startServer() {
          await startReverseImageSearch();
       }
    } catch (err) {
-      console.error('Failed to start ReverseImageSearch sidecar:', err.message);
-      process.exit(1);
+      //console.error('Failed to start ReverseImageSearch sidecar:', err.message);
+      //process.exit(1);
    }
 
    app.listen(PORT, () => {
@@ -194,6 +201,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/alert-segments', alertSegmentRoutes);
 app.use('/api/lists', listRoutes);
+app.use('/api/price-alerts', priceAlertRoutes);
 
 // Root route
 app.get('/', (req, res) => {
