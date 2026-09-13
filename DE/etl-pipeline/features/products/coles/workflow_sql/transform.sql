@@ -5,7 +5,11 @@ WITH cleaned AS (
         trim(Name) AS item_name,
         NULLIF(trim(Brand), '') AS brand_name,
         NULLIF(trim(Size), '') AS raw_size,
-        NULLIF(trim(ImageUri), '') AS image_link_side,
+        CASE
+            WHEN NULLIF(trim(ImageUri), '') IS NULL THEN NULL
+            WHEN trim(ImageUri) LIKE 'http%' THEN trim(ImageUri)
+            ELSE 'https://productimages.coles.com.au/productimages' || trim(ImageUri)
+        END AS image_link_side,
         NULLIF(trim(CategoryGroup), '') AS category_group,
         NULLIF(trim(Category), '') AS category_name_raw,
         NULLIF(trim(SubCategory), '') AS subcategory_name_raw,

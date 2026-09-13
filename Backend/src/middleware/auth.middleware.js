@@ -9,7 +9,7 @@ const verifyToken = (req, res, next) => {
         : null; // If no token is found, set it to null
 
     if (!token) {
-        return res.status(401).json({message: "No token provided"});
+        return res.status(401).json({message: "No token provided", code: "authentication_required"});
     }
 
     try {
@@ -23,9 +23,9 @@ const verifyToken = (req, res, next) => {
     } catch (err) {
 
         if (err.name === "TokenExpiredError") {
-            return res.status(401).json({message: "Token Has Expired"});
+            return res.status(401).json({message: "Token Has Expired", code: "authentication_required"});
         }
-        return res.status(401).json({ message: "Invalid Token"});
+        return res.status(401).json({ message: "Invalid Token", code: "authentication_required"});
     }
 
 };

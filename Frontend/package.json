@@ -12,11 +12,13 @@
     "serve:web": "node server.js",
     "test": "jest --watchAll",
     "test:ci": "jest --runInBand --ci",
+    "test:e2e": "playwright test",
     "lint": "eslint app components constants hooks types --ext .js,.jsx,.ts,.tsx"
   },
   "jest": {
     "preset": "jest-expo",
-    "testRegex": "(/__tests__/.*|(\\.|-)(test|spec))\\.[jt]sx?$"
+    "testRegex": "(/__tests__/.*|(\\.|-)(test|spec))\\.[jt]sx?$",
+    "testPathIgnorePatterns": ["/node_modules/", "/e2e/"]
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
@@ -71,6 +73,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@playwright/test": "^1.62.1",
     "@types/jest": "^29.5.12",
     "@types/papaparse": "^5.3.15",
     "@types/react": "~18.2.45",

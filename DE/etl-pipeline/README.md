@@ -71,6 +71,24 @@ Apply migrations:
 uv run alembic upgrade head
 ```
 
+If Alembic reports an unknown revision (for example `20260430_0002`), do not
+stamp the database. First inspect the database without changing it:
+
+```sql
+SELECT version_num FROM alembic_version;
+SELECT table_schema, table_name
+FROM information_schema.tables
+WHERE table_schema = 'silver'
+ORDER BY table_name;
+```
+
+Compare that schema with the migrations in `migrations/versions` and restore the
+missing historical migration from source control. For a disposable showcase
+database, creating a new empty database and running the full migration chain is
+safer than claiming an unverified schema is current. Only use `alembic stamp`
+after the tables, columns, constraints, seeds, and views have been reconciled and
+reviewed.
+
 ## Run workflows
 
 Retailer selectors use the format `products_<retailer>`, for example `products_aldi`.
@@ -208,8 +226,7 @@ uv run alembic revision -m "describe change"
 - `config/`: env-backed settings and runtime config templates
 - `common/`: shared CLI, path, DuckDB, normalization, and PostgreSQL helpers
 - `features/example/`: one working example workflow
-- `features/products/aldi/`: implemented Aldi job plus workflow SQL for normalize, QA, and silver upsert
-- `features/products/<retailer>/job.py`: retailer jobs, with Aldi implemented and others available for later expansion
+- `features/products/<retailer>/`: implemented ALDI, Coles, IGA, and Woolworths jobs plus workflow SQL
 - `migrations/`: Alembic migration files
 
 ## Container build
@@ -253,8 +270,10 @@ Do not commit:
 
 ## Notes
 
-- `example` is still useful as a starter workflow, but `products_aldi` is the implemented retailer pipeline in this repo
+- `example` is still useful as a starter workflow; all four product retailer jobs are implemented
 - Aldi GTIN matching uses `silver.static_master_coles_products` as a reference source and optimizes for precision over recall
-- retailer `job.py` files under `features/products/` other than Aldi remain expansion points
+- Woolworths rejects malformed/scientific-notation barcodes and only enriches brands from a unique trusted Coles GTIN
+- successful product loads write `silver.etl_run_audit` and refresh comparison groups to convergence
+- product jobs fail before publishing a zero-positive-offer load
 - local Bronze sample data is kept local
 - deployment, CI/CD, and the final warehouse schema are out of scope for this refactor

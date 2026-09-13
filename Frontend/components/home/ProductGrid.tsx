@@ -5,10 +5,14 @@ import ProductCard, { Product } from "./ProductCard";
 import ProductFilterSection from "../common/ProductFilterSection";
 import { API_URL } from "@/constants/Api";
 
-type ApiProduct = {
+export type ApiProduct = {
    _id: string;
    product_name?: string | null;
    product_code?: string | null;
+   brand?: string | null;
+   gtin?: string | null;
+   unit_per_prod?: string | number | null;
+   measurement?: string | null;
    category_id?: string | null;
    category_name?: string | null;
    description?: string | null;
@@ -156,7 +160,7 @@ async function fetchProductsPage(
    return parseProductsPayload(data, limit);
 }
 
-function mapApiProductToCard(product: ApiProduct): Product {
+export function mapApiProductToCard(product: ApiProduct): Product {
    // Always use _id for consistency in URLs since it's guaranteed to exist for all MongoDB documents
    // The backend's getProduct endpoint can handle both _id (MongoDB ObjectId) and product_code
    const rawId = product._id;
@@ -242,6 +246,10 @@ function mapApiProductToCard(product: ApiProduct): Product {
       name,
       subtitle,
       category,
+      brand: product.brand?.trim() || undefined,
+      gtin: product.gtin?.trim() || undefined,
+      packQuantity: product.unit_per_prod == null ? undefined : String(product.unit_per_prod),
+      packUom: product.measurement?.trim() || undefined,
       icon,
       link_image: product.link_image || null,
       badge,

@@ -13,6 +13,7 @@ import { ShoppingListsProvider } from './(tabs)/ShoppingListsContext';
 import { ImageSearchProvider } from './(tabs)/ImageSearchContext';
 import { UserProfileProvider } from '../context/UserProfileContext';
 import { NotificationCenterProvider } from '../context/NotificationCenterContext';
+import { ToastProvider } from 'react-native-toast-notifications';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -60,13 +61,15 @@ export default function RootLayout() {
                 <CartProvider>
                    <UserProfileProvider>
                       <NotificationCenterProvider>
-                         <Stack>
-                            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                            <Stack.Screen name="(product)" options={{ headerShown: false }} />
-                            <Stack.Screen name="(specials)" options={{ headerShown: false }} />
-                            <Stack.Screen name="+not-found" />
-                         </Stack>
+                         <ToastProvider placement="top" duration={2800} animationType="slide-in">
+                            <Stack>
+                               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                               <Stack.Screen name="(product)" options={{ headerShown: false }} />
+                               <Stack.Screen name="(specials)" options={{ headerShown: false }} />
+                               <Stack.Screen name="+not-found" />
+                            </Stack>
+                         </ToastProvider>
                       </NotificationCenterProvider>
                    </UserProfileProvider>
                 </CartProvider>

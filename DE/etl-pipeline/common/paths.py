@@ -47,9 +47,31 @@ def resolve_input_paths(
     run_date: date,
 ) -> list[str]:
     resolved_path = resolve_input_path(runtime_config, model, runner, run_date)
-    path_pattern = str(resolved_path)
+    paths = _glob_paths(conn, str(resolved_path))
+    if paths:
+        return paths
+
+    fallback_template = getattr(runtime_config.models[model], f"{runner}_glob", None)
+    if not fallback_template:
+        return []
+    bronze_root = runtime_config.paths.bronze_root
+    fallback = fallback_template.format(
+        bronze_root=bronze_root,
+        date=run_date.isoformat(),
+        date_compact=run_date.strftime("%Y%m%d"),
+    )
+    if not fallback.startswith(("gs://", "gcs://")):
+        project_root = Path(__file__).resolve().parents[1]
+        candidate = Path(fallback)
+        fallback = str(candidate if candidate.is_absolute() else project_root / candidate)
+    return _glob_paths(conn, fallback)
+
+
+def _glob_paths(conn: duckdb.DuckDBPyConnection | None, path_pattern: str) -> list[str]:
 
     if path_pattern.startswith(("gs://", "gcs://")):
+        if conn is None:
+            raise RuntimeError("A DuckDB connection is required to discover cloud inputs.")
         rows = conn.execute(
             "SELECT file FROM glob(?) ORDER BY file",
             [path_pattern],

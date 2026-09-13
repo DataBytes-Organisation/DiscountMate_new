@@ -116,6 +116,19 @@ function cleanItems(items) {
             cleanedItem.categoryId = String(item.categoryId || item.category_id);
         }
 
+        const comparisonIdentityFields = [
+            ['comparisonProductId', item.comparisonProductId || item.comparison_product_id],
+            ['sourceProductId', item.sourceProductId || item.source_product_id],
+            ['deProductId', item.deProductId || item.de_product_id],
+            ['gtin', item.gtin || item.barcode],
+            ['brand', item.brand || item.brand_name],
+            ['packQuantity', item.packQuantity || item.pack_quantity],
+            ['packUom', item.packUom || item.pack_uom],
+        ];
+        comparisonIdentityFields.forEach(([key, value]) => {
+            if (value != null && String(value).trim()) cleanedItem[key] = String(value).trim();
+        });
+
         const retailerPrices = cleanRetailerPrices(item.retailerPrices);
         if (retailerPrices) cleanedItem.retailerPrices = retailerPrices;
 
@@ -483,6 +496,7 @@ async function repriceShoppingList(req, res) {
 }
 
 module.exports = {
+    cleanItems,
     getShoppingLists,
     createShoppingList,
     updateShoppingList,
