@@ -4,6 +4,8 @@ This is the schema used immediately after the MongoDB-to-PostgreSQL copy. It is
 deliberately able to preserve the current API behaviour and imperfect historical
 records. Migration-stage compatibility does **not** mean that every table is temporary.
 
+Diagram files: [editable Draw.io](./diagrams/migration-postgresql-schema.drawio), [relationship preview](./diagrams/migration-postgresql-schema-relationships.png), and [all-fields preview](./diagrams/migration-postgresql-schema-allfields.png).
+
 ## The four schemas
 
 | Schema | Owner | What belongs here |
@@ -209,7 +211,7 @@ These tables are never frontend/API domain tables.
 | `migration.entity_id_map` | Stable mapping from a source identity to a PostgreSQL UUID. | `source_system`; `source_collection`; `source_id`; `target_schema`; `target_table`; `target_id`; `migration_run_id?`; `source_checksum?`; `migrated_at` |
 | `migration.record_outcomes` | Exactly one terminal result per scanned source document and run. | `id`; `migration_run_id`; `source_system`; `source_collection`; `source_id`; `source_checksum?`; `outcome`; `primary_reason_code?`; `target_schema?`; `target_table?`; `target_id?`; `details jsonb`; `created_at`; `updated_at` |
 | `migration.record_issues` | Validation, normalization, identity, and technical details attached to an outcome. | `id`; `record_outcome_id`; `issue_type`; `severity`; `reason_code`; `source_field?`; `details jsonb`; `created_at` |
-| `migration.reference_resolution_issues` | Required or optional source references that could not resolve to a PostgreSQL UUID. | `id`; `record_outcome_id?`; `migration_run_id?`; `source_system`; `source_collection`; `source_id?`; `source_field`; `source_value?`; `target_schema`; `target_table`; `target_field`; `reason_code`; `required`; `details jsonb`; `resolved_target_id?`; `resolved_at?`; `created_at` |
+| `migration.reference_resolution_issues` | Required or optional source references that could not resolve to a PostgreSQL UUID. | `id`; `record_outcome_id?`; `migration_run_id?`; `source_system`; `source_collection`; `source_id`; `source_field`; `source_value?`; `target_schema`; `target_table`; `target_field`; `reason_code`; `required`; `details jsonb`; `resolved_target_id?`; `resolved_at?`; `created_at` |
 | `migration.reconciliation_results` | Count, amount, uniqueness, and relationship checks performed after a phase. | `id`; `migration_run_id`; `entity_type`; `check_name`; `source_value jsonb?`; `target_value jsonb?`; `passed`; `details jsonb?`; `checked_at` |
 
 ## Public version ledgers

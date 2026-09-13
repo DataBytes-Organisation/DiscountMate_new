@@ -1,6 +1,6 @@
 # Legacy MongoDB
 
-The editable source-database diagram is [legacy-mongodb-schema.drawio](../diagrams/legacy-mongodb-schema.drawio). It is a read-only inventory of `DiscountMate_DB`.
+Diagram files: [editable Draw.io](./diagrams/legacy-mongodb-schema.drawio), [relationship preview](./diagrams/legacy-mongodb-schema-relationships.png), and [all-fields preview](./diagrams/legacy-mongodb-schema-allfields.png).
 
 ## Scope
 

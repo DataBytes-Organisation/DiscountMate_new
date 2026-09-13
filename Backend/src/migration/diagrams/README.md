@@ -6,9 +6,9 @@ This directory contains the editable Draw.io sources and exported PNG previews f
 
 | Schema stage | Editable source | Page `00` relationship export | Page `01` field-index export |
 | --- | --- | --- | --- |
-| Legacy MongoDB | `legacy-mongodb-schema.drawio` | `legacy-mongodb-schema-relationships.png` | `legacy-mongodb-schema-allfields.png` |
-| Migration PostgreSQL | `migration-postgresql-schema.drawio` | `migration-postgresql-schema-relationships.png` | `migration-postgresql-schema-allfields.png` |
-| Finalised PostgreSQL | `finalised-postgresql-schema.drawio` | `finalised-postgresql-schema-relationships.png` | `finalised-postgresql-schema-allfields.png` |
+| Legacy MongoDB | [legacy-mongodb-schema.drawio](./legacy-mongodb-schema.drawio) | [legacy-mongodb-schema-relationships.png](./legacy-mongodb-schema-relationships.png) | [legacy-mongodb-schema-allfields.png](./legacy-mongodb-schema-allfields.png) |
+| Migration PostgreSQL | [migration-postgresql-schema.drawio](./migration-postgresql-schema.drawio) | [migration-postgresql-schema-relationships.png](./migration-postgresql-schema-relationships.png) | [migration-postgresql-schema-allfields.png](./migration-postgresql-schema-allfields.png) |
+| Finalised PostgreSQL | [finalised-postgresql-schema.drawio](./finalised-postgresql-schema.drawio) | [finalised-postgresql-schema-relationships.png](./finalised-postgresql-schema-relationships.png) | [finalised-postgresql-schema-allfields.png](./finalised-postgresql-schema-allfields.png) |
 
 Each Draw.io file contains multiple pages. Page `00` is the relationship overview and is the source of the corresponding `-relationships.png` file. Page `01` is the complete table or collection field index and is the source of the corresponding `-allfields.png` file. Later pages provide detailed views of individual domains.
 
@@ -31,6 +31,7 @@ These are not three independent database designs. The schemas demonstrate how th
 1. Install a Draw.io-compatible editor, such as the Draw.io Integration extension for Visual Studio Code.
 2. Open the relevant `.drawio` file and select the page to update.
 3. Make the diagram changes and save the `.drawio` source.
-4. To export a page, move it to the first position in the Draw.io document. Select **Export**, enter the filename, and choose the required file type.
-5. Move the page back to its original position in the numbered sequence.
-6. Review the exported PNG and commit it with the Draw.io source.
+4. To export a page, move it to the first position in the Draw.io document. Select **Export**, choose the required file type and then enter a name or click on an existing file to replace it. 
+5. Click Save
+6. Move the page back to its original position in the numbered sequence.
+7. Review the exported PNG and commit it with the Draw.io source.

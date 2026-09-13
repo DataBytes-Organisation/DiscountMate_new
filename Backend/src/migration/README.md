@@ -41,9 +41,10 @@ Schema ownership:
 
 ### Schema references
 
-- [Legacy MongoDB Draw.io diagram](./diagrams/legacy-mongodb-schema.drawio): editable source-database view, including collections not copied by migration.
+- [Legacy MongoDB](./LEGACY_MONGODB_SCHEMA.md): source-database inventory, diagram links, and collections not copied by migration.
 - [Migration PostgreSQL](./MIGRATION_POSTGRESQL_SCHEMA.md): every table and field used immediately after the MongoDB copy, including why bridge/legacy values exist.
 - [Finalised PostgreSQL](./FINALISED_POSTGRESQL_SCHEMA.md): every table and field after the optional cleanup, including exactly what is kept renamed, moved, or controller-derived.
+- [Diagram index](./diagrams/README.md): editable Draw.io sources and relationship/all-fields PNG previews for all three schema stages.
 - [Migration PostgreSQL Draw.io ERD](./diagrams/migration-postgresql-schema.drawio): editable migration-stage tables, PostgreSQL field types, nullability, keys, and links.
 - [Finalised PostgreSQL Draw.io ERD](./diagrams/finalised-postgresql-schema.drawio): the same editable view after the optional rename/move/field cleanup.
 

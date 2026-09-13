@@ -633,6 +633,8 @@ async function startServer() {
          'Failed to start ReverseImageSearch sidecar:',
          err.message
       );
+
+      process.exit(1);
    }
 
    // Start accepting incoming HTTP requests.
