@@ -36,8 +36,8 @@ def test_column_names_are_clean():
 def test_column_counts():
     coles, wool, iga = get_cleaned_data()
 
-    assert len(coles.columns) == 37
-    assert len(wool.columns) == 48
+    assert len(coles.columns) == 38
+    assert len(wool.columns) == 49
     assert len(iga.columns) == 70
 
 

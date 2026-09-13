@@ -38,7 +38,7 @@ separators. Examples from the PDF:
 - 'SapCategoryName '
 - 'iga_weight_increment '
 
-We fix this by:
+fix this by:
 - stripping whitespace
 - converting to lowercase
 - replacing spaces and hyphens with underscores
@@ -76,7 +76,7 @@ scoring or harmonisation. Examples:
 - productwarningmessage
 - productrestrictionmessage
 
-We drop these to simplify the dataset.
+drop these to simplify the dataset.
 """
 
 def drop_irrelevant_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -102,7 +102,7 @@ Large portions of retailer data contain NaN values:
 - PackageSize: 24826 non-null out of 31122
 - iga_description: 12023 non-null out of 20445
 
-We fill:
+fill:
 - object/text columns → empty string ""
 - numeric columns → 0
 
@@ -133,7 +133,7 @@ Sizes appear in inconsistent formats:
 - "1 Each"
 - "224 Pack"
 
-We extract:
+extract:
 - numeric value → size_value
 - unit → size_unit
 
@@ -178,7 +178,7 @@ IGA:
 - iga_price_numeric
 - iga_was_price_numeric
 
-We unify these into:
+unify these into:
 - price_now
 - price_was
 
@@ -223,7 +223,7 @@ Examples:
 - "STRAWBERRIES : BERRIES : . : 250 GRAM"
 - "LETTUCE ICEBERG: : . : 1 EACH"
 
-We remove:
+remove:
 - colons
 - repeated whitespace
 - stray punctuation
@@ -262,7 +262,7 @@ Woolworths:
 IGA:
 - iga_default_category → JSON list
 
-We unify these into:
+unify these into:
 - category
 - subcategory
 """
