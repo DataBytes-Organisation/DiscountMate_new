@@ -8,6 +8,7 @@ used for the final DL-06 chatbot integration work.
 - Sunain Mushtaq - primary chatbot, RAG, MCP tool, price comparison, evaluation, and integration work.
 - Sreya Krishna - chatbot intent classification work from PR #330.
 - Swapneel Nandkumar - chatbot prototype and MCP wrapper work from PR #306, already present through upstream history.
+- Sanjay Paruthiyil - initial price-comparison chatbot logic from PR #332.
 - Ho Ching Ling - supporting chatbot documentation supplied for the integration review.
 
 ## Included source material
