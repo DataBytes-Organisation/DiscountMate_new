@@ -1,5 +1,9 @@
 import pandas as pd
 import numpy as np
+# NOTE: historical_context_score currently uses a temporary synthetic dataset
+# (see synthetic_price_history.py) because the real Gold Layer historical
+# price data is not yet available this trimester (confirmed with Data
+# Engineering). Replace with a real historical price lookup once ready.
 
 # ------------------------------------------------------------
 # 1. DISCOUNT STRENGTH SCORE
@@ -55,13 +59,36 @@ def score_unit_price_fairness(df: pd.DataFrame) -> pd.DataFrame:
 
 
 # ------------------------------------------------------------
-# 3. HISTORICAL PRICE CONTEXT SCORE (placeholder)
+# 3. HISTORICAL PRICE CONTEXT SCORE
 # ------------------------------------------------------------
-def score_historical_context(df: pd.DataFrame) -> pd.DataFrame:
-    # Placeholder: assume neutral historical context
-    df["historical_context_score"] = 0.5
-    return df
+from ML.true_value_promotion.synthetic_price_history import get_price_history
 
+
+def _historical_context_for_row(row) -> float:
+    """
+    Score how rare/genuine a discount is for a specific product, based on
+    its own price history. Uses percentile rank: what proportion of past
+    prices were higher than the current price.
+
+    Falls back to a neutral 0.5 if no price history is available for the
+    product (e.g. new product, or synthetic dataset doesn't cover it).
+    """
+    history = get_price_history(row.get("name"))
+
+    if not history:
+        return 0.5
+
+    current_price = row["price_now"]
+
+    higher_count = sum(1 for past_price in history if past_price > current_price)
+    score = higher_count / len(history)
+
+    return round(score, 3)
+
+
+def score_historical_context(df: pd.DataFrame) -> pd.DataFrame:
+    df["historical_context_score"] = df.apply(_historical_context_for_row, axis=1)
+    return df
 
 # ------------------------------------------------------------
 # 4. CATEGORY RELEVANCE SCORE
