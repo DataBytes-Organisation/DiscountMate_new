@@ -31,13 +31,12 @@ def clean_product_name(name):
     
     return name
 
-def fuzzy_match_product(extracted_product, catalog, threshold=0.55):
-    """DL-06-T10: Uses token intersection and difflib for robust semantic matching."""
+def fuzzy_match_product(extracted_product, catalog, high_threshold=0.70, low_threshold=0.40):
+    """DL-06-T15: Uses token intersection, difflib, and ambiguity handling for robust semantic matching."""
     cleaned_query = clean_product_name(extracted_product)
     query_tokens = set(cleaned_query.split())
     
-    best_match = None
-    highest_score = 0.0
+    scored_products = []
 
     for item in catalog:
         cleaned_item_name = clean_product_name(item['product_name'])
@@ -60,22 +59,57 @@ def fuzzy_match_product(extracted_product, catalog, threshold=0.55):
         # Blended Score: Weighs token overlap slightly higher for grocery items
         blended_score = (sequence_score * 0.4) + (token_score * 0.6)
         
-        if blended_score > highest_score:
-            highest_score = blended_score
-            best_match = item
+        # Keep track of anything that passes the minimum fallback threshold
+        if blended_score >= low_threshold:
+            scored_products.append({
+                "product": item,
+                "score": blended_score
+            })
 
-    if highest_score >= threshold:
-        return {
-            "match_found": True,
-            "confidence_score": round(highest_score, 2),
-            "matched_product": best_match
-        }
-    else:
+    # Sort matches by highest score
+    scored_products = sorted(scored_products, key=lambda x: x['score'], reverse=True)
+
+    # 1. Handle Not Found
+    if not scored_products:
         return {
             "match_found": False,
-            "confidence_score": round(highest_score, 2),
+            "status": "not_found",
+            "confidence_score": 0.0,
             "message": "Low confidence: No products met the matching threshold."
         }
+        
+    top_match = scored_products[0]
+    is_ambiguous = False
+    
+    # 2. Condition A: The top score is okay, but not high enough to be absolutely certain
+    if top_match['score'] < high_threshold:
+        is_ambiguous = True
+        
+    # 3. Condition B: There are multiple products with practically identical scores (a tie)
+    elif len(scored_products) > 1:
+        score_difference = top_match['score'] - scored_products[1]['score']
+        if score_difference < 0.05: # Within a 5% margin
+            is_ambiguous = True
+
+    # 4. Handle Ambiguity (Fallback & Clarification)
+    if is_ambiguous:
+        # Grab the names of the top 3 closest matches for the LLM to suggest to the user
+        suggestions = [item['product']['product_name'] for item in scored_products[:3]]
+        return {
+            "match_found": False,
+            "status": "ambiguous",
+            "confidence_score": round(top_match['score'], 2),
+            "message": "Multiple or partial matches found. Please ask the user to clarify.",
+            "suggestions": suggestions
+        }
+        
+    # 5. Complete Success
+    return {
+        "match_found": True,
+        "status": "success",
+        "confidence_score": round(top_match['score'], 2),
+        "matched_product": top_match['product']
+    }
 
 if __name__ == "__main__":
     # Load the dummy catalog to run local tests
@@ -92,7 +126,8 @@ if __name__ == "__main__":
             "fresh full cream milk 2 l",       # Spacing issue & filler word ("fresh", "2 l")
             "devon butter 250grams",           # Typos and un-normalized weights ("250grams")
             "coles brand dairy milk",          # Brand filler word ("brand")
-            "premium organic apples 1kg"       # Item not in catalog (should safely fail)
+            "premium organic apples 1kg",      # Item not in catalog (should safely fail)
+            "milk"
         ]
         
         print("Running T10 Advanced Normalisation Tests...\n")

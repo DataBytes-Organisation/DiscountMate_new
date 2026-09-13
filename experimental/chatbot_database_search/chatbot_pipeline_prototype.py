@@ -22,8 +22,10 @@ def process_chat_query(user_query, catalog):
     # Step 2: Fuzzy Match against Dummy Catalog (DL-06-T12)
     match_result = fuzzy_match_product(product_entity, catalog)
 
-    # Step 3: Format Standardised JSON Response (DL-06-T17)
-    if match_result["match_found"]:
+    # Step 3: Format Standardised JSON Response (DL-06-T17 & T15 Ambiguity)
+    status = match_result.get("status", "not_found")
+    
+    if status == "success":
         item = match_result["matched_product"]
         print(f"3. Database Match: {item['product_name']} (Score: {match_result['confidence_score']})")
         
@@ -39,21 +41,33 @@ def process_chat_query(user_query, catalog):
                 "pack_size": item["pack_size"]
             }
         }
+        
+    elif status == "ambiguous":
+        print(f"3. Database Match: Ambiguous. Suggestions found: {len(match_result.get('suggestions', []))}")
+        
+        return {
+            "query": user_query,
+            "action": extraction["intent"],
+            "status": "ambiguous",
+            "message": match_result["message"],
+            "suggestions": match_result.get("suggestions", [])
+        }
+        
     else:
         print("3. Database Match: Failed.")
         return {
             "query": user_query,
             "action": extraction["intent"],
             "status": "not_found",
-            "message": match_result["message"]
+            "message": match_result.get("message", "No products met the matching threshold.")
         }
 
 if __name__ == "__main__":
     # Initialize the dummy database (DL-06-T4, DL-06-T13)
     db = DummyCatalog()
 
-    # Simulate an end-to-end user request
-    test_query = "Find the best deal for devon butter 250 grams at Woolworths"
+    # Simulate an end-to-end user request to test T15 Ambiguity
+    test_query = "Find the best price for milk"
     final_api_response = process_chat_query(test_query, db.catalog)
 
     print("\n--- Final API JSON Output ---")
