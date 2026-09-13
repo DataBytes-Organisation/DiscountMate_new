@@ -31,8 +31,10 @@ except ImportError:
 
 try:
     from .gcs_loader import ensure_index_file   # Flask package
+    from .tool_selector import ChatToolSelector, RECIPE_ONLY_MESSAGE, ordinal_index
 except ImportError:
     from gcs_loader import ensure_index_file    # CLI direct run
+    from tool_selector import ChatToolSelector, RECIPE_ONLY_MESSAGE, ordinal_index
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -1092,9 +1094,11 @@ class RecipeRAG:
         self.product_matcher = ProductMatcher(self.model, index_dir)
         self.mongo_resolver = MongoProductResolver()
         self.llm = LLMClient()
+        self.tool_selector = ChatToolSelector()
 
         self.max_turns = max_turns
         self.sessions: Dict[str, List[Dict]] = {}
+        self._last_results_by_session: Dict[str, List[Dict]] = {}
         # context_id → list of confirmed MongoDB lookup keys for that turn
         self._context_store: Dict[str, List[Dict]] = {}
         self._context_store_created: Dict[str, float] = {}
@@ -1105,6 +1109,7 @@ class RecipeRAG:
 
     def reset_session(self, session_id: str):
         self.sessions.pop(session_id, None)
+        self._last_results_by_session.pop(session_id, None)
 
     def turn_count(self, session_id: str) -> int:
         return len(self.sessions.get(session_id, [])) // 2
@@ -1233,6 +1238,10 @@ class RecipeRAG:
     ) -> Optional[Dict]:
         if not results:
             return None
+        requested_index = ordinal_index(user_query)
+        if requested_index is not None and requested_index < len(results):
+            return results[requested_index]
+
         haystack_l = f"{answer} {user_query}".lower()
         recipe_names = []
         for result in results:
@@ -1342,7 +1351,19 @@ class RecipeRAG:
         a recipe_context_id that the caller uses to fetch product cards via
         GET /api/recipe/products?context_id=... (products_pending=True signals this).
         """
+        user_query = str(user_query or "").strip()[:2000]
+        try:
+            top_k = int(top_k)
+        except (TypeError, ValueError):
+            top_k = 3
+        top_k = max(1, min(top_k, 8))
+
         history = self.sessions.setdefault(session_id, [])
+        previous_results = self._last_results_by_session.get(session_id, [])
+        selection = self.tool_selector.select(
+            user_query,
+            has_previous_results=bool(previous_results),
+        )
 
         if self.turn_count(session_id) >= self.max_turns:
             return {
@@ -1355,15 +1376,35 @@ class RecipeRAG:
                 "product_candidate_names": [],
                 "products_pending": False,
                 "recipe_context_id": None,
+                "tool_selection": selection.to_dict(),
             }
 
-        # 1. Retrieve recipes
-        results = self.retriever.search(user_query, top_k=top_k)
+        if not selection.run_llm:
+            return {
+                "answer": RECIPE_ONLY_MESSAGE,
+                "sources": [],
+                "turns": self.turn_count(session_id),
+                "limit_reached": False,
+                "product_candidate_names": [],
+                "products_pending": False,
+                "recipe_context_id": None,
+                "tool_selection": selection.to_dict(),
+            }
+
+        reused_previous_results = False
+        if selection.reuse_previous_results and previous_results:
+            results = previous_results[:top_k]
+            reused_previous_results = True
+        else:
+            results = self.retriever.search(user_query, top_k=top_k)
+            self._last_results_by_session[session_id] = results
 
         # Product cards are still resolved after the LLM answer is known, but
-        # generation gets a Mongo-grounded product constraint up front.
+        # the selector grants product-lookup permission before any lookup runs.
         mongo_products: List[Dict] = []
-        mongo_names: List[str] = self._prefetch_query_product_names(user_query)
+        mongo_names: List[str] = []
+        if selection.run_product_lookup:
+            mongo_names = self._prefetch_query_product_names(user_query)
         confirmed_lookups: List[Dict] = []
         ingredient_matches: List[Dict] = []
 
@@ -1397,11 +1438,12 @@ class RecipeRAG:
                 "product_candidate_names": [],
                 "products_pending": False,
                 "recipe_context_id": None,
+                "tool_selection": selection.to_dict(reused_previous_results),
             }
 
-        should_attach_products = self._should_attach_products(
-            user_query,
-            answer,
+        should_attach_products = (
+            selection.run_product_lookup
+            and self._should_attach_products(user_query, answer)
         )
         if should_attach_products:
             answered_recipe = self._select_recipe_for_answer(results, answer, user_query)
@@ -1433,6 +1475,7 @@ class RecipeRAG:
             "product_candidate_names": mongo_names if products_pending else [],
             "products_pending": products_pending,
             "recipe_context_id": context_id if products_pending else None,
+            "tool_selection": selection.to_dict(reused_previous_results),
         }
 
 
