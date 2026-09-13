@@ -14,11 +14,8 @@ from chatbots.schemas.agent import (
 )
 from chatbots.schemas.products import (
     PriceComparisonArguments,
-    PriceRetrievalArguments,
-    ProductDetailsArguments,
     ProductSearchArguments,
 )
-from chatbots.schemas.recipes import RecipeChatArguments
 from chatbots.schemas.tools import ToolError
 
 try:
@@ -32,19 +29,15 @@ PLANNER_SYSTEM_PROMPT = """You are DiscountMate's tool planner.
 Return only valid JSON with keys: tool, arguments, rationale.
 
 Available tools:
-- recipe_chat: recipes, cooking, meal planning, recipe ingredients, recipe steps.
 - search_products: find grocery products by product_name, brand, pack_size, category.
-- get_product_details: details for a known product_id.
-- get_current_prices: current prices for a known product_id.
 - compare_prices: compare retailer prices by product_id or product_name.
 - clarification: ask for missing information.
 
 Rules:
 - Pick exactly one tool.
-- Use recipe_chat for recipe/cooking requests even when ingredients may later map
-  to products.
 - Use compare_prices when the user asks for cheapest, price comparison, specials,
   deals, or where to buy a product cheaper.
+- Use search_products for every other grocery-product lookup.
 - If a product-price request has no product_id and no product_name, choose
   clarification.
 - Never invent a product_id.
@@ -52,10 +45,7 @@ Rules:
 
 
 PRODUCT_ARG_MODELS = {
-    "recipe_chat": RecipeChatArguments,
     "search_products": ProductSearchArguments,
-    "get_product_details": ProductDetailsArguments,
-    "get_current_prices": PriceRetrievalArguments,
     "compare_prices": PriceComparisonArguments,
 }
 
@@ -80,12 +70,10 @@ class DiscountMateLangGraphWorkflow:
     def __init__(
         self,
         tool_registry: Optional[Dict] = None,
-        rag_provider=None,
         llm_client=None,
         enable_llm_planning: bool = True,
     ):
         self.tool_registry = tool_registry or TOOL_REGISTRY
-        self.rag_provider = rag_provider
         self.llm_client = llm_client
         self.enable_llm_planning = enable_llm_planning
         self.backend = "langgraph" if StateGraph is not None else "local-fallback"
@@ -207,7 +195,7 @@ class DiscountMateLangGraphWorkflow:
         tool_call = state["tool_call"]
         question = tool_call.arguments.get(
             "question",
-            "Which product or recipe would you like help with?",
+            "Which grocery product would you like me to find or compare?",
         )
         return {
             "response": AgentResponse(
@@ -222,13 +210,7 @@ class DiscountMateLangGraphWorkflow:
 
     def _execute_tool_node(self, state: ChatbotGraphState) -> ChatbotGraphState:
         tool_call = state["tool_call"]
-        if tool_call.tool == "recipe_chat":
-            response = self.tool_registry[tool_call.tool](
-                tool_call.arguments,
-                rag_provider=self.rag_provider,
-            )
-        else:
-            response = self.tool_registry[tool_call.tool](tool_call.arguments)
+        response = self.tool_registry[tool_call.tool](tool_call.arguments)
         return {"tool_response": _model_dict(response)}
 
     def _compose_answer_node(self, state: ChatbotGraphState) -> ChatbotGraphState:
@@ -289,32 +271,12 @@ class DiscountMateLangGraphWorkflow:
             return None
 
     def _get_llm_client(self):
-        if self.llm_client is not None:
-            return self.llm_client
-        try:
-            from recipe_rag.rag_pipeline import LLMClient
-
-            self.llm_client = LLMClient(temperature=0.0, max_tokens=350)
-            return self.llm_client
-        except Exception as exc:
-            print(f"[DiscountMateWorkflow] LLM planner unavailable: {exc}")
-            return None
+        return self.llm_client
 
     def _heuristic_plan(self, request: ChatbotMessageRequest) -> AgentToolCall:
         message = request.message.strip()
         lower = message.lower()
         product_id = request.context.product_id
-
-        if self._is_recipe_request(lower):
-            return AgentToolCall(
-                tool="recipe_chat",
-                arguments={
-                    "session_id": request.session_id,
-                    "message": message,
-                    "top_k": request.top_k,
-                },
-                rationale="Recipe or cooking request.",
-            )
 
         if self._is_price_request(lower):
             retailers = self._extract_retailers(lower)
@@ -347,13 +309,6 @@ class DiscountMateLangGraphWorkflow:
                 rationale="Price comparison request.",
             )
 
-        if product_id and re.search(r"\b(detail|info|about|price|cost)\b", lower):
-            tool = "get_current_prices" if re.search(r"\b(price|cost)\b", lower) else "get_product_details"
-            args = {"product_id": product_id}
-            if tool == "get_current_prices":
-                args["retailers"] = self._extract_retailers(lower)
-            return AgentToolCall(tool=tool, arguments=args, rationale="Known product context.")
-
         product_name = self._extract_product_name(message)
         if product_name:
             return AgentToolCall(
@@ -364,7 +319,7 @@ class DiscountMateLangGraphWorkflow:
 
         return AgentToolCall(
             tool="clarification",
-            arguments={"question": "Do you want help with a recipe or a grocery product?"},
+            arguments={"question": "Which grocery product would you like me to find or compare?"},
             rationale="No clear tool intent.",
         )
 
@@ -374,11 +329,7 @@ class DiscountMateLangGraphWorkflow:
         request: ChatbotMessageRequest,
     ) -> AgentToolCall:
         arguments = dict(tool_call.arguments or {})
-        if tool_call.tool == "recipe_chat":
-            arguments.setdefault("session_id", request.session_id)
-            arguments.setdefault("message", request.message)
-            arguments.setdefault("top_k", request.top_k)
-        elif tool_call.tool in ("get_product_details", "get_current_prices", "compare_prices"):
+        if tool_call.tool == "compare_prices":
             if request.context.product_id:
                 arguments.setdefault("product_id", request.context.product_id)
         elif tool_call.tool == "search_products":
@@ -408,8 +359,6 @@ class DiscountMateLangGraphWorkflow:
             return error.get("message") or "That chatbot action failed."
 
         data = response.get("data") or {}
-        if tool_call.tool == "recipe_chat":
-            return data.get("answer") or "I found a recipe response."
         if tool_call.tool == "compare_prices":
             return self._price_comparison_answer(data)
         if tool_call.tool == "search_products":
@@ -418,27 +367,6 @@ class DiscountMateLangGraphWorkflow:
                 return "I could not find matching products."
             names = [p.get("product_name") for p in products[:5] if p.get("product_name")]
             return "I found these matching products: " + ", ".join(names)
-        if tool_call.tool == "get_product_details":
-            product = data.get("product") or {}
-            name = product.get("product_name") or "that product"
-            pack = product.get("pack_size")
-            brand = product.get("brand")
-            parts = [name]
-            if brand:
-                parts.append(f"brand: {brand}")
-            if pack:
-                parts.append(f"pack size: {pack}")
-            return ". ".join(parts) + "."
-        if tool_call.tool == "get_current_prices":
-            prices = data.get("prices") or []
-            if not prices:
-                return "I could not find current prices for that product."
-            formatted = [
-                f"{p.get('retailer')}: ${float(p.get('price')):.2f}"
-                for p in prices
-                if p.get("retailer") and p.get("price") is not None
-            ]
-            return "Current prices are " + ", ".join(formatted) + "."
         return "Done."
 
     def _price_comparison_answer(self, data: Dict[str, Any]) -> str:
@@ -475,13 +403,6 @@ class DiscountMateLangGraphWorkflow:
         data = response.get("data") or {}
         question = data.get("clarification_question")
         return bool(question), question
-
-    def _is_recipe_request(self, lower: str) -> bool:
-        return bool(re.search(
-            r"\b(recipe|cook|cooking|meal|dinner|lunch|breakfast|ingredient|"
-            r"ingredients|make|prepare|bake|roast|fry|dish|serving|servings)\b",
-            lower,
-        ))
 
     def _is_price_request(self, lower: str) -> bool:
         return bool(re.search(

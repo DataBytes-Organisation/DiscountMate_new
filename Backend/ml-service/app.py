@@ -129,7 +129,6 @@ def get_chatbot_agent():
         if chatbot_agent is None:
             chatbot_agent = DiscountMateAgent(
                 tool_registry=TOOL_REGISTRY,
-                rag_provider=get_rag,
             )
         return chatbot_agent
 
@@ -177,8 +176,6 @@ def chatbot_tool_status(payload):
         return 400
     if code == "repository_unavailable":
         return 503
-    if code == "rag_unavailable":
-        return 503
     if code == "product_not_found":
         return 404
     return 500
@@ -200,10 +197,7 @@ def run_chatbot_tool(tool_name):
             },
         }), 404
 
-    if tool_name == "recipe_chat":
-        result = TOOL_REGISTRY[tool_name](arguments, rag_provider=get_rag)
-    else:
-        result = TOOL_REGISTRY[tool_name](arguments)
+    result = TOOL_REGISTRY[tool_name](arguments)
     payload = model_to_dict(result)
     return jsonify(payload), chatbot_tool_status(payload)
 
@@ -404,24 +398,9 @@ def chatbot_chat():
     return jsonify(payload), chatbot_tool_status(payload)
 
 
-@app.route('/api/chatbot/tools/recipe-chat', methods=['POST'])
-def chatbot_recipe_chat_tool():
-    return run_chatbot_tool("recipe_chat")
-
-
 @app.route('/api/chatbot/tools/search-products', methods=['POST'])
 def chatbot_search_products():
     return run_chatbot_tool("search_products")
-
-
-@app.route('/api/chatbot/tools/product-details', methods=['POST'])
-def chatbot_product_details():
-    return run_chatbot_tool("get_product_details")
-
-
-@app.route('/api/chatbot/tools/current-prices', methods=['POST'])
-def chatbot_current_prices():
-    return run_chatbot_tool("get_current_prices")
 
 
 @app.route('/api/chatbot/tools/compare-prices', methods=['POST'])
@@ -619,11 +598,8 @@ if __name__ == '__main__':
     print("  POST /api/ml/price-prediction - Predict future prices")
     print("  POST /api/ocr/receipt - Process uploaded receipt image")
     print("  POST /api/chatbot/tools/search-products - DL-06 product search tool")
-    print("  POST /api/chatbot/tools/product-details - DL-06 product details tool")
-    print("  POST /api/chatbot/tools/current-prices - DL-06 current prices tool")
     print("  POST /api/chatbot/tools/compare-prices - DL-06 price comparison tool")
-    print("  POST /api/chatbot/tools/recipe-chat - DL-06 recipe RAG tool")
-    print("  POST /api/chatbot/chat - Combined RAG + MCP chatbot agent")
+    print("  POST /api/chatbot/chat - Product search and price comparison assistant")
     print("  GET  /api/recipe/stats - Recipe RAG diagnostics")
     print("  GET  /api/recipe/search?q=... - Recipe retrieval (no LLM)")
     print("  POST /api/recipe/chat - Recipe RAG chat (full LLM)")
