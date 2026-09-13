@@ -11,13 +11,11 @@ class DiscountMateAgent:
     def __init__(
         self,
         tool_registry: Optional[Dict] = None,
-        rag_provider=None,
         llm_client=None,
         enable_llm_planning: bool = True,
     ):
         self.workflow = DiscountMateLangGraphWorkflow(
             tool_registry=tool_registry,
-            rag_provider=rag_provider,
             llm_client=llm_client,
             enable_llm_planning=enable_llm_planning,
         )

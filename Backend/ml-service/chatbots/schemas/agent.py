@@ -8,17 +8,14 @@ from chatbots.schemas.tools import ChatbotContext, ToolError
 
 
 AgentToolName = Literal[
-    "recipe_chat",
     "search_products",
-    "get_product_details",
-    "get_current_prices",
     "compare_prices",
     "clarification",
 ]
 
 
 class ChatbotMessageRequest(BaseModel):
-    """User message handled by the combined RAG + MCP chatbot."""
+    """User message handled by the product-search and price-comparison chatbot."""
 
     session_id: str = Field(..., min_length=1)
     message: str = Field(..., min_length=1)

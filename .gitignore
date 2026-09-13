@@ -8,6 +8,8 @@ Catalogue_Scraping_2025/catalogues/
 venv/
 */venv/
 Backend/ml-service/venv/
+.venv/
+*/.venv/
 .vscode/settings.json
 *.csv
 # RAG embedding artefacts — too large for git, see README in index/

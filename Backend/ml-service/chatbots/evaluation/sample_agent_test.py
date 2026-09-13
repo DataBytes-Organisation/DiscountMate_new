@@ -1,4 +1,4 @@
-"""Smoke test for the combined RAG + MCP chatbot agent.
+"""Smoke test for the product-search and price-comparison chatbot agent.
 
 Run from Backend/ml-service:
     python chatbots/evaluation/sample_agent_test.py
@@ -14,30 +14,22 @@ if ML_SERVICE_DIR not in sys.path:
     sys.path.insert(0, ML_SERVICE_DIR)
 
 from chatbots.agents import DiscountMateAgent
-from chatbots.mcp_tools import price_comparison, recipe_chat
-
-
-class FakeRAG:
-    def chat(self, session_id, user_query, top_k=5):
-        return {
-            "answer": "Use the Recipe RAG answer for chicken pasta.",
-            "sources": [{"name": "Chicken Pasta", "score": 0.91}],
-            "turns": 1,
-            "limit_reached": False,
-            "product_candidate_names": ["Chicken Breast"],
-            "products_pending": True,
-            "recipe_context_id": "ctx-demo",
-        }
+from chatbots.mcp_tools import price_comparison, product_search
 
 
 class FakeProductRepository:
+    def __init__(self):
+        self.search_queries = []
+
     def search_products(self, **kwargs):
+        product_name = kwargs.get("product_name") or "Coke Zero 2L"
+        self.search_queries.append(product_name)
         return [{
-            "product_id": "demo-coke-zero-2l",
-            "product_name": "Coca-Cola Coke Zero 2L",
-            "brand": "Coca-Cola",
-            "pack_size": "2L",
-            "category": "Soft drinks",
+            "product_id": "dynamic-product-result",
+            "product_name": product_name,
+            "brand": None,
+            "pack_size": None,
+            "category": None,
             "image_url": None,
             "score": 1.0,
         }]
@@ -65,23 +57,14 @@ def main():
     repo = FakeProductRepository()
     agent = DiscountMateAgent(
         tool_registry={
-            "recipe_chat": recipe_chat.run,
+            "search_products": lambda arguments: product_search.run(arguments, repository=repo),
             "compare_prices": lambda arguments: price_comparison.run(arguments, repository=repo),
         },
-        rag_provider=lambda: FakeRAG(),
         enable_llm_planning=False,
     )
     assert agent.workflow_backend in ("langgraph", "local-fallback"), agent.workflow_backend
+    assert set(agent.workflow.tool_registry) == {"search_products", "compare_prices"}
     print(f"chatbot workflow backend: {agent.workflow_backend}")
-
-    recipe = agent.chat({
-        "session_id": "demo-session",
-        "message": "Show me a chicken pasta recipe",
-    })
-    assert recipe.success is True, recipe
-    assert recipe.action == "recipe_chat", recipe
-    assert recipe.data["recipe_context_id"] == "ctx-demo", recipe
-    print("recipe_chat routed through combined agent")
 
     price = agent.chat({
         "session_id": "demo-session",
@@ -91,6 +74,16 @@ def main():
     assert price.action == "compare_prices", price
     assert price.data["cheapest"]["retailer"] == "Coles", price
     print("compare_prices routed through combined agent")
+
+    search = agent.chat({
+        "session_id": "demo-session",
+        "message": "Find oat milk",
+    })
+    assert search.success is True, search
+    assert search.action == "search_products", search
+    assert repo.search_queries[-1].lower() == "oat milk", repo.search_queries
+    assert "oat milk" in search.answer.lower(), search
+    print("arbitrary product name routed dynamically to product repository")
 
     invalid = agent.chat({"session_id": "", "message": ""})
     assert invalid.success is False, invalid

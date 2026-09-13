@@ -7,11 +7,7 @@ from pydantic import BaseModel, Field
 
 ChatbotAction = Literal[
     "product_search",
-    "product_details",
-    "price_retrieval",
     "price_comparison",
-    "recipe_search",
-    "recipe_chat",
     "clarification",
 ]
 

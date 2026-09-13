@@ -13,7 +13,7 @@
       "id": "plan_tool",
       "type": "llm_or_heuristic_router",
       "label": "Plan Tool",
-      "description": "Select recipe_chat, search_products, get_product_details, get_current_prices, compare_prices, or clarification."
+      "description": "Select search_products, compare_prices, or clarification."
     },
     {
       "id": "validate_tool",
@@ -31,7 +31,7 @@
       "id": "execute_tool",
       "type": "tool_runner",
       "label": "Execute MCP-Style Tool",
-      "description": "Run the selected product, price, comparison, or recipe RAG tool."
+      "description": "Run the selected product-search or price-comparison tool."
     },
     {
       "id": "compose_answer",
@@ -77,13 +77,13 @@
   ],
   "test_cases": [
     {
-      "name": "Recipe route",
+      "name": "Product search route",
       "input": {
         "session_id": "demo-session",
-        "message": "Show me a chicken pasta recipe",
+        "message": "Find oat milk",
         "top_k": 5
       },
-      "expected_tool": "recipe_chat"
+      "expected_tool": "search_products"
     },
     {
       "name": "Price comparison route",

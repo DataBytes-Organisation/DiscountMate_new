@@ -129,6 +129,7 @@ def assert_success(response, expected_tool):
 
 
 def main():
+    assert set(TOOL_REGISTRY) == {"search_products", "compare_prices"}
     repo = FakeProductRepository()
 
     search = TOOL_REGISTRY["search_products"](
@@ -141,22 +142,6 @@ def main():
     )
     assert_success(search, "search_products")
     print_result("search_products", search)
-
-    product_id = search.data["products"][0]["product_id"]
-
-    details = TOOL_REGISTRY["get_product_details"](
-        {"product_id": product_id},
-        repository=repo,
-    )
-    assert_success(details, "get_product_details")
-    print_result("get_product_details", details)
-
-    prices = TOOL_REGISTRY["get_current_prices"](
-        {"product_id": product_id},
-        repository=repo,
-    )
-    assert_success(prices, "get_current_prices")
-    print_result("get_current_prices", prices)
 
     comparison = TOOL_REGISTRY["compare_prices"](
         {

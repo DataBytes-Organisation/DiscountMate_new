@@ -391,26 +391,10 @@ const postChatbotProductSearch = postChatbotTool(
   'chatbot product search'
 );
 
-const postChatbotProductDetails = postChatbotTool(
-  '/api/chatbot/tools/product-details',
-  'chatbot product details'
-);
-
-const postChatbotCurrentPrices = postChatbotTool(
-  '/api/chatbot/tools/current-prices',
-  'chatbot current prices'
-);
-
 const postChatbotComparePrices = postChatbotTool(
   '/api/chatbot/tools/compare-prices',
   'chatbot price comparison'
 );
-
-const postChatbotRecipeChat = postChatbotTool(
-  '/api/chatbot/tools/recipe-chat',
-  'chatbot recipe chat'
-);
-
 
 module.exports = {
   getWeeklySpecials,
@@ -424,10 +408,7 @@ module.exports = {
   getRecipeProducts,
   // DL-06 chatbot tools
   postChatbotChat,
-  postChatbotRecipeChat,
   postChatbotProductSearch,
-  postChatbotProductDetails,
-  postChatbotCurrentPrices,
   postChatbotComparePrices,
 };
 

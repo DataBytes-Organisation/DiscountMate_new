@@ -69,28 +69,13 @@ def main():
     if not products:
         fail("MongoDB connected, but no products matched the test query")
 
-    product_id = products[0]["product_id"]
-
-    details = TOOL_REGISTRY["get_product_details"](
-        {"product_id": product_id},
-        repository=repo,
-    )
-    details_payload = as_dict(details)
-    print_json("get_product_details", details_payload)
-    if not details.success:
-        fail(details.error.message if details.error else "get_product_details failed")
-
-    prices = TOOL_REGISTRY["get_current_prices"](
-        {"product_id": product_id},
-        repository=repo,
-    )
-    prices_payload = as_dict(prices)
-    print_json("get_current_prices", prices_payload)
-    if not prices.success:
-        fail(prices.error.message if prices.error else "get_current_prices failed")
-
     comparison = TOOL_REGISTRY["compare_prices"](
-        {"product_id": product_id},
+        {
+            "product_name": args.product_name,
+            "brand": args.brand,
+            "pack_size": args.pack_size,
+            "category": args.category,
+        },
         repository=repo,
     )
     comparison_payload = as_dict(comparison)
