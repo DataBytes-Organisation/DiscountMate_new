@@ -1,16 +1,16 @@
-name: Ingestion Pipeline Checks
+name: ETL Pipeline Checks
 
 on:
   pull_request:
     branches: [main]
     paths:
-      - "DE/ingestion-pipeline/**"
-      - ".github/workflows/ingestion-pipeline-checks.yml"
+      - "DE/etl-pipeline/**"
+      - ".github/workflows/etl-pipeline-checks.yml"
   push:
     branches: [main]
     paths:
-      - "DE/ingestion-pipeline/**"
-      - ".github/workflows/ingestion-pipeline-checks.yml"
+      - "DE/etl-pipeline/**"
+      - ".github/workflows/etl-pipeline-checks.yml"
   workflow_dispatch:
   workflow_call:
 
@@ -19,12 +19,11 @@ permissions:
 
 jobs:
   checks:
-    name: Type, lint, and format checks
+    name: Type, lint, format, and container checks
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: DE/ingestion-pipeline
-
+        working-directory: DE/etl-pipeline
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -51,5 +50,5 @@ jobs:
 
       - name: Build and smoke test container
         run: |
-          docker build --platform linux/amd64 -t discount-mate-ingestion:ci .
-          docker run --rm discount-mate-ingestion:ci --help
+          docker build --platform linux/amd64 -t discount-mate-etl:ci .
+          docker run --rm discount-mate-etl:ci --help
