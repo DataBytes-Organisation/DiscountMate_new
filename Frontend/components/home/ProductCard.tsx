@@ -6,8 +6,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import RetailerCard, { Retailer } from "./RetailerCard";
 import AddButton from "../common/AddButton";
 import { useRouter } from "expo-router";
-import { useCart } from "../../app/(tabs)/CartContext";
-import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
+import { useCart } from "../../context/CartContext";
+import { useShoppingLists } from "../../context/ShoppingListsContext";
 export type TrendTone = "green" | "red" | "orange" | "neutral";
 
 export type Product = {

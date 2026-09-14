@@ -8,8 +8,12 @@ import React, {
    type ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_URL } from "../../constants/Api";
-import type { ShoppingList, ShoppingListAccent, ShoppingListLineItem } from "../../types/ShoppingList";
+import { API_URL } from "../constants/Api";
+import type { ShoppingList, ShoppingListAccent, ShoppingListLineItem } from "../types/ShoppingList";
+import {
+   normalizeApiErrorMessage,
+   SESSION_EXPIRED_MESSAGE,
+} from "../utils/authSession";
 
 type ApiListResponse = {
    lists: ShoppingList[];
@@ -59,7 +63,12 @@ async function apiRequest<T>(path: string, token: string, init: RequestInit = {}
 
    const data = await response.json().catch(() => ({}));
    if (!response.ok) {
-      throw new Error(data?.message || `Request failed with status ${response.status}`);
+      throw new Error(
+         await normalizeApiErrorMessage(
+            data?.message,
+            `Request failed with status ${response.status}`
+         )
+      );
    }
 
    return data as T;
@@ -155,7 +164,9 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
          setLists(hydratedLists);
          setActiveListIdState(data.activeListId ?? hydratedLists[0]?.id ?? null);
       } catch (error) {
-         console.error("Failed to load shopping lists:", error);
+         if (error instanceof Error && error.message !== SESSION_EXPIRED_MESSAGE) {
+            console.error("Failed to load shopping lists:", error);
+         }
          setLists([]);
          setActiveListIdState(null);
       } finally {

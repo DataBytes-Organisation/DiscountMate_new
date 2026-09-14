@@ -4,7 +4,7 @@ import SidebarFilters from "./SidebarFilters";
 import ProductGrid from "../home/ProductGrid";
 import ProductCard, { Product } from "../home/ProductCard";
 import { useLocalSearchParams } from "expo-router";
-import { ImageSearchResult, useImageSearch } from "../../app/(tabs)/ImageSearchContext";
+import { ImageSearchResult, useImageSearch } from "../../context/ImageSearchContext";
 
 function buildImageSearchImageUrl(imageUrl: string | null | undefined): string | null {
    if (!imageUrl) return null;

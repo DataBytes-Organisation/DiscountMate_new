@@ -26,8 +26,8 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Markdown from 'react-native-markdown-display';
-import { useCart } from './CartContext';
-import { useShoppingLists } from './ShoppingListsContext';
+import { useCart } from '../../context/CartContext';
+import { useShoppingLists } from '../../context/ShoppingListsContext';
 import { API_ROOT_URL } from '../../constants/Api';
 
 // ----------------------------------------------------------
@@ -568,30 +568,24 @@ const styles = StyleSheet.create({
       backgroundColor: '#4CAF50',
       width: 60,
       height: 60,
-      borderRadius: 30,
-      justifyContent: 'center',
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 6,
-   },
+	      borderRadius: 30,
+	      justifyContent: 'center',
+	      alignItems: 'center',
+	      boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
+	      elevation: 6,
+	   },
    chatWindow: {
       position: 'absolute',
       bottom: 70,
       right: 0,
       width: 360,
       height: 540,
-      backgroundColor: '#fff',
-      borderRadius: 12,
-      overflow: 'hidden',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 8,
-   },
+	      backgroundColor: '#fff',
+	      borderRadius: 12,
+	      overflow: 'hidden',
+	      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+	      elevation: 8,
+	   },
    header: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -737,15 +731,12 @@ const cardStyles = StyleSheet.create({
       borderRadius: 8,
       marginRight: 8,
       padding: 8,
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: '#e8e8e8',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.08,
-      shadowRadius: 2,
-      elevation: 2,
-   },
+	      alignItems: 'center',
+	      borderWidth: 1,
+	      borderColor: '#e8e8e8',
+	      boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.08)',
+	      elevation: 2,
+	   },
    image: {
       width: 72,
       height: 72,

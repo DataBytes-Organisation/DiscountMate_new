@@ -1,4 +1,3 @@
-// tailwind.config.js
 const nativewind = require('nativewind/preset');
 
 module.exports = {
@@ -14,7 +13,6 @@ module.exports = {
             secondary_green: "#059669",
             dark: '#1F2937',
             accent: '#FBBF24',
-            dark: '#1F2937',
             light: '#F9FAFB',
          },
          fontFamily: {

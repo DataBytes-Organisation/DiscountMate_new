@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
-import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
+import { useShoppingLists } from "../../context/ShoppingListsContext";
 import { accentDot } from "../my-lists/accentStyles";
 
 type StoreKey = "coles" | "woolworths" | "iga";

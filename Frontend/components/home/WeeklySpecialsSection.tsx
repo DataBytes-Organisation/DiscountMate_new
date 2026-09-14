@@ -5,8 +5,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import AddButton from "../common/AddButton";
 import { API_URL } from "@/constants/Api";
-import { useCart } from "../../app/(tabs)/CartContext";
-import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
+import { useCart } from "../../context/CartContext";
+import { useShoppingLists } from "../../context/ShoppingListsContext";
 
 interface WeeklySpecial {
    id: number;

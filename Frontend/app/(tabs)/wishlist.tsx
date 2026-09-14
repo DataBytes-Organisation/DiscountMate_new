@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
-import { useWishlist } from './WishlistContext';
-import { useBasket } from './BasketContext';
+import { useWishlist } from '../../context/WishlistContext';
+import { useBasket } from '../../context/BasketContext';
 
 export default function Wishlist() {
   const { wishlist } = useWishlist();

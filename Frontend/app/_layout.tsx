@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -8,17 +8,20 @@ import React from 'react';
 import '../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { CartProvider } from './(tabs)/CartContext';
-import { ShoppingListsProvider } from './(tabs)/ShoppingListsContext';
-import { ImageSearchProvider } from './(tabs)/ImageSearchContext';
+import { CartProvider } from '../context/CartContext';
+import { AuthProvider } from '../context/AuthContext';
+import { ShoppingListsProvider } from '../context/ShoppingListsContext';
+import { ImageSearchProvider } from '../context/ImageSearchContext';
 import { UserProfileProvider } from '../context/UserProfileContext';
 import { NotificationCenterProvider } from '../context/NotificationCenterContext';
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {
+   // The splash screen may already be hidden during fast web reloads.
+});
 
 export default function RootLayout() {
    const colorScheme = useColorScheme();
-   const [loaded] = useFonts({
+   const [loaded, fontError] = useFonts({
       SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
    });
 
@@ -44,33 +47,37 @@ export default function RootLayout() {
    }, []);
 
    useEffect(() => {
-      if (loaded) {
-         SplashScreen.hideAsync();
+      if (loaded || fontError) {
+         SplashScreen.hideAsync().catch(() => {
+            // Ignore duplicate hide calls during development reloads.
+         });
       }
-   }, [loaded]);
+   }, [loaded, fontError]);
 
-   if (!loaded) {
+   if (!loaded && !fontError) {
       return null;
    }
 
     return (
        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <ImageSearchProvider>
-             <ShoppingListsProvider>
-                <CartProvider>
-                   <UserProfileProvider>
-                      <NotificationCenterProvider>
-                         <Stack>
-                            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                            <Stack.Screen name="(product)" options={{ headerShown: false }} />
-                            <Stack.Screen name="(specials)" options={{ headerShown: false }} />
-                            <Stack.Screen name="+not-found" />
-                         </Stack>
-                      </NotificationCenterProvider>
-                   </UserProfileProvider>
-                </CartProvider>
-             </ShoppingListsProvider>
+             <AuthProvider>
+                <ShoppingListsProvider>
+                   <CartProvider>
+                      <UserProfileProvider>
+                         <NotificationCenterProvider>
+                            <Stack>
+                               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                               <Stack.Screen name="(product)" options={{ headerShown: false }} />
+                               <Stack.Screen name="(specials)" options={{ headerShown: false }} />
+                               <Stack.Screen name="+not-found" />
+                            </Stack>
+                         </NotificationCenterProvider>
+                      </UserProfileProvider>
+                   </CartProvider>
+                </ShoppingListsProvider>
+             </AuthProvider>
           </ImageSearchProvider>
        </ThemeProvider>
     );

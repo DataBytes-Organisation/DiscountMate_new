@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, ScrollView, useWindowDimensions } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useShoppingLists } from "./ShoppingListsContext";
+import { useShoppingLists } from "../../context/ShoppingListsContext";
 import EditShoppingListModal from "../../components/my-lists/EditShoppingListModal";
 import MyListsHeroSection from "../../components/my-lists/MyListsHeroSection";
 import MyListsListsSection from "../../components/my-lists/MyListsListsSection";

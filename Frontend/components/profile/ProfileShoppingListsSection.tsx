@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
-import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
+import { useShoppingLists } from "../../context/ShoppingListsContext";
 import ShoppingListCard from "../my-lists/ShoppingListCard";
 
 export default function ProfileShoppingListsSection() {

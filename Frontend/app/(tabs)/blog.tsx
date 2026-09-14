@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAuth } from './AuthContext'; // Reintroduce useAuth
+import { useAuth } from '../../context/AuthContext'; // Reintroduce useAuth
 import { buildApiUrl } from '../../constants/Api';
 
 // Define the type for blog and news items

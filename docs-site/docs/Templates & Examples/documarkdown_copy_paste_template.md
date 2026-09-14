@@ -153,9 +153,9 @@ All main sub team sections have had an /img/ folder created, so add images there
 Use "picture tile: [ name ](link "alt text")"
 ```
 
-Machine Learning: ![Machine Learning General](img\machinelearning.jpg "ML")
+Machine Learning: ![Machine Learning General](img/machinelearning.jpg "ML")
 
-![Machine Learning General2](img\machine-learning2.png "ML")
+![Machine Learning General2](img/machine-learning2.png "ML")
 
 ## Embedding Vidoes (e.g. Youtube or Panopto)
 If embedding YouTube videos ensure you select the 'embed' link which is obtained via share --> emebed --> copy only the src and paste it here.  
@@ -180,4 +180,3 @@ If embedding YouTube videos ensure you select the 'embed' link which is obtained
 
 See the MDX template:
 A quick note on using what's called .mdx features, mdx means markdown extended, to used these features, you need to name your file to have the extension .mdx
-

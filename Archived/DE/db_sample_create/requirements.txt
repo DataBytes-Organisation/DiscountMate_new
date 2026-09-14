@@ -1,4 +1,4 @@
-psycopg2==2.9.9
-sqlalchemy==2.0.30
-pymongo
-pandas
+psycopg2==2.9.12
+sqlalchemy==2.0.50
+pymongo==4.17.0
+pandas==3.0.3

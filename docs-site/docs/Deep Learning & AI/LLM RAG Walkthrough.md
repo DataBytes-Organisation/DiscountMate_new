@@ -38,7 +38,7 @@ The pipeline calls into LLMs hosted via APIs, and uses a **cascade** based appro
 
 The key benefit of the router/cascade approach is **resilience**: if the cheapest free model is busy, the request automatically falls through to the next model and then to the next provider, instead of returning a hard error to the user.
 
-Schematic Overview of RAG: ![RAG General](img\general_rag_overview.png "RAG")
+Schematic Overview of RAG: ![RAG General](img/general_rag_overview.png "RAG")
 
 **Note** that the *gemini* models via the Google AI SDK were also tested initially however strict rate limits, even after one or two prompts,  were encountered even on the free models. Thus development with this model did not continue and the OpenRouter API became the primary method for LLM utilisation in this feature. 
 
@@ -260,5 +260,4 @@ The current setup is deliberately **local-dev-first**: Node on port 5000, Flask 
 
 - Cloud Run injects the listen port via the `$PORT` env var (default 8080), not a static `5001`. The current code already reads `ML_SERVICE_PORT` from env, so set `ML_SERVICE_PORT=$PORT` in the Cloud Run config, or change `app.py` to read `PORT` directly.
 - Likewise, the Node `ML_SERVICE_URL` should be the Cloud Run service URL (e.g. `https://discountmate-ml-xxxx.a.run.app`), not `http://localhost:5001`.
-
 

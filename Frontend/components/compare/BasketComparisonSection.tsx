@@ -2,8 +2,8 @@ import React, { useMemo, useState } from "react";
 import { View, Text, Pressable, ScrollView, Image, Modal } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
-import { useCart } from "../../app/(tabs)/CartContext";
-import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
+import { useCart } from "../../context/CartContext";
+import { useShoppingLists } from "../../context/ShoppingListsContext";
 import type { ShoppingList } from "../../types/ShoppingList";
 
 type StoreKey = "iga" | "coles" | "woolworths";

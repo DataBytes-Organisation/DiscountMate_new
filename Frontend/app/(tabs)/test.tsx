@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'rea
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
-import { useAuth } from './AuthContext';  // Ensure you have AuthContext for authentication state
+import { useAuth } from '../../context/AuthContext';  // Ensure you have AuthContext for authentication state
 import Entypo from 'react-native-vector-icons/Entypo';
 import { buildApiUrl } from '../../constants/Api';
 
