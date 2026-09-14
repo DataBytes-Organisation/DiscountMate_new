@@ -17,6 +17,8 @@ from ml_models.weekly_specials import get_weekly_specials_ml
 from ml_models.recommendations import get_recommendations_ml
 from ml_models.price_prediction import get_price_prediction_ml
 from ocr.extractor import process_receipt_internal, build_user_response
+from chatbots.agents import DiscountMateAgent
+from chatbots.mcp_tools import TOOL_REGISTRY
 
 
 def _resolve_project_id():
@@ -81,6 +83,8 @@ from recipe_rag.rag_pipeline import RecipeRAG
 rag = None
 RAG_INIT_ERROR = None
 RAG_LOCK = Lock()
+chatbot_agent = None
+CHATBOT_AGENT_LOCK = Lock()
 
 
 def get_rag():
@@ -114,6 +118,21 @@ def rag_not_ready_response(error):
     }), 503
 
 
+def get_chatbot_agent():
+    """Lazy-load the combined RAG + MCP chatbot agent."""
+    global chatbot_agent
+
+    if chatbot_agent is not None:
+        return chatbot_agent
+
+    with CHATBOT_AGENT_LOCK:
+        if chatbot_agent is None:
+            chatbot_agent = DiscountMateAgent(
+                tool_registry=TOOL_REGISTRY,
+            )
+        return chatbot_agent
+
+
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -137,6 +156,50 @@ def error_payload(message, error, status_code=500):
         'message': message,
         'error': error,
     }), status_code
+
+
+def model_to_dict(model):
+    if hasattr(model, "model_dump"):
+        return model.model_dump()
+    if hasattr(model, "dict"):
+        return model.dict()
+    return model
+
+
+def chatbot_tool_status(payload):
+    if payload.get("success"):
+        return 200
+
+    error = payload.get("error") or {}
+    code = error.get("code")
+    if code in ("invalid_arguments", "invalid_request"):
+        return 400
+    if code == "repository_unavailable":
+        return 503
+    if code == "product_not_found":
+        return 404
+    return 500
+
+
+def run_chatbot_tool(tool_name):
+    data = request.get_json(silent=True) or {}
+    arguments = data.get("arguments") if isinstance(data.get("arguments"), dict) else data
+
+    if tool_name not in TOOL_REGISTRY:
+        return jsonify({
+            "success": False,
+            "tool": tool_name,
+            "data": None,
+            "error": {
+                "code": "unknown_tool",
+                "message": f"Unknown chatbot tool: {tool_name}",
+                "details": {},
+            },
+        }), 404
+
+    result = TOOL_REGISTRY[tool_name](arguments)
+    payload = model_to_dict(result)
+    return jsonify(payload), chatbot_tool_status(payload)
 
 
 @app.route('/health', methods=['GET'])
@@ -321,6 +384,29 @@ def process_receipt_api():
     finally:
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
+
+
+# ============================================================
+# DL-06 chatbot MCP-style tool endpoints
+# ============================================================
+
+@app.route('/api/chatbot/chat', methods=['POST'])
+def chatbot_chat():
+    data = request.get_json(silent=True) or {}
+    result = get_chatbot_agent().chat(data)
+    payload = model_to_dict(result)
+    return jsonify(payload), chatbot_tool_status(payload)
+
+
+@app.route('/api/chatbot/tools/search-products', methods=['POST'])
+def chatbot_search_products():
+    return run_chatbot_tool("search_products")
+
+
+@app.route('/api/chatbot/tools/compare-prices', methods=['POST'])
+def chatbot_compare_prices():
+    return run_chatbot_tool("compare_prices")
+
 
 # ============================================================
 # Recipe RAG endpoints
@@ -511,6 +597,9 @@ if __name__ == '__main__':
     print("  POST /api/ml/recommendations - Get product recommendations")
     print("  POST /api/ml/price-prediction - Predict future prices")
     print("  POST /api/ocr/receipt - Process uploaded receipt image")
+    print("  POST /api/chatbot/tools/search-products - DL-06 product search tool")
+    print("  POST /api/chatbot/tools/compare-prices - DL-06 price comparison tool")
+    print("  POST /api/chatbot/chat - Product search and price comparison assistant")
     print("  GET  /api/recipe/stats - Recipe RAG diagnostics")
     print("  GET  /api/recipe/search?q=... - Recipe retrieval (no LLM)")
     print("  POST /api/recipe/chat - Recipe RAG chat (full LLM)")
