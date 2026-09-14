@@ -1,0 +1,29 @@
+Status: Experimental / Not deployed
+
+Purpose:
+Develop and evaluate a CatBoost regression prototype for DiscountMate.
+The initial model predicts promotional discount depth using Australian grocery product data.
+
+Current limitations:
+- The initial Australia_Grocery_2022Sep dataset is a snapshot rather than a long historical time series.
+- The first prototype predicts discount depth rather than future product price.
+- Production Coles/Woolworths historical data is not yet available.
+
+Inputs / assumptions:
+- Local dataset: data/Australia_Grocery_2022Sep.csv
+- Python 3.11 environment
+- Dataset files remain local and are not committed to Git.
+
+How to run:
+- Activate the local Python virtual environment.
+- Run the dataset inspection and CatBoost training scripts/notebooks.
+
+Next steps:
+- Inspect and clean the Australian grocery dataset.
+- Define and validate the discount_percentage regression target.
+- Train a CatBoostRegressor baseline.
+- Evaluate with MAE, RMSE and R2.
+- Compare against suitable baselines and prepare for later production integration.
+
+Owner / contributors:
+- Azhar Mujeeb Jabbar
