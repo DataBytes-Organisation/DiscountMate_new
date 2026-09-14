@@ -1,0 +1,72 @@
+{
+  "input_file": "/Users/sumitsumit/Desktop/personal_projects/assignment/Data Analysis/GA4 Behavioural Segmentation - T2 2026/Data/Original_bigquery_data.csv",
+  "input_sha256": "4f83732d1aa6f143bd0c8d3da237a869e676166add6c4c5bb89627679ca77c79",
+  "input_rows": 21,
+  "exact_duplicate_rows_removed": 0,
+  "unique_rows_after_deduplication": 21,
+  "source_kind": "bigquery",
+  "specification_verification_status": "NOT_FULLY_VERIFIED",
+  "specification_verification_note": "Validation checks the implemented cleaning contract. Original DA-01-T3, DA-01-T7 and Persona Archetype Definitions were unavailable for direct comparison. See Documentation/SPECIFICATION_VERIFICATION.md.",
+  "output_columns": [
+    "user_pseudo_id",
+    "sessions_count",
+    "avg_engagement_time_sec",
+    "pageviews_per_session",
+    "compare_ratio",
+    "specials_ratio",
+    "mylists_ratio",
+    "category_browse_ratio",
+    "product_detail_ratio",
+    "unique_pages_visited",
+    "browsing_entropy",
+    "days_since_first_visit",
+    "days_since_last_activity"
+  ],
+  "dropped_columns": [
+    "avg_percent_scrolled"
+  ],
+  "warnings": [
+    "Reporting dates and inclusion flag are absent; none were invented.",
+    "Session-level engagement eligibility cannot be verified from aggregate means.",
+    "Synthetic affinity-sum constraint of 0.95 is not applied to BigQuery data.",
+    "Cluster assignments and persona labels are not supplied by cleaning."
+  ],
+  "excluded_rows_removed": 0,
+  "output_rows": 21,
+  "missing_days_since_first_visit_before": 5,
+  "missing_days_since_first_visit_after": 0,
+  "days_since_first_visit_imputation": {
+    "method": "rounded median, raised to days_since_last_activity when required",
+    "observed_median": 8.5,
+    "imputed_base_value": 8,
+    "recency_constraint_adjustments": 2
+  },
+  "p99_capping_applied": false,
+  "scaling_applied": false,
+  "validation_status": "PASS",
+  "output_file": "/Users/sumitsumit/Desktop/personal_projects/assignment/Data Analysis/GA4 Behavioural Segmentation - T2 2026/Data/cleaned_bigquery_users.csv",
+  "output_sha256": "8b0f5fd08919000b0b446651d6fbb52081b9c19dc962dbfcda220464b886c752",
+  "post_write_schema_check": "PASS",
+  "post_write_row_count_check": "PASS",
+  "post_write_unique_id_check": "PASS",
+  "post_write_duplicate_row_check": "PASS",
+  "post_write_inclusion_flag_check": "PASS",
+  "post_write_missing_value_check": "PASS",
+  "post_write_constraint_check": "PASS",
+  "missing_values_by_column": {
+    "user_pseudo_id": 0,
+    "sessions_count": 0,
+    "avg_engagement_time_sec": 0,
+    "pageviews_per_session": 0,
+    "compare_ratio": 0,
+    "specials_ratio": 0,
+    "mylists_ratio": 0,
+    "category_browse_ratio": 0,
+    "product_detail_ratio": 0,
+    "unique_pages_visited": 0,
+    "browsing_entropy": 0,
+    "days_since_first_visit": 0,
+    "days_since_last_activity": 0
+  },
+  "post_write_validation_rows": 21
+}
