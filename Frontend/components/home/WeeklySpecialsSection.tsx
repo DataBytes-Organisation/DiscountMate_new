@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import React, { useState, useEffect } from "react";   
+import { View,Text,Pressable,ActivityIndicator,Image,} from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -9,7 +9,7 @@ import { useCart } from "../../app/(tabs)/CartContext";
 import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 
 interface WeeklySpecial {
-   id: number;
+   id: string | number;
    product_name: string;
    description: string;
    price: number;
@@ -45,28 +45,85 @@ export default function WeeklySpecialsSection() {
    }, []);
 
    const fetchWeeklySpecials = async () => {
-      try {
-         setLoading(true);
-         setError(null);
+   try {
+      setLoading(true);
+      setError(null);
 
-         const response = await fetch(`${API_URL}/ml/weekly-specials?limit=4`);
-         const data: WeeklySpecialsResponse = await response.json();
+      const response = await fetch(`${API_URL}/products?limit=50`);
 
-         if (data.success && data.data) {
-            setSpecials(data.data);
-         } else {
-            setError(data.error || "Failed to load weekly specials");
-            // Fallback to empty array or show error message
-            console.error("Error fetching weekly specials:", data.error);
-         }
-      } catch (err) {
-         console.error("Error fetching weekly specials:", err);
-         setError("Unable to connect to ML service. Please ensure the Python ML service is running.");
-         // Keep empty array on error - component will show loading/error state
-      } finally {
-         setLoading(false);
+      if (!response.ok) {
+         throw new Error(`Products request failed: ${response.status}`);
       }
-   };
+
+      const result = await response.json();
+
+      const liveSpecials: WeeklySpecial[] = (result.items || [])
+         .filter((product: any) => {
+            const currentPrice = Number(product.current_price) || 0;
+            const bestPrice = Number(product.best_price) || 0;
+
+            return (
+               product.is_on_special === true &&
+               currentPrice > 0 &&
+               bestPrice > 0 &&
+               bestPrice < currentPrice
+            );
+         })
+         .filter(
+            (product: any, index: number, array: any[]) =>
+               index ===
+               array.findIndex(
+         (p: any) => p.product_name === product.product_name
+            )
+           )
+         .slice(0, 4)
+         .map((product: any) => {
+            const originalPrice = Number(product.current_price);
+            const specialPrice = Number(product.best_price);
+            const savings = originalPrice - specialPrice;
+            const discountPercentage =
+               originalPrice > 0
+                  ? (savings / originalPrice) * 100
+                  : 0;
+
+            const storeKey = String(product.store_chain || "")
+               .replace("_generic", "")
+               .toLowerCase();
+
+            const store =
+               storeKey === "coles"
+                  ? "Coles"
+                  : storeKey === "woolworths"
+                    ? "Woolworths"
+                    : storeKey === "iga"
+                      ? "IGA"
+                      : "Retailer";
+
+            return {
+               id: product._id,
+               product_id: product._id,
+               product_name: product.product_name,
+               description: product.description || "",
+               price: specialPrice,
+               original_price: originalPrice,
+               discount_percentage: discountPercentage,
+               savings,
+               store,
+               store_key: storeKey,
+               category: product.category_name || "Other",
+               icon: "tag",
+               image_url: product.link_image || null,
+            };
+         });
+
+      setSpecials(liveSpecials);
+   } catch (err) {
+      console.error("Error fetching weekly specials:", err);
+      setError("Unable to load live weekly specials.");
+   } finally {
+      setLoading(false);
+   }
+};
 
    const formatPrice = (price: number): string => {
       return `$${price.toFixed(2)}`;
@@ -159,13 +216,21 @@ export default function WeeklySpecialsSection() {
                         <View className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
                            {/* Image / icon area + badge */}
                            <View className="relative">
-                              <View className="w-full h-56 bg-gray-100 items-center justify-center">
-                                 <FontAwesome6
-                                    name={item.icon || "circle-question"}
-                                    size={32}
-                                    color="#9CA3AF"
-                                 />
-                              </View>
+                            <View className="w-full h-56 bg-gray-100 items-center justify-center">
+                           {item.image_url ? (
+                        <Image
+                            source={{ uri: item.image_url }}
+                            className="w-full h-56"
+                           resizeMode="contain"
+                            />
+                          ) : (
+                           <FontAwesome6
+                          name={item.icon || "circle-question"}
+                          size={32}
+                           color="#9CA3AF"
+                             />
+                            )}
+                           </View>  
 
                               <View className="absolute top-4 right-4">
                                  <View className="px-4 py-2 rounded-full bg-red-500">
@@ -181,8 +246,11 @@ export default function WeeklySpecialsSection() {
                               <Text className="text-base font-bold text-[#111827] mb-1">
                                  {item.product_name}
                               </Text>
-                              <Text className="text-xs text-gray-500 mb-4">
-                                 {item.description}
+                              <Text
+                                 numberOfLines={3}
+                                 className="text-xs text-gray-500 mb-4"
+                              >
+                                 {item.description?.replace(/<[^>]*>/g, "")}
                               </Text>
 
                               <View className="flex-row items-end justify-between mb-4">
