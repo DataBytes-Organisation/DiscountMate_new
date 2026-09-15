@@ -1,0 +1,54 @@
+{
+  "model_name": "DiscountMate CatBoost Discount Depth Regressor",
+  "model_type": "CatBoostRegressor",
+  "status": "experimental",
+  "target": "discount_percentage",
+  "features": [
+    "Category",
+    "Sub_category",
+    "Product_Group",
+    "Brand",
+    "state",
+    "city",
+    "package_size",
+    "Retail_price",
+    "is_estimated"
+  ],
+  "categorical_features": [
+    "Category",
+    "Sub_category",
+    "Product_Group",
+    "Brand",
+    "state",
+    "city",
+    "package_size"
+  ],
+  "numerical_features": [
+    "Retail_price",
+    "is_estimated"
+  ],
+  "hyperparameters": {
+    "iterations": 1249,
+    "depth": 8,
+    "learning_rate": 0.03,
+    "l2_leaf_reg": 5,
+    "random_seed": 42,
+    "loss_function": "RMSE"
+  },
+  "training_rows": 73786,
+  "training_skus": 1045,
+  "test_rows": 13136,
+  "test_skus": 185,
+  "sku_overlap": 0,
+  "test_metrics": {
+    "mae": 2.3585215219489113,
+    "rmse": 4.875240334510868,
+    "r2": 0.8412840859429485,
+    "median_baseline_mae": 9.910797517116597,
+    "median_baseline_rmse": 12.863922138361447,
+    "mae_improvement_percent": 76.20250521841871,
+    "rmse_improvement_percent": 62.101447116409126
+  },
+  "data_limitation": "Current Australian source dataset contains one timestamp. This model predicts promotional discount depth and is not yet a temporal future-price forecasting model.",
+  "created_at_utc": "2026-08-21T11:35:56.562970+00:00"
+}

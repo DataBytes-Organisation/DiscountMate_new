@@ -213,3 +213,14 @@ variable "postgres_authorized_networks" {
   }))
   default = []
 }
+
+variable "etl_job_image" {
+  description = "Container image executed by the production ETL Cloud Run jobs."
+  type        = string
+}
+
+variable "etl_scheduler_time_zone" {
+  description = "Timezone used by the production ETL Cloud Scheduler triggers."
+  type        = string
+  default     = "Australia/Melbourne"
+}
