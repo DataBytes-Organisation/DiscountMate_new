@@ -1,5 +1,5 @@
-const express = require('express');
-const mlController = require('../controllers/ml.controller');
+const express = require("express");
+const mlController = require("../controllers/ml.controller");
 
 const router = express.Router();
 
@@ -28,7 +28,28 @@ const router = express.Router();
  *       503:
  *         description: ML service unavailable
  */
-router.get('/weekly-specials', mlController.getWeeklySpecials);
+router.get("/weekly-specials", mlController.getWeeklySpecials);
+/**
+ * @swagger
+ * /ml/trending-categories:
+ *   get:
+ *     tags: [ML/AI]
+ *     summary: Get trending category insights
+ *     description: Retrieve category-level trending stats (avg price drop, avg savings)
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 3
+ *         description: Number of categories to return
+ *     responses:
+ *       200:
+ *         description: Trending categories retrieved successfully
+ *       503:
+ *         description: ML service unavailable
+ */
+router.get("/trending-categories", mlController.getTrendingCategories);
 
 /**
  * @swagger
@@ -54,7 +75,7 @@ router.get('/weekly-specials', mlController.getWeeklySpecials);
  *       200:
  *         description: Recommendations retrieved successfully
  */
-router.post('/recommendations', mlController.getRecommendations);
+router.post("/recommendations", mlController.getRecommendations);
 
 /**
  * @swagger
@@ -78,7 +99,7 @@ router.post('/recommendations', mlController.getRecommendations);
  *       200:
  *         description: Price prediction retrieved successfully
  */
-router.post('/price-prediction', mlController.getPricePrediction);
+router.post("/price-prediction", mlController.getPricePrediction);
 
 /* ============================================================
  * Recipe RAG routes (Step 2)
@@ -108,7 +129,7 @@ router.post('/price-prediction', mlController.getPricePrediction);
  *       503:
  *         description: ML service or RAG pipeline unavailable
  */
-router.get('/recipe/stats', mlController.getRecipeStats);
+router.get("/recipe/stats", mlController.getRecipeStats);
 
 /**
  * @swagger
@@ -135,7 +156,7 @@ router.get('/recipe/stats', mlController.getRecipeStats);
  *       503:
  *         description: ML service unavailable
  */
-router.get('/recipe/search', mlController.getRecipeSearch);
+router.get("/recipe/search", mlController.getRecipeSearch);
 
 /**
  * @swagger
@@ -165,7 +186,7 @@ router.get('/recipe/search', mlController.getRecipeSearch);
  *       504:
  *         description: LLM providers timed out
  */
-router.post('/recipe/chat', mlController.postRecipeChat);
+router.post("/recipe/chat", mlController.postRecipeChat);
 
 /**
  * @swagger
@@ -187,7 +208,7 @@ router.post('/recipe/chat', mlController.postRecipeChat);
  *       200:
  *         description: Session reset successfully
  */
-router.post('/recipe/reset', mlController.postRecipeReset);
+router.post("/recipe/reset", mlController.postRecipeReset);
 
 /**
  * @swagger
@@ -215,7 +236,6 @@ router.post('/recipe/reset', mlController.postRecipeReset);
  *       503:
  *         description: ML service unavailable
  */
-router.get('/recipe/products', mlController.getRecipeProducts);
+router.get("/recipe/products", mlController.getRecipeProducts);
 
 module.exports = router;
-

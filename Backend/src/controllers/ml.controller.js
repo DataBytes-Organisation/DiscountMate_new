@@ -1,7 +1,7 @@
-const axios = require('axios');
+const axios = require("axios");
 
 // ML Service URL - can be configured via environment variable
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://localhost:5001";
 
 /**
  * Get weekly specials from ML service
@@ -18,7 +18,7 @@ const getWeeklySpecials = async (req, res) => {
     // Call Python ML service
     const response = await axios.get(`${ML_SERVICE_URL}/api/weekly-specials`, {
       params,
-      timeout: 10000 // 10 second timeout
+      timeout: 10000, // 10 second timeout
     });
 
     if (response.data.success) {
@@ -26,30 +26,76 @@ const getWeeklySpecials = async (req, res) => {
     } else {
       return res.status(500).json({
         success: false,
-        message: 'ML service returned an error',
-        error: response.data.error
+        message: "ML service returned an error",
+        error: response.data.error,
       });
     }
   } catch (error) {
-    console.error('Error calling ML service:', error.message);
+    console.error("Error calling ML service:", error.message);
 
     // If ML service is unavailable, return a fallback response
-    if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+    if (error.code === "ECONNREFUSED" || error.code === "ETIMEDOUT") {
       return res.status(503).json({
         success: false,
-        message: 'ML service is currently unavailable',
-        error: 'Service connection failed. Please ensure the Python ML service is running on port 5001.'
+        message: "ML service is currently unavailable",
+        error:
+          "Service connection failed. Please ensure the Python ML service is running on port 5001.",
       });
     }
 
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch weekly specials',
-      error: error.message
+      message: "Failed to fetch weekly specials",
+      error: error.message,
     });
   }
 };
+/**
+ * Get trending categories from ML service
+ */
+const getTrendingCategories = async (req, res) => {
+  try {
+    const { limit } = req.query;
 
+    const params = {};
+    if (limit) params.limit = limit;
+
+    const response = await axios.get(
+      `${ML_SERVICE_URL}/api/trending-categories`,
+      {
+        params,
+        timeout: 10000,
+      },
+    );
+
+    if (response.data.success) {
+      return res.json(response.data);
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: "ML service returned an error",
+        error: response.data.error,
+      });
+    }
+  } catch (error) {
+    console.error("Error calling ML service:", error.message);
+
+    if (error.code === "ECONNREFUSED" || error.code === "ETIMEDOUT") {
+      return res.status(503).json({
+        success: false,
+        message: "ML service is currently unavailable",
+        error:
+          "Service connection failed. Please ensure the Python ML service is running on port 5001.",
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch trending categories",
+      error: error.message,
+    });
+  }
+};
 /**
  * Get product recommendations from ML service
  */
@@ -58,7 +104,7 @@ const getRecommendations = async (req, res) => {
     const response = await axios.post(
       `${ML_SERVICE_URL}/api/ml/recommendations`,
       req.body,
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
 
     if (response.data.success) {
@@ -66,25 +112,25 @@ const getRecommendations = async (req, res) => {
     } else {
       return res.status(500).json({
         success: false,
-        message: 'ML service returned an error',
-        error: response.data.error
+        message: "ML service returned an error",
+        error: response.data.error,
       });
     }
   } catch (error) {
-    console.error('Error calling ML recommendations service:', error.message);
+    console.error("Error calling ML recommendations service:", error.message);
 
-    if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+    if (error.code === "ECONNREFUSED" || error.code === "ETIMEDOUT") {
       return res.status(503).json({
         success: false,
-        message: 'ML service is currently unavailable',
-        error: 'Service connection failed.'
+        message: "ML service is currently unavailable",
+        error: "Service connection failed.",
       });
     }
 
     return res.status(500).json({
       success: false,
-      message: 'Failed to get recommendations',
-      error: error.message
+      message: "Failed to get recommendations",
+      error: error.message,
     });
   }
 };
@@ -97,7 +143,7 @@ const getPricePrediction = async (req, res) => {
     const response = await axios.post(
       `${ML_SERVICE_URL}/api/ml/price-prediction`,
       req.body,
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
 
     if (response.data.success) {
@@ -105,25 +151,25 @@ const getPricePrediction = async (req, res) => {
     } else {
       return res.status(500).json({
         success: false,
-        message: 'ML service returned an error',
-        error: response.data.error
+        message: "ML service returned an error",
+        error: response.data.error,
       });
     }
   } catch (error) {
-    console.error('Error calling ML price prediction service:', error.message);
+    console.error("Error calling ML price prediction service:", error.message);
 
-    if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+    if (error.code === "ECONNREFUSED" || error.code === "ETIMEDOUT") {
       return res.status(503).json({
         success: false,
-        message: 'ML service is currently unavailable',
-        error: 'Service connection failed.'
+        message: "ML service is currently unavailable",
+        error: "Service connection failed.",
       });
     }
 
     return res.status(500).json({
       success: false,
-      message: 'Failed to get price prediction',
-      error: error.message
+      message: "Failed to get price prediction",
+      error: error.message,
     });
   }
 };
@@ -149,18 +195,17 @@ const getPricePrediction = async (req, res) => {
  */
 const getRecipeStats = async (req, res) => {
   try {
-    const response = await axios.get(
-      `${ML_SERVICE_URL}/api/recipe/stats`,
-      { timeout: 5000 }
-    );
+    const response = await axios.get(`${ML_SERVICE_URL}/api/recipe/stats`, {
+      timeout: 5000,
+    });
     return res.json(response.data);
   } catch (error) {
-    console.error('Error calling recipe stats:', error.message);
-    if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+    console.error("Error calling recipe stats:", error.message);
+    if (error.code === "ECONNREFUSED" || error.code === "ETIMEDOUT") {
       return res.status(503).json({
         success: false,
-        message: 'ML service is currently unavailable',
-        error: 'Recipe service is not running on port 5001.'
+        message: "ML service is currently unavailable",
+        error: "Recipe service is not running on port 5001.",
       });
     }
     // Forward Flask's error response if it sent one (e.g. 503 RAG_NOT_READY)
@@ -169,8 +214,8 @@ const getRecipeStats = async (req, res) => {
     }
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch recipe stats',
-      error: error.message
+      message: "Failed to fetch recipe stats",
+      error: error.message,
     });
   }
 };
@@ -181,21 +226,18 @@ const getRecipeStats = async (req, res) => {
  */
 const getRecipeSearch = async (req, res) => {
   try {
-    const response = await axios.get(
-      `${ML_SERVICE_URL}/api/recipe/search`,
-      {
-        params: req.query,   // forward all query params (?q=, ?top_k=)
-        timeout: 10000
-      }
-    );
+    const response = await axios.get(`${ML_SERVICE_URL}/api/recipe/search`, {
+      params: req.query, // forward all query params (?q=, ?top_k=)
+      timeout: 10000,
+    });
     return res.json(response.data);
   } catch (error) {
-    console.error('Error calling recipe search:', error.message);
-    if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+    console.error("Error calling recipe search:", error.message);
+    if (error.code === "ECONNREFUSED" || error.code === "ETIMEDOUT") {
       return res.status(503).json({
         success: false,
-        message: 'ML service is currently unavailable',
-        error: 'Recipe service is not running on port 5001.'
+        message: "ML service is currently unavailable",
+        error: "Recipe service is not running on port 5001.",
       });
     }
     if (error.response) {
@@ -203,8 +245,8 @@ const getRecipeSearch = async (req, res) => {
     }
     return res.status(500).json({
       success: false,
-      message: 'Recipe search failed',
-      error: error.message
+      message: "Recipe search failed",
+      error: error.message,
     });
   }
 };
@@ -222,24 +264,24 @@ const postRecipeChat = async (req, res) => {
   try {
     const response = await axios.post(
       `${ML_SERVICE_URL}/api/recipe/chat`,
-      req.body,                 // forward the JSON body verbatim
-      { timeout: 200000 }        // 200 seconds
+      req.body, // forward the JSON body verbatim
+      { timeout: 200000 }, // 200 seconds
     );
     return res.json(response.data);
   } catch (error) {
-    console.error('Error calling recipe chat:', error.message);
-    if (error.code === 'ECONNREFUSED') {
+    console.error("Error calling recipe chat:", error.message);
+    if (error.code === "ECONNREFUSED") {
       return res.status(503).json({
         success: false,
-        message: 'ML service is currently unavailable',
-        error: 'Recipe service is not running on port 5001.'
+        message: "ML service is currently unavailable",
+        error: "Recipe service is not running on port 5001.",
       });
     }
-    if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED') {
+    if (error.code === "ETIMEDOUT" || error.code === "ECONNABORTED") {
       return res.status(504).json({
         success: false,
-        message: 'Recipe chat timed out',
-        error: 'All LLM providers were too slow to respond. Please retry.'
+        message: "Recipe chat timed out",
+        error: "All LLM providers were too slow to respond. Please retry.",
       });
     }
     // Pass Flask's structured error response straight through
@@ -248,8 +290,8 @@ const postRecipeChat = async (req, res) => {
     }
     return res.status(500).json({
       success: false,
-      message: 'Recipe chat failed',
-      error: error.message
+      message: "Recipe chat failed",
+      error: error.message,
     });
   }
 };
@@ -263,15 +305,15 @@ const postRecipeReset = async (req, res) => {
     const response = await axios.post(
       `${ML_SERVICE_URL}/api/recipe/reset`,
       req.body,
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
     return res.json(response.data);
   } catch (error) {
-    console.error('Error calling recipe reset:', error.message);
-    if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+    console.error("Error calling recipe reset:", error.message);
+    if (error.code === "ECONNREFUSED" || error.code === "ETIMEDOUT") {
       return res.status(503).json({
         success: false,
-        message: 'ML service is currently unavailable'
+        message: "ML service is currently unavailable",
       });
     }
     if (error.response) {
@@ -279,12 +321,11 @@ const postRecipeReset = async (req, res) => {
     }
     return res.status(500).json({
       success: false,
-      message: 'Recipe reset failed',
-      error: error.message
+      message: "Recipe reset failed",
+      error: error.message,
     });
   }
 };
-
 
 /**
  * GET /api/ml/recipe/products?context_id=...
@@ -293,21 +334,18 @@ const postRecipeReset = async (req, res) => {
  */
 const getRecipeProducts = async (req, res) => {
   try {
-    const response = await axios.get(
-      `${ML_SERVICE_URL}/api/recipe/products`,
-      {
-        params: req.query,   // forwards ?context_id=...
-        timeout: 15000
-      }
-    );
+    const response = await axios.get(`${ML_SERVICE_URL}/api/recipe/products`, {
+      params: req.query, // forwards ?context_id=...
+      timeout: 15000,
+    });
     return res.json(response.data);
   } catch (error) {
-    console.error('Error calling recipe products:', error.message);
-    if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+    console.error("Error calling recipe products:", error.message);
+    if (error.code === "ECONNREFUSED" || error.code === "ETIMEDOUT") {
       return res.status(503).json({
         success: false,
-        message: 'ML service is currently unavailable',
-        error: 'Recipe service is not running on port 5001.'
+        message: "ML service is currently unavailable",
+        error: "Recipe service is not running on port 5001.",
       });
     }
     if (error.response) {
@@ -315,15 +353,15 @@ const getRecipeProducts = async (req, res) => {
     }
     return res.status(500).json({
       success: false,
-      message: 'Recipe products fetch failed',
-      error: error.message
+      message: "Recipe products fetch failed",
+      error: error.message,
     });
   }
 };
 
-
 module.exports = {
   getWeeklySpecials,
+  getTrendingCategories,
   getRecommendations,
   getPricePrediction,
   // Recipe RAG
@@ -333,4 +371,3 @@ module.exports = {
   postRecipeReset,
   getRecipeProducts,
 };
-
