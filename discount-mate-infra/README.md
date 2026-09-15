@@ -238,3 +238,11 @@ jobs:
 
 - Provider lockfiles are committed per environment and should be updated with OpenTofu
 - Child modules resolve from the checked-out project root rather than `../` paths
+
+## Prod ETL Cloud Run Jobs
+
+`environments/prod/etl.tf` adds four ETL jobs (`ww`, `iga`, `aldi`, `coles`) following the original ingestion job and direct scheduler pattern. All run at 12:00 every Saturday in `Australia/Melbourne`, independently of ingestion, using the CLI's seven-day lookback.
+
+ETL reuses the original GitHub Actions service account as runtime and scheduler identity. Its job definitions add a Cloud SQL socket mount and a GCS HMAC key for DuckDB. PostgreSQL and HMAC credentials are supplied as environment variables and stored in OpenTofu state. The original ingestion configuration and shared job module remain unchanged.
+
+Set `etl_job_image` to an existing ETL image. Apply database migrations separately before running ETL. Image deployment remains manually available through `.github/workflows/data-pipeline-deploy.yml`; after deploying a new image, keep `etl_job_image` in sync before the next infrastructure apply.

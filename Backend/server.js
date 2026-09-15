@@ -568,6 +568,22 @@ async function ensureJwtSecret() {
  */
 async function startServer() {
    try {
+      const {
+         assertGoogleAuthConfiguration,
+      } = require('./src/services/google-auth.service');
+
+      assertGoogleAuthConfiguration();
+   } catch (err) {
+      console.error(
+         'Failed to initialize Google authentication:',
+         err.message
+      );
+
+      process.exit(1);
+      return;
+   }
+
+   try {
       // Load authentication and database secrets.
       await ensureJwtSecret();
       await ensureMongoUri();
@@ -578,9 +594,15 @@ async function startServer() {
       const {
          connectToMongoDB,
       } = require('./src/config/database');
+      const {
+         ensureGoogleIdentityIndex,
+      } = require('./src/services/google-auth.service');
 
       // Connect the DiscountMate backend to MongoDB.
-      await connectToMongoDB();
+      const db = await connectToMongoDB();
+
+      // Prevent a Google identity from being linked to multiple accounts.
+      await ensureGoogleIdentityIndex(db);
    } catch (err) {
       console.error(
          'Failed to initialize MongoDB:',

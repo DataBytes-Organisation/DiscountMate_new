@@ -1,0 +1,38 @@
+[
+    {
+        "product_id": "W-1001",
+        "product_name": "Woolworths Full Cream Milk",
+        "retailer": "Woolworths",
+        "category": "Dairy",
+        "price": 3.10,
+        "pack_size": "2L",
+        "on_special": false
+    },
+    {
+        "product_id": "C-2001",
+        "product_name": "Coles Dairy Milk Full Cream",
+        "retailer": "Coles",
+        "category": "Dairy",
+        "price": 3.10,
+        "pack_size": "2L",
+        "on_special": false
+    },
+    {
+        "product_id": "W-1002",
+        "product_name": "Devondale Unsalted Butter",
+        "retailer": "Woolworths",
+        "category": "Dairy",
+        "price": 4.50,
+        "pack_size": "250g",
+        "on_special": true
+    },
+    {
+        "product_id": "C-2002",
+        "product_name": "Devondale Unsalted Butter",
+        "retailer": "Coles",
+        "category": "Dairy",
+        "price": 5.00,
+        "pack_size": "250g",
+        "on_special": false
+    }
+]
