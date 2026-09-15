@@ -26,6 +26,7 @@ const router = express.Router();
 
 router.post('/signup', userController.signupLimiter, signupValidation, validateRequest, userController.signup);
 router.post('/signin', userController.signinLimiter, signinValidation, validateRequest, userController.signin);
+router.get('/verify-email', userController.verifyEmail); // confirms a user's email using the token sent at signup
 
 router.get('/profile', verifyToken, userController.getProfile);
 router.put('/profile', verifyToken, userController.updateProfile);
