@@ -125,10 +125,10 @@ These commands do not create a notification channel or alert policy. Opening or
 merging a PR also does not create GCP resources; an authorised operator must run
 `tofu apply`.
 
-The `Silver ETL Alerting Checks` GitHub Actions workflow runs the same Python
-and Terraform checks for relevant pull requests. It validates code and
-configuration only and never runs `tofu plan` against production or
-`tofu apply`.
+The `ETL Pipeline Checks` GitHub Actions workflow validates pipeline code, and
+the `Infrastructure Checks` workflow runs the Terraform format and validation
+commands for relevant pull requests. These workflows never run `tofu plan`
+against production or `tofu apply`.
 
 ## Terraform plan and apply
 
