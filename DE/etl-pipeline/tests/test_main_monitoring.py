@@ -5,11 +5,15 @@ import json
 import unittest
 from argparse import Namespace
 from contextlib import redirect_stderr, redirect_stdout
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import main as etl_main
 
-SUCCESS_SUMMARY = {
+if TYPE_CHECKING:
+    from common.job_models import JobSummary
+
+SUCCESS_SUMMARY: JobSummary = {
     "processed_dates": "2026-09-09",
     "skipped_dates": "none",
     "counts": {"raw_input": 100, "raw_input_normalized": 95},
@@ -45,7 +49,7 @@ class MainMonitoringTests(unittest.TestCase):
         return result, stdout.getvalue(), stderr.getvalue()
 
     def test_product_success_emits_structured_outcome(self) -> None:
-        def runner(**_kwargs: object) -> dict[str, object]:
+        def runner(**_kwargs: object) -> JobSummary:
             return SUCCESS_SUMMARY
 
         result, stdout, stderr = self._run_main(
@@ -60,7 +64,7 @@ class MainMonitoringTests(unittest.TestCase):
         self.assertEqual(stderr, "")
 
     def test_product_empty_input_emits_warning_and_keeps_success_exit(self) -> None:
-        def runner(**_kwargs: object) -> dict[str, object]:
+        def runner(**_kwargs: object) -> JobSummary:
             return {
                 "processed_dates": "none",
                 "skipped_dates": "2026-09-09",
@@ -79,7 +83,7 @@ class MainMonitoringTests(unittest.TestCase):
         self.assertEqual(stderr, "")
 
     def test_product_empty_output_emits_warning_and_keeps_success_exit(self) -> None:
-        def runner(**_kwargs: object) -> dict[str, object]:
+        def runner(**_kwargs: object) -> JobSummary:
             return {
                 "processed_dates": "2026-09-09",
                 "skipped_dates": "none",
@@ -98,7 +102,7 @@ class MainMonitoringTests(unittest.TestCase):
         self.assertEqual(stderr, "")
 
     def test_product_failure_emits_event_and_preserves_original_exception(self) -> None:
-        def runner(**_kwargs: object) -> dict[str, object]:
+        def runner(**_kwargs: object) -> JobSummary:
             raise ValueError("database unavailable")
 
         args = Namespace(
@@ -163,7 +167,7 @@ class MainMonitoringTests(unittest.TestCase):
         self.assertNotIn(secret, stderr.getvalue())
 
     def test_example_model_keeps_existing_plain_text_output(self) -> None:
-        def runner(**_kwargs: object) -> dict[str, object]:
+        def runner(**_kwargs: object) -> JobSummary:
             return SUCCESS_SUMMARY
 
         result, stdout, stderr = self._run_main(model="example", runner=runner)
@@ -173,7 +177,7 @@ class MainMonitoringTests(unittest.TestCase):
         self.assertEqual(stderr, "")
 
     def test_monitoring_failure_does_not_fail_successful_etl(self) -> None:
-        def runner(**_kwargs: object) -> dict[str, object]:
+        def runner(**_kwargs: object) -> JobSummary:
             return SUCCESS_SUMMARY
 
         with patch.object(
@@ -191,7 +195,7 @@ class MainMonitoringTests(unittest.TestCase):
         self.assertIn("Unable to emit Silver ETL monitoring event", stderr)
 
     def test_monitoring_failure_does_not_replace_etl_exception(self) -> None:
-        def runner(**_kwargs: object) -> dict[str, object]:
+        def runner(**_kwargs: object) -> JobSummary:
             raise ValueError("original ETL failure")
 
         args = Namespace(

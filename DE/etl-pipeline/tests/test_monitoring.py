@@ -5,8 +5,12 @@ import json
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from common.monitoring import EtlRunStatus, classify_summary, emit_etl_run_event
+
+if TYPE_CHECKING:
+    from common.job_models import JobSummary
 
 STARTED_AT = datetime(2026, 9, 9, tzinfo=UTC)
 SAFE_ERROR_MESSAGE = "Silver ETL execution failed; see Cloud Logging traceback"
@@ -18,7 +22,7 @@ def _summary(
     skipped_dates: str = "none",
     input_rows: int = 100,
     output_rows: int = 95,
-) -> dict[str, object]:
+) -> JobSummary:
     return {
         "processed_dates": processed_dates,
         "skipped_dates": skipped_dates,
