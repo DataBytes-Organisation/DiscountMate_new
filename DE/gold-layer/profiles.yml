@@ -1,0 +1,13 @@
+discount_mate_gold:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('POSTGRES_HOST', '127.0.0.1') }}"
+      port: "{{ env_var('POSTGRES_PORT', '5433') | int }}"
+      user: "{{ env_var('POSTGRES_USER', 'postgres') }}"
+      password: "{{ env_var('POSTGRES_PASSWORD') }}"
+      dbname: "{{ env_var('POSTGRES_DATABASE', 'discountmate') }}"
+      schema: "{{ env_var('DBT_TARGET_SCHEMA', 'gold') }}"
+      threads: 4
+

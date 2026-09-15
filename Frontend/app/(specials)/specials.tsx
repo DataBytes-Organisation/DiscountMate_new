@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import {
-  Dimensions,
   Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import FooterSection from "../../components/home/FooterSection";
 import ProductGrid from "../../components/home/ProductGrid";
 
-const { width } = Dimensions.get("window");
-const isDesktop = width >= 1100;
+
 
 const SPECIALS_CATEGORY_ID = "696f64f76b7787e691e7901f";
 
@@ -67,6 +66,9 @@ const CATEGORY_COUNTS = [
 ];
 
 export default function SpecialsScreen() {
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 1200;
+
   const [selectedRetailers, setSelectedRetailers] = useState<Retailer[]>([
     "Coles",
     "Woolworths",
@@ -94,8 +96,22 @@ export default function SpecialsScreen() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
         <View style={styles.container}>
-          <View style={styles.mainLayout}>
-            <View style={styles.sidebar}>
+          <View
+                style={[
+                  styles.mainLayout,
+                  isDesktop
+                    ? styles.mainLayoutDesktop
+                    : styles.mainLayoutMobile,
+                ]}
+              >
+            <View
+              style={[
+                styles.sidebar,
+                isDesktop
+                  ? styles.sidebarDesktop
+                  : styles.sidebarMobile,
+              ]}
+            >
               <Text style={styles.sidebarHeading}>Filter by Retailer</Text>
               {(["Coles", "Woolworths", "Aldi"] as Retailer[]).map((retailer) => {
                 const active = selectedRetailers.includes(retailer);
@@ -193,18 +209,28 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   mainLayout: {
-    flexDirection: isDesktop ? "row" : "column",
-    gap: 20,
-  },
-  sidebar: {
-    width: isDesktop ? 260 : "100%",
-    backgroundColor: "#fff",
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    padding: 16,
-    alignSelf: "flex-start",
-  },
+  gap: 20,
+},
+mainLayoutDesktop: {
+  flexDirection: "row",
+},
+mainLayoutMobile: {
+  flexDirection: "column",
+},
+sidebar: {
+  backgroundColor: "#fff",
+  borderRadius: 18,
+  borderWidth: 1,
+  borderColor: "#e5e7eb",
+  padding: 16,
+  alignSelf: "flex-start",
+},
+sidebarDesktop: {
+  width: 260,
+},
+sidebarMobile: {
+  width: "100%",
+},
   sidebarHeading: {
     fontSize: 13,
     fontWeight: "700",
