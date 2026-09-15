@@ -271,6 +271,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
    const [apiProducts, setApiProducts] = useState<ApiProduct[]>([]);
    const [loading, setLoading] = useState<boolean>(true);
    const [error, setError] = useState<string | null>(null);
+   const [retryRequest, setRetryRequest] = useState(0);
    const [currentPage, setCurrentPage] = useState<number>(1);
    const [totalProducts, setTotalProducts] = useState<number>(0);
    const [totalPagesFromApi, setTotalPagesFromApi] = useState<number | null>(null);
@@ -312,9 +313,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                return;
             }
             console.error("Error fetching products for home grid:", err);
-            setError(
-               "We couldn't load products just now. Please refresh the page to try again."
-            );
+               setApiProducts([]);
+               setTotalProducts(0);
+               setTotalPagesFromApi(0);
+               setError(
+                  "We couldn't load products just now. Please check your connection and try again."
+               );
          } finally {
             if (!ac.signal.aborted) {
                setLoading(false);
@@ -324,7 +328,13 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
       run();
       return () => ac.abort();
-   }, [currentPage, activeCategory, searchQuery, requireSearch]);
+   }, [
+         currentPage,
+         activeCategory,
+         searchQuery,
+         requireSearch,
+         retryRequest,
+      ]);
 
    useEffect(() => {
       // Reset to first page when the category or search query changes
@@ -395,10 +405,27 @@ const ProductGrid: React.FC<ProductGridProps> = ({
          {/* Product Filter Section */}
          <ProductFilterSection productCount={loading ? 0 : overallProductCount} />
 
-         {/* Error message */}
+        {/* Error state */}
          {error && !loading && (
-            <View className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200">
-               <Text className="text-sm text-red-700">{error}</Text>
+            <View className="mb-6 px-6 py-8 rounded-2xl bg-red-50 border border-red-200 items-center">
+               <Text className="text-base font-semibold text-red-700 text-center mb-2">
+                  Unable to load products
+               </Text>
+
+               <Text className="text-sm text-red-600 text-center mb-5">
+                  {error}
+               </Text>
+
+               <Pressable
+                  onPress={() => setRetryRequest((previous) => previous + 1)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Retry loading products"
+                  className="px-6 py-3 rounded-xl bg-emerald-500"
+               >
+                  <Text className="text-white font-semibold">
+                     Retry
+                  </Text>
+               </Pressable>
             </View>
          )}
 
