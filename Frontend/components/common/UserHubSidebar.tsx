@@ -82,7 +82,7 @@ export default function UserHubSidebar({
 
    const handleLogout = async () => {
       await AsyncStorage.removeItem("authToken");
-      router.push("/login");
+      router.push("/(auth)/login");
    };
 
    const renderNavItem = (item: (typeof NAV_ITEMS)[number], mobile = false) => {

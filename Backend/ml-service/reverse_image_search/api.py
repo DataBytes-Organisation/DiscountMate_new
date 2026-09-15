@@ -10,6 +10,7 @@ import os
 os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 
 import io
+import sys
 from contextlib import asynccontextmanager
 from typing import Optional
 
@@ -17,11 +18,12 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from notebook_runtime import (
+    MODEL_ARTIFACT_SOURCE,
     METADATA_PATH,
     load_engine,
     search_image_array,
@@ -32,9 +34,21 @@ MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    if not METADATA_PATH.exists():
-        raise RuntimeError(f"Metadata not found at '{METADATA_PATH}'.")
-    load_engine()
+    app.state.model_ready = False
+    app.state.model_error = None
+    try:
+        if not METADATA_PATH.exists():
+            raise RuntimeError(f"Metadata not found at '{METADATA_PATH}'.")
+        load_engine()
+        app.state.model_ready = True
+    except Exception as exc:
+        if MODEL_ARTIFACT_SOURCE == "gcs":
+            raise
+        app.state.model_error = str(exc)
+        print(
+            f"[ReverseImageSearch] feature disabled: {exc}",
+            file=sys.stderr,
+        )
     yield
 
 
@@ -71,9 +85,16 @@ def _clean_price(val) -> Optional[str]:
 
 @app.post("/reverse-image-search", response_model=list[SearchResult])
 async def reverse_image_search(
+    request: Request,
     file: UploadFile = File(...),
     top_k: int = 5,
 ) -> list[SearchResult]:
+    if not getattr(request.app.state, "model_ready", False):
+        error = getattr(request.app.state, "model_error", None)
+        raise HTTPException(
+            status_code=503,
+            detail=f"Reverse image search is unavailable: {error or 'model is not ready'}",
+        )
     if not (1 <= top_k <= 20):
         raise HTTPException(status_code=400, detail="top_k must be between 1 and 20.")
     if not file.content_type or not file.content_type.startswith("image/"):
@@ -117,5 +138,13 @@ async def reverse_image_search(
 
 
 @app.get("/health")
-async def health() -> dict:
-    return {"status": "ok"}
+async def health(request: Request) -> dict:
+    ready = getattr(request.app.state, "model_ready", False)
+    payload = {
+        "status": "ok" if ready else "degraded",
+        "ready": ready,
+        "model_source": MODEL_ARTIFACT_SOURCE,
+    }
+    if error := getattr(request.app.state, "model_error", None):
+        payload["error"] = error
+    return payload
