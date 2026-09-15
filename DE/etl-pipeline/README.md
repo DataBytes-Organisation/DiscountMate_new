@@ -5,7 +5,7 @@ DuckDB-first ETL pipeline for loading retailer product data into the PostgreSQL 
 This repo now contains:
 
 - one generic example workflow for starter/reference use
-- one implemented retailer workflow for Aldi product pricing
+- retailer workflows for Aldi, Coles, IGA, and Woolworths product pricing
 - PostgreSQL migrations for the current `silver` warehouse tables
 
 The Aldi workflow reads raw Aldi Bronze CSV data, enriches it with conservative GTIN matching from `silver.static_master_coles_products`, and syncs the results into:
@@ -95,7 +95,7 @@ through DuckDB for the final silver-table sync. Bronze inputs can come from:
 
 ## Run the Aldi workflow
 
-The implemented retailer workflow is `products_aldi`.
+The Aldi retailer workflow is `products_aldi`.
 
 It uses:
 
@@ -209,7 +209,7 @@ uv run alembic revision -m "describe change"
 - `common/`: shared CLI, path, DuckDB, normalization, and PostgreSQL helpers
 - `features/example/`: one working example workflow
 - `features/products/aldi/`: implemented Aldi job plus workflow SQL for normalize, QA, and silver upsert
-- `features/products/<retailer>/job.py`: retailer jobs, with Aldi implemented and others available for later expansion
+- `features/products/<retailer>/job.py`: retailer jobs for Aldi, Coles, IGA, and Woolworths
 - `migrations/`: Alembic migration files
 
 ## Container build
@@ -236,6 +236,8 @@ The runtime config and local sample CSV files are mounted because they are kept 
 For GCS-backed Bronze inputs, set `paths.bronze_root` to a `gs://bucket/prefix`
 value in `config/config.yaml` and provide `GCS_KEY_ID` / `GCS_SECRET`.
 
+Production runs as four Cloud Run Jobs invoked directly by Cloud Scheduler at 12:00 every Saturday in Australia/Melbourne. All four run independently of ingestion completion and use the existing seven-day lookback, including the run date. Apply the production Alembic migrations manually before enabling the schedules; deployment does not run migrations.
+
 ## Config and secrets
 
 Commit:
@@ -253,8 +255,7 @@ Do not commit:
 
 ## Notes
 
-- `example` is still useful as a starter workflow, but `products_aldi` is the implemented retailer pipeline in this repo
+- `example` is a starter workflow; production jobs use `products_aldi`, `products_coles`, `products_iga`, and `products_woolworths`
 - Aldi GTIN matching uses `silver.static_master_coles_products` as a reference source and optimizes for precision over recall
-- retailer `job.py` files under `features/products/` other than Aldi remain expansion points
 - local Bronze sample data is kept local
-- deployment, CI/CD, and the final warehouse schema are out of scope for this refactor
+- CI checks are defined in `.github/workflows/etl-pipeline-checks.yml`. Production image deployment is manually triggered through `.github/workflows/data-pipeline-deploy.yml`.
