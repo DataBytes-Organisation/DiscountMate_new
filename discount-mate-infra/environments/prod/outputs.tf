@@ -78,3 +78,13 @@ output "postgres_user_name" {
   description = "The production PostgreSQL application user name."
   value       = module.postgresql.user_name
 }
+
+output "etl_job_names" {
+  description = "Production ETL Cloud Run job names keyed by source."
+  value       = { for source, job in google_cloud_run_v2_job.etl : source => job.name }
+}
+
+output "etl_scheduler_names" {
+  description = "Production ETL Cloud Scheduler names keyed by source."
+  value       = { for source, scheduler in google_cloud_scheduler_job.etl : source => scheduler.name }
+}
