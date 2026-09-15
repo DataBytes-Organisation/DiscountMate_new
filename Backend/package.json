@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "lint": "eslint ./src/",
-    "check:ci": "node --check server.js && node --check src/config/database.js && node --check src/config/swagger.js && node --check src/controllers/basket.controller.js"
+    "test": "node --test test/*.test.js",
+    "check:ci": "node --check server.js && node --check src/config/database.js && node --check src/config/swagger.js && node --check src/controllers/basket.controller.js && npm test"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +33,7 @@
     "express-validator": "^7.3.2",
     "firebase": "^10.13.0",
     "firebase-admin": "^12.4.0",
+    "google-auth-library": "^11.0.2",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.8.1",
