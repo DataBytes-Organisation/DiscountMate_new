@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "lint": "eslint ./src/",
-    "check:ci": "node --check server.js && node --check src/config/database.js && node --check src/config/swagger.js && node --check src/controllers/basket.controller.js"
+    "test": "node --test test/*.test.js",
+    "check:ci": "node --check server.js && node --check src/config/database.js && node --check src/config/swagger.js && node --check src/controllers/basket.controller.js && npm test"
   },
   "keywords": [],
   "author": "",
