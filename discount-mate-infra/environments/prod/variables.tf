@@ -197,3 +197,8 @@ variable "postgres_authorized_networks" {
   }))
   default = []
 }
+
+variable "monitoring_alert_email" {
+  description = "Redundant email notification address for scraper alerts."
+  type        = string
+}

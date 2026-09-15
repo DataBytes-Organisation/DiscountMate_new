@@ -264,3 +264,56 @@ def load_brand_queries(path: Path) -> list[str]:
         seen.add(dedupe_key)
         brands.append(value)
     return brands
+
+def emit_scrape_summary(
+    source: str,
+    run_id: str,
+    status: str,
+    rows_scraped: int,
+    duration_s: float,
+    http_counts: dict[str, int] | None = None,
+    retries: int = 0,
+    block_detected: bool = False,
+) -> None:
+    payload = {
+        "event": "scrape_run_finished",
+        "scraper": source,
+        "run_id": run_id,
+        "status": status,
+        "rows_scraped": rows_scraped,
+        "duration_s": round(duration_s, 1),
+        "retries": retries,
+        "block_detected": block_detected,
+        "severity": "INFO",
+    }
+    counts = http_counts or {}
+    for code_key in ("http_200", "http_403", "http_429", "http_5xx"):
+        payload[code_key] = counts.get(code_key, 0)
+    print(json.dumps(payload, ensure_ascii=False))
+
+
+def emit_scrape_block(source: str, reason: str) -> None:
+    print(
+        json.dumps(
+            {
+                "event": "scrape_block",
+                "scraper": source,
+                "reason": reason,
+                "severity": "ERROR",
+            },
+            ensure_ascii=False,
+        )
+    )
+
+
+def emit_scrape_run_failed(source: str) -> None:
+    print(
+        json.dumps(
+            {
+                "event": "scrape_run_failed",
+                "scraper": source,
+                "severity": "ERROR",
+            },
+            ensure_ascii=False,
+        )
+    )

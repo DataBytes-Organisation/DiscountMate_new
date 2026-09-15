@@ -238,129 +238,132 @@ def run(context: RunContext) -> RunResult:
     start_index = int(progress.get("last_brand_index", -1)) + 1
     fallback_hits = 0
 
-    with context.tracer.start_as_current_span("coles.products") as span:
-        span.set_attribute("brand_count", len(brands))
+    try:
+        with context.tracer.start_as_current_span("coles.products") as span:
+            span.set_attribute("brand_count", len(brands))
 
-        with httpx.Client(
-            timeout=settings.timeout_seconds, follow_redirects=True
-        ) as client:
-            cookies = parse_cookie_string(settings.cookie_string)
-            build_id = _detect_build_id(
-                client,
-                context,
-                settings.homepage_url,
-                settings.fallback_build_id,
-                cookies,
-            )
-            api_url = settings.api_base_template.format(build_id=build_id)
-            context.logger.info("Using Coles build id %s", build_id)
-            current_brand_index = max(start_index - 1, -1)
+            with httpx.Client(
+                timeout=settings.timeout_seconds, follow_redirects=True
+            ) as client:
+                cookies = parse_cookie_string(settings.cookie_string)
+                build_id = _detect_build_id(
+                    client,
+                    context,
+                    settings.homepage_url,
+                    settings.fallback_build_id,
+                    cookies,
+                )
+                api_url = settings.api_base_template.format(build_id=build_id)
+                context.logger.info("Using Coles build id %s", build_id)
+                current_brand_index = max(start_index - 1, -1)
 
-            try:
-                for brand_index in range(start_index, len(brands)):
-                    current_brand_index = brand_index
-                    brand = brands[brand_index]
-                    brand_products = 0
+                try:
+                    for brand_index in range(start_index, len(brands)):
+                        current_brand_index = brand_index
+                        brand = brands[brand_index]
+                        brand_products = 0
 
-                    for page in range(1, settings.max_pages + 1):
-                        payload, status = _search_direct(
-                            client,
-                            context,
-                            api_url,
-                            brand,
-                            page,
-                            settings.page_size,
-                            cookies,
-                        )
-                        if (
-                            payload is None
-                            and settings.scraperapi_key
-                            and status in {"BLOCKED_403", "RATE_LIMITED_429"}
-                        ):
-                            payload, status = _search_scraperapi(
+                        for page in range(1, settings.max_pages + 1):
+                            payload, status = _search_direct(
                                 client,
                                 context,
                                 api_url,
                                 brand,
                                 page,
                                 settings.page_size,
-                                settings.scraperapi_key,
+                                cookies,
                             )
-                            fallback_hits += 1
+                            context.stats.record_status(status, context.source)
 
-                        if payload is None:
-                            context.logger.warning(
-                                "Coles request failed for brand=%s page=%s status=%s",
+                            if (
+                                payload is None
+                                and settings.scraperapi_key
+                                and status in {"BLOCKED_403", "RATE_LIMITED_429"}
+                            ):
+                                payload, status = _search_scraperapi(
+                                    client,
+                                    context,
+                                    api_url,
+                                    brand,
+                                    page,
+                                    settings.page_size,
+                                    settings.scraperapi_key,
+                                )
+                                context.stats.record_status(status, context.source)
+                                fallback_hits += 1
+
+                            if payload is None:
+                                context.logger.warning(
+                                    "Coles request failed for brand=%s page=%s status=%s",
+                                    brand,
+                                    page,
+                                    status,
+                                )
+                                if status == "SCRAPERAPI_CREDITS_EXHAUSTED":
+                                    _save_checkpoint(
+                                        checkpoint_path,
+                                        progress_path,
+                                        all_products,
+                                        brand_index,
+                                    )
+                                    raise RuntimeError("ScraperAPI credits exhausted")
+                                break
+
+                            results = (
+                                ((payload.get("pageProps") or {}).get("searchResults"))
+                                or {}
+                            ).get("results") or []
+                            extracted = 0
+                            for item in results:
+                                if (
+                                    isinstance(item, dict)
+                                    and item.get("_type") == "PRODUCT"
+                                ):
+                                    all_products.append(
+                                        _extract_coles_product_data(item, brand)
+                                    )
+                                    extracted += 1
+
+                            brand_products += extracted
+                            context.logger.info(
+                                "Fetched %s Coles records for brand=%s page=%s",
+                                extracted,
                                 brand,
                                 page,
-                                status,
                             )
-                            if status == "SCRAPERAPI_CREDITS_EXHAUSTED":
-                                _save_checkpoint(
-                                    checkpoint_path,
-                                    progress_path,
-                                    all_products,
-                                    brand_index,
-                                )
-                                raise RuntimeError("ScraperAPI credits exhausted")
-                            break
+                            if extracted == 0 or extracted < settings.page_size:
+                                break
+                            _sleep_random_delay(
+                                context,
+                                settings.delay_seconds_min,
+                                settings.delay_seconds_max,
+                            )
 
-                        results = (
-                            ((payload.get("pageProps") or {}).get("searchResults"))
-                            or {}
-                        ).get("results") or []
-                        extracted = 0
-                        for item in results:
-                            if (
-                                isinstance(item, dict)
-                                and item.get("_type") == "PRODUCT"
-                            ):
-                                all_products.append(
-                                    _extract_coles_product_data(item, brand)
-                                )
-                                extracted += 1
+                        if ((brand_index + 1) % AUTOSAVE_EVERY_N_BRANDS == 0) or (
+                            brand_index == len(brands) - 1
+                        ):
+                            _save_checkpoint(
+                                checkpoint_path, progress_path, all_products, brand_index
+                            )
 
-                        brand_products += extracted
-                        context.logger.info(
-                            "Fetched %s Coles records for brand=%s page=%s",
-                            extracted,
-                            brand,
-                            page,
-                        )
-                        if extracted == 0 or extracted < settings.page_size:
-                            break
-                        _sleep_random_delay(
-                            context,
-                            settings.delay_seconds_min,
-                            settings.delay_seconds_max,
-                        )
-
-                    if ((brand_index + 1) % AUTOSAVE_EVERY_N_BRANDS == 0) or (
-                        brand_index == len(brands) - 1
-                    ):
-                        _save_checkpoint(
-                            checkpoint_path, progress_path, all_products, brand_index
-                        )
-
-            except KeyboardInterrupt:
-                _save_checkpoint(
-                    checkpoint_path,
-                    progress_path,
-                    all_products,
-                    max(current_brand_index, 0),
-                )
-                raise
-            except Exception:
-                _save_checkpoint(
-                    checkpoint_path,
-                    progress_path,
-                    all_products,
-                    max(current_brand_index, 0),
-                )
-                raise
+                except KeyboardInterrupt:
+                    _save_checkpoint(
+                        checkpoint_path,
+                        progress_path,
+                        all_products,
+                        max(current_brand_index, 0),
+                    )
+                    raise
+    except KeyboardInterrupt:
+        raise
+    except Exception:
+        context.stats.emit_failure(context.source, context.run_id, len(all_products))
+        raise
 
     remove_file_if_exists(checkpoint_path)
     remove_file_if_exists(progress_path)
+
+    context.stats.emit_success(context.source, context.run_id, len(all_products))
 
     return RunResult(
         records=all_products,
@@ -370,3 +373,4 @@ def run(context: RunContext) -> RunResult:
             "record_count": len(all_products),
         },
     )
+    
