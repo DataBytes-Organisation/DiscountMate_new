@@ -9,14 +9,22 @@ const UserSchema = new Schema({
   },
   user_fname: {
     type: String,
-    required: [true, 'First name is required'],
-    minlength: [2, 'First name must be at least 2 characters long'],
+    required: false,
+    default: '',
+    validate: {
+      validator: (value) => !value || value.length >= 2,
+      message: 'First name must be at least 2 characters long',
+    },
     maxlength: [100, 'First name cannot exceed 100 characters'],
   },
   user_lname: {
     type: String,
-    required: [true, 'Last name is required'],
-    minlength: [2, 'Last name must be at least 2 characters long'],
+    required: false,
+    default: '',
+    validate: {
+      validator: (value) => !value || value.length >= 2,
+      message: 'Last name must be at least 2 characters long',
+    },
     maxlength: [100, 'Last name cannot exceed 100 characters'],
   },
   email: {
@@ -27,7 +35,27 @@ const UserSchema = new Schema({
   },
   encrypted_password: { // NEW: renamed to match controller
     type: String,
-    required: [true, 'Password is required'],
+    required: false,
+  },
+  email_verified: {
+    type: Boolean,
+    default: false,
+  },
+  external_identities: {
+    google: {
+      subject: {
+        type: String,
+        required: false,
+      },
+      email_at_link: {
+        type: String,
+        required: false,
+      },
+      linked_at: {
+        type: Date,
+        required: false,
+      },
+    },
   },
   address: {
     type: String,

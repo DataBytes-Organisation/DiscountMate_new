@@ -12,6 +12,10 @@ const {
     normalizeDashboardRetailer,
 } = require('../utils/savedLists');
 const { logSecurityEvent } = require('../utils/securityLogger');
+const {
+    createDiscountMateSession,
+    passwordMatchesUser,
+} = require('../services/google-auth.service');
 
 const PASSWORD_SPECIAL_CHARACTER_REGEX = /[^A-Za-z0-9\s]/;
 const AU_POSTCODE_REGEX = /^\d{4}$/;
@@ -567,10 +571,7 @@ const signin = async (req, res) => {
             });
         }
 
-        const isMatch = await bcrypt.compare(
-            password,
-            user.encrypted_password
-        );
+        const isMatch = await passwordMatchesUser(password, user, bcrypt.compare);
 
         if (!isMatch) {
             const attempts =
@@ -634,28 +635,7 @@ const signin = async (req, res) => {
             }
         );
 
-        const role =
-            user.role ||
-            (user.admin ? 'admin' : 'user');
-
-        const token = jwt.sign(
-            {
-                email: normalizedEmail,
-                role,
-                admin: role === 'admin',
-            },
-            process.env.JWT_SECRET,
-            {
-                expiresIn: '1h',
-            }
-        );
-
-        return res.status(200).json({
-            message: 'Signin successful',
-            token,
-            role,
-            admin: role === 'admin',
-        });
+        return res.status(200).json(createDiscountMateSession(user));
     } catch (error) {
         console.error(
             'Error signing in user:',
