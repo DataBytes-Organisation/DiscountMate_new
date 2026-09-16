@@ -1,5 +1,11 @@
-import React, { useState, useEffect } from "react";   
-import { View,Text,Pressable,ActivityIndicator,Image,} from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+   View,
+   Text,
+   Pressable,
+   ActivityIndicator,
+   Image,
+} from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -76,6 +82,14 @@ export default function WeeklySpecialsSection() {
                      (p: any) => p.product_name === product.product_name
                   )
             )
+            .sort((a: any, b: any) => {
+               const aCurrent = Number(a.current_price) || 0;
+               const aBest = Number(a.best_price) || 0;
+               const bCurrent = Number(b.current_price) || 0;
+               const bBest = Number(b.best_price) || 0;
+
+               return (bCurrent - bBest) - (aCurrent - aBest);
+            })
             .slice(0, 4)
             .map((product: any) => {
                const originalPrice = Number(product.current_price);
@@ -236,6 +250,8 @@ export default function WeeklySpecialsSection() {
                                        source={{ uri: item.image_url }}
                                        className="w-full h-56"
                                        resizeMode="contain"
+                                       accessibilityRole="image"
+                                       accessibilityLabel={item.product_name}
                                     />
                                  ) : (
                                     <FontAwesome6
