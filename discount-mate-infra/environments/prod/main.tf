@@ -6,6 +6,7 @@ locals {
     "artifactregistry.googleapis.com",
     "cloudscheduler.googleapis.com",
     "iam.googleapis.com",
+    "logging.googleapis.com",
     "monitoring.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
@@ -83,6 +84,13 @@ locals {
       schedule       = "0 9 * * 6"
       source         = "coles"
     }
+  }
+
+  silver_etl_jobs = {
+    aldi       = "discount-mate-etl-products-aldi"
+    coles      = "discount-mate-etl-products-coles"
+    iga        = "discount-mate-etl-products-iga"
+    woolworths = "discount-mate-etl-products-woolworths"
   }
 }
 
@@ -229,6 +237,17 @@ module "ingestion_jobs" {
   depends_on = [google_project_service.enabled_apis]
 }
 
+module "silver_monitoring" {
+  source = "${local.repo_root}/modules/silver_monitoring"
+
+  project_id      = var.project_id
+  region          = var.silver_etl_region
+  alert_email     = var.monitoring_alert_email
+  silver_etl_jobs = local.silver_etl_jobs
+
+  depends_on = [google_project_service.enabled_apis]
+}
+
 module "postgresql" {
   source = "${local.repo_root}/modules/postgresql"
 
@@ -244,15 +263,6 @@ module "postgresql" {
   database_name       = var.postgres_database_name
   user_name           = var.postgres_user_name
   user_password       = var.postgres_user_password
-
-  depends_on = [google_project_service.enabled_apis]
-}
-
-module "monitoring" {
-  source = "${local.repo_root}/modules/monitoring"
-
-  project_id  = var.project_id
-  alert_email = var.monitoring_alert_email
 
   depends_on = [google_project_service.enabled_apis]
 }

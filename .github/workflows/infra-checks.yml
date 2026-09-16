@@ -1,0 +1,42 @@
+name: Infrastructure Checks
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "discount-mate-infra/**"
+      - ".github/workflows/infra-checks.yml"
+  push:
+    branches: [main]
+    paths:
+      - "discount-mate-infra/**"
+      - ".github/workflows/infra-checks.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: OpenTofu format and validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: "1.11.0"
+
+      - name: Check Terraform formatting
+        run: tofu fmt -check -recursive discount-mate-infra
+
+      - name: Initialize without backend
+        working-directory: discount-mate-infra/environments/prod
+        run: tofu init -backend=false
+
+      - name: Validate Terraform
+        working-directory: discount-mate-infra/environments/prod
+        run: tofu validate

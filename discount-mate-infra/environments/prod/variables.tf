@@ -147,6 +147,22 @@ variable "ingestion_ww_scraperapi_key" {
   sensitive   = true
 }
 
+variable "monitoring_alert_email" {
+  description = "Email address that receives production Silver ETL alerts."
+  type        = string
+
+  validation {
+    condition     = can(regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", var.monitoring_alert_email))
+    error_message = "monitoring_alert_email must be a valid email address."
+  }
+}
+
+variable "silver_etl_region" {
+  description = "Region containing the Silver ETL Cloud Run Jobs."
+  type        = string
+  default     = "australia-southeast2"
+}
+
 variable "postgres_instance_name" {
   description = "Cloud SQL instance name for the production PostgreSQL database."
   type        = string
@@ -196,11 +212,6 @@ variable "postgres_authorized_networks" {
     cidr_block = string
   }))
   default = []
-}
-
-variable "monitoring_alert_email" {
-  description = "Redundant email notification address for scraper alerts."
-  type        = string
 }
 
 variable "etl_job_image" {
