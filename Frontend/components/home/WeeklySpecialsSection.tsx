@@ -37,6 +37,51 @@ interface WeeklySpecialsResponse {
    week: string;
    error?: string;
 }
+interface SpecialImageProps {
+   imageUrl?: string | null;
+   icon?: string | null;
+   productName?: string | null;
+}
+
+function SpecialImage({
+   imageUrl,
+   icon,
+   productName,
+}: SpecialImageProps) {
+   const [imageFailed, setImageFailed] = useState(false);
+   const validImageUrl = imageUrl?.trim();
+
+   useEffect(() => {
+      setImageFailed(false);
+   }, [validImageUrl]);
+
+   if (validImageUrl && !imageFailed) {
+      return (
+         <Image
+            source={{ uri: validImageUrl }}
+            className="w-full h-56"
+            resizeMode="cover"
+            accessibilityLabel={
+               productName?.trim() || "Weekly special product"
+            }
+            onError={() => setImageFailed(true)}
+         />
+      );
+   }
+
+   return (
+      <View className="w-full h-56 bg-gray-100 items-center justify-center">
+         <FontAwesome6
+            name={icon || "image"}
+            size={32}
+            color="#9CA3AF"
+         />
+         <Text className="mt-3 text-sm text-gray-500">
+            Image unavailable
+         </Text>
+      </View>
+   );
+}
 
 export default function WeeklySpecialsSection() {
    const router = useRouter();
@@ -137,52 +182,107 @@ export default function WeeklySpecialsSection() {
       } finally {
          setLoading(false);
       }
-   };
 
-   const formatPrice = (price: number): string => {
-      return `$${price.toFixed(2)}`;
-   };
+      setSpecials(Array.isArray(data.data) ? data.data : []);
+   } catch (err) {
+      console.error("Error fetching weekly specials:", err);
+      setSpecials([]);
+      setError(
+         "We couldn't load this week's specials. Please check your connection and try again."
+      );
+   } finally {
+      setLoading(false);
+   }
+};
 
-   const formatDiscount = (percentage: number): string => {
-      return `${Math.round(percentage)}% OFF`;
-   };
+const formatPrice = (price?: number | null): string => {
+   if (typeof price !== "number" || !Number.isFinite(price)) {
+      return "Price unavailable";
+   }
+
+   return `$${price.toFixed(2)}`;
+};
+
+const formatDiscount = (
+   percentage?: number | null
+): string | null => {
+   if (
+      typeof percentage !== "number" ||
+      !Number.isFinite(percentage)
+   ) {
+      return null;
+   }
+
+   return `${Math.round(percentage)}% OFF`;
+};
 
    const handleAddSpecial = async (item: WeeklySpecial) => {
-      const token = await AsyncStorage.getItem("authToken");
-      if (!token) {
-         router.push("/(auth)/login");
-         return;
-      }
+   const token = await AsyncStorage.getItem("authToken");
 
-      if (!getActiveList()) {
-         router.push({
-            pathname: "/(tabs)/my-lists",
-            params: { create: "1" },
-         });
-         return;
-      }
+   if (!token) {
+      router.push("/(auth)/login");
+      return;
+   }
 
-      const storeKey = item.store_key?.toLowerCase();
-      addToCart({
-         id: item.product_id || String(item.id),
-         name: item.product_name,
-         price: item.price,
-         store: item.store,
-         category: item.category,
-         image: item.image_url ?? undefined,
-         retailerPrices: {
-            ...(storeKey === "coles" ? { coles: item.price } : {}),
-            ...(storeKey === "woolworths" ? { woolworths: item.price } : {}),
-            ...(storeKey === "iga" ? { iga: item.price } : {}),
-         },
+   if (!getActiveList()) {
+      router.push({
+         pathname: "/(tabs)/my-lists",
+         params: { create: "1" },
       });
-   };
+      return;
+   }
+
+   const productId =
+      item.product_id ||
+      (item.id !== undefined ? String(item.id) : null);
+
+   const productName = item.product_name?.trim();
+   const productPrice = item.price;
+
+   if (
+      !productId ||
+      !productName ||
+      typeof productPrice !== "number" ||
+      !Number.isFinite(productPrice)
+   ) {
+      console.warn(
+         "Cannot add weekly special because required product data is missing.",
+         item
+      );
+      return;
+   }
+
+   const storeName = item.store?.trim() || "Store unavailable";
+   const categoryName =
+      item.category?.trim() || "Uncategorised";
+   const storeKey = item.store_key?.toLowerCase();
+
+   addToCart({
+      id: productId,
+      name: productName,
+      price: productPrice,
+      store: storeName,
+      category: categoryName,
+      image: item.image_url || undefined,
+      retailerPrices: {
+         ...(storeKey === "coles"
+            ? { coles: productPrice }
+            : {}),
+         ...(storeKey === "woolworths"
+            ? { woolworths: productPrice }
+            : {}),
+         ...(storeKey === "iga"
+            ? { iga: productPrice }
+            : {}),
+      },
+   });
+};
 
    return (
       <View className="bg-white border-t border-gray-100">
          <View className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-16">
             {/* Header */}
-            <View className="flex-row items-center justify-between mb-10">
+            <View className="flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
                <View>
                   <Text className="text-3xl font-bold text-[#111827] mb-2">
                      This Week&apos;s Top Specials
@@ -262,6 +362,7 @@ export default function WeeklySpecialsSection() {
                                  )}
                               </View>
 
+                              {formatDiscount(item.discount_percentage) && (
                               <View className="absolute top-4 right-4">
                                  <View className="px-4 py-2 rounded-full bg-red-500">
                                     <Text className="text-white text-xs font-bold">
@@ -269,12 +370,13 @@ export default function WeeklySpecialsSection() {
                                     </Text>
                                  </View>
                               </View>
+                           )}
                            </View>
 
                            {/* Content */}
                            <View className="p-5">
                               <Text className="text-base font-bold text-[#111827] mb-1">
-                                 {item.product_name}
+                                 {item.product_name?.trim() || "Product name unavailable"}
                               </Text>
                               <Text
                                  numberOfLines={3}
@@ -295,11 +397,14 @@ export default function WeeklySpecialsSection() {
 
                                  <View className="items-end">
                                     <Text className="text-xs text-gray-500 mb-1">
-                                       at {item.store}
+                                       at {item.store?.trim() || "Store name unavailable"}
                                     </Text>
                                     <Text className="text-xs font-bold text-[#10B981]">
-                                       Save {formatPrice(item.savings)}
-                                    </Text>
+                                    {typeof item.savings === "number" &&
+                                    Number.isFinite(item.savings)
+                                       ? `Save ${formatPrice(item.savings)}`
+                                       : "Savings unavailable"}
+                                 </Text>
                                  </View>
                               </View>
 

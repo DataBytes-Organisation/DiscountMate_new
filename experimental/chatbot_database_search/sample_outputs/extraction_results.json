@@ -1,0 +1,42 @@
+[
+    {
+        "query": "What is the cheapest 2L milk at Woolworths?",
+        "intent": "price_comparison",
+        "confidence": 0.85,
+        "extracted_entities": {
+            "retailer": "Woolworths",
+            "product": "Milk",
+            "pack_size": "2l"
+        }
+    },
+    {
+        "query": "Compare price for 500g devondale butter at Coles",
+        "intent": "price_comparison",
+        "confidence": 0.85,
+        "extracted_entities": {
+            "retailer": "Coles",
+            "product": "Devondale Butter",
+            "pack_size": "500g"
+        }
+    },
+    {
+        "query": "How much is pasta at IGA?",
+        "intent": "price_comparison",
+        "confidence": 0.85,
+        "extracted_entities": {
+            "retailer": "Iga",
+            "product": "Pasta",
+            "pack_size": null
+        }
+    },
+    {
+        "query": "Find the best deal for 1kg chicken breast",
+        "intent": "price_comparison",
+        "confidence": 0.85,
+        "extracted_entities": {
+            "retailer": null,
+            "product": "Chicken Breast",
+            "pack_size": "1kg"
+        }
+    }
+]

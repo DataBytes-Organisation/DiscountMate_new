@@ -49,6 +49,16 @@ output "ingestion_scheduler_names" {
   value       = { for source, job in module.ingestion_jobs : source => job.scheduler_name }
 }
 
+output "silver_alert_notification_channel_name" {
+  description = "The Silver ETL email notification channel resource name."
+  value       = module.silver_monitoring.notification_channel_name
+}
+
+output "silver_alert_policy_names" {
+  description = "Display names of the Silver ETL alert policies."
+  value       = module.silver_monitoring.alert_policy_names
+}
+
 output "backend_mongo_secret_name" {
   description = "The Secret Manager secret name for the production backend Mongo URI."
   value       = google_secret_manager_secret.backend_mongo_uri.secret_id
@@ -77,4 +87,14 @@ output "postgres_database_name" {
 output "postgres_user_name" {
   description = "The production PostgreSQL application user name."
   value       = module.postgresql.user_name
+}
+
+output "etl_job_names" {
+  description = "Production ETL Cloud Run job names keyed by source."
+  value       = { for source, job in google_cloud_run_v2_job.etl : source => job.name }
+}
+
+output "etl_scheduler_names" {
+  description = "Production ETL Cloud Scheduler names keyed by source."
+  value       = { for source, scheduler in google_cloud_scheduler_job.etl : source => scheduler.name }
 }
