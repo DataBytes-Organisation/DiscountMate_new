@@ -6,6 +6,7 @@ locals {
     "artifactregistry.googleapis.com",
     "cloudscheduler.googleapis.com",
     "iam.googleapis.com",
+    "monitoring.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
     "sqladmin.googleapis.com",
@@ -243,6 +244,15 @@ module "postgresql" {
   database_name       = var.postgres_database_name
   user_name           = var.postgres_user_name
   user_password       = var.postgres_user_password
+
+  depends_on = [google_project_service.enabled_apis]
+}
+
+module "monitoring" {
+  source = "${local.repo_root}/modules/monitoring"
+
+  project_id  = var.project_id
+  alert_email = var.monitoring_alert_email
 
   depends_on = [google_project_service.enabled_apis]
 }
