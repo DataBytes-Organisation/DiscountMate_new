@@ -24,6 +24,7 @@ jobs:
       EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: "ci-web-client-id"
       EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: "ci-ios-client-id"
       EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID: "ci-android-client-id"
+      EXPO_PUBLIC_COMPARISON_V2_ENABLED: "false"
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -93,16 +94,42 @@ jobs:
       - name: Smoke test ML service import
         run: python -c "from app import app; print(sorted(str(rule) for rule in app.url_map.iter_rules()))"
 
+  comparison-data-checks:
+    name: Comparison data migration checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: DE/etl-pipeline
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify comparison runtime access migration
+        run: python -m unittest tests/test_comparison_runtime_access_migration.py
+
   deploy-backend:
     name: Deploy backend to Cloud Run
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_CLOUD_RUN_DEPLOY == 'true'
-    needs: [frontend-checks, backend-checks, ml-checks]
+    if: github.ref == 'refs/heads/main' && vars.ENABLE_CLOUD_RUN_DEPLOY == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    needs: [frontend-checks, backend-checks, ml-checks, comparison-data-checks]
     runs-on: ubuntu-latest
+    env:
+      BACKEND_COMPARISON_V2_ENABLED: ${{ vars.BACKEND_COMPARISON_V2_ENABLED }}
+      FRONTEND_COMPARISON_V2_ENABLED: ${{ vars.FRONTEND_COMPARISON_V2_ENABLED }}
+      CLOUD_SQL_INSTANCE_CONNECTION_NAME: ${{ vars.CLOUD_SQL_INSTANCE_CONNECTION_NAME }}
+      COMPARISON_DATABASE_URL: ${{ secrets.COMPARISON_DATABASE_URL }}
     outputs:
       service_url: ${{ steps.backend-url.outputs.service_url }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Validate comparison rollout configuration
+        run: node .github/scripts/validate-comparison-deploy-config.js
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -164,6 +191,7 @@ jobs:
           RUNTIME_SUPPORT_EMAIL_APP_PASSWORD: ${{ secrets.SUPPORT_EMAIL_APP_PASSWORD }}
           RUNTIME_OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
           RUNTIME_HUGGING_FACE_TOKEN: ${{ secrets.HUGGING_FACE_TOKEN }}
+          RUNTIME_COMPARISON_DATABASE_URL: ${{ secrets.COMPARISON_DATABASE_URL }}
           GOOGLE_OAUTH_CLIENT_IDS: ${{ vars.GOOGLE_OAUTH_CLIENT_IDS }}
         run: |
           cat <<EOF > /tmp/backend-cloudrun.yaml
@@ -178,6 +206,13 @@ jobs:
               metadata:
                 annotations:
                   run.googleapis.com/container-dependencies: '{"backend":["ml-service","reverse-image-search"]}'
+          EOF
+          if [ "${BACKEND_COMPARISON_V2_ENABLED:-false}" = "true" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                  run.googleapis.com/cloudsql-instances: "${CLOUD_SQL_INSTANCE_CONNECTION_NAME}"
+          EOF
+          fi
+          cat <<EOF >> /tmp/backend-cloudrun.yaml
               spec:
                 serviceAccountName: github-actions-prod@sit-26t1-discountmate-935cb94.iam.gserviceaccount.com
                 containers:
@@ -193,6 +228,8 @@ jobs:
                     env:
                       - name: NODE_ENV
                         value: production
+                      - name: COMPARISON_V2_ENABLED
+                        value: "${BACKEND_COMPARISON_V2_ENABLED:-false}"
                       - name: GOOGLE_CLOUD_PROJECT
                         value: ${{ vars.GCP_PROJECT_ID }}
                       - name: GOOGLE_OAUTH_CLIENT_IDS
@@ -252,6 +289,14 @@ jobs:
             cat <<EOF >> /tmp/backend-cloudrun.yaml
                       - name: SUPPORT_EMAIL_APP_PASSWORD
                         value: ${RUNTIME_SUPPORT_EMAIL_APP_PASSWORD}
+          EOF
+          fi
+          if [ "${BACKEND_COMPARISON_V2_ENABLED:-false}" = "true" ]; then
+            cat <<EOF >> /tmp/backend-cloudrun.yaml
+                      - name: DE_DATABASE_URL
+                        value: "${RUNTIME_COMPARISON_DATABASE_URL}"
+                      - name: APP_DATABASE_URL
+                        value: "${RUNTIME_COMPARISON_DATABASE_URL}"
           EOF
           fi
           cat <<EOF >> /tmp/backend-cloudrun.yaml
@@ -335,10 +380,22 @@ jobs:
           SERVICE_URL="$(gcloud run services describe "${{ vars.BACKEND_CLOUD_RUN_SERVICE }}" --region "${{ vars.GCP_REGION }}" --format='value(status.url)')"
           echo "service_url=${SERVICE_URL}" >> "${GITHUB_OUTPUT}"
 
+      - name: Smoke test comparison product search
+        if: vars.BACKEND_COMPARISON_V2_ENABLED == 'true'
+        env:
+          SERVICE_URL: ${{ steps.backend-url.outputs.service_url }}
+        run: |
+          curl --fail-with-body \
+            --retry 5 \
+            --retry-all-errors \
+            --retry-delay 5 \
+            --max-time 20 \
+            "${SERVICE_URL}/api/comparisons/products?search=apple"
+
   deploy-frontend:
     name: Deploy frontend to Cloud Run
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_CLOUD_RUN_DEPLOY == 'true'
-    needs: [frontend-checks, backend-checks, ml-checks, deploy-backend]
+    if: github.ref == 'refs/heads/main' && vars.ENABLE_CLOUD_RUN_DEPLOY == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    needs: [frontend-checks, backend-checks, ml-checks, comparison-data-checks, deploy-backend]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -363,6 +420,7 @@ jobs:
           GOOGLE_WEB_CLIENT_ID: ${{ vars.GOOGLE_WEB_CLIENT_ID }}
           GOOGLE_IOS_CLIENT_ID: ${{ vars.GOOGLE_IOS_CLIENT_ID }}
           GOOGLE_ANDROID_CLIENT_ID: ${{ vars.GOOGLE_ANDROID_CLIENT_ID }}
+          FRONTEND_COMPARISON_V2_ENABLED: ${{ vars.FRONTEND_COMPARISON_V2_ENABLED }}
         run: |
           FRONTEND_IMAGE_URI="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/${{ vars.FRONTEND_IMAGE_NAME }}:${{ github.sha }}"
           echo "FRONTEND_IMAGE_URI=${FRONTEND_IMAGE_URI}" >> "${GITHUB_ENV}"
@@ -372,6 +430,7 @@ jobs:
             --build-arg EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID="${GOOGLE_WEB_CLIENT_ID}" \
             --build-arg EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID="${GOOGLE_IOS_CLIENT_ID}" \
             --build-arg EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID="${GOOGLE_ANDROID_CLIENT_ID}" \
+            --build-arg EXPO_PUBLIC_COMPARISON_V2_ENABLED="${FRONTEND_COMPARISON_V2_ENABLED:-false}" \
             -t "${FRONTEND_IMAGE_URI}" \
             Frontend
 

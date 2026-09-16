@@ -4,7 +4,11 @@ WITH cleaned AS (
 
     SELECT
         nullif(trim(CAST(Stockcode AS VARCHAR)), '') AS raw_product_id,
-        nullif(regexp_replace(CAST(Barcode AS VARCHAR), '[^0-9]', '', 'g'), '') AS raw_gtin,
+        CASE
+            WHEN regexp_full_match(trim(CAST(Barcode AS VARCHAR)), '[0-9]+')
+                THEN nullif(trim(CAST(Barcode AS VARCHAR)), '')
+            ELSE NULL
+        END AS raw_gtin,
         nullif(trim(coalesce(CAST(DisplayName AS VARCHAR), CAST(Name AS VARCHAR))), '') AS item_name,
         nullif(trim(CAST(Brand_Searched AS VARCHAR)), '') AS brand_name,
         nullif(trim(CAST(PackageSize AS VARCHAR)), '') AS raw_size,

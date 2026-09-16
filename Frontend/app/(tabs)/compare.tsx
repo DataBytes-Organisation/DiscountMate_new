@@ -5,6 +5,7 @@ import { useShoppingLists } from "./ShoppingListsContext";
 import { ActionButton, Card } from "../../features/comparison/ComparisonPrimitives";
 import { GroceryListComparison } from "../../features/comparison/GroceryListComparison";
 import { SingleProductComparison } from "../../features/comparison/SingleProductComparison";
+import { isComparisonV2Enabled } from "../../features/comparison/comparisonFeature";
 import FooterSection from "../../components/home/FooterSection";
 
 type ComparisonMode = "grocery" | "single";
@@ -16,7 +17,7 @@ export default function CompareScreen() {
    const compact = width < 700;
    const { lists, activeListId } = useShoppingLists();
    const activeList = lists.find((list) => list.id === activeListId) || lists[0];
-   const comparisonV2Enabled = process.env.EXPO_PUBLIC_COMPARISON_V2_ENABLED !== "false";
+   const comparisonV2Enabled = isComparisonV2Enabled(process.env.EXPO_PUBLIC_COMPARISON_V2_ENABLED);
 
    if (!comparisonV2Enabled) {
       return (
