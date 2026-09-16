@@ -7,10 +7,12 @@ Frontend/.expo
 Catalogue_Scraping_2025/catalogues/
 venv/
 */venv/
+.venv*/
 Backend/ml-service/venv/
 .vscode/settings.json
 *.csv
 *.joblib
+*.keras
 # RAG embedding artefacts — too large for git, see README in index/
 Backend/ml-service/recipe_rag/index/*.npz
 Backend/ml-service/recipe_rag/index/*.json
