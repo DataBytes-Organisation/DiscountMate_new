@@ -265,6 +265,7 @@ def load_brand_queries(path: Path) -> list[str]:
         brands.append(value)
     return brands
 
+
 def emit_scrape_summary(
     source: str,
     run_id: str,

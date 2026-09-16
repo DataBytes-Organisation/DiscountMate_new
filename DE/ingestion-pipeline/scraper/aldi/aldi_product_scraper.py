@@ -170,15 +170,17 @@ def run(context: RunContext) -> RunResult:
     all_records: list[dict[str, Any]] = []
     category_count = 0
 
-    try:
-        with context.tracer.start_as_current_span("aldi.products") as span:
-            span.set_attribute("source", context.source)
-            span.set_attribute("runner", context.runner)
+    with context.tracer.start_as_current_span("aldi.products") as span:
+        span.set_attribute("source", context.source)
+        span.set_attribute("runner", context.runner)
 
-            with httpx.Client(
-                timeout=settings.timeout_seconds, follow_redirects=True
-            ) as client:
-                for category_url in _category_urls(client, context, settings.sitemap_url):
+        with httpx.Client(
+            timeout=settings.timeout_seconds, follow_redirects=True
+        ) as client:
+            try:
+                for category_url in _category_urls(
+                    client, context, settings.sitemap_url
+                ):
                     category_id = _category_id(category_url)
                     if not category_id:
                         continue
@@ -246,9 +248,11 @@ def run(context: RunContext) -> RunResult:
                                 )
                                 break
                             raise e
-    except Exception:
-        context.stats.emit_failure(context.source, context.run_id, len(all_records))
-        raise
+            except Exception:
+                context.stats.emit_failure(
+                    context.source, context.run_id, len(all_records)
+                )
+                raise
 
     context.stats.emit_success(context.source, context.run_id, len(all_records))
 
@@ -256,4 +260,3 @@ def run(context: RunContext) -> RunResult:
         records=all_records,
         metadata={"category_count": category_count, "record_count": len(all_records)},
     )
-    

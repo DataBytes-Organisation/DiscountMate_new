@@ -319,7 +319,9 @@ def run(context: RunContext) -> RunResult:
                     all_products,
                     max(current_brand_index, 0),
                 )
-                context.stats.emit_failure(context.source, context.run_id, len(all_products))
+                context.stats.emit_failure(
+                    context.source, context.run_id, len(all_products)
+                )
                 raise
 
     remove_file_if_exists(checkpoint_path)
