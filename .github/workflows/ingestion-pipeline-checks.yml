@@ -12,6 +12,7 @@ on:
       - "DE/ingestion-pipeline/**"
       - ".github/workflows/ingestion-pipeline-checks.yml"
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -47,3 +48,8 @@ jobs:
 
       - name: Run Ruff format check
         run: uv run ruff format --check --diff .
+
+      - name: Build and smoke test container
+        run: |
+          docker build --platform linux/amd64 -t discount-mate-ingestion:ci .
+          docker run --rm discount-mate-ingestion:ci --help

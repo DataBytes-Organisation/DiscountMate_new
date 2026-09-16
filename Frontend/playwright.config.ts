@@ -14,7 +14,12 @@ export default defineConfig({
    webServer: existingBaseUrl ? undefined : {
       command: "npm run build:web && npm run serve:web",
       url: "http://127.0.0.1:19006",
-      env: { PORT: "19006" },
+      env: {
+         PORT: "19006",
+         EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: "e2e-web-client-id",
+         EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: "e2e-ios-client-id",
+         EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID: "e2e-android-client-id",
+      },
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
    },

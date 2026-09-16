@@ -50,3 +50,29 @@ their reason. Deterministic mappings are written only to App PostgreSQL; the
 Silver catalogue is never copied to MongoDB. New list items retain GTIN, brand,
 pack, image, and comparison identity metadata so they do not depend on fuzzy
 matching later.
+
+## PostgreSQL migration
+
+The API is moving from MongoDB to PostgreSQL feature by feature. Current
+controllers still write to MongoDB; the migration tooling prepares and
+backfills PostgreSQL.
+
+After completing the setup instructions, run the complete migration with:
+
+```bash
+npm run migrate:all
+```
+
+See [src/migration/README.md](src/migration/README.md) for setup instructions,
+the local DE Docker configuration, architecture details, and available
+migration commands.
+
+The editable legacy MongoDB ERD is
+[legacy-mongodb-schema.drawio](src/migration/diagrams/legacy-mongodb-schema.drawio),
+with its scope and legend documented in
+[LEGACY_MONGODB_SCHEMA.md](src/migration/LEGACY_MONGODB_SCHEMA.md).
+
+The PostgreSQL ERDs cover the
+[migration schema](src/migration/diagrams/migration-postgresql-schema.drawio)
+and the
+[finalised schema](src/migration/diagrams/finalised-postgresql-schema.drawio).

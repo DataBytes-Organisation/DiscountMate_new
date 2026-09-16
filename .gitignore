@@ -10,6 +10,7 @@ venv/
 Backend/ml-service/venv/
 .vscode/settings.json
 *.csv
+*.joblib
 # RAG embedding artefacts — too large for git, see README in index/
 Backend/ml-service/recipe_rag/index/*.npz
 Backend/ml-service/recipe_rag/index/*.json
@@ -22,3 +23,4 @@ ML/ReverseImageSearch/Scraped_images/
 Backend/ml-service/ml_models/reverse_image_search.faiss
 __pycache__/
 Backend/ml-service/sample_data/
+ML/Recommendation_system/Recommendation-2026-t2/data/

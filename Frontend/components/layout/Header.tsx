@@ -88,7 +88,7 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
       await AsyncStorage.removeItem("authToken");
       setCachedProfile(null);
       setShowMenu(false);
-      router.push("/login");
+      router.push("/(auth)/login");
    };
 
    const handleProfile = () => {

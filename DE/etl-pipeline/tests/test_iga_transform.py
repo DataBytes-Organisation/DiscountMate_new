@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 
@@ -33,6 +34,7 @@ def create_canonical_raw_input(connection: duckdb.DuckDBPyConnection) -> None:
         CREATE TABLE raw_input AS
         SELECT
             'iga-123'::VARCHAR AS iga_product_id,
+            NULL::VARCHAR AS iga_productid,
             'sku-123'::VARCHAR AS sku,
             'iga-sku-123'::VARCHAR AS iga_sku,
             '9300657174101'::VARCHAR AS barcode,
@@ -40,27 +42,99 @@ def create_canonical_raw_input(connection: duckdb.DuckDBPyConnection) -> None:
             'Cottee''s Instant Vanilla Pudding'::VARCHAR AS name,
             'Cottee''s Instant Vanilla Pudding'::VARCHAR AS iga_name,
             'Cottee''s'::VARCHAR AS brand_name,
+            NULL::VARCHAR AS brandname,
             'Cottee''s'::VARCHAR AS iga_brand,
             'https://example.test/pudding.jpg'::VARCHAR AS primary_image_url,
+            NULL::VARCHAR AS primaryimageurl,
             NULL::VARCHAR AS iga_image_default,
             NULL::VARCHAR AS iga_image_cell,
             NULL::VARCHAR AS iga_image_details,
             NULL::VARCHAR AS iga_image_zoom,
             '[{"category":"Pantry"},{"category":"Pantry"}]'::VARCHAR AS iga_categories,
             '[{"category":"Desserts"}]'::VARCHAR AS iga_default_category,
+            NULL::VARCHAR AS iga_defaultcategory,
             'Regular price'::VARCHAR AS price_label,
+            NULL::VARCHAR AS pricelabel,
             NULL::VARCHAR AS iga_price_label,
+            NULL::VARCHAR AS iga_pricelabel,
             'regular'::VARCHAR AS price_source,
+            NULL::VARCHAR AS pricesource,
             NULL::VARCHAR AS iga_price_source,
+            NULL::VARCHAR AS iga_pricesource,
             '1.80'::VARCHAR AS price_numeric,
+            NULL::VARCHAR AS pricenumeric,
             NULL::VARCHAR AS iga_price_numeric,
+            NULL::VARCHAR AS iga_pricenumeric,
             '$1.80 per 100g'::VARCHAR AS price_per_unit,
+            NULL::VARCHAR AS priceperunit,
             NULL::VARCHAR AS iga_price_per_unit,
+            NULL::VARCHAR AS iga_priceperunit,
             '100'::VARCHAR AS iga_unit_of_size_size,
+            NULL::VARCHAR AS iga_unitofsize_size,
             NULL::VARCHAR AS iga_unit_of_measure_size,
+            NULL::VARCHAR AS iga_unitofmeasure_size,
             'gram'::VARCHAR AS iga_unit_of_size_type,
+            NULL::VARCHAR AS iga_unitofsize_type,
             NULL::VARCHAR AS iga_unit_of_measure_type,
+            NULL::VARCHAR AS iga_unitofmeasure_type,
             '2026-05-04T16:00:00'::VARCHAR AS scraped_at,
+            NULL::VARCHAR AS scrapedat,
+            'iga_sample_20260504.csv'::VARCHAR AS source_file
+        """
+    )
+
+
+def create_legacy_raw_input(connection: duckdb.DuckDBPyConnection) -> None:
+    connection.execute(
+        """
+        CREATE TABLE raw_input AS
+        SELECT
+            NULL::VARCHAR AS iga_product_id,
+            'iga-123'::VARCHAR AS iga_productid,
+            NULL::VARCHAR AS sku,
+            NULL::VARCHAR AS iga_sku,
+            '9300657174101'::VARCHAR AS barcode,
+            NULL::VARCHAR AS iga_barcode,
+            'Cottee''s Instant Vanilla Pudding'::VARCHAR AS name,
+            NULL::VARCHAR AS iga_name,
+            NULL::VARCHAR AS brand_name,
+            'Cottee''s'::VARCHAR AS brandname,
+            NULL::VARCHAR AS iga_brand,
+            NULL::VARCHAR AS primary_image_url,
+            'https://example.test/pudding.jpg'::VARCHAR AS primaryimageurl,
+            NULL::VARCHAR AS iga_image_default,
+            NULL::VARCHAR AS iga_image_cell,
+            NULL::VARCHAR AS iga_image_details,
+            NULL::VARCHAR AS iga_image_zoom,
+            '[{"category":"Pantry"},{"category":"Unknown"}]'::VARCHAR AS iga_categories,
+            NULL::VARCHAR AS iga_default_category,
+            '[{"category":"Snacks"}]'::VARCHAR AS iga_defaultcategory,
+            NULL::VARCHAR AS price_label,
+            'On special'::VARCHAR AS pricelabel,
+            NULL::VARCHAR AS iga_price_label,
+            NULL::VARCHAR AS iga_pricelabel,
+            NULL::VARCHAR AS price_source,
+            'tpr'::VARCHAR AS pricesource,
+            NULL::VARCHAR AS iga_price_source,
+            NULL::VARCHAR AS iga_pricesource,
+            NULL::VARCHAR AS price_numeric,
+            '1.80'::VARCHAR AS pricenumeric,
+            NULL::VARCHAR AS iga_price_numeric,
+            NULL::VARCHAR AS iga_pricenumeric,
+            NULL::VARCHAR AS price_per_unit,
+            '$1.80 per 100g'::VARCHAR AS priceperunit,
+            NULL::VARCHAR AS iga_price_per_unit,
+            NULL::VARCHAR AS iga_priceperunit,
+            NULL::VARCHAR AS iga_unit_of_size_size,
+            '100'::VARCHAR AS iga_unitofsize_size,
+            NULL::VARCHAR AS iga_unit_of_measure_size,
+            NULL::VARCHAR AS iga_unitofmeasure_size,
+            NULL::VARCHAR AS iga_unit_of_size_type,
+            'gram'::VARCHAR AS iga_unitofsize_type,
+            NULL::VARCHAR AS iga_unit_of_measure_type,
+            NULL::VARCHAR AS iga_unitofmeasure_type,
+            NULL::VARCHAR AS scraped_at,
+            '2026-05-04T16:00:00'::VARCHAR AS scrapedat,
             'iga_sample_20260504.csv'::VARCHAR AS source_file
         """
     )
@@ -90,6 +164,49 @@ class IgaTransformTest(unittest.TestCase):
                 "Cottee's Instant Vanilla Pudding",
                 "Cottee's",
                 1.8,
+                100.0,
+                "g",
+            ),
+        )
+
+    def test_transform_accepts_legacy_no_underscore_scrape_columns(self) -> None:
+        connection = duckdb.connect()
+        self.addCleanup(connection.close)
+        create_legacy_raw_input(connection)
+
+        connection.execute(TRANSFORM_SQL)
+
+        row = connection.execute(
+            """
+            SELECT
+                raw_product_id,
+                brand_name,
+                image_link_side,
+                category_name,
+                special_text,
+                product_url,
+                price,
+                unit_price,
+                recorded_at,
+                is_on_special,
+                pack_quantity,
+                pack_uom
+            FROM raw_input_normalized
+            """
+        ).fetchone()
+        self.assertEqual(
+            row,
+            (
+                "iga-123",
+                "Cottee's",
+                "https://example.test/pudding.jpg",
+                "SNACKS & CONFECTIONARY",
+                "On special",
+                "https://www.igashop.com.au/product/iga-123",
+                1.8,
+                0.018,
+                datetime(2026, 5, 4, 16, 0),
+                True,
                 100.0,
                 "g",
             ),
