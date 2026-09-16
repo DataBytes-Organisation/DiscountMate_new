@@ -19,8 +19,15 @@ The workflow has three parts:
 | `discount_price_regression_and_prediction.ipynb` | Compares discount regressors and builds the combined price predictor. |
 | `discount_special_model.joblib` | Generated standalone classification model. This file is not committed. |
 | `discount_price_prediction_model.joblib` | Generated combined classification and regression model. This file is not committed. |
+| `all_catalogue_products2024.csv` | Local 2024 catalogue source. Only `VIC METRO` rows are used. |
+| `discount_price_combined_dataset_preparation.ipynb` | Creates a separate VIC Metro dataset from the 2024 and 2025 source files. |
+| `combined_data_model_training_comparison.ipynb` | Loads both datasets, creates chronological splits, trains the existing models and LSTM models, and compares their results. |
+| `discount_price_combined_2024_2025_vic.csv` | Generated combined modelling dataset. This file is not committed. |
+| `discount_price_prediction_model_combined.joblib` | Generated combined-data tabular model. This file is not committed. |
+| `discount_special_lstm_combined.keras` | Generated combined-data LSTM classifier. This file is not committed. |
+| `discount_price_lstm_combined.keras` | Generated combined-data LSTM discount regressor. This file is not committed. |
 
-CSV and Joblib files are excluded by the repository's Git ignore rules. The source CSV must be supplied locally before running the notebooks.
+CSV, Joblib and Keras files are excluded by the repository's Git ignore rules. The source CSV files must be supplied locally before running the notebooks.
 
 ## Setup
 
@@ -30,7 +37,7 @@ From the repository root:
 python3 -m venv .myenv
 source .myenv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install pandas numpy matplotlib scikit-learn xgboost jupyter ipykernel joblib
+python -m pip install pandas numpy matplotlib scikit-learn xgboost jupyter ipykernel joblib tensorflow
 jupyter notebook
 ```
 
@@ -41,6 +48,45 @@ Run the notebooks in this order:
 3. `discount_price_regression_and_prediction.ipynb`
 
 The notebooks can be run either from this folder or from the repository root.
+
+For the new combined experiment, keep the original 2025 files unchanged and run:
+
+1. `discount_price_combined_dataset_preparation.ipynb`
+2. `combined_data_model_training_comparison.ipynb`
+
+Both `all_catalogue_products.csv` and `all_catalogue_products2024.csv` must be in this folder. Use a Python 3.10–3.12 notebook kernel; the notebook installs TensorFlow and the other required packages into the selected kernel.
+
+## Combined VIC Metro experiment
+
+The separate combined preprocessing notebook applies the same cleaning, product matching, weekly history, target and feature logic to both source files. It filters the inputs to `VIC METRO` before combining them and does not overwrite the existing 2025 dataset or models.
+
+| Check | Combined result |
+| --- | ---: |
+| 2024 VIC source rows | 4,675 |
+| 2025 VIC source rows | 15,195 |
+| Date range | 11 Sep 2024–31 Dec 2025 |
+| Products retained | 8,508 |
+| Final product-week rows | 59,539 |
+| Classification-eligible rows | 58,748 |
+| Next-week special examples | 5,430 |
+| Discount-regression examples | 3,043 |
+
+The comparison uses the same validation dates (9 September–4 November 2025) and test start date (5 November 2025) for both datasets. This keeps the evaluation period identical; the only difference is the earlier training history.
+
+### Best validation-selected results
+
+| Task and training data | Selected model | Test precision | Test recall | Test F1 | Test PR-AUC | Test MAE |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| Special classification, 2025 only | LSTM | 24.32% | 26.98% | 25.58% | 21.67% | — |
+| Special classification, combined | LSTM | 20.16% | 46.28% | 28.09% | 22.16% | — |
+| Discount regression, 2025 only | HistGradientBoosting | — | — | — | — | 9.00 points |
+| Discount regression, combined | HistGradientBoosting | — | — | — | — | 8.46 points |
+
+The combined LSTM improves recall, F1 and PR-AUC, although its precision is lower. The combined HistGradientBoosting regressor improves test MAE from approximately 9.14 to 8.46 percentage points.
+
+LSTM inputs use four consecutive weeks from the same product only. Missing-value handling and scaling are fitted on training rows, and the test period is not used for early stopping or threshold selection.
+
+The model notebook saves the best validation-selected combined tabular classifier and regressor in `discount_price_prediction_model_combined.joblib`. Its final test section reloads that file and scores three reproducible random products, showing special probability, rounded discount, predicted special price and probability-weighted expected price.
 
 ## Dataset preparation
 
