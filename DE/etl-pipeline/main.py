@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 
 from common.cli import parse_args
 from common.job_models import JobSummary
-from common.run_audit import build_audit_record, record_product_run
+from common.monitoring import emit_etl_run_event
 from config import load_runtime_config, load_settings
 from features.example.job import run as run_example
 from features.products.aldi.job import run as run_aldi
@@ -15,6 +15,31 @@ from features.products.iga.job import run as run_iga
 from features.products.woolworths.job import run as run_woolworths
 
 JobRunner = Callable[..., JobSummary]
+
+
+def _emit_etl_run_event_safely(
+    *,
+    model: str,
+    start_date: str,
+    end_date: str | None,
+    started_at: datetime,
+    summary: JobSummary | None = None,
+    error: BaseException | None = None,
+) -> None:
+    try:
+        emit_etl_run_event(
+            model=model,
+            start_date=start_date,
+            end_date=end_date,
+            started_at=started_at,
+            summary=summary,
+            error=error,
+        )
+    except Exception as monitoring_error:
+        print(
+            f"Unable to emit Silver ETL monitoring event: {monitoring_error}",
+            file=sys.stderr,
+        )
 
 
 def resolve_job(model: str) -> JobRunner:
@@ -35,11 +60,11 @@ def resolve_job(model: str) -> JobRunner:
 
 def main() -> int:
     args = parse_args()
-    settings = load_settings()
-    runtime_config = load_runtime_config()
-    run_job = resolve_job(args.model)
     started_at = datetime.now(UTC)
     try:
+        settings = load_settings()
+        runtime_config = load_runtime_config()
+        run_job = resolve_job(args.model)
         summary = run_job(
             model=args.model,
             start_date=args.start_date,
@@ -47,35 +72,25 @@ def main() -> int:
             runtime_config=runtime_config,
             settings=settings,
         )
-        if args.model.startswith("products_"):
-            record_product_run(
-                settings,
-                build_audit_record(
-                    model=args.model,
-                    start_date=args.start_date,
-                    end_date=args.end_date,
-                    started_at=started_at,
-                    summary=summary,
-                ),
-            )
     except Exception as error:
         if args.model.startswith("products_"):
-            try:
-                record_product_run(
-                    settings,
-                    build_audit_record(
-                        model=args.model,
-                        start_date=args.start_date,
-                        end_date=args.end_date,
-                        started_at=started_at,
-                        error=error,
-                    ),
-                )
-            except Exception as audit_error:
-                print(
-                    f"Unable to record failed ETL audit: {audit_error}", file=sys.stderr
-                )
+            _emit_etl_run_event_safely(
+                model=args.model,
+                start_date=args.start_date,
+                end_date=args.end_date,
+                started_at=started_at,
+                error=error,
+            )
         raise
+
+    if args.model.startswith("products_"):
+        _emit_etl_run_event_safely(
+            model=args.model,
+            start_date=args.start_date,
+            end_date=args.end_date,
+            started_at=started_at,
+            summary=summary,
+        )
 
     print("Pipeline completed successfully")
     print(f"model={args.model}")
