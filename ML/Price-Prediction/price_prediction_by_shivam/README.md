@@ -73,9 +73,9 @@ The separate combined preprocessing notebook applies the same cleaning, product 
 
 The comparison uses the same validation dates (9 September–4 November 2025) and test start date (5 November 2025) for both datasets. This keeps the evaluation period identical; the only difference is the earlier training history.
 
-### Best validation-selected results
+### Model comparison highlights
 
-| Task and training data | Selected model | Test precision | Test recall | Test F1 | Test PR-AUC | Test MAE |
+| Task and training data | Best validation-ranked model | Test precision | Test recall | Test F1 | Test PR-AUC | Test MAE |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | Special classification, 2025 only | LSTM | 24.32% | 26.98% | 25.58% | 21.67% | — |
 | Special classification, combined | LSTM | 20.16% | 46.28% | 28.09% | 22.16% | — |
@@ -86,7 +86,15 @@ The combined LSTM improves recall, F1 and PR-AUC, although its precision is lowe
 
 LSTM inputs use four consecutive weeks from the same product only. Missing-value handling and scaling are fitted on training rows, and the test period is not used for early stopping or threshold selection.
 
-The model notebook saves the best validation-selected combined tabular classifier and regressor in `discount_price_prediction_model_combined.joblib`. Its final test section reloads that file and scores three reproducible random products, showing special probability, rounded discount, predicted special price and probability-weighted expected price.
+### Final model workflow
+
+The showcase prediction workflow uses two tabular models: XGBoost predicts whether a product will be on special next week, and HistGradientBoosting predicts the discount percentage conditional on a special. They are selected using validation PR-AUC and validation MAE respectively, then stored together in `discount_price_prediction_model_combined.joblib`.
+
+The LSTM classifier remains an experimental comparison. It provides the strongest PR-AUC and higher recall, but produces lower precision and a slightly lower F1 score than HistGradientBoosting at the validation-selected thresholds. This trade-off does not establish a clear overall advantage over the simpler tabular classifiers. The LSTM discount regressor is not part of the showcase workflow because its combined-data test MAE is 10.28 percentage points, compared with 8.46 for HistGradientBoosting.
+
+The held-out test period is used to evaluate the selected model configuration before final training. After the features, model types and classification threshold have been fixed using training and validation data, the selected models are retrained on all available eligible rows to create the final model artifact. Reported test metrics describe the pre-retraining evaluation models; the retrained artifact requires newer unseen catalogue data for future performance measurement.
+
+The notebook finishes by reloading the saved model and scoring three reproducible random products. This is a smoke test of model serialization and prediction output, not a performance evaluation. It displays the special probability, rounded discount, predicted special price and probability-weighted expected price for each product.
 
 ## Dataset preparation
 
