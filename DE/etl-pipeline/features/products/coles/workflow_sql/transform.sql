@@ -155,7 +155,12 @@ categorized AS (
         END AS category_name
     FROM parsed
 ),
-deduplicated AS (
+/* ------------------------------------------------------------
+   Build the normalized pack-size key before deduplication.
+   This must happen before canonical_key is used in the
+   PARTITION BY clause.
+   ------------------------------------------------------------ */
+keyed AS (
     SELECT
         *,
         CASE
@@ -165,18 +170,60 @@ deduplicated AS (
                 '\.$',
                 ''
             )
-        END AS pack_quantity_key,
+        END AS pack_quantity_key
+    FROM categorized
+),
+/* ------------------------------------------------------------
+   Build canonical product identity before deduplication.
+
+   canonical_key =
+       normalized brand
+       + normalized product name
+       + normalized pack quantity
+       + normalized pack unit
+   ------------------------------------------------------------ */
+keyed2 AS (
+    SELECT
+        *,
+        brand_name_key || '|' || product_name_key || '|' || pack_quantity_key || '|' || COALESCE(pack_uom, '') AS canonical_key
+    FROM keyed
+),
+/* ------------------------------------------------------------
+   DE-06-T2 DEDUPLICATION
+
+   Effective deduplication identity:
+
+       raw_product_id
+       + canonical_key
+       + source_file
+
+   recorded_at is deliberately NOT part of the partition.
+
+   Therefore, if the same Coles product appears multiple times
+   within the same source file because it was encountered during
+   multiple search passes, those observations collapse into one
+   record.
+
+   source_file remains in the partition so historical scrape
+   batches remain separate.
+
+   The most recent recorded_at is retained. If timestamps are
+   identical, the lower price is preferred as the deterministic
+   tie-breaker.
+   ------------------------------------------------------------ */
+deduplicated AS (
+    SELECT
+        *,
         row_number() OVER (
             PARTITION BY
                 raw_product_id,
-                recorded_at,
-                item_name,
-                COALESCE(price, -1),
-                COALESCE(unit_price, -1),
+                canonical_key,
                 source_file
-            ORDER BY source_file
+            ORDER BY
+                recorded_at DESC,
+                price ASC
         ) AS dedupe_rank
-    FROM categorized
+    FROM keyed2
 )
 SELECT
     raw_product_id,
@@ -194,11 +241,11 @@ SELECT
     is_on_special,
     recorded_at,
     source_file,
-    brand_name_key || '|' || product_name_key || '|' || pack_quantity_key || '|' || COALESCE(pack_uom, '') AS canonical_key
+    canonical_key
 FROM deduplicated
 WHERE
     dedupe_rank = 1
     AND raw_product_id IS NOT NULL
     AND item_name IS NOT NULL
     AND price IS NOT NULL
-    AND recorded_at IS NOT NULL
+    AND recorded_at IS NOT NULL;
