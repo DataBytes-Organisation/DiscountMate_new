@@ -5,7 +5,7 @@ import ProductCard, { Product } from "./ProductCard";
 import ProductFilterSection from "../common/ProductFilterSection";
 import { API_URL } from "@/constants/Api";
 
-type ApiProduct = {
+export type ApiProduct = {
    _id: string;
    product_name?: string | null;
    product_code?: string | null;
@@ -156,7 +156,7 @@ async function fetchProductsPage(
    return parseProductsPayload(data, limit);
 }
 
-function mapApiProductToCard(product: ApiProduct): Product {
+export function mapApiProductToCard(product: ApiProduct): Product {
    // Always use _id for consistency in URLs since it's guaranteed to exist for all MongoDB documents
    // The backend's getProduct endpoint can handle both _id (MongoDB ObjectId) and product_code
    const rawId = product._id;

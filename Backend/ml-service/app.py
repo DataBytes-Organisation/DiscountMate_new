@@ -190,48 +190,26 @@ def get_current_week():
 
 @app.route('/api/ml/recommendations', methods=['POST'])
 def get_recommendations():
-    """
-    Get product recommendations using existing ML model
-
-    This endpoint demonstrates how to integrate an existing trained model:
-    - The model file exists at: ML/Recommendation_system/Recommendation-by-Simba/product_recommendation_model.joblib
-    - Currently returns demo output showing the expected structure
-    - Ready to be connected to the actual model when data sources are available
-
-    Request body:
-    {
-        "product_id": 21137,
-        "limit": 5
-    }
-    """
+    data = request.get_json(silent=True) or {}
     try:
-        data = request.get_json() or {}
-        product_id = data.get('product_id')
-        limit = int(data.get('limit', 5))
+        limit = min(max(int(data.get('limit', 10)), 1), 20)
+    except (TypeError, ValueError):
+        return error_payload('Invalid request', 'limit must be an integer', 400)
 
-        if product_id is None:
-            return error_payload('Invalid request', 'product_id is required', 400)
-
-        # Call ML model function from ml_models module
-        # This demonstrates the integration pattern:
-        # - app.py handles HTTP requests/responses
-        # - ml_models/recommendations.py contains the ML model logic
-        recommendations = get_recommendations_ml(product_id=product_id, limit=limit)
+    try:
+        recommendations = get_recommendations_ml(limit=limit)
 
         return success_payload(
-            message='Product recommendations using existing ML model',
-            input_product_id=product_id,
             recommendations=recommendations,
             count=len(recommendations),
             model_info={
-                'model_type': 'Association Rule Learning',
-                'model_location': os.getenv('RECOMMENDATION_MODEL_PATH', '/app/models/product_recommendation_model.joblib'),
-                'status': 'using_actual_model' if recommendations and recommendations[0].get('source') == 'product_recommendation_model.joblib' else 'fallback_mode'
+                'type': 'discount_ranking',
+                'status': 'live'
             }
         )
 
     except Exception as e:
-        return error_payload('Failed to get recommendations', str(e))
+        return error_payload('Failed to get recommendations', str(e), 503)
 
 
 @app.route('/api/ml/price-prediction', methods=['POST'])
