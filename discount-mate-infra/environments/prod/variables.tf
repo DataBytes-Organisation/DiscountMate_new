@@ -214,6 +214,11 @@ variable "postgres_authorized_networks" {
   default = []
 }
 
+variable "monitoring_alert_email" {
+  description = "Redundant email notification address for scraper alerts."
+  type        = string
+}
+
 variable "etl_job_image" {
   description = "Container image executed by the production ETL Cloud Run jobs."
   type        = string
