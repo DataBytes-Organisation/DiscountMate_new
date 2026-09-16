@@ -83,12 +83,12 @@ export default function WeeklySpecialsSection() {
                   )
             )
             .sort((a: any, b: any) => {
-               const aCurrent = Number(a.current_price) || 0;
-               const aBest = Number(a.best_price) || 0;
-               const bCurrent = Number(b.current_price) || 0;
-               const bBest = Number(b.best_price) || 0;
+               const aSavings =
+                  (Number(a.current_price) || 0) - (Number(a.best_price) || 0);
+               const bSavings =
+                  (Number(b.current_price) || 0) - (Number(b.best_price) || 0);
 
-               return (bCurrent - bBest) - (aCurrent - aBest);
+               return bSavings - aSavings;
             })
             .slice(0, 4)
             .map((product: any) => {
