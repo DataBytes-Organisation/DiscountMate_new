@@ -1,10 +1,13 @@
 CREATE OR REPLACE TABLE raw_input_normalized AS
-WITH cleaned AS (
+WITH source_cleaned AS (
     SELECT
         nullif(trim(CAST(Stockcode AS VARCHAR)), '') AS raw_product_id,
-        nullif(regexp_replace(CAST(Barcode AS VARCHAR), '[^0-9]', '', 'g'), '') AS raw_gtin,
+        CASE
+            WHEN regexp_full_match(trim(CAST(Barcode AS VARCHAR)), '[0-9]{8,14}')
+                THEN trim(CAST(Barcode AS VARCHAR))
+            ELSE NULL
+        END AS raw_gtin,
         nullif(trim(coalesce(CAST(DisplayName AS VARCHAR), CAST(Name AS VARCHAR))), '') AS item_name,
-        NULL::VARCHAR AS brand_name,
         nullif(trim(CAST(PackageSize AS VARCHAR)), '') AS raw_size,
         nullif(trim(CAST(SapCategoryName AS VARCHAR)), '') AS raw_category,
         nullif(trim(CAST(PromotionType AS VARCHAR)), '') AS promotion_type,
@@ -22,6 +25,26 @@ WITH cleaned AS (
         TRY_CAST(Timestamp AS TIMESTAMP) AS recorded_at,
         source_file
     FROM raw_input
+),
+trusted_coles_gtins AS (
+    SELECT
+        trim(CAST(gtin AS VARCHAR)) AS gtin,
+        arg_max(
+            nullif(trim(coalesce(CAST(brand_name AS VARCHAR), CAST(brand AS VARCHAR))), ''),
+            scraped_at
+        ) AS brand_name
+    FROM {{ static_master_coles_products_table }}
+    WHERE regexp_full_match(trim(CAST(gtin AS VARCHAR)), '[0-9]{8,14}')
+    GROUP BY trim(CAST(gtin AS VARCHAR))
+    HAVING count(DISTINCT product_id) = 1
+),
+cleaned AS (
+    SELECT
+        source_cleaned.*,
+        trusted_coles_gtins.brand_name
+    FROM source_cleaned
+    LEFT JOIN trusted_coles_gtins
+        ON trusted_coles_gtins.gtin = source_cleaned.raw_gtin
 ),
 prepared AS (
     SELECT

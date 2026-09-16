@@ -39,24 +39,32 @@ USING (
         WHERE product_rank = 1
     ),
     gtin_matches AS (
-        SELECT
+        SELECT DISTINCT
             touched_products.source_product_key,
             products.id AS product_id
         FROM touched_products
         INNER JOIN {{ dim_products_table }} AS products
             ON touched_products.gtin IS NOT NULL
             AND products.gtin = touched_products.gtin
+        INNER JOIN {{ fct_product_prices_table }} AS existing_prices
+            ON existing_prices.product_id = products.id
+        CROSS JOIN retailer_woolworths AS existing_retailer
+        WHERE existing_prices.retailer_id = existing_retailer.retailer_id
     ),
     canonical_matches AS (
-        SELECT
+        SELECT DISTINCT
             touched_products.source_product_key,
             products.id AS product_id
         FROM touched_products
         INNER JOIN {{ dim_products_table }} AS products
             ON {{ dim_product_canonical_key_expr }} = touched_products.canonical_key
+        INNER JOIN {{ fct_product_prices_table }} AS existing_prices
+            ON existing_prices.product_id = products.id
+        CROSS JOIN retailer_woolworths AS existing_retailer
+        WHERE existing_prices.retailer_id = existing_retailer.retailer_id
     ),
     physical_key_matches AS (
-        SELECT
+        SELECT DISTINCT
             touched_products.source_product_key,
             products.id AS product_id
         FROM touched_products
@@ -65,6 +73,10 @@ USING (
             AND lower(products.product_name) = lower(touched_products.product_name)
             AND coalesce(products.pack_quantity, -1) = coalesce(touched_products.pack_quantity, -1)
             AND coalesce(lower(products.pack_uom), '') = coalesce(lower(touched_products.pack_uom), '')
+        INNER JOIN {{ fct_product_prices_table }} AS existing_prices
+            ON existing_prices.product_id = products.id
+        CROSS JOIN retailer_woolworths AS existing_retailer
+        WHERE existing_prices.retailer_id = existing_retailer.retailer_id
     ),
     resolved_canonical_groups AS (
         SELECT
