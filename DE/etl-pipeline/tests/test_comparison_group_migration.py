@@ -5,7 +5,10 @@ from pathlib import Path
 
 
 def test_comparison_group_migration_is_non_destructive_and_versioned() -> None:
-    path = Path(__file__).parents[1] / "migrations/versions/20260822_0005_comparison_product_groups.py"
+    path = (
+        Path(__file__).parents[1]
+        / "migrations/versions/20260822_0005_comparison_product_groups.py"
+    )
     assert path.exists()
     text = path.read_text(encoding="utf-8")
 
@@ -28,8 +31,12 @@ def test_comparison_group_migration_is_non_destructive_and_versioned() -> None:
 
 
 def test_migration_revision_metadata_imports_without_running_sql() -> None:
-    path = Path(__file__).parents[1] / "migrations/versions/20260822_0005_comparison_product_groups.py"
+    path = (
+        Path(__file__).parents[1]
+        / "migrations/versions/20260822_0005_comparison_product_groups.py"
+    )
     spec = importlib.util.spec_from_file_location("comparison_groups_migration", path)
+    assert spec is not None
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)
@@ -58,6 +65,7 @@ def test_retailer_scoped_identity_migration_follows_grouping_revision() -> None:
         / "migrations/versions/20260824_0007_retailer_scoped_product_identity.py"
     )
     spec = importlib.util.spec_from_file_location("retailer_scoped_identity", path)
+    assert spec is not None
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)
@@ -72,6 +80,7 @@ def test_bounded_group_refresh_migration_is_latest_revision() -> None:
         / "migrations/versions/20260825_0008_bound_group_refresh.py"
     )
     spec = importlib.util.spec_from_file_location("bounded_group_refresh", path)
+    assert spec is not None
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import sys
 from collections.abc import Callable
 from datetime import UTC, datetime
-import sys
 
 from common.cli import parse_args
 from common.job_models import JobSummary
@@ -48,25 +48,33 @@ def main() -> int:
             settings=settings,
         )
         if args.model.startswith("products_"):
-            record_product_run(settings, build_audit_record(
-                model=args.model,
-                start_date=args.start_date,
-                end_date=args.end_date,
-                started_at=started_at,
-                summary=summary,
-            ))
-    except Exception as error:
-        if args.model.startswith("products_"):
-            try:
-                record_product_run(settings, build_audit_record(
+            record_product_run(
+                settings,
+                build_audit_record(
                     model=args.model,
                     start_date=args.start_date,
                     end_date=args.end_date,
                     started_at=started_at,
-                    error=error,
-                ))
+                    summary=summary,
+                ),
+            )
+    except Exception as error:
+        if args.model.startswith("products_"):
+            try:
+                record_product_run(
+                    settings,
+                    build_audit_record(
+                        model=args.model,
+                        start_date=args.start_date,
+                        end_date=args.end_date,
+                        started_at=started_at,
+                        error=error,
+                    ),
+                )
             except Exception as audit_error:
-                print(f"Unable to record failed ETL audit: {audit_error}", file=sys.stderr)
+                print(
+                    f"Unable to record failed ETL audit: {audit_error}", file=sys.stderr
+                )
         raise
 
     print("Pipeline completed successfully")

@@ -278,7 +278,9 @@ class IgaTransformTest(unittest.TestCase):
         try:
             connection.execute(render_sql_template(SYNC_DIM_PRODUCTS_SQL, **context))
         except duckdb.Error as error:
-            self.fail(f"exact GTIN identity must not violate the unique GTIN constraint: {error}")
+            self.fail(
+                f"exact GTIN identity must not violate the unique GTIN constraint: {error}"
+            )
 
         rows = connection.execute(
             """

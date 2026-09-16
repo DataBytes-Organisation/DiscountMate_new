@@ -40,7 +40,7 @@ def resolve_input_path(
 
 
 def resolve_input_paths(
-    conn: duckdb.DuckDBPyConnection,
+    conn: duckdb.DuckDBPyConnection | None,
     runtime_config: RuntimeConfig,
     model: str,
     runner: str,
@@ -63,7 +63,9 @@ def resolve_input_paths(
     if not fallback.startswith(("gs://", "gcs://")):
         project_root = Path(__file__).resolve().parents[1]
         candidate = Path(fallback)
-        fallback = str(candidate if candidate.is_absolute() else project_root / candidate)
+        fallback = str(
+            candidate if candidate.is_absolute() else project_root / candidate
+        )
     return _glob_paths(conn, fallback)
 
 
@@ -71,7 +73,9 @@ def _glob_paths(conn: duckdb.DuckDBPyConnection | None, path_pattern: str) -> li
 
     if path_pattern.startswith(("gs://", "gcs://")):
         if conn is None:
-            raise RuntimeError("A DuckDB connection is required to discover cloud inputs.")
+            raise RuntimeError(
+                "A DuckDB connection is required to discover cloud inputs."
+            )
         rows = conn.execute(
             "SELECT file FROM glob(?) ORDER BY file",
             [path_pattern],

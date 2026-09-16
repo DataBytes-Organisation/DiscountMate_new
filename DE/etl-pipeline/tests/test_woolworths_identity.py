@@ -16,7 +16,9 @@ TRANSFORM_SQL = (
 )
 
 
-def test_woolworths_transform_preserves_valid_gtin_and_rejects_scientific_notation() -> None:
+def test_woolworths_transform_preserves_valid_gtin_and_rejects_scientific_notation() -> (
+    None
+):
     conn = duckdb.connect()
     conn.execute(
         """
@@ -76,8 +78,8 @@ def test_woolworths_transform_preserves_valid_gtin_and_rejects_scientific_notati
         """
     ).fetchall()
 
-    assert rows[0] == ('100', '9300000000001', '9300000000001', 'BrandCo')
-    assert rows[1] == ('101', None, None, None)
+    assert rows[0] == ("100", "9300000000001", "9300000000001", "BrandCo")
+    assert rows[1] == ("101", None, None, None)
 
 
 def test_woolworths_job_rejects_a_zero_positive_offer_load() -> None:

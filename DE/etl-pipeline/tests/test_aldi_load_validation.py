@@ -3,7 +3,7 @@ import pytest
 from features.products.aldi import job as aldi_job
 
 
-def test_aldi_job_rejects_a_zero_positive_offer_load():
+def test_aldi_job_rejects_a_zero_positive_offer_load() -> None:
     validator = getattr(aldi_job, "_validate_positive_offer_count", None)
     assert validator is not None
 
@@ -11,4 +11,3 @@ def test_aldi_job_rejects_a_zero_positive_offer_load():
         validator(0)
 
     validator(1)
-

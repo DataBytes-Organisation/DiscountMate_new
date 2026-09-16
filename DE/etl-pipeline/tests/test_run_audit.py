@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 from common.run_audit import build_audit_record, finalize_product_run
 
@@ -27,14 +31,19 @@ def test_audit_record_preserves_source_counts_and_observation_date() -> None:
 
 def test_successful_product_run_refreshes_groups_and_writes_audit() -> None:
     class Result:
-        def fetchone(self):
+        def fetchone(self) -> tuple[datetime]:
             return (datetime(2026, 5, 4, 2, 0, tzinfo=UTC),)
 
     class Connection:
-        def __init__(self):
-            self.calls = []
+        def __init__(self) -> None:
+            self.calls: list[tuple[str, Sequence[object] | None]] = []
 
-        def execute(self, sql, params=None):
+        def execute(
+            self,
+            sql: str,
+            /,
+            params: Sequence[object] | None = None,
+        ) -> Result:
             self.calls.append((sql, params))
             return Result()
 

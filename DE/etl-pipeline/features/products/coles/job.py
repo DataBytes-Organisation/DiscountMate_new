@@ -187,8 +187,7 @@ def _sync_static_master_to_postgres(
     stage = sql.Identifier("static_master_coles_products_stage")
     identifiers = sql.SQL(", ").join(map(sql.Identifier, columns))
     join_condition = sql.SQL(
-        "target.product_id = stage.product_id "
-        "AND target.scraped_at = stage.scraped_at"
+        "target.product_id = stage.product_id AND target.scraped_at = stage.scraped_at"
     )
 
     with (
@@ -196,8 +195,9 @@ def _sync_static_master_to_postgres(
         pg_connection.cursor() as cursor,
     ):
         cursor.execute(
-            sql.SQL("CREATE TEMP TABLE {} (LIKE {} INCLUDING DEFAULTS) ON COMMIT DROP")
-            .format(stage, target)
+            sql.SQL(
+                "CREATE TEMP TABLE {} (LIKE {} INCLUDING DEFAULTS) ON COMMIT DROP"
+            ).format(stage, target)
         )
         with cursor.copy(
             sql.SQL("COPY {} ({}) FROM STDIN").format(stage, identifiers)
@@ -205,12 +205,14 @@ def _sync_static_master_to_postgres(
             for row in rows:
                 copy.write_row(row)
         cursor.execute(
-            sql.SQL("DELETE FROM {} AS target USING {} AS stage WHERE {}")
-            .format(target, stage, join_condition)
+            sql.SQL("DELETE FROM {} AS target USING {} AS stage WHERE {}").format(
+                target, stage, join_condition
+            )
         )
         cursor.execute(
-            sql.SQL("INSERT INTO {} ({}) SELECT {} FROM {}")
-            .format(target, identifiers, identifiers, stage)
+            sql.SQL("INSERT INTO {} ({}) SELECT {} FROM {}").format(
+                target, identifiers, identifiers, stage
+            )
         )
 
     return len(rows)

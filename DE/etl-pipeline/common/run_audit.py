@@ -1,13 +1,30 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import psycopg
 
-from common.job_models import JobSummary
-from config.settings import AppSettings
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from datetime import datetime
+
+    from common.job_models import JobSummary
+    from config.settings import AppSettings
+
+
+class AuditQueryResult(Protocol):
+    def fetchone(self) -> Sequence[object] | None: ...
+
+
+class AuditConnection(Protocol):
+    def execute(
+        self,
+        query: str,
+        /,
+        params: Sequence[object] | None = None,
+    ) -> AuditQueryResult: ...
+
 
 RETAILER_BY_MODEL = {
     "products_aldi": "ALDI",
@@ -27,9 +44,13 @@ def build_audit_record(
     error: BaseException | None = None,
 ) -> dict[str, Any]:
     counts = summary["counts"] if summary else {}
-    processed_dates = [] if not summary else [
-        value for value in summary["processed_dates"].split(",") if value != "none"
-    ]
+    processed_dates = (
+        []
+        if not summary
+        else [
+            value for value in summary["processed_dates"].split(",") if value != "none"
+        ]
+    )
     return {
         "model_name": model,
         "retailer_name": RETAILER_BY_MODEL.get(model),
@@ -45,7 +66,7 @@ def build_audit_record(
     }
 
 
-def finalize_product_run(connection: Any, record: dict[str, Any]) -> None:
+def finalize_product_run(connection: AuditConnection, record: dict[str, Any]) -> None:
     if record["status"] == "succeeded":
         connection.execute("SELECT silver.refresh_comparison_product_groups()")
 
@@ -94,4 +115,4 @@ def finalize_product_run(connection: Any, record: dict[str, Any]) -> None:
 
 def record_product_run(settings: AppSettings, record: dict[str, Any]) -> None:
     with psycopg.connect(settings.postgres_duckdb_uri()) as connection:
-        finalize_product_run(connection, record)
+        finalize_product_run(cast("AuditConnection", connection), record)
