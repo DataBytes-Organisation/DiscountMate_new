@@ -55,7 +55,7 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
    const { cartItems, getTotalItems } = useCart();
    const { isLoading } = useShoppingLists();
    const { width } = useWindowDimensions();
-   const { profile } = useUserProfile();
+   const { profile, setCachedProfile } = useUserProfile();
    const {
       unreadCount,
       panelOpen,
@@ -88,8 +88,9 @@ export default function Header({ activeRoute = "Home" }: HeaderProps) {
    const handleLogout = async () => {
       await unregisterPushToken().catch(() => undefined);
       await AsyncStorage.removeItem("authToken");
+      setCachedProfile(null);
       setShowMenu(false);
-      router.push("/login");
+      router.push("/(auth)/login");
    };
 
    const handleProfile = () => {

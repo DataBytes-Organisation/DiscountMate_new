@@ -6,6 +6,8 @@ locals {
     "artifactregistry.googleapis.com",
     "cloudscheduler.googleapis.com",
     "iam.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
     "sqladmin.googleapis.com",
@@ -82,6 +84,13 @@ locals {
       schedule       = "0 9 * * 6"
       source         = "coles"
     }
+  }
+
+  silver_etl_jobs = {
+    aldi       = "discount-mate-etl-products-aldi"
+    coles      = "discount-mate-etl-products-coles"
+    iga        = "discount-mate-etl-products-iga"
+    woolworths = "discount-mate-etl-products-woolworths"
   }
 }
 
@@ -224,6 +233,17 @@ module "ingestion_jobs" {
   args                            = ["--source", each.value.source, "--runner", "products"]
   env_vars                        = local.ingestion_job_env_vars
   task_timeout                    = "18000s"
+
+  depends_on = [google_project_service.enabled_apis]
+}
+
+module "silver_monitoring" {
+  source = "${local.repo_root}/modules/silver_monitoring"
+
+  project_id      = var.project_id
+  region          = var.silver_etl_region
+  alert_email     = var.monitoring_alert_email
+  silver_etl_jobs = local.silver_etl_jobs
 
   depends_on = [google_project_service.enabled_apis]
 }

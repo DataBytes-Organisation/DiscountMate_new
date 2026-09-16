@@ -93,7 +93,7 @@ export default function NotificationsScreen() {
                   err?.message || "Unable to load notification settings.";
                setError(message);
                if (message === SESSION_EXPIRED_MESSAGE) {
-                  router.replace("/login");
+                  router.replace("/(auth)/login");
                }
             }
          } finally {
@@ -144,7 +144,7 @@ export default function NotificationsScreen() {
          setPreferences(previousPreferences);
          setError(message);
          if (message === SESSION_EXPIRED_MESSAGE) {
-            router.replace("/login");
+            router.replace("/(auth)/login");
          }
       } finally {
          setSavingKey(null);

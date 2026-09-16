@@ -30,9 +30,15 @@ except ImportError:
           "Run: pip install sentence-transformers")
 
 try:
-    from .gcs_loader import ensure_index_file   # Flask package
+    from .gcs_loader import (  # Flask package
+        ensure_index_file,
+        get_local_index_dir,
+    )
 except ImportError:
-    from gcs_loader import ensure_index_file    # CLI direct run
+    from gcs_loader import (  # CLI direct run
+        ensure_index_file,
+        get_local_index_dir,
+    )
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -53,7 +59,7 @@ else:
     print(f"[env] no .env at {_ENV_PATH} — fell back to cwd search")
 
 EMBEDDING_MODEL_NAME = "all-mpnet-base-v2"
-INDEX_DIR = os.path.join(os.path.dirname(__file__), "index")
+INDEX_DIR = get_local_index_dir()
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 HUGGINGFACE_URL = "https://router.huggingface.co/v1/chat/completions"
@@ -883,8 +889,8 @@ class RecipeRetriever:
             meta_path = ensure_index_file("recipe_metadata.json", self.index_dir)
         except RuntimeError as e:
             raise FileNotFoundError(
-                f"Recipe index unavailable (local + GCS both failed): {e}\n"
-                "Run: python build_recipe_index.py — or check GCS auth."
+                f"Recipe index unavailable from the configured source: {e}\n"
+                "Build the local index or check the configured GCS access."
             ) from e
         embeddings = np.load(emb_path)["embeddings"].astype(np.float32)
         with open(meta_path, "r", encoding="utf-8") as f:
@@ -972,13 +978,18 @@ class ProductMatcher:
             meta_path = ensure_index_file("product_metadata.json", self.index_dir)
         except RuntimeError as e:
             print(f"[ProductMatcher] product index unavailable "
-                  f"(local + GCS both failed) — annotations DISABLED. {e}")
+                  f"from the configured source — annotations DISABLED. {e}")
             return
 
-        data = np.load(emb_path, allow_pickle=True)
-        embeddings = data["embeddings"].astype(np.float32)
-        with open(meta_path, "r", encoding="utf-8") as f:
-            products = json.load(f)["products"]
+        try:
+            data = np.load(emb_path, allow_pickle=True)
+            embeddings = data["embeddings"].astype(np.float32)
+            with open(meta_path, "r", encoding="utf-8") as f:
+                products = json.load(f)["products"]
+        except Exception as e:
+            print(f"[ProductMatcher] product index is invalid "
+                  f"— annotations DISABLED. {e}")
+            return
 
         if embeddings.shape[0] != len(products):
             print(f"[ProductMatcher] WARNING: shape mismatch — "

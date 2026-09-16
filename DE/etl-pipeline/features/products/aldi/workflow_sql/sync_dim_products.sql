@@ -6,7 +6,7 @@ USING (
         WHERE retailer_name = 'aldi'
     ),
     latest_products AS (
-        SELECT
+        SELECT DISTINCT
             raw.source_product_key,
             raw.canonical_key,
             categories.id AS category_id,
@@ -46,14 +46,22 @@ USING (
         INNER JOIN {{ dim_products_table }} AS products
             ON touched_products.gtin IS NOT NULL
             AND products.gtin = touched_products.gtin
+        INNER JOIN {{ fct_product_prices_table }} AS existing_prices
+            ON existing_prices.product_id = products.id
+        CROSS JOIN retailer_aldi AS existing_retailer
+        WHERE existing_prices.retailer_id = existing_retailer.retailer_id
     ),
     canonical_matches AS (
-        SELECT
+        SELECT DISTINCT
             touched_products.source_product_key,
             products.id AS product_id
         FROM touched_products
         INNER JOIN {{ dim_products_table }} AS products
             ON {{ dim_product_canonical_key_expr }} = touched_products.canonical_key
+        INNER JOIN {{ fct_product_prices_table }} AS existing_prices
+            ON existing_prices.product_id = products.id
+        CROSS JOIN retailer_aldi AS existing_retailer
+        WHERE existing_prices.retailer_id = existing_retailer.retailer_id
     ),
     resolved_canonical_groups AS (
         SELECT
