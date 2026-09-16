@@ -80,6 +80,13 @@ type ActiveListItemInput = {
    image?: string;
    category?: string;
    categoryId?: string;
+   comparisonProductId?: string;
+   sourceProductId?: string;
+   deProductId?: string;
+   gtin?: string;
+   brand?: string;
+   packQuantity?: string;
+   packUom?: string;
    retailerPrices?: {
       coles?: number;
       woolworths?: number;
@@ -103,6 +110,13 @@ function toLineItem(item: ActiveListItemInput): ShoppingListLineItem {
       image: item.image,
       category: item.category,
       categoryId: item.categoryId,
+      comparisonProductId: item.comparisonProductId,
+      sourceProductId: item.sourceProductId,
+      deProductId: item.deProductId,
+      gtin: item.gtin,
+      brand: item.brand,
+      packQuantity: item.packQuantity,
+      packUom: item.packUom,
       retailerPrices: item.retailerPrices,
    };
 }
@@ -111,6 +125,7 @@ type ShoppingListsContextValue = {
    lists: ShoppingList[];
    activeListId: string | null;
    isLoading: boolean;
+   isAuthenticated: boolean | null;
    refreshLists: () => Promise<void>;
    setActiveList: (id: string) => void;
    createList: (input: CreateListInput) => Promise<ShoppingList>;
@@ -118,13 +133,13 @@ type ShoppingListsContextValue = {
    deleteList: (id: string) => void;
    getActiveList: () => ShoppingList | null;
    getListById: (id: string) => ShoppingList | undefined;
-   addItemToActiveList: (item: ActiveListItemInput) => void;
+   addItemToActiveList: (item: ActiveListItemInput) => Promise<{ action: "added" | "updated" }>;
    removeItemFromActiveList: (itemId: string) => void;
    updateActiveListItemQuantity: (itemId: string, quantity: number) => void;
    clearActiveListItems: () => void;
    replaceActiveListItems: (items: ActiveListItemInput[]) => void;
    removeItemFromList: (listId: string, itemId: string) => void;
-   updateListItemQuantity: (listId: string, itemId: string, quantity: number) => void;
+   updateListItemQuantity: (listId: string, itemId: string, quantity: number) => Promise<void>;
    updateListItemRetailer: (
       listId: string,
       itemId: string,
@@ -139,11 +154,15 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
    const [lists, setLists] = useState<ShoppingList[]>([]);
    const [activeListId, setActiveListIdState] = useState<string | null>(null);
    const [isLoading, setIsLoading] = useState(true);
+   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
    const refreshLists = useCallback(async () => {
       setIsLoading(true);
+      let hasToken = false;
       try {
          const token = await getAuthToken();
+         hasToken = Boolean(token);
+         setIsAuthenticated(hasToken);
          if (!token) {
             setLists([]);
             setActiveListIdState(null);
@@ -158,6 +177,7 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
          console.error("Failed to load shopping lists:", error);
          setLists([]);
          setActiveListIdState(null);
+         setIsAuthenticated(hasToken);
       } finally {
          setIsLoading(false);
       }
@@ -170,24 +190,20 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
    const persistList = useCallback(async (list: ShoppingList) => {
       if (!isMongoId(list.id)) return;
 
-      try {
-         const token = await getAuthToken();
-         if (!token) return;
+      const token = await getAuthToken();
+      if (!token) throw new Error("Please log in to update this list.");
 
-         await apiRequest<ApiSingleListResponse>(`/shopping-lists/${list.id}`, token, {
-            method: "PUT",
-            body: JSON.stringify({
-               name: list.name,
-               description: list.description,
-               accent: list.accent,
-               items: list.items,
-               total: list.total,
-               savings: list.savings,
-            }),
-         });
-      } catch (error) {
-         console.error("Failed to save shopping list:", error);
-      }
+      await apiRequest<ApiSingleListResponse>(`/shopping-lists/${list.id}`, token, {
+         method: "PUT",
+         body: JSON.stringify({
+            name: list.name,
+            description: list.description,
+            accent: list.accent,
+            items: list.items,
+            total: list.total,
+            savings: list.savings,
+         }),
+      });
    }, []);
 
    const setActiveList = useCallback((id: string) => {
@@ -278,7 +294,7 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
          };
 
          setLists((prev) => prev.map((list) => (list.id === id ? updatedList : list)));
-         void persistList(updatedList);
+         void persistList(updatedList).catch((error) => console.error("Failed to save shopping list:", error));
       },
       [lists, persistList]
    );
@@ -323,7 +339,7 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
             if (!target) return prev;
 
             const updatedList = update(target);
-            void persistList(updatedList);
+            void persistList(updatedList).catch((error) => console.error("Failed to save shopping list:", error));
             return prev.map((list) => (list.id === listId ? updatedList : list));
          });
       },
@@ -331,22 +347,42 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
    );
 
    const updateListItemQuantity = useCallback(
-      (listId: string, itemId: string, quantity: number) => {
-         commitListChange(listId, (list) => {
-            const nextItems =
-               quantity <= 0
-                  ? list.items.filter((item) => item.id !== itemId)
-                  : list.items.map((item) => (item.id === itemId ? { ...item, quantity } : item));
+      async (listId: string, itemId: string, quantity: number) => {
+         const original = lists.find((list) => list.id === listId);
+         if (!original) return;
+         const nextItems =
+            quantity <= 0
+               ? original.items.filter((item) => item.id !== itemId)
+               : original.items.map((item) => (item.id === itemId ? { ...item, quantity } : item));
+         const updatedList = {
+            ...original,
+            items: nextItems,
+            total: computeListTotal(nextItems),
+            updatedLabel: "Just now",
+         };
+         setLists((prev) => prev.map((list) => (list.id === listId ? updatedList : list)));
 
-            return {
-               ...list,
-               items: nextItems,
-               total: computeListTotal(nextItems),
-               updatedLabel: "Just now",
-            };
-         });
+         if (!isMongoId(listId)) return;
+         try {
+            const token = await getAuthToken();
+            if (!token) throw new Error("Please log in to update this list.");
+            await apiRequest<ApiSingleListResponse>(`/shopping-lists/${listId}`, token, {
+               method: "PUT",
+               body: JSON.stringify({
+                  name: updatedList.name,
+                  description: updatedList.description,
+                  accent: updatedList.accent,
+                  items: updatedList.items,
+                  total: updatedList.total,
+                  savings: updatedList.savings,
+               }),
+            });
+         } catch (error) {
+            setLists((prev) => prev.map((list) => (list.id === listId ? original : list)));
+            throw error;
+         }
       },
-      [commitListChange]
+      [lists]
    );
 
    const removeItemFromList = useCallback(
@@ -430,12 +466,18 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
    );
 
    const addItemToActiveList = useCallback(
-      (item: ActiveListItemInput) => {
-         if (!activeListId) return;
-
-         commitListChange(activeListId, (list) => {
+      async (item: ActiveListItemInput) => {
+         if (!activeListId) throw new Error("Please select a grocery list first.");
+         const original = lists.find((list) => list.id === activeListId);
+         if (!original) throw new Error("The active grocery list could not be found.");
+         const existingIndex = original.items.findIndex((existing) => (
+            (existing.comparisonProductId || existing.deProductId || existing.id) ===
+            (item.comparisonProductId || item.deProductId || item.id)
+         ));
+         const action: "added" | "updated" = existingIndex >= 0 ? "updated" : "added";
+         const updatedList = (() => {
+            const list = original;
             const qtyToAdd = Math.max(1, item.quantity ?? 1);
-            const existingIndex = list.items.findIndex((existing) => existing.id === item.id);
             let nextItems: ShoppingListLineItem[];
 
             if (existingIndex >= 0) {
@@ -449,6 +491,13 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
                   image: item.image ?? existing.image,
                   category: item.category ?? existing.category,
                   categoryId: item.categoryId ?? existing.categoryId,
+                  comparisonProductId: item.comparisonProductId ?? existing.comparisonProductId,
+                  sourceProductId: item.sourceProductId ?? existing.sourceProductId,
+                  deProductId: item.deProductId ?? existing.deProductId,
+                  gtin: item.gtin ?? existing.gtin,
+                  brand: item.brand ?? existing.brand,
+                  packQuantity: item.packQuantity ?? existing.packQuantity,
+                  packUom: item.packUom ?? existing.packUom,
                   retailerPrices: item.retailerPrices ?? existing.retailerPrices,
                };
             } else {
@@ -461,9 +510,17 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
                total: computeListTotal(nextItems),
                updatedLabel: "Just now",
             };
-         });
+         })();
+         setLists((prev) => prev.map((list) => (list.id === activeListId ? updatedList : list)));
+         try {
+            await persistList(updatedList);
+            return { action };
+         } catch (error) {
+            setLists((prev) => prev.map((list) => (list.id === activeListId ? original : list)));
+            throw error;
+         }
       },
-      [activeListId, commitListChange]
+      [activeListId, lists, persistList]
    );
 
    const removeItemFromActiveList = useCallback(
@@ -477,7 +534,9 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
    const updateActiveListItemQuantity = useCallback(
       (itemId: string, quantity: number) => {
          if (!activeListId) return;
-         updateListItemQuantity(activeListId, itemId, quantity);
+         void updateListItemQuantity(activeListId, itemId, quantity).catch((error) => {
+            console.error("Failed to update active-list quantity:", error);
+         });
       },
       [activeListId, updateListItemQuantity]
    );
@@ -525,6 +584,7 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
          lists,
          activeListId,
          isLoading,
+         isAuthenticated,
          refreshLists,
          setActiveList,
          createList,
@@ -546,6 +606,7 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
          lists,
          activeListId,
          isLoading,
+         isAuthenticated,
          refreshLists,
          setActiveList,
          createList,
