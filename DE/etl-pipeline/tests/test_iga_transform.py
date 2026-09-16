@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import csv
 import unittest
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import duckdb
 
 from common.duckdb_utils import render_sql_template
-from features.products.iga.job import _workflow_sql_context
+from features.products.iga.job import _load_input_files, _workflow_sql_context
 
 TRANSFORM_SQL = (
     Path(__file__).parents[1]
@@ -28,115 +30,90 @@ SYNC_DIM_PRODUCTS_SQL = (
 )
 
 
+def load_raw_input(
+    connection: duckdb.DuckDBPyConnection,
+    row: dict[str, str],
+) -> None:
+    with TemporaryDirectory() as directory:
+        input_path = Path(directory) / "iga_sample_20260504.csv"
+        with input_path.open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=list(row))
+            writer.writeheader()
+            writer.writerow(row)
+        _load_input_files(connection, [str(input_path)])
+
+
 def create_canonical_raw_input(connection: duckdb.DuckDBPyConnection) -> None:
-    connection.execute(
-        """
-        CREATE TABLE raw_input AS
-        SELECT
-            'iga-123'::VARCHAR AS iga_product_id,
-            NULL::VARCHAR AS iga_productid,
-            'sku-123'::VARCHAR AS sku,
-            'iga-sku-123'::VARCHAR AS iga_sku,
-            '9300657174101'::VARCHAR AS barcode,
-            '9300657174101'::VARCHAR AS iga_barcode,
-            'Cottee''s Instant Vanilla Pudding'::VARCHAR AS name,
-            'Cottee''s Instant Vanilla Pudding'::VARCHAR AS iga_name,
-            'Cottee''s'::VARCHAR AS brand_name,
-            NULL::VARCHAR AS brandname,
-            'Cottee''s'::VARCHAR AS iga_brand,
-            'https://example.test/pudding.jpg'::VARCHAR AS primary_image_url,
-            NULL::VARCHAR AS primaryimageurl,
-            NULL::VARCHAR AS iga_image_default,
-            NULL::VARCHAR AS iga_image_cell,
-            NULL::VARCHAR AS iga_image_details,
-            NULL::VARCHAR AS iga_image_zoom,
-            '[{"category":"Pantry"},{"category":"Pantry"}]'::VARCHAR AS iga_categories,
-            '[{"category":"Desserts"}]'::VARCHAR AS iga_default_category,
-            NULL::VARCHAR AS iga_defaultcategory,
-            'Regular price'::VARCHAR AS price_label,
-            NULL::VARCHAR AS pricelabel,
-            NULL::VARCHAR AS iga_price_label,
-            NULL::VARCHAR AS iga_pricelabel,
-            'regular'::VARCHAR AS price_source,
-            NULL::VARCHAR AS pricesource,
-            NULL::VARCHAR AS iga_price_source,
-            NULL::VARCHAR AS iga_pricesource,
-            '1.80'::VARCHAR AS price_numeric,
-            NULL::VARCHAR AS pricenumeric,
-            NULL::VARCHAR AS iga_price_numeric,
-            NULL::VARCHAR AS iga_pricenumeric,
-            '$1.80 per 100g'::VARCHAR AS price_per_unit,
-            NULL::VARCHAR AS priceperunit,
-            NULL::VARCHAR AS iga_price_per_unit,
-            NULL::VARCHAR AS iga_priceperunit,
-            '100'::VARCHAR AS iga_unit_of_size_size,
-            NULL::VARCHAR AS iga_unitofsize_size,
-            NULL::VARCHAR AS iga_unit_of_measure_size,
-            NULL::VARCHAR AS iga_unitofmeasure_size,
-            'gram'::VARCHAR AS iga_unit_of_size_type,
-            NULL::VARCHAR AS iga_unitofsize_type,
-            NULL::VARCHAR AS iga_unit_of_measure_type,
-            NULL::VARCHAR AS iga_unitofmeasure_type,
-            '2026-05-04T16:00:00'::VARCHAR AS scraped_at,
-            NULL::VARCHAR AS scrapedat,
-            'iga_sample_20260504.csv'::VARCHAR AS source_file
-        """
+    load_raw_input(
+        connection,
+        {
+            "iga_product_id": "iga-123",
+            "sku": "sku-123",
+            "iga_sku": "iga-sku-123",
+            "barcode": "9300657174101",
+            "iga_barcode": "9300657174101",
+            "name": "Cottee's Instant Vanilla Pudding",
+            "iga_name": "Cottee's Instant Vanilla Pudding",
+            "brand_name": "Cottee's",
+            "iga_brand": "Cottee's",
+            "primary_image_url": "https://example.test/pudding.jpg",
+            "iga_image_default": "",
+            "iga_image_cell": "",
+            "iga_image_details": "",
+            "iga_image_zoom": "",
+            "iga_categories": '[{"category":"Pantry"},{"category":"Pantry"}]',
+            "iga_default_category": '[{"category":"Desserts"}]',
+            "price_label": "Regular price",
+            "iga_price_label": "",
+            "price_source": "regular",
+            "iga_price_source": "",
+            "price_numeric": "1.80",
+            "iga_price_numeric": "",
+            "price_per_unit": "$1.80 per 100g",
+            "iga_price_per_unit": "",
+            "iga_unit_of_size_size": "100",
+            "iga_unit_of_measure_size": "",
+            "iga_unit_of_size_type": "gram",
+            "iga_unit_of_measure_type": "",
+            "scraped_at": "2026-05-04T16:00:00",
+        },
     )
 
 
 def create_legacy_raw_input(connection: duckdb.DuckDBPyConnection) -> None:
-    connection.execute(
-        """
-        CREATE TABLE raw_input AS
-        SELECT
-            NULL::VARCHAR AS iga_product_id,
-            'iga-123'::VARCHAR AS iga_productid,
-            NULL::VARCHAR AS sku,
-            NULL::VARCHAR AS iga_sku,
-            '9300657174101'::VARCHAR AS barcode,
-            NULL::VARCHAR AS iga_barcode,
-            'Cottee''s Instant Vanilla Pudding'::VARCHAR AS name,
-            NULL::VARCHAR AS iga_name,
-            NULL::VARCHAR AS brand_name,
-            'Cottee''s'::VARCHAR AS brandname,
-            NULL::VARCHAR AS iga_brand,
-            NULL::VARCHAR AS primary_image_url,
-            'https://example.test/pudding.jpg'::VARCHAR AS primaryimageurl,
-            NULL::VARCHAR AS iga_image_default,
-            NULL::VARCHAR AS iga_image_cell,
-            NULL::VARCHAR AS iga_image_details,
-            NULL::VARCHAR AS iga_image_zoom,
-            '[{"category":"Pantry"},{"category":"Unknown"}]'::VARCHAR AS iga_categories,
-            NULL::VARCHAR AS iga_default_category,
-            '[{"category":"Snacks"}]'::VARCHAR AS iga_defaultcategory,
-            NULL::VARCHAR AS price_label,
-            'On special'::VARCHAR AS pricelabel,
-            NULL::VARCHAR AS iga_price_label,
-            NULL::VARCHAR AS iga_pricelabel,
-            NULL::VARCHAR AS price_source,
-            'tpr'::VARCHAR AS pricesource,
-            NULL::VARCHAR AS iga_price_source,
-            NULL::VARCHAR AS iga_pricesource,
-            NULL::VARCHAR AS price_numeric,
-            '1.80'::VARCHAR AS pricenumeric,
-            NULL::VARCHAR AS iga_price_numeric,
-            NULL::VARCHAR AS iga_pricenumeric,
-            NULL::VARCHAR AS price_per_unit,
-            '$1.80 per 100g'::VARCHAR AS priceperunit,
-            NULL::VARCHAR AS iga_price_per_unit,
-            NULL::VARCHAR AS iga_priceperunit,
-            NULL::VARCHAR AS iga_unit_of_size_size,
-            '100'::VARCHAR AS iga_unitofsize_size,
-            NULL::VARCHAR AS iga_unit_of_measure_size,
-            NULL::VARCHAR AS iga_unitofmeasure_size,
-            NULL::VARCHAR AS iga_unit_of_size_type,
-            'gram'::VARCHAR AS iga_unitofsize_type,
-            NULL::VARCHAR AS iga_unit_of_measure_type,
-            NULL::VARCHAR AS iga_unitofmeasure_type,
-            NULL::VARCHAR AS scraped_at,
-            '2026-05-04T16:00:00'::VARCHAR AS scrapedat,
-            'iga_sample_20260504.csv'::VARCHAR AS source_file
-        """
+    load_raw_input(
+        connection,
+        {
+            "IGA_ProductID": "iga-123",
+            "sku": "",
+            "iga_sku": "",
+            "barcode": "9300657174101",
+            "iga_barcode": "",
+            "name": "Cottee's Instant Vanilla Pudding",
+            "iga_name": "",
+            "BrandName": "Cottee's",
+            "iga_brand": "",
+            "PrimaryImageUrl": "https://example.test/pudding.jpg",
+            "iga_image_default": "",
+            "iga_image_cell": "",
+            "iga_image_details": "",
+            "iga_image_zoom": "",
+            "iga_categories": '[{"category":"Pantry"},{"category":"Unknown"}]',
+            "IGA_DefaultCategory": '[{"category":"Snacks"}]',
+            "PriceLabel": "On special",
+            "iga_price_label": "",
+            "PriceSource": "tpr",
+            "iga_price_source": "",
+            "PriceNumeric": "1.80",
+            "iga_price_numeric": "",
+            "PricePerUnit": "$1.80 per 100g",
+            "iga_price_per_unit": "",
+            "IGA_UnitOfSize_Size": "100",
+            "iga_unit_of_measure_size": "",
+            "IGA_UnitOfSize_Type": "gram",
+            "iga_unit_of_measure_type": "",
+            "ScrapedAt": "2026-05-04T16:00:00",
+        },
     )
 
 

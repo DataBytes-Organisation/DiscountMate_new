@@ -25,10 +25,58 @@ WORKFLOW_SQL_DIR = SQL_ROOT / "workflow_sql"
 IGA_RUNNER = "products"
 IGA_MODEL = "products_iga"
 IGA_TIMEZONE = "Australia/Melbourne"
+IGA_COMPATIBILITY_COLUMNS = (
+    "iga_product_id",
+    "iga_productid",
+    "brand_name",
+    "brandname",
+    "primary_image_url",
+    "primaryimageurl",
+    "iga_default_category",
+    "iga_defaultcategory",
+    "price_label",
+    "pricelabel",
+    "iga_price_label",
+    "iga_pricelabel",
+    "price_source",
+    "pricesource",
+    "iga_price_source",
+    "iga_pricesource",
+    "price_numeric",
+    "pricenumeric",
+    "iga_price_numeric",
+    "iga_pricenumeric",
+    "price_per_unit",
+    "priceperunit",
+    "iga_price_per_unit",
+    "iga_priceperunit",
+    "iga_unit_of_size_size",
+    "iga_unitofsize_size",
+    "iga_unit_of_measure_size",
+    "iga_unitofmeasure_size",
+    "iga_unit_of_size_type",
+    "iga_unitofsize_type",
+    "iga_unit_of_measure_type",
+    "iga_unitofmeasure_type",
+    "scraped_at",
+    "scrapedat",
+)
 
 
 def _validate_positive_offer_count(count: int) -> None:
     validate_positive_offer_count("IGA", count)
+
+
+def _ensure_compatibility_columns(conn: duckdb.DuckDBPyConnection) -> None:
+    existing_columns = {
+        str(row[1]).casefold()
+        for row in conn.execute("PRAGMA table_info('raw_input')").fetchall()
+    }
+    for column in IGA_COMPATIBILITY_COLUMNS:
+        normalized_column = column.casefold()
+        if normalized_column not in existing_columns:
+            conn.execute(f'ALTER TABLE raw_input ADD COLUMN "{column}" VARCHAR')
+            existing_columns.add(normalized_column)
 
 
 def _workflow_sql_context() -> dict[str, str]:
@@ -85,6 +133,7 @@ def _load_input_files(
         """,
         [input_paths],
     )
+    _ensure_compatibility_columns(conn)
 
     return fetch_scalar(conn, "SELECT count(*) FROM raw_input")
 
