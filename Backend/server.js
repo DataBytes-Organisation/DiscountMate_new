@@ -56,6 +56,12 @@ const dashboardRoutes = require('./src/routers/dashboard.router');
 const notificationRoutes = require('./src/routers/notification.router');
 const alertSegmentRoutes = require('./src/routers/alertSegment.router');
 const listRoutes = require('./src/routers/list.router');
+const comparisonRoutes = require('./src/comparison/routers/comparison.router');
+const { closePostgresPools } = require('./src/config/postgres');
+const {
+   initializeMongoDependency,
+   initializeReverseImageSearchDependency,
+} = require('./src/services/startupDependencies');
 
 // Import the global input sanitisation middleware added for CS-10-T1.
 const inputSanitisation = require(
@@ -568,26 +574,51 @@ async function ensureJwtSecret() {
  */
 async function startServer() {
    try {
-      // Load authentication and database secrets.
-      await ensureJwtSecret();
-      await ensureMongoUri();
-
-      /*
-       * Import the database module only after MONGO_URI has been loaded.
-       */
       const {
-         connectToMongoDB,
-      } = require('./src/config/database');
+         assertGoogleAuthConfiguration,
+      } = require('./src/services/google-auth.service');
 
-      // Connect the DiscountMate backend to MongoDB.
-      await connectToMongoDB();
+      assertGoogleAuthConfiguration();
    } catch (err) {
       console.error(
-         'Failed to initialize MongoDB:',
-         err
+         'Failed to initialize Google authentication:',
+         err.message
       );
 
       process.exit(1);
+      return;
+   }
+
+   try {
+      // Load authentication and database secrets.
+      await ensureJwtSecret();
+   } catch (err) {
+      console.error(
+         'Failed to initialize authentication secrets:',
+         err
+      );
+      process.exit(1);
+      return;
+   }
+
+   try {
+      const mongoStatus = await initializeMongoDependency({
+         initialize: async () => {
+            await ensureMongoUri();
+            // Require AFTER MONGO_URI is set.
+            const { connectToMongoDB } = require('./src/config/database');
+            const {
+               ensureGoogleIdentityIndex,
+            } = require('./src/services/google-auth.service');
+            const db = await connectToMongoDB();
+            await ensureGoogleIdentityIndex(db);
+         },
+      });
+      app.locals.mongoAvailable = mongoStatus.available;
+   } catch (err) {
+      console.error("Failed to initialize required MongoDB:", err);
+      process.exit(1);
+      return;
    }
 
    try {
@@ -599,20 +630,20 @@ async function startServer() {
          console.log(
             'Managed runtime detected. Using reverse image search sidecar via REVERSE_IMAGE_SEARCH_SERVICE_URL.'
          );
+         app.locals.reverseImageSearchAvailable = true;
       } else {
-         /*
-          * Start the local reverse image search service during local
-          * development.
-          */
-         await startReverseImageSearch();
+         const reverseImageStatus = await initializeReverseImageSearchDependency({
+            initialize: startReverseImageSearch,
+         });
+         app.locals.reverseImageSearchAvailable = reverseImageStatus.available;
       }
    } catch (err) {
       console.error(
-         'Failed to start ReverseImageSearch sidecar:',
+         'Failed to start required ReverseImageSearch sidecar:',
          err.message
       );
-
       process.exit(1);
+      return;
    }
 
    // Start accepting incoming HTTP requests.
@@ -644,6 +675,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/alert-segments', alertSegmentRoutes);
 app.use('/api/lists', listRoutes);
+app.use('/api/comparisons', comparisonRoutes);
 
 /*
  * Root route used to confirm that the API is running.
@@ -799,15 +831,13 @@ app.use((err, req, res, next) => {
 startServer();
 
 /*
- * Gracefully stop the locally managed reverse image search service when
- * the application receives a shutdown signal.
+ * Gracefully stop locally managed services and PostgreSQL pools when the
+ * application receives a shutdown signal.
  */
-function shutdown(signal) {
-   console.log(
-      `Received ${signal}. Shutting down...`
-   );
-
+async function shutdown(signal) {
+   console.log(`Received ${signal}. Shutting down...`);
    stopReverseImageSearch();
+   await closePostgresPools();
    process.exit(0);
 }
 
