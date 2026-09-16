@@ -23,8 +23,8 @@ resource "google_logging_metric" "scraper_rows" {
   bucket_options {
     exponential_buckets {
       num_finite_buckets = 64
-      growth_factor       = 2
-      scale                = 1
+      growth_factor      = 2
+      scale              = 1
     }
   }
 }
@@ -176,10 +176,10 @@ resource "google_monitoring_alert_policy" "scraper_zero_rows" {
     display_name = "${each.key} rows below floor or missing"
     condition_threshold {
       filter                  = "resource.type=\"cloud_run_job\" AND metric.type=\"logging.googleapis.com/user/scraper_rows\" AND metric.labels.scraper=\"${each.key}\""
-      comparison               = "COMPARISON_LT"
-      threshold_value          = each.value
-      duration                 = var.missing_data_retest_window
-      evaluation_missing_data  = "EVALUATION_MISSING_DATA_ACTIVE"
+      comparison              = "COMPARISON_LT"
+      threshold_value         = each.value
+      duration                = var.missing_data_retest_window
+      evaluation_missing_data = "EVALUATION_MISSING_DATA_ACTIVE"
       aggregations {
         alignment_period   = "3600s"
         per_series_aligner = "ALIGN_SUM"
@@ -208,10 +208,10 @@ resource "google_monitoring_alert_policy" "scraper_http_error_rate" {
       threshold_value = var.http_error_threshold
       duration        = var.http_error_window
       aggregations {
-        alignment_period      = var.http_error_window
-        per_series_aligner    = "ALIGN_SUM"
-        cross_series_reducer  = "REDUCE_SUM"
-        group_by_fields       = ["metric.labels.scraper"]
+        alignment_period     = var.http_error_window
+        per_series_aligner   = "ALIGN_SUM"
+        cross_series_reducer = "REDUCE_SUM"
+        group_by_fields      = ["metric.labels.scraper"]
       }
     }
   }
