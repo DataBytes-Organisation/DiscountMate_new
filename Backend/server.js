@@ -56,6 +56,8 @@ const dashboardRoutes = require('./src/routers/dashboard.router');
 const notificationRoutes = require('./src/routers/notification.router');
 const alertSegmentRoutes = require('./src/routers/alertSegment.router');
 const listRoutes = require('./src/routers/list.router');
+const priceAlertRoutes = require('./src/routers/priceAlert.router');
+const { checkPriceAlerts } = require('./src/utils/priceAlerts');
 const comparisonRoutes = require('./src/comparison/routers/comparison.router');
 const { closePostgresPools, getPostgresPools } = require('./src/config/postgres');
 const {
@@ -637,6 +639,11 @@ async function startServer() {
       return;
    }
 
+   if (process.env.NODE_ENV !== 'test' && process.env.PRICE_ALERT_CHECKS_ENABLED !== 'false') {
+      const minutes = Number(process.env.PRICE_ALERT_CHECK_MINUTES) || 15;
+      setInterval(() => checkPriceAlerts().catch((err) => console.error('Price alert check failed:', err.message)), minutes * 60 * 1000);
+   }
+
    try {
       /*
        * Managed cloud environments use the separately deployed reverse
@@ -691,6 +698,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/alert-segments', alertSegmentRoutes);
 app.use('/api/lists', listRoutes);
+app.use('/api/price-alerts', priceAlertRoutes);
 app.use('/api/comparisons', comparisonRoutes);
 
 /*
