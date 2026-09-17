@@ -6,7 +6,7 @@ USING (
         WHERE retailer_name = 'iga'
     ),
     latest_products AS (
-        SELECT
+        SELECT DISTINCT
             raw.source_product_key,
             raw.canonical_key,
             categories.id AS category_id,
@@ -46,21 +46,29 @@ USING (
         INNER JOIN {{ dim_products_table }} AS products
             ON touched_products.gtin IS NOT NULL
             AND products.gtin = touched_products.gtin
+        INNER JOIN {{ fct_product_prices_table }} AS existing_prices
+            ON existing_prices.product_id = products.id
+        CROSS JOIN retailer_iga AS existing_retailer
+        WHERE existing_prices.retailer_id = existing_retailer.retailer_id
     ),
     canonical_matches AS (
-        SELECT
+        SELECT DISTINCT
             touched_products.source_product_key,
             products.id AS product_id
         FROM touched_products
         INNER JOIN {{ dim_products_table }} AS products
             ON {{ dim_product_canonical_key_expr }} = touched_products.canonical_key
+        INNER JOIN {{ fct_product_prices_table }} AS existing_prices
+            ON existing_prices.product_id = products.id
+        CROSS JOIN retailer_iga AS existing_retailer
+        WHERE existing_prices.retailer_id = existing_retailer.retailer_id
     ),
     resolved_canonical_groups AS (
         SELECT
             touched_products.canonical_key,
             coalesce(
-                min(canonical_matches.product_id) FILTER (WHERE canonical_matches.product_id IS NOT NULL),
-                min(gtin_matches.product_id) FILTER (WHERE gtin_matches.product_id IS NOT NULL)
+                min(gtin_matches.product_id) FILTER (WHERE gtin_matches.product_id IS NOT NULL),
+                min(canonical_matches.product_id) FILTER (WHERE canonical_matches.product_id IS NOT NULL)
             ) AS product_id
         FROM touched_products
         LEFT JOIN gtin_matches
@@ -69,8 +77,8 @@ USING (
             USING (source_product_key)
         GROUP BY touched_products.canonical_key
         HAVING coalesce(
-            min(canonical_matches.product_id) FILTER (WHERE canonical_matches.product_id IS NOT NULL),
-            min(gtin_matches.product_id) FILTER (WHERE gtin_matches.product_id IS NOT NULL)
+            min(gtin_matches.product_id) FILTER (WHERE gtin_matches.product_id IS NOT NULL),
+            min(canonical_matches.product_id) FILTER (WHERE canonical_matches.product_id IS NOT NULL)
         ) IS NOT NULL
     ),
     unmatched_touched_products AS (
@@ -122,9 +130,9 @@ USING (
     canonical_products AS (
         SELECT
             coalesce(
-                canonical_matches.product_id,
-                resolved_canonical_groups.product_id,
                 gtin_matches.product_id,
+                resolved_canonical_groups.product_id,
+                canonical_matches.product_id,
                 new_product_ids.product_id
             ) AS product_id,
             touched_products.source_product_key,
@@ -279,15 +287,30 @@ USING (
     merged_source AS (
         SELECT
             canonical_products.product_id,
-            coalesce(
-                price_snapshots.latest_category_id,
-                canonical_products.category_id
-            ) AS category_id,
-            canonical_products.product_name,
-            canonical_products.brand_name,
+            CASE
+                WHEN existing_products.id IS NOT NULL THEN existing_products.category_id
+                ELSE coalesce(
+                    price_snapshots.latest_category_id,
+                    canonical_products.category_id
+                )
+            END AS category_id,
+            CASE
+                WHEN existing_products.id IS NOT NULL THEN existing_products.product_name
+                ELSE canonical_products.product_name
+            END AS product_name,
+            CASE
+                WHEN existing_products.id IS NOT NULL THEN existing_products.brand_name
+                ELSE canonical_products.brand_name
+            END AS brand_name,
             product_gtin_resolution.resolved_gtin AS gtin,
-            canonical_products.pack_quantity,
-            canonical_products.pack_uom,
+            CASE
+                WHEN existing_products.id IS NOT NULL THEN existing_products.pack_quantity
+                ELSE canonical_products.pack_quantity
+            END AS pack_quantity,
+            CASE
+                WHEN existing_products.id IS NOT NULL THEN existing_products.pack_uom
+                ELSE canonical_products.pack_uom
+            END AS pack_uom,
             price_snapshots.price_current_iga,
             price_snapshots.price_last_iga,
             price_snapshots.unit_price_current_iga,
@@ -300,6 +323,8 @@ USING (
         FROM canonical_products
         INNER JOIN product_gtin_resolution
             USING (product_id)
+        LEFT JOIN {{ dim_products_table }} AS existing_products
+            ON existing_products.id = canonical_products.product_id
         LEFT JOIN price_snapshots
             ON price_snapshots.product_id = canonical_products.product_id
     )

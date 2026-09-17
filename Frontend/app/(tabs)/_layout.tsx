@@ -4,7 +4,7 @@ import { Slot, useSegments } from "expo-router";
 import AppHeader from "../../components/layout/Header";
 import SearchBar from "../../components/layout/SearchBar";
 import { CartProvider } from "./CartContext";
-import RecipeBot from "./RecipeBot";
+import Chatbot from "./Chatbot";
 
 export default function TabsLayout() {
    const segments = useSegments();
@@ -18,6 +18,7 @@ export default function TabsLayout() {
    const isComparePage = segments.includes("compare");
    const isMyListsPage = segments.includes("my-lists");
    const isProductDashboardPage = segments.includes("product-dashboard");
+   const isChatbotPage = segments.includes("Chatbot");
 
    let activeRoute: "Home" | "Compare" | "Specials" | "Grocery Lists" | "Profile" | "Dashboard" = "Home";
    if (
@@ -50,13 +51,14 @@ export default function TabsLayout() {
                !isComparePage &&
                !isMyListsPage &&
                !isDashboardPage &&
-               !isProductDashboardPage && (
+               !isProductDashboardPage &&
+               !isChatbotPage && (
                <View className="mb-1">
                   <SearchBar />
                </View>
             )}
 
-            {isComparePage || isMyListsPage ? (
+            {isComparePage || isMyListsPage || isChatbotPage ? (
                <Slot />
             ) : (
                <ScrollView
@@ -67,10 +69,11 @@ export default function TabsLayout() {
                </ScrollView>
             )}
 
-            {/* Floating Recipe RAG chatbot — sits above the scroll
-                container so it stays pinned to the viewport corner
-                on every page in the (tabs) group. */}
-            <RecipeBot />
+            {/* Floating MateBot widget — product search and price
+                comparison. Sits outside the scroll container so it stays
+                pinned to the viewport corner on every page in the (tabs)
+                group. Skipped on /Chatbot, which renders it as the page. */}
+            {!isChatbotPage && <Chatbot />}
          </View>
       </CartProvider>
    );

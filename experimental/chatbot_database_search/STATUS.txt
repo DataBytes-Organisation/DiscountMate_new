@@ -1,0 +1,29 @@
+Status: Experimental / Not deployed
+
+Purpose:
+Initial prototype for the DL-06 chatbot with database search. Includes a dummy catalog loader (DL-06-T4), rule-based NLP extraction (DL-06-T7, DL-06-T8), advanced product normalisation and fuzzy matching (DL-06-T10), an end-to-end processing pipeline (DL-06-T11, DL-06-T17), and a Model Context Protocol (MCP) server wrapper (DL-06-T9) to expose the pipeline to AI agents.
+
+Current limitations:
+- Uses a static dummy JSON catalog instead of the live PostgreSQL database.
+- NLP extraction is currently rule-based (Regex/Keywords) rather than utilizing an LLM.
+- Fuzzy matching relies on token overlap and Python's native difflib rather than dense vector/semantic embeddings.
+- MCP server currently operates via local stdio, requiring standard client configuration for testing.
+
+Inputs / assumptions:
+- Expects local execution within the experimental directory.
+- Assumes queries are in English and follow standard grocery search phrasing.
+- Python environment requires the `mcp` library for server execution.
+
+How to run (optional):
+- Run `python catalog_loader_prototype.py` to test the dummy database initialization.
+- Run `python fuzzy_matcher_prototype.py` to test string normalisation edge cases.
+- Run `python chatbot_pipeline_prototype.py` to execute end-to-end synthetic query tests and generate JSON API payloads.
+- Run `python mcp_server_prototype.py` to initialize the local MCP tool server for LLM agent connection.
+
+Next steps:
+- Connect MCP tools to DiscountMate's PostgreSQL database once the Data Engineering schema is finalized (DL-06-T14).
+- Expand the natural-language query dataset to test future ML classification models (DL-06-T5).
+- Implement fallback and ambiguity handling for low-confidence search results (DL-06-T15).
+
+Owner / contributors:
+- Swapneel Managaonkar
