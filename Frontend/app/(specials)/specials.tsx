@@ -12,11 +12,9 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import FooterSection from "../../components/home/FooterSection";
 import ProductGrid from "../../components/home/ProductGrid";
 
-
-
 const SPECIALS_CATEGORY_ID = "696f64f76b7787e691e7901f";
 
-type Retailer = "Coles" | "Woolworths" | "Aldi";
+type Retailer = "Coles" | "Woolworths" | "IGA";
 type Category =
   | "Pantry"
   | "Dairy"
@@ -44,10 +42,10 @@ const RETAILER_META: Record<
     light: "#dcfce7",
     icon: "alpha-w-circle",
   },
-  Aldi: {
+  IGA: {
     color: "#3b82f6",
     light: "#dbeafe",
-    icon: "alpha-a-circle",
+    icon: "alpha-i-circle",
   },
 };
 
@@ -65,6 +63,14 @@ const CATEGORY_COUNTS = [
   { name: "Fruit & Veg", count: 79 },
 ];
 
+const DISCOUNT_RANGES = [
+  "50% or more",
+  "40–49%",
+  "30–39%",
+  "20–29%",
+  "10–19%",
+];
+
 export default function SpecialsScreen() {
   const { width } = useWindowDimensions();
   const isDesktop = width >= 1200;
@@ -72,9 +78,10 @@ export default function SpecialsScreen() {
   const [selectedRetailers, setSelectedRetailers] = useState<Retailer[]>([
     "Coles",
     "Woolworths",
-    "Aldi",
+    "IGA",
   ]);
   const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
+  const [selectedDiscountRanges, setSelectedDiscountRanges] = useState<string[]>([]);
 
   const toggleRetailer = (retailer: Retailer) => {
     setSelectedRetailers((prev) =>
@@ -92,18 +99,32 @@ export default function SpecialsScreen() {
     );
   };
 
+  const toggleDiscountRange = (range: string) => {
+    setSelectedDiscountRanges((prev) =>
+      prev.includes(range)
+        ? prev.filter((item) => item !== range)
+        : [...prev, range]
+    );
+  };
+
+  const resetFilters = () => {
+    setSelectedRetailers(["Coles", "Woolworths", "IGA"]);
+    setSelectedCategories([]);
+    setSelectedDiscountRanges([]);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
         <View style={styles.container}>
           <View
-                style={[
-                  styles.mainLayout,
-                  isDesktop
-                    ? styles.mainLayoutDesktop
-                    : styles.mainLayoutMobile,
-                ]}
-              >
+            style={[
+              styles.mainLayout,
+              isDesktop
+                ? styles.mainLayoutDesktop
+                : styles.mainLayoutMobile,
+            ]}
+          >
             <View
               style={[
                 styles.sidebar,
@@ -113,9 +134,10 @@ export default function SpecialsScreen() {
               ]}
             >
               <Text style={styles.sidebarHeading}>Filter by Retailer</Text>
-              {(["Coles", "Woolworths", "Aldi"] as Retailer[]).map((retailer) => {
+              {(["Coles", "Woolworths", "IGA"] as Retailer[]).map((retailer) => {
                 const active = selectedRetailers.includes(retailer);
                 const meta = RETAILER_META[retailer];
+
                 return (
                   <Pressable
                     key={retailer}
@@ -123,15 +145,24 @@ export default function SpecialsScreen() {
                     onPress={() => toggleRetailer(retailer)}
                   >
                     <View style={[styles.checkbox, active && styles.checkboxActive]}>
-                      {active ? <Ionicons name="checkmark" size={12} color="#fff" /> : null}
+                      {active ? (
+                        <Ionicons name="checkmark" size={12} color="#fff" />
+                      ) : null}
                     </View>
-                    <View style={[styles.retailerDot, { backgroundColor: meta.light }]}>
+
+                    <View
+                      style={[
+                        styles.retailerDot,
+                        { backgroundColor: meta.light },
+                      ]}
+                    >
                       <MaterialCommunityIcons
                         name={meta.icon as any}
                         size={12}
                         color={meta.color}
                       />
                     </View>
+
                     <Text style={styles.checkboxText}>{retailer}</Text>
                   </Pressable>
                 );
@@ -142,31 +173,58 @@ export default function SpecialsScreen() {
               </Text>
 
               {CATEGORY_COUNTS.map((category) => {
-                const active = selectedCategories.includes(category.name as Category);
+                const active = selectedCategories.includes(
+                  category.name as Category
+                );
+
                 return (
                   <Pressable
                     key={category.name}
                     style={styles.checkboxRow}
-                    onPress={() => toggleCategory(category.name as Category)}
+                    onPress={() =>
+                      toggleCategory(category.name as Category)
+                    }
                   >
                     <View style={[styles.checkbox, active && styles.checkboxActive]}>
-                      {active ? <Ionicons name="checkmark" size={12} color="#fff" /> : null}
+                      {active ? (
+                        <Ionicons name="checkmark" size={12} color="#fff" />
+                      ) : null}
                     </View>
+
                     <Text style={styles.checkboxText}>{category.name}</Text>
                     <Text style={styles.countText}>({category.count})</Text>
                   </Pressable>
                 );
               })}
 
-              <Text style={[styles.sidebarHeading, { marginTop: 20 }]}>Discount Range</Text>
-              {["50% or more", "40–49%", "30–39%", "20–29%", "10–19%"].map((range) => (
-                <Pressable key={range} style={styles.checkboxRow}>
-                  <View style={styles.checkbox} />
-                  <Text style={styles.checkboxText}>{range}</Text>
-                </Pressable>
-              ))}
+              <Text style={[styles.sidebarHeading, { marginTop: 20 }]}>
+                Discount Range
+              </Text>
 
-              <Pressable style={styles.resetButton}>
+              {DISCOUNT_RANGES.map((range) => {
+                const active = selectedDiscountRanges.includes(range);
+
+                return (
+                  <Pressable
+                    key={range}
+                    style={styles.checkboxRow}
+                    onPress={() => toggleDiscountRange(range)}
+                  >
+                    <View style={[styles.checkbox, active && styles.checkboxActive]}>
+                      {active ? (
+                        <Ionicons name="checkmark" size={12} color="#fff" />
+                      ) : null}
+                    </View>
+
+                    <Text style={styles.checkboxText}>{range}</Text>
+                  </Pressable>
+                );
+              })}
+
+              <Pressable
+                style={styles.resetButton}
+                onPress={resetFilters}
+              >
                 <Text style={styles.resetText}>Reset All Filters</Text>
               </Pressable>
             </View>
@@ -174,6 +232,9 @@ export default function SpecialsScreen() {
             <View style={styles.mainContent}>
               <ProductGrid
                 activeCategory={SPECIALS_CATEGORY_ID}
+                selectedRetailers={selectedRetailers}
+                selectedCategories={selectedCategories}
+                selectedDiscountRanges={selectedDiscountRanges}
                 useScrollView={false}
                 containerClassName="flex-1 px-0 pt-0 pb-10"
               />
@@ -209,28 +270,28 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   mainLayout: {
-  gap: 20,
-},
-mainLayoutDesktop: {
-  flexDirection: "row",
-},
-mainLayoutMobile: {
-  flexDirection: "column",
-},
-sidebar: {
-  backgroundColor: "#fff",
-  borderRadius: 18,
-  borderWidth: 1,
-  borderColor: "#e5e7eb",
-  padding: 16,
-  alignSelf: "flex-start",
-},
-sidebarDesktop: {
-  width: 260,
-},
-sidebarMobile: {
-  width: "100%",
-},
+    gap: 20,
+  },
+  mainLayoutDesktop: {
+    flexDirection: "row",
+  },
+  mainLayoutMobile: {
+    flexDirection: "column",
+  },
+  sidebar: {
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    padding: 16,
+    alignSelf: "flex-start",
+  },
+  sidebarDesktop: {
+    width: 260,
+  },
+  sidebarMobile: {
+    width: "100%",
+  },
   sidebarHeading: {
     fontSize: 13,
     fontWeight: "700",

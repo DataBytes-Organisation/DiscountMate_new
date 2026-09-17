@@ -18,6 +18,8 @@ export type ApiProduct = {
    description?: string | null;
    link_image?: string | null;
    current_price?: number | null;
+   best_price?: number | null;
+   is_on_special?: boolean | null;
    unit_price?: string | null;
    store_chain?: string | null;
    /** Latest Coles shelf price from product_pricings (coles_generic) */
@@ -160,6 +162,30 @@ async function fetchProductsPage(
    return parseProductsPayload(data, limit);
 }
 
+async function fetchAllProducts(
+   category: string | undefined,
+   search: string | undefined,
+   signal?: AbortSignal
+): Promise<ApiProduct[]> {
+   const limit = 50;
+   const firstPage = await fetchProductsPage(1, limit, category, search, signal);
+
+   if (firstPage.totalPages <= 1) {
+      return firstPage.items;
+   }
+
+   const remainingPages = await Promise.all(
+      Array.from({ length: firstPage.totalPages - 1 }, (_, index) =>
+         fetchProductsPage(index + 2, limit, category, search, signal)
+      )
+   );
+
+   return [
+      ...firstPage.items,
+      ...remainingPages.flatMap((page) => page.items),
+   ];
+}
+
 export function mapApiProductToCard(product: ApiProduct): Product {
    // Always use _id for consistency in URLs since it's guaranteed to exist for all MongoDB documents
    // The backend's getProduct endpoint can handle both _id (MongoDB ObjectId) and product_code
@@ -259,6 +285,245 @@ export function mapApiProductToCard(product: ApiProduct): Product {
    };
 }
 
+
+function normaliseFilterValue(value: string | null | undefined): string {
+   return (value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+}
+
+function getDiscountPercentage(product: ApiProduct): number | null {
+   // Prefer the real live-special price pair when the API provides it.
+   const originalPrice = pickPositivePrice(product.current_price);
+   const specialPrice = pickPositivePrice(product.best_price);
+
+   if (
+      originalPrice != null &&
+      specialPrice != null &&
+      specialPrice < originalPrice
+   ) {
+      return ((originalPrice - specialPrice) / originalPrice) * 100;
+   }
+
+   // Fallback for ProductGrid data: calculate the saving between the
+   // highest and lowest available retailer shelf prices.
+   const { colesPriceNum, woolworthsPriceNum, igaPriceNum } =
+      resolveColesWoolworthsPrices(product);
+
+   const retailerPrices = [
+      colesPriceNum,
+      woolworthsPriceNum,
+      igaPriceNum,
+   ].filter((price): price is number => price != null && price > 0);
+
+   if (retailerPrices.length < 2) {
+      return null;
+   }
+
+   const highestPrice = Math.max(...retailerPrices);
+   const lowestPrice = Math.min(...retailerPrices);
+
+   if (highestPrice <= lowestPrice) {
+      return 0;
+   }
+
+   return ((highestPrice - lowestPrice) / highestPrice) * 100;
+}
+
+function matchesDiscountRange(
+   percentage: number | null,
+   selectedRanges: string[]
+): boolean {
+   if (selectedRanges.length === 0) return true;
+   if (percentage == null) return false;
+
+   return selectedRanges.some((range) => {
+      if (range === "50% or more") return percentage >= 50;
+      if (range === "40–49%") return percentage >= 40 && percentage < 50;
+      if (range === "30–39%") return percentage >= 30 && percentage < 40;
+      if (range === "20–29%") return percentage >= 20 && percentage < 30;
+      if (range === "10–19%") return percentage >= 10 && percentage < 20;
+      return false;
+   });
+}
+
+function matchesCategoryFilter(
+   product: ApiProduct,
+   selectedCategories: string[]
+): boolean {
+   if (selectedCategories.length === 0) {
+      return true;
+   }
+
+   const category = normaliseFilterValue(product.category_name);
+   const searchableText = normaliseFilterValue(
+      [
+         product.category_name,
+         product.product_name,
+         product.description,
+         product.brand,
+      ]
+         .filter(Boolean)
+         .join(" ")
+   );
+
+   const CATEGORY_ALIASES: Record<string, string[]> = {
+      pantry: [
+         "pantry",
+         "cereal",
+         "pasta",
+         "rice",
+         "sauce",
+         "oil",
+         "spread",
+         "canned",
+         "condiment",
+      ],
+      dairy: [
+         "dairy",
+         "milk",
+         "cheese",
+         "yoghurt",
+         "yogurt",
+         "butter",
+         "cream",
+         "egg",
+      ],
+      drinks: [
+         "drink",
+         "drinks",
+         "beverage",
+         "water",
+         "juice",
+         "coffee",
+         "tea",
+         "cola",
+         "soft drink",
+      ],
+      frozen: [
+         "frozen",
+         "freezer",
+         "ice cream",
+      ],
+      household: [
+         "household",
+         "laundry",
+         "detergent",
+         "cleaner",
+         "cleaning",
+         "dishwashing",
+         "paper towel",
+         "toilet",
+      ],
+      snacks: [
+         "snack",
+         "chips",
+         "chocolate",
+         "biscuit",
+         "cracker",
+         "nuts",
+         "confectionery",
+      ],
+      health: [
+         "health",
+         "vitamin",
+         "supplement",
+         "pharmacy",
+      ],
+      "pet care": [
+         "pet",
+         "cat",
+         "dog",
+         "kitten",
+         "puppy",
+         "whiskas",
+         "pedigree",
+      ],
+      "personal care": [
+         "personal care",
+         "shampoo",
+         "conditioner",
+         "soap",
+         "body wash",
+         "deodorant",
+         "toothpaste",
+         "toothbrush",
+         "skincare",
+      ],
+      bakery: [
+         "bakery",
+         "bread",
+         "roll",
+         "bun",
+         "cake",
+         "pastry",
+      ],
+      "fruit and veg": [
+         "fruit",
+         "veg",
+         "vegetable",
+         "salad",
+         "lettuce",
+         "tomato",
+         "potato",
+         "onion",
+         "carrot",
+         "apple",
+         "banana",
+         "berry",
+         "berries",
+      ],
+   };
+
+   return selectedCategories.some((selectedCategory) => {
+      const selected = normaliseFilterValue(selectedCategory);
+
+      // First use the real category value when it already matches.
+      if (
+         category === selected ||
+         category.includes(selected) ||
+         selected.includes(category)
+      ) {
+         return true;
+      }
+
+      // Some product records use more specific category labels.
+      // Use a small alias set so the UI categories still match them.
+      const aliases = CATEGORY_ALIASES[selected] ?? [selected];
+
+      return aliases.some((alias) =>
+         searchableText.includes(normaliseFilterValue(alias))
+      );
+   });
+}
+
+function matchesRetailer(
+   product: ApiProduct,
+   selectedRetailers: Array<"Coles" | "Woolworths" | "IGA">
+): boolean {
+   if (selectedRetailers.length === 0) return false;
+
+   const storeChain = normaliseFilterValue(product.store_chain);
+   const { colesPriceNum, woolworthsPriceNum, igaPriceNum } =
+      resolveColesWoolworthsPrices(product);
+
+   return selectedRetailers.some((retailer) => {
+      if (retailer === "Coles") {
+         return colesPriceNum != null || storeChain.includes("coles");
+      }
+
+      if (retailer === "Woolworths") {
+         return woolworthsPriceNum != null || storeChain.includes("woolworths");
+      }
+
+      return igaPriceNum != null || storeChain.includes("iga");
+   });
+}
+
 type ProductGridProps = {
    activeCategory?: string;
    searchQuery?: string;
@@ -266,6 +531,9 @@ type ProductGridProps = {
    requireSearch?: boolean;
    useScrollView?: boolean;
    containerClassName?: string;
+   selectedRetailers?: Array<"Coles" | "Woolworths" | "IGA">;
+   selectedCategories?: string[];
+   selectedDiscountRanges?: string[];
 };
 
 const ProductGrid: React.FC<ProductGridProps> = ({
@@ -275,6 +543,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({
    requireSearch = false,
    useScrollView = true,
    containerClassName = "flex-1 px-4 md:px-8 pt-4 pb-10",
+   selectedRetailers,
+   selectedCategories = [],
+   selectedDiscountRanges = [],
 }) => {
    const [apiProducts, setApiProducts] = useState<ApiProduct[]>([]);
    const [loading, setLoading] = useState<boolean>(true);
@@ -283,9 +554,63 @@ const ProductGrid: React.FC<ProductGridProps> = ({
    const [currentPage, setCurrentPage] = useState<number>(1);
    const [totalProducts, setTotalProducts] = useState<number>(0);
    const [totalPagesFromApi, setTotalPagesFromApi] = useState<number | null>(null);
+   const [filterPool, setFilterPool] = useState<ApiProduct[]>([]);
+   const [filterPoolReady, setFilterPoolReady] = useState(false);
 
    const pageSize = 9; // cards per page
    const pageJump = 10; // outer pagination buttons skip this many pages
+   const retailerFilterKey = selectedRetailers?.join("|") ?? "";
+   const categoryFilterKey = selectedCategories.join("|");
+   const discountFilterKey = selectedDiscountRanges.join("|");
+
+   const retailerFilterActive =
+      selectedRetailers != null && selectedRetailers.length < 3;
+
+   const t3FilterActive =
+      retailerFilterActive ||
+      selectedCategories.length > 0 ||
+      selectedDiscountRanges.length > 0;
+
+   useEffect(() => {
+      if (selectedRetailers == null) {
+         setFilterPool([]);
+         setFilterPoolReady(false);
+         return;
+      }
+
+      const ac = new AbortController();
+
+      const loadFilterPool = async () => {
+         try {
+            setFilterPoolReady(false);
+
+            const items = await fetchAllProducts(
+               activeCategory,
+               searchQuery,
+               ac.signal
+            );
+
+            if (!ac.signal.aborted) {
+               setFilterPool(items);
+               setFilterPoolReady(true);
+            }
+         } catch (err: unknown) {
+            if (err instanceof Error && err.name === "AbortError") {
+               return;
+            }
+
+            console.error("Error loading Specials filter data:", err);
+
+            if (!ac.signal.aborted) {
+               setFilterPool([]);
+               setFilterPoolReady(true);
+            }
+         }
+      };
+
+      void loadFilterPool();
+      return () => ac.abort();
+   }, [selectedRetailers != null, activeCategory, searchQuery]);
 
    useEffect(() => {
       const hasSearch = typeof searchQuery === "string" && searchQuery.trim().length > 0;
@@ -347,7 +672,13 @@ const ProductGrid: React.FC<ProductGridProps> = ({
    useEffect(() => {
       // Reset to first page when the category or search query changes
       setCurrentPage(1);
-   }, [activeCategory, searchQuery]);
+   }, [
+      activeCategory,
+      searchQuery,
+      retailerFilterKey,
+      categoryFilterKey,
+      discountFilterKey,
+   ]);
 
    useEffect(() => {
       if (totalPagesFromApi == null || totalPagesFromApi < 1) return;
@@ -359,8 +690,32 @@ const ProductGrid: React.FC<ProductGridProps> = ({
       !!priceRangeFilter &&
       (priceRangeFilter.min != null || priceRangeFilter.max != null);
 
-   const filteredApiProducts: ApiProduct[] = apiProducts.filter((product) => {
+   const sourceProducts =
+      t3FilterActive && filterPoolReady ? filterPool : apiProducts;
+
+   const filteredApiProducts: ApiProduct[] = sourceProducts.filter((product) => {
       if (!apiProductHasShelfPrice(product)) {
+         return false;
+      }
+
+      if (
+         retailerFilterActive &&
+         selectedRetailers &&
+         !matchesRetailer(product, selectedRetailers)
+      ) {
+         return false;
+      }
+
+      if (!matchesCategoryFilter(product, selectedCategories)) {
+         return false;
+      }
+
+      if (
+         !matchesDiscountRange(
+            getDiscountPercentage(product),
+            selectedDiscountRanges
+         )
+      ) {
          return false;
       }
 
@@ -387,23 +742,27 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
    const apiMappedProducts: Product[] = filteredApiProducts.map(mapApiProductToCard);
 
-   // When backend provides pagination totals, rely on those; otherwise fall back to the current payload length.
    const productsToShow = apiMappedProducts;
+   const usingFilteredPool = t3FilterActive && filterPoolReady;
 
-   // For the "Showing X products" label, prefer the total count returned  by the backend so it reflects all matching products, not just the current page. When a client-side price range filter is active we can only count the products we've actually filtered on the current page, so fall back to that in that case.
-   const overallProductCount = hasPriceRangeFilter
-      ? productsToShow.length
-      : (totalProducts || productsToShow.length);
+   const overallProductCount =
+      usingFilteredPool || hasPriceRangeFilter
+         ? productsToShow.length
+         : (totalProducts || productsToShow.length);
 
    const totalPages = Math.max(
       1,
-      totalPagesFromApi != null && totalPagesFromApi > 0
-         ? totalPagesFromApi
-         : Math.max(1, Math.ceil((totalProducts || 0) / pageSize))
+      usingFilteredPool
+         ? Math.ceil(productsToShow.length / pageSize)
+         : totalPagesFromApi != null && totalPagesFromApi > 0
+            ? totalPagesFromApi
+            : Math.max(1, Math.ceil((totalProducts || 0) / pageSize))
    );
 
    const safePage = Math.min(Math.max(1, currentPage), totalPages);
-   const pagedProducts = productsToShow;
+   const pagedProducts = usingFilteredPool
+      ? productsToShow.slice((safePage - 1) * pageSize, safePage * pageSize)
+      : productsToShow;
 
    const canGoPrev = safePage > 1;
    const canGoNext = safePage < totalPages;
