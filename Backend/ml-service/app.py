@@ -14,7 +14,7 @@ from google.cloud.secretmanager import SecretManagerServiceClient
 
 # Import ML model functions
 from ml_models.weekly_specials import get_weekly_specials_ml
-from ml_models.recommendations import get_recommendations_ml
+from ml_models.recommendations import get_recommendations_ml, get_model_recommendations_ml
 from ml_models.price_prediction import get_price_prediction_ml
 from ocr.extractor import process_receipt_internal, build_user_response
 
@@ -196,14 +196,21 @@ def get_recommendations():
     except (TypeError, ValueError):
         return error_payload('Invalid request', 'limit must be an integer', 400)
 
+    user_id = data.get('user_id')
+
     try:
-        recommendations = get_recommendations_ml(limit=limit)
+        if user_id:
+            recommendations = get_model_recommendations_ml(user_id, limit=limit)
+            model_type = 'purchase_probability_model'
+        else:
+            recommendations = get_recommendations_ml(limit=limit)
+            model_type = 'discount_ranking'
 
         return success_payload(
             recommendations=recommendations,
             count=len(recommendations),
             model_info={
-                'type': 'discount_ranking',
+                'type': model_type,
                 'status': 'live'
             }
         )

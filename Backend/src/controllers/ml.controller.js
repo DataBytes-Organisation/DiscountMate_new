@@ -90,6 +90,7 @@ const getRecommendedProductDetails = async (recommendations) => {
     }
     details.was_price = rec.was_price;
     details.discount_percent = rec.discount_percent;
+    details.purchase_probability = rec.purchase_probability;
 
     results.push(details);
   }
