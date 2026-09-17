@@ -22,6 +22,23 @@ Runs on `http://localhost:3000`. Swagger docs at `http://localhost:3000/api-docs
 
 **Never commit a real `.env` file or paste real secrets into a PR, issue, or documentation.**
 
+## ML Service Dependency
+
+The backend proxies several features (recommendations, price prediction, OCR, chatbot) to a separate Flask sidecar at `Backend/ml-service`. This has its own Python dependency set, isolated from the Node.js backend.
+
+From `Backend/ml-service`:
+
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py
+
+Runs on `http://localhost:5001` by default.
+
+**Python version requirement:** use Python 3.10 or 3.11 specifically. Python 3.12+ breaks several pinned dependencies (pandas, google-auth) due to missing prebuilt wheels for that version.
+
+If your only work is on Node.js/Express routes and you're not touching ML-backed features, you don't need to run this service locally — but the backend will log connection warnings for ML-proxy routes if it's not running.
+
 ## Database and migration commands
 
 The backend is mid-migration from MongoDB to PostgreSQL. See `Backend/src/migration/README.md` for the legacy, intermediate, and finalised schema stages.
