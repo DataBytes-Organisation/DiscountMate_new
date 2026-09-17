@@ -1,5 +1,6 @@
 import React from "react";
 import renderer, { act } from "react-test-renderer";
+import { ScrollView } from "react-native";
 import CompareScreen from "../../../app/(tabs)/compare";
 
 const mockIsComparisonV2Enabled = jest.fn(() => true);
@@ -54,5 +55,26 @@ describe("comparison page", () => {
       expect(text).toContain("View Power BI Report");
       expect(text.match(/Shared footer/g)).toHaveLength(1);
       expect(text).not.toContain('"Share"');
+   });
+
+   it("keeps the shared footer at the viewport bottom for short content in both modes", () => {
+      let tree: renderer.ReactTestRenderer;
+      act(() => {
+         tree = renderer.create(<CompareScreen />);
+      });
+
+      const scrollView = tree!.root.findByType(ScrollView);
+      expect(scrollView.props.contentContainerStyle).toEqual(
+         expect.objectContaining({ flexGrow: 1 })
+      );
+      expect(tree!.root.findByProps({ testID: "comparison-page-content" }).props.style).toEqual(
+         expect.objectContaining({ flexGrow: 1 })
+      );
+
+      const groceryTab = tree!.root.findByProps({ accessibilityLabel: "Grocery List" });
+      act(() => groceryTab.props.onPress());
+      expect(tree!.root.findByProps({ testID: "comparison-page-content" }).props.style).toEqual(
+         expect.objectContaining({ flexGrow: 1 })
+      );
    });
 });
