@@ -4,24 +4,30 @@ import importlib.util
 import sys
 import unittest
 from pathlib import Path
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from unittest.mock import Mock
 
 
 class ComparisonRuntimeAccessMigrationTest(unittest.TestCase):
-    def test_latest_migration_grants_the_runtime_reader_every_required_relation(self) -> None:
+    def test_latest_migration_grants_the_runtime_reader_every_required_relation(
+        self,
+    ) -> None:
         execute = Mock()
         previous_alembic = sys.modules.get("alembic")
-        sys.modules["alembic"] = SimpleNamespace(op=SimpleNamespace(execute=execute))
+        alembic_module = ModuleType("alembic")
+        alembic_module.__dict__["op"] = SimpleNamespace(execute=execute)
+        sys.modules["alembic"] = alembic_module
         try:
             path = (
                 Path(__file__).parents[1]
                 / "migrations/versions/20260828_0011_comparison_runtime_access.py"
             )
-            spec = importlib.util.spec_from_file_location("comparison_runtime_access", path)
-            self.assertIsNotNone(spec)
+            spec = importlib.util.spec_from_file_location(
+                "comparison_runtime_access", path
+            )
+            if spec is None or spec.loader is None:
+                self.fail(f"Could not load migration module from {path}")
             module = importlib.util.module_from_spec(spec)
-            self.assertIsNotNone(spec.loader)
             spec.loader.exec_module(module)
 
             self.assertEqual(module.down_revision, "20260827_0010")
