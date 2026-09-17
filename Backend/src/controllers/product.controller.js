@@ -503,12 +503,4 @@ const getProduct = async (req, res) => {
    }
 };
 
-module.exports = {
-   getProducts,
-   getProduct,
-   normaliseColesProduct,
-   fetchLatestPricingForStoreChains,
-   COLES_STORE_CHAINS,
-   WOOLWORTHS_STORE_CHAINS,
-   IGA_STORE_CHAINS,
-};
+module.exports = { getProducts, getProduct };
