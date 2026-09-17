@@ -94,6 +94,14 @@ jobs:
       - name: Smoke test ML service import
         run: python -c "from app import app; print(sorted(str(rule) for rule in app.url_map.iter_rules()))"
 
+      - name: Build ML service image
+        run: docker build -t discountmate-ml-service-ci:${{ github.sha }} .
+
+      - name: Smoke test built ML image import
+        run: |
+          docker run --rm discountmate-ml-service-ci:${{ github.sha }} \
+            python -c "from app import app; print('ML image import OK')"
+
   comparison-data-checks:
     name: Comparison data migration checks
     runs-on: ubuntu-latest
