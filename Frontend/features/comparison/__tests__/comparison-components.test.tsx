@@ -19,6 +19,8 @@ const mockProductController = {
    availableRetailers: [],
    loading: false,
    error: null,
+   searchLoading: false,
+   searchError: null as string | null,
    selectProduct: jest.fn(),
    changeRange: jest.fn(),
    toggleSimilar: jest.fn(),
@@ -26,6 +28,7 @@ const mockProductController = {
    clearRetailers: jest.fn(),
    clear: jest.fn(),
    retry: jest.fn(),
+   retrySearch: jest.fn(),
 };
 const mockToastShow = jest.fn();
 const mockShoppingLists = {
@@ -49,6 +52,38 @@ jest.mock("../../../components/layout/ProductImageScanner", () => ({
 jest.mock("react-native-vector-icons/FontAwesome6", () => "Icon");
 
 describe("comparison components", () => {
+   beforeEach(() => {
+      Object.assign(mockProductController, {
+         query: "",
+         results: [],
+         selectedProduct: null,
+         comparison: null,
+         loading: false,
+         error: null,
+         searchLoading: false,
+         searchError: null,
+      });
+      mockProductController.retrySearch.mockClear();
+   });
+
+   it("shows a failed product search and lets the user retry it", () => {
+      Object.assign(mockProductController, {
+         query: "apple sauce",
+         searchError: "Product search is temporarily unavailable.",
+      });
+
+      let tree: renderer.ReactTestRenderer;
+      act(() => { tree = renderer.create(<SingleProductComparison />); });
+
+      const text = JSON.stringify(tree!.toJSON());
+      expect(text).toContain("Product search is temporarily unavailable.");
+
+      act(() => {
+         tree!.root.findByProps({ accessibilityLabel: "Retry product search" }).props.onPress();
+      });
+      expect(mockProductController.retrySearch).toHaveBeenCalledTimes(1);
+   });
+
    it("renders a useful single-product discovery state with the shared scanner", () => {
       let tree: renderer.ReactTestRenderer;
       act(() => {
