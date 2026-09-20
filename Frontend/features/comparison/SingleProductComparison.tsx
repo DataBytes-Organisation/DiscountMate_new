@@ -56,6 +56,25 @@ export function SingleProductComparison() {
                </View>
             </View>
             {scanNotice ? <Text className="mt-2 text-xs text-emerald-700">{scanNotice}</Text> : null}
+            {controller.searchLoading ? (
+               <Text className="mt-2 text-xs text-gray-500">Searching comparison products…</Text>
+            ) : null}
+            {controller.searchError ? (
+               <View
+                  accessibilityLiveRegion="polite"
+                  className="mt-2 flex-row items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2"
+               >
+                  <Text className="flex-1 text-xs text-red-700">{controller.searchError}</Text>
+                  <Pressable
+                     accessibilityRole="button"
+                     accessibilityLabel="Retry product search"
+                     onPress={controller.retrySearch}
+                     className="rounded-md border border-red-300 bg-white px-3 py-1.5"
+                  >
+                     <Text className="text-xs font-semibold text-red-700">Retry</Text>
+                  </Pressable>
+               </View>
+            ) : null}
             {controller.results.length ? (
                <View accessibilityLabel="Product search results" accessibilityRole="list" className="mt-2">
                   <Card className="overflow-hidden">

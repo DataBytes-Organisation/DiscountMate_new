@@ -59,7 +59,12 @@ const listRoutes = require('./src/routers/list.router');
 const priceAlertRoutes = require('./src/routers/priceAlert.router');
 const { checkPriceAlerts } = require('./src/utils/priceAlerts');
 const comparisonRoutes = require('./src/comparison/routers/comparison.router');
-const { closePostgresPools } = require('./src/config/postgres');
+const { closePostgresPools, getPostgresPools } = require('./src/config/postgres');
+const {
+   assertComparisonConfiguration,
+   assertComparisonDatabaseConnections,
+   comparisonRequiresConfiguredDatabases,
+} = require('./src/comparison/config/comparison.config');
 const {
    initializeMongoDependency,
    initializeReverseImageSearchDependency,
@@ -575,6 +580,17 @@ async function ensureJwtSecret() {
  * Connect to required services before starting the HTTP server.
  */
 async function startServer() {
+   try {
+      assertComparisonConfiguration();
+      if (comparisonRequiresConfiguredDatabases()) {
+         await assertComparisonDatabaseConnections(getPostgresPools());
+      }
+   } catch (err) {
+      console.error('Failed to initialize Comparison V2:', err.message);
+      process.exit(1);
+      return;
+   }
+
    try {
       const {
          assertGoogleAuthConfiguration,

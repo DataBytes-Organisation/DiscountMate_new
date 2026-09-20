@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const verifyToken = require('../../middleware/auth.middleware');
 const controller = require('../controllers/comparison.controller');
+const { isComparisonV2Enabled } = require('../config/comparison.config');
 
 function createComparisonRouter(options = {}) {
   const handlers = options.controller || controller;
@@ -10,8 +11,12 @@ function createComparisonRouter(options = {}) {
   const router = express.Router();
 
   router.use((req, res, next) => {
-    const enabled = process.env.COMPARISON_V2_ENABLED === 'true' || process.env.NODE_ENV !== 'production';
-    if (!enabled) return res.status(404).json({ message: 'Comparison V2 is disabled' });
+    if (!isComparisonV2Enabled()) {
+      return res.status(404).json({
+        code: 'comparison_disabled',
+        message: 'Comparison V2 is disabled',
+      });
+    }
 
     return next();
   });
