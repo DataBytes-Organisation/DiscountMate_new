@@ -56,8 +56,15 @@ const dashboardRoutes = require('./src/routers/dashboard.router');
 const notificationRoutes = require('./src/routers/notification.router');
 const alertSegmentRoutes = require('./src/routers/alertSegment.router');
 const listRoutes = require('./src/routers/list.router');
+const priceAlertRoutes = require('./src/routers/priceAlert.router');
+const { checkPriceAlerts } = require('./src/utils/priceAlerts');
 const comparisonRoutes = require('./src/comparison/routers/comparison.router');
-const { closePostgresPools } = require('./src/config/postgres');
+const { closePostgresPools, getPostgresPools } = require('./src/config/postgres');
+const {
+   assertComparisonConfiguration,
+   assertComparisonDatabaseConnections,
+   comparisonRequiresConfiguredDatabases,
+} = require('./src/comparison/config/comparison.config');
 const {
    initializeMongoDependency,
    initializeReverseImageSearchDependency,
@@ -574,6 +581,17 @@ async function ensureJwtSecret() {
  */
 async function startServer() {
    try {
+      assertComparisonConfiguration();
+      if (comparisonRequiresConfiguredDatabases()) {
+         await assertComparisonDatabaseConnections(getPostgresPools());
+      }
+   } catch (err) {
+      console.error('Failed to initialize Comparison V2:', err.message);
+      process.exit(1);
+      return;
+   }
+
+   try {
       const {
          assertGoogleAuthConfiguration,
       } = require('./src/services/google-auth.service');
@@ -619,6 +637,11 @@ async function startServer() {
       console.error("Failed to initialize required MongoDB:", err);
       process.exit(1);
       return;
+   }
+
+   if (process.env.NODE_ENV !== 'test' && process.env.PRICE_ALERT_CHECKS_ENABLED !== 'false') {
+      const minutes = Number(process.env.PRICE_ALERT_CHECK_MINUTES) || 15;
+      setInterval(() => checkPriceAlerts().catch((err) => console.error('Price alert check failed:', err.message)), minutes * 60 * 1000);
    }
 
    try {
@@ -675,6 +698,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/alert-segments', alertSegmentRoutes);
 app.use('/api/lists', listRoutes);
+app.use('/api/price-alerts', priceAlertRoutes);
 app.use('/api/comparisons', comparisonRoutes);
 
 /*

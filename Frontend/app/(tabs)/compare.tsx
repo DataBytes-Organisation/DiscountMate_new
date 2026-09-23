@@ -5,6 +5,7 @@ import { useShoppingLists } from "./ShoppingListsContext";
 import { ActionButton, Card } from "../../features/comparison/ComparisonPrimitives";
 import { GroceryListComparison } from "../../features/comparison/GroceryListComparison";
 import { SingleProductComparison } from "../../features/comparison/SingleProductComparison";
+import { isComparisonV2Enabled } from "../../features/comparison/comparisonFeature";
 import FooterSection from "../../components/home/FooterSection";
 
 type ComparisonMode = "grocery" | "single";
@@ -16,7 +17,7 @@ export default function CompareScreen() {
    const compact = width < 700;
    const { lists, activeListId } = useShoppingLists();
    const activeList = lists.find((list) => list.id === activeListId) || lists[0];
-   const comparisonV2Enabled = process.env.EXPO_PUBLIC_COMPARISON_V2_ENABLED !== "false";
+   const comparisonV2Enabled = isComparisonV2Enabled(process.env.EXPO_PUBLIC_COMPARISON_V2_ENABLED);
 
    if (!comparisonV2Enabled) {
       return (
@@ -29,8 +30,12 @@ export default function CompareScreen() {
 
    return (
       <View className="flex-1 bg-[#F7F8FA]">
-         <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 0 }}>
-            <View className="mx-auto w-full max-w-[1200px] px-4 py-8 md:px-7 md:py-10">
+         <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1, paddingBottom: 0 }}>
+            <View
+               testID="comparison-page-content"
+               className="mx-auto w-full max-w-[1200px] px-4 py-8 md:px-7 md:py-10"
+               style={{ flexGrow: 1 }}
+            >
                <View className="items-center">
                   <Text className={`${compact ? "text-2xl" : "text-3xl"} font-bold tracking-tight text-gray-900`}>Product Comparison</Text>
                   <Text className="mt-2 text-center text-sm text-gray-500">Compare products across retailers to find the best value</Text>

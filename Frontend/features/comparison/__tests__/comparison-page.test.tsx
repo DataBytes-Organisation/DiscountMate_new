@@ -1,6 +1,9 @@
 import React from "react";
 import renderer, { act } from "react-test-renderer";
+import { ScrollView } from "react-native";
 import CompareScreen from "../../../app/(tabs)/compare";
+
+const mockIsComparisonV2Enabled = jest.fn(() => true);
 
 jest.mock("expo-router", () => ({ useRouter: () => ({ push: jest.fn() }) }));
 jest.mock("../../../app/(tabs)/ShoppingListsContext", () => ({
@@ -10,8 +13,28 @@ jest.mock("../GroceryListComparison", () => ({ GroceryListComparison: () => "Gro
 jest.mock("../SingleProductComparison", () => ({ SingleProductComparison: () => "Single comparison content" }));
 jest.mock("react-native-vector-icons/FontAwesome6", () => "Icon");
 jest.mock("../../../components/home/FooterSection", () => () => "Shared footer");
+jest.mock("../comparisonFeature", () => ({
+   isComparisonV2Enabled: () => mockIsComparisonV2Enabled(),
+}));
 
 describe("comparison page", () => {
+   beforeEach(() => {
+      mockIsComparisonV2Enabled.mockReturnValue(true);
+   });
+
+   it("fails closed when the comparison feature flag is missing", () => {
+      mockIsComparisonV2Enabled.mockReturnValue(false);
+
+      let tree: renderer.ReactTestRenderer;
+      act(() => {
+         tree = renderer.create(<CompareScreen />);
+      });
+
+      const text = JSON.stringify(tree!.toJSON());
+      expect(text).toContain("Comparison is temporarily unavailable");
+      expect(text).not.toContain("Single comparison content");
+   });
+
    it("shows public Single Product first and switches to Grocery List", () => {
       let tree: renderer.ReactTestRenderer;
       act(() => {
@@ -32,5 +55,26 @@ describe("comparison page", () => {
       expect(text).toContain("View Power BI Report");
       expect(text.match(/Shared footer/g)).toHaveLength(1);
       expect(text).not.toContain('"Share"');
+   });
+
+   it("keeps the shared footer at the viewport bottom for short content in both modes", () => {
+      let tree: renderer.ReactTestRenderer;
+      act(() => {
+         tree = renderer.create(<CompareScreen />);
+      });
+
+      const scrollView = tree!.root.findByType(ScrollView);
+      expect(scrollView.props.contentContainerStyle).toEqual(
+         expect.objectContaining({ flexGrow: 1 })
+      );
+      expect(tree!.root.findByProps({ testID: "comparison-page-content" }).props.style).toEqual(
+         expect.objectContaining({ flexGrow: 1 })
+      );
+
+      const groceryTab = tree!.root.findByProps({ accessibilityLabel: "Grocery List" });
+      act(() => groceryTab.props.onPress());
+      expect(tree!.root.findByProps({ testID: "comparison-page-content" }).props.style).toEqual(
+         expect.objectContaining({ flexGrow: 1 })
+      );
    });
 });

@@ -27,6 +27,7 @@ def test_woolworths_transform_preserves_valid_gtin_and_rejects_scientific_notati
             Barcode VARCHAR,
             DisplayName VARCHAR,
             Name VARCHAR,
+            Brand_Searched VARCHAR,
             PackageSize VARCHAR,
             SapCategoryName VARCHAR,
             PromotionType VARCHAR,
@@ -42,10 +43,10 @@ def test_woolworths_transform_preserves_valid_gtin_and_rejects_scientific_notati
         );
 
         INSERT INTO raw_input VALUES
-            ('100', '9300000000001', 'BrandCo Milk 1L', 'BrandCo Milk 1L', '1L',
+            ('100', '9300000000001', 'BrandCo Milk 1L', 'BrandCo Milk 1L', 'BrandCo', '1L',
              'Milk', NULL, 'brandco-milk-1l', NULL, '3.50', '3.50', '1L', '$3.50 / 1L',
              'false', '2026-05-04T10:00:00', 'woolworths.csv'),
-            ('101', '9.3007E+12', 'Broken Barcode Milk 1L', 'Broken Barcode Milk 1L', '1L',
+            ('101', '9.3007E+12', 'Broken Barcode Milk 1L', 'Broken Barcode Milk 1L', NULL, '1L',
              'Milk', NULL, 'broken-barcode-milk-1l', NULL, '4.00', '4.00', '1L', '$4.00 / 1L',
              'false', '2026-05-04T10:00:00', 'woolworths.csv');
 

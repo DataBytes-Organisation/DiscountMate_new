@@ -26,6 +26,7 @@ export function comparisonErrorMessage(code?: string, fallback?: string): string
       no_mapped_items: "None of this list’s products are mapped to the comparison catalogue yet.",
       de_unavailable: "Live retailer data is temporarily unavailable. Retry after the comparison service reconnects.",
       app_database_unavailable: "The comparison could not be saved. Your grocery list has not been changed.",
+      comparison_disabled: "Product comparison is temporarily unavailable.",
       validation_failed: "The comparison settings are invalid. Review the selected options and retry.",
    };
    return (code && messages[code]) || fallback || "Comparison data is temporarily unavailable.";

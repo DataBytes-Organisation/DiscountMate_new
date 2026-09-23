@@ -25,20 +25,46 @@ export function useProductComparisonController() {
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState<string | null>(null);
    const [errorCode, setErrorCode] = useState<string | null>(null);
+   const [searchLoading, setSearchLoading] = useState(false);
+   const [searchError, setSearchError] = useState<string | null>(null);
+   const [searchRevision, setSearchRevision] = useState(0);
 
    useEffect(() => {
       const trimmed = query.trim();
       if (trimmed.length < 2 || selectedProduct?.name === trimmed) {
          setResults([]);
+         setSearchLoading(false);
+         setSearchError(null);
          return;
       }
+      let cancelled = false;
+      setSearchError(null);
       const timer = setTimeout(() => {
+         setSearchLoading(true);
          void searchComparisonProducts(trimmed)
-            .then(setResults)
-            .catch(() => setResults([]));
+            .then((nextResults) => {
+               if (!cancelled) setResults(nextResults);
+            })
+            .catch((cause) => {
+               if (cancelled) return;
+               setResults([]);
+               setSearchError(cause instanceof Error
+                  ? cause.message
+                  : "Product search is temporarily unavailable. Please retry.");
+            })
+            .finally(() => {
+               if (!cancelled) setSearchLoading(false);
+            });
       }, 250);
-      return () => clearTimeout(timer);
-   }, [query, selectedProduct]);
+      return () => {
+         cancelled = true;
+         clearTimeout(timer);
+      };
+   }, [query, searchRevision, selectedProduct]);
+
+   const retrySearch = useCallback(() => {
+      setSearchRevision((current) => current + 1);
+   }, []);
 
    const load = useCallback(async (
       product = selectedProduct,
@@ -112,13 +138,15 @@ export function useProductComparisonController() {
       setResults([]);
       setError(null);
       setErrorCode(null);
+      setSearchError(null);
+      setSearchLoading(false);
       setRetailerIds([]);
    }, []);
 
    return {
       query, setQuery, results, selectedProduct, comparison, range, includeSimilar,
-      retailerIds, availableRetailers, loading, error, errorCode, selectProduct, toggleSimilar,
-      toggleRetailer, clearRetailers, clear, retry: load,
+      retailerIds, availableRetailers, loading, error, errorCode, searchLoading, searchError,
+      selectProduct, toggleSimilar, toggleRetailer, clearRetailers, clear, retry: load, retrySearch,
    };
 }
 
