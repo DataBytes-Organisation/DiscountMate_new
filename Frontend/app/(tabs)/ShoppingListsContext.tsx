@@ -88,14 +88,13 @@ type ActiveListItemInput = {
    packQuantity?: string;
    packUom?: string;
    retailerPrices?: {
-      aldi?: number;
       coles?: number;
       woolworths?: number;
       iga?: number;
    };
 };
 
-type RetailerKey = "aldi" | "coles" | "woolworths" | "iga";
+type RetailerKey = "coles" | "woolworths" | "iga";
 
 function computeListTotal(items: ShoppingListLineItem[]) {
    return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -413,7 +412,7 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
                }
 
                const storeName =
-                  retailer === "iga" ? "IGA" : retailer === "aldi" ? "Aldi" : retailer === "coles" ? "Coles" : "Woolworths";
+                  retailer === "iga" ? "IGA" : retailer === "coles" ? "Coles" : "Woolworths";
                return {
                   ...item,
                   store: storeName,
@@ -445,7 +444,7 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
                }
 
                const storeName =
-                  retailer === "iga" ? "IGA" : retailer === "aldi" ? "Aldi" : retailer === "coles" ? "Coles" : "Woolworths";
+                  retailer === "iga" ? "IGA" : retailer === "coles" ? "Coles" : "Woolworths";
 
                return {
                   ...item,

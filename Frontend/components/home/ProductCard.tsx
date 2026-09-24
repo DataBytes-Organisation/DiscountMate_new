@@ -115,7 +115,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             : null;
 
       const retailerPriceMap = retailers.reduce<{
-         aldi?: number;
          coles?: number;
          woolworths?: number;
          iga?: number;
@@ -125,7 +124,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
          if (parsedPrice == null) return acc;
          const key =
             retailer.storeKey?.toLowerCase();
-         if (key === "aldi") { acc.aldi = parsedPrice; }
          if (key === "coles") { acc.coles = parsedPrice; }
          if (key === "woolworths") { acc.woolworths = parsedPrice; }
          if (key === "iga") { acc.iga = parsedPrice; }
