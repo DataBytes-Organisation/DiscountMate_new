@@ -2,23 +2,28 @@ import React from "react";
 import { View } from "react-native";
 import SidebarCategories from "./SidebarCategories";
 import ProductGrid from "./ProductGrid";
+import type { CatalogueSource } from "@/services/catalogue/types";
 
-export default function HomeMainSection() {
-   // Home page always shows "All" category
-   const activeCategory = "All";
+type HomeMainSectionProps = {source?: CatalogueSource; activeCategory?: string;};
 
+export default function HomeMainSection({
+   source = "mongo",
+   activeCategory = "All",
+}: HomeMainSectionProps) {
    return (
       <View className="bg-[#F9FAFB]">
          <View className="w-full flex-row items-start">
-            {/* Sidebar with navigation enabled */}
             <SidebarCategories
+               source={source}
                activeCategory={activeCategory}
-               useNavigation={true}
+               useNavigation
             />
 
-            {/* Product area */}
             <View className="flex-1 px-4 md:px-8 py-8">
-               <ProductGrid activeCategory={activeCategory} />
+               <ProductGrid
+                  source={source}
+                  activeCategory={activeCategory}
+               />
             </View>
          </View>
       </View>

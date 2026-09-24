@@ -1,28 +1,29 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import {View, Text, ScrollView, Pressable} from "react-native";
 import { useRouter } from "expo-router";
-import { API_URL } from "@/constants/Api";
+import {fetchCatalogueCategories} from "@/services/catalogue/catalogueApi";
+import type {CatalogueCategory,CatalogueSource} from "@/services/catalogue/types";
 
 type Category = {
    id?: string | null;
    label: string;
 };
 
-type DbCategory = {
-   _id: string;
-   category_name: string;
-   description?: string | null;
-   icon_url?: string | null;
-   display_order?: number | null;
-   is_active?: boolean;
+type SidebarCategoriesProps = {
+   activeCategory: string;
+   onSelect?: (category: string) => void;
+   useNavigation?: boolean;
+   source?: CatalogueSource;
 };
 
 function toTitleCase(input: string): string {
-   const s = input.trim();
-   if (!s) return s;
-   return s
+   const value = input.trim();
+   if (!value) return value;
+   return value
       .toLowerCase()
-      .replace(/\b[a-z]/g, (m) => m.toUpperCase());
+      .replace(/\b[a-z]/g, (letter) =>
+         letter.toUpperCase()
+      );
 }
 
 function normaliseCategoryKey(name: string): string {
@@ -35,20 +36,19 @@ function normaliseCategoryKey(name: string): string {
       .trim();
 }
 
-function isObjectId(value: string): boolean {
-   return /^[0-9a-fA-F]{24}$/.test(value);
-}
-
-type SidebarCategoriesProps = {
-   activeCategory: string;
-   onSelect?: (category: string) => void; // Optional for backward compatibility
-   useNavigation?: boolean; // If true, use router navigation instead of onSelect
-};
-
-function SidebarCategorySkeletonRow({ widthClass }: { widthClass: string }) {
+function SidebarCategorySkeletonRow({
+   widthClass,
+}: {
+   widthClass: string;
+}) {
    return (
       <View className="px-3 py-2 rounded-xl mb-1 bg-transparent">
-         <View className={["h-4 rounded bg-gray-200", widthClass].join(" ")} />
+         <View
+            className={[
+               "h-4 rounded bg-gray-200",
+               widthClass,
+            ].join(" ")}
+         />
       </View>
    );
 }
@@ -57,90 +57,106 @@ export default function SidebarCategories({
    activeCategory,
    onSelect,
    useNavigation = false,
+   source = "mongo",
 }: SidebarCategoriesProps) {
    const router = useRouter();
-   const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
+
+   const [categories, setCategories] = useState<
+      CatalogueCategory[]
+   >([]);
    const [loading, setLoading] = useState(true);
 
-   const handleCategorySelect = (category: Category) => {
-      if (useNavigation) {
-         if (category.label === "All") {
-            router.push("/");
+   const navigateToCategory = (category: Category) => {
+      if (source === "postgres") {
+         if (!category.id || category.label === "All") {
+            router.push("/postgresproductpage");
             return;
          }
-
-         if (category.id) {
-            router.push(`/category/${category.id}`);
-            return;
-         }
-         router.push("/");
-      } else if (onSelect) {
-         // Use callback approach (for backward compatibility)
-         onSelect(category.label);
-      } else {
-         // Fallback to navigation if no callback provided
-         if (category.label === "All") {
-            router.push("/");
-         } else {
-            if (category.id) {
-               router.push(`/category/${category.id}`);
-            } else {
-               router.push("/");
-            }
-         }
+         router.push({
+            pathname: "/postgresproductpage",
+            params: {
+               categoryId: category.id,
+            },
+         });
+         return;
       }
+
+      if (!category.id || category.label === "All") {
+         router.push("/");
+         return;
+      }
+      router.push(`/category/${category.id}`);
+   };
+
+   const handleCategorySelect = (category: Category) => {
+      if (!useNavigation && onSelect) {
+         onSelect(category.label);
+         return;
+      }
+      navigateToCategory(category);
    };
 
    useEffect(() => {
-      let cancelled = false;
-
+      const controller = new AbortController();
       async function loadCategories() {
          try {
             setLoading(true);
-            const res = await fetch(`${API_URL}/categories`);
-            if (!res.ok) {
-               throw new Error(`Failed to fetch categories (${res.status})`);
+            const result =
+               await fetchCatalogueCategories(
+                  source,
+                  controller.signal
+               );
+
+            if (!controller.signal.aborted) {
+               setCategories(result);
             }
-            const data = (await res.json()) as DbCategory[];
-            if (!cancelled) {
-               setDbCategories(Array.isArray(data) ? data : []);
+         } catch (error) {
+            if (
+               error instanceof Error &&
+               error.name === "AbortError"
+            ) {
+               return;
             }
-         } catch (e) {
-            console.error("Failed to load categories:", e);
-            if (!cancelled) {
-               setDbCategories([]);
+            console.error(
+               "Failed to load categories:",
+               error
+            );
+            if (!controller.signal.aborted) {
+               setCategories([]);
             }
          } finally {
-            if (!cancelled) {
+            if (!controller.signal.aborted) {
                setLoading(false);
             }
          }
       }
-
       loadCategories();
-      return () => {
-         cancelled = true;
-      };
-   }, []);
+      return () => controller.abort();
+   }, [source]);
 
-   const categoriesForUi: Category[] = useMemo(() => {
-      const dynamic: Category[] = dbCategories
-         .filter((c) => c?.category_name)
-         .map((c) => ({
-            id: c._id,
-            label: toTitleCase(c.category_name),
-         }));
-      return [{ id: null, label: "All" }, ...dynamic];
-   }, [dbCategories]);
+   const categoriesForUi: Category[] = useMemo(
+      () => [
+         {
+            id: null,
+            label: "All",
+         },
+         ...categories
+            .filter((category) => category.name?.trim())
+            .map((category) => ({
+               id: category.id,
+               label: toTitleCase(category.name),
+            })),
+      ],
+      [categories]
+   );
 
    return (
       <View
-         // outer wrapper: sticky on web, aligned with product grid
          style={{
             position: "sticky" as any,
-            top: 0,                            // no huge gap; sits with content
+            top: 0,
             alignSelf: "flex-start",
-            maxHeight: "100vh",               // limit height so inner scroll can work
+            maxHeight: "100vh",
          }}
          className="hidden md:flex w-64"
       >
@@ -151,45 +167,58 @@ export default function SidebarCategories({
                   paddingVertical: 24,
                   paddingHorizontal: 16,
                }}
-               showsVerticalScrollIndicator={true}
+               showsVerticalScrollIndicator
             >
                <Text className="text-xs text-gray-500 uppercase tracking-[0.15em] mb-4">
                   Categories
                </Text>
-
                {loading ? (
                   <>
-                     {Array.from({ length: 10 }).map((_, idx) => {
-                        const widthClass =
-                           idx % 4 === 0
-                              ? "w-40"
-                              : idx % 4 === 1
-                                 ? "w-32"
-                                 : idx % 4 === 2
-                                    ? "w-44"
-                                    : "w-28";
-                        return (
-                           <SidebarCategorySkeletonRow
-                              key={`cat-skel-${idx}`}
-                              widthClass={widthClass}
-                           />
-                        );
-                     })}
+                     {Array.from({ length: 10 }).map(
+                        (_, index) => {
+                           const widthClass =
+                              index % 4 === 0
+                                 ? "w-40"
+                                 : index % 4 === 1
+                                    ? "w-32"
+                                    : index % 4 === 2
+                                       ? "w-44"
+                                       : "w-28";
+                           return (
+                              <SidebarCategorySkeletonRow
+                                 key={`cat-skel-${index}`}
+                                 widthClass={widthClass}
+                              />
+                           );
+                        }
+                     )}
                   </>
                ) : (
-                  categoriesForUi.map((cat) => {
+                  categoriesForUi.map((category) => {
                      const byId =
-                        isObjectId(activeCategory) &&
-                        !!cat.id &&
-                        String(cat.id).toLowerCase() === activeCategory.toLowerCase();
-                     const byName =
-                        normaliseCategoryKey(activeCategory) === normaliseCategoryKey(cat.label);
-                     const isActive = byId || byName;
+                        Boolean(category.id) &&
+                        String(category.id).toLowerCase() ===
+                        activeCategory.toLowerCase();
 
+                     const byName =
+                        normaliseCategoryKey(
+                           activeCategory
+                        ) ===
+                        normaliseCategoryKey(
+                           category.label
+                        );
+                     const isActive = byId || byName;
                      return (
                         <Pressable
-                           key={cat.id || cat.label}
-                           onPress={() => handleCategorySelect(cat)}
+                           key={
+                              category.id ||
+                              category.label
+                           }
+                           onPress={() =>
+                              handleCategorySelect(
+                                 category
+                              )
+                           }
                            className={[
                               "group flex-row items-center px-3 py-2 rounded-xl mb-1",
                               isActive
@@ -205,7 +234,7 @@ export default function SidebarCategories({
                                     : "text-gray-700 group-hover:text-primary_green",
                               ].join(" ")}
                            >
-                              {cat.label}
+                              {category.label}
                            </Text>
                         </Pressable>
                      );
@@ -216,5 +245,3 @@ export default function SidebarCategories({
       </View>
    );
 }
-
-export { };

@@ -72,6 +72,11 @@ const FINALISED_COLUMN_RENAMES = [
     migrationColumn: 'legacy_shopping_list_id',
     finalisedColumn: 'snapshot_list_key',
   },
+  {
+    table: 'app.product_api_compatibility',
+    migrationColumn: 'source_measurement',
+    finalisedColumn: 'pack_display_unit',
+  },
 ];
 
 function jsonBuildExpression(columns) {
@@ -148,6 +153,56 @@ async function restoreMigrationColumnNames(queryRunner) {
   }
 }
 
+async function finaliseProductPriceMetadata(queryRunner) {
+  await queryRunner.query(`
+    CREATE TABLE app.product_price_metadata (
+      price_fact_id uuid NOT NULL,
+      price_recorded_at timestamptz NOT NULL,
+      unit_price_label text,
+      best_price numeric(10, 2),
+      best_unit_price_label text,
+      created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT pk_product_price_metadata PRIMARY KEY (
+        price_fact_id,
+        price_recorded_at
+      )
+    )
+  `);
+
+  await queryRunner.query(`
+    INSERT INTO app.product_price_metadata (
+      price_fact_id,
+      price_recorded_at,
+      unit_price_label,
+      best_price,
+      best_unit_price_label,
+      created_at,
+      updated_at
+    )
+    SELECT
+      price_fact_id,
+      price_recorded_at,
+      raw_unit_price,
+      best_price,
+      raw_best_unit_price,
+      created_at,
+      updated_at
+    FROM app.product_price_source_records
+  `);
+
+  await queryRunner.query(
+    'ALTER TABLE app.product_price_source_records SET SCHEMA migration',
+  );
+}
+
+async function restoreMigrationProductPriceSources(queryRunner) {
+  await queryRunner.query('DROP TABLE app.product_price_metadata');
+  await queryRunner.query(
+    'ALTER TABLE migration.product_price_source_records SET SCHEMA app',
+  );
+}
+
 class ApplyFinalisedPostgreSQL1786579200007 {
   name = 'ApplyFinalisedPostgreSQL1786579200007';
 
@@ -211,15 +266,11 @@ class ApplyFinalisedPostgreSQL1786579200007 {
     await queryRunner.query(
       'ALTER TABLE app.catalog_source_keys SET SCHEMA migration',
     );
-    await queryRunner.query(
-      'ALTER TABLE app.product_price_source_records SET SCHEMA migration',
-    );
+    await finaliseProductPriceMetadata(queryRunner);
   }
 
   async down(queryRunner) {
-    await queryRunner.query(
-      'ALTER TABLE migration.product_price_source_records SET SCHEMA app',
-    );
+    await restoreMigrationProductPriceSources(queryRunner);
     await queryRunner.query(
       'ALTER TABLE migration.catalog_source_keys SET SCHEMA app',
     );
@@ -317,5 +368,7 @@ module.exports = {
   ApplyFinalisedPostgreSQL1786579200007,
   FIELD_BACKUPS,
   FINALISED_COLUMN_RENAMES,
+  finaliseProductPriceMetadata,
   jsonBuildExpression,
+  restoreMigrationProductPriceSources,
 };

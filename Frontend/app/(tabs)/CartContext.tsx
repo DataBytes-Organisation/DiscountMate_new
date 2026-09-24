@@ -18,6 +18,7 @@ type CartItem = {
    packQuantity?: string;
    packUom?: string;
    retailerPrices?: {
+      aldi?: number;
       coles?: number;
       woolworths?: number;
       iga?: number;
