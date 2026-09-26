@@ -3,13 +3,21 @@ import time
 from datetime import timedelta
 from typing import Dict, List
 
+import joblib
+import pandas as pd
+
 MONGO_URI = os.getenv("MONGO_URI", "").strip()
 MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "DiscountMate_DB")
 ONE_DAY = timedelta(days=1)
 CACHE_SECONDS = 600
 
+MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
+MODEL_PATH = os.path.join(MODELS_DIR, "DiscountMate_REES46_purchase_probability_model.joblib")
+RECOMMENDED_OPTIONS_PATH = os.path.join(MODELS_DIR, "user_recommended_options.csv")
+
 _pricings_col = None
 _cache: Dict = {'results': [], 'expires': 0.0}
+_bundle = None
 
 
 def _get_pricings_collection():
@@ -68,3 +76,34 @@ def get_recommendations_ml(limit: int = 10) -> List[Dict]:
     _cache['expires'] = time.time() + CACHE_SECONDS
 
     return results[:limit]
+
+
+def _get_model():
+    global _bundle
+    if _bundle is None:
+        _bundle = joblib.load(MODEL_PATH)
+    return _bundle
+
+
+def score_user(rows):
+    bundle = _get_model()
+    rows['purchase_probability'] = bundle['estimator'].predict_proba(rows[bundle['feature_columns']])[:, 1]
+    return rows.sort_values('purchase_probability', ascending=False)
+
+
+def load_user_recommended_options(user_id):
+    options = pd.read_csv(RECOMMENDED_OPTIONS_PATH)
+    return options[options['user_id'] == int(user_id)]
+
+
+def get_model_recommendations_ml(user_id, limit: int = 10) -> List[Dict]:
+    rows = load_user_recommended_options(user_id)
+    if rows.empty:
+        return []
+
+    ranked = score_user(rows).head(limit)
+
+    return [
+        {'product_code': code, 'purchase_probability': round(float(prob), 3)}
+        for code, prob in zip(ranked['product_code'], ranked['purchase_probability'])
+    ]

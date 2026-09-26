@@ -5,9 +5,11 @@ import { ApiProduct, mapApiProductToCard } from "./ProductGrid";
 import { API_URL } from "@/constants/Api";
 
 const RECOMMENDATION_LIMIT = 10;
+const DEMO_USER_ID = 561174161;
 
 type RecommendedProduct = ApiProduct & {
    discount_percent?: number | null;
+   purchase_probability?: number | null;
 };
 
 interface RecommendationsResponse {
@@ -19,7 +21,11 @@ interface RecommendationsResponse {
 
 function mapRecommendationToCard(item: RecommendedProduct): Product {
    const card = mapApiProductToCard(item);
-   if (item.discount_percent && item.discount_percent > 0) {
+   if (item.purchase_probability && item.purchase_probability > 0) {
+      card.badge = `${Math.round(item.purchase_probability * 100)}% match`;
+      card.trendLabel = "Recommended";
+      card.trendTone = "green";
+   } else if (item.discount_percent && item.discount_percent > 0) {
       card.badge = `${Math.round(item.discount_percent)}% off`;
       card.trendLabel = "On special";
       card.trendTone = "green";
@@ -44,7 +50,7 @@ export default function RecommendedForYouSection() {
          const response = await fetch(`${API_URL}/ml/recommendations`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ limit: RECOMMENDATION_LIMIT }),
+            body: JSON.stringify({ limit: RECOMMENDATION_LIMIT, user_id: DEMO_USER_ID }),
          });
          const data: RecommendationsResponse = await response.json();
 
@@ -73,7 +79,7 @@ export default function RecommendedForYouSection() {
                   Recommended for You
                </Text>
                <Text className="text-gray-600">
-                  Discounted picks from across the retailers
+                  Demo: ranked by the recommendation model for test user {DEMO_USER_ID}, shown with sample products but real model probability
                </Text>
             </View>
 

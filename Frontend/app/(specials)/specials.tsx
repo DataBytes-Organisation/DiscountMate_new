@@ -95,7 +95,7 @@ export default function SpecialsScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-        <View style={styles.container}>
+        <View testID="specials-page-content" style={styles.container}>
           <View
                 style={[
                   styles.mainLayout,
@@ -199,9 +199,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8faf8",
   },
   content: {
+    flexGrow: 1,
     paddingBottom: 0,
   },
   container: {
+    flexGrow: 1,
     width: "100%",
     maxWidth: 1400,
     alignSelf: "center",
@@ -285,5 +287,6 @@ sidebarMobile: {
   },
   mainContent: {
     flex: 1,
+    minWidth: 0,
   },
 });
