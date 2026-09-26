@@ -1,10 +1,16 @@
 CREATE OR REPLACE TABLE raw_input_normalized AS
+
 WITH cleaned AS (
+
     SELECT
         nullif(trim(CAST(Stockcode AS VARCHAR)), '') AS raw_product_id,
-        nullif(regexp_replace(CAST(Barcode AS VARCHAR), '[^0-9]', '', 'g'), '') AS raw_gtin,
+        CASE
+            WHEN regexp_full_match(trim(CAST(Barcode AS VARCHAR)), '[0-9]+')
+                THEN nullif(trim(CAST(Barcode AS VARCHAR)), '')
+            ELSE NULL
+        END AS raw_gtin,
         nullif(trim(coalesce(CAST(DisplayName AS VARCHAR), CAST(Name AS VARCHAR))), '') AS item_name,
-        NULL::VARCHAR AS brand_name,
+        nullif(trim(CAST(Brand_Searched AS VARCHAR)), '') AS brand_name,
         nullif(trim(CAST(PackageSize AS VARCHAR)), '') AS raw_size,
         nullif(trim(CAST(SapCategoryName AS VARCHAR)), '') AS raw_category,
         nullif(trim(CAST(PromotionType AS VARCHAR)), '') AS promotion_type,
@@ -15,37 +21,29 @@ WITH cleaned AS (
         nullif(trim(CAST(CupMeasure AS VARCHAR)), '') AS cup_measure,
         nullif(trim(CAST(CupString AS VARCHAR)), '') AS cup_string,
         CASE
-            WHEN lower(trim(coalesce(CAST(IsOnSpecial AS VARCHAR), ''))) IN ('true', '1', 'yes', 'y') THEN TRUE
-            WHEN lower(trim(coalesce(CAST(IsOnSpecial AS VARCHAR), ''))) IN ('false', '0', 'no', 'n') THEN FALSE
+            WHEN lower(trim(coalesce(CAST(IsOnSpecial AS VARCHAR), '')))
+                IN ('true', '1', 'yes', 'y')
+                THEN TRUE
+            WHEN lower(trim(coalesce(CAST(IsOnSpecial AS VARCHAR), '')))
+                IN ('false', '0', 'no', 'n')
+                THEN FALSE
             ELSE NULL
         END AS is_on_special,
         TRY_CAST(Timestamp AS TIMESTAMP) AS recorded_at,
         source_file
     FROM raw_input
 ),
+
+
 prepared AS (
     SELECT
         *,
-        coalesce(
-            TRY_CAST(
-                nullif(
-                    regexp_extract(lower(coalesce(raw_size, '')), '^([0-9]+(?:\.[0-9]+)?)', 1),
-                    ''
-                ) AS DOUBLE
-            ),
-            TRY_CAST(
-                nullif(
-                    regexp_extract(lower(coalesce(cup_measure, '')), '^([0-9]+(?:\.[0-9]+)?)', 1),
-                    ''
-                ) AS DOUBLE
-            )
+        coalesce(TRY_CAST(nullif(regexp_extract(lower(coalesce(raw_size, '')),'^([0-9]+(?:\.[0-9]+)?)',1),'') AS DOUBLE),
+            TRY_CAST(nullif(regexp_extract(lower(coalesce(cup_measure, '')),'^([0-9]+(?:\.[0-9]+)?)',1),'') AS DOUBLE)
         ) AS pack_quantity,
         CASE lower(
-            coalesce(
-                nullif(regexp_extract(lower(coalesce(raw_size, '')), '^[0-9]+(?:\.[0-9]+)?\s*([a-z]+)', 1), ''),
-                nullif(regexp_extract(lower(coalesce(cup_measure, '')), '^[0-9]+(?:\.[0-9]+)?\s*([a-z]+)', 1), '')
-            )
-        )
+            coalesce(nullif(regexp_extract(lower(coalesce(raw_size, '')),'^[0-9]+(?:\.[0-9]+)?\s*([a-z]+)',1),''),
+                nullif(regexp_extract(lower(coalesce(cup_measure, '')),'^[0-9]+(?:\.[0-9]+)?\s*([a-z]+)',1),'')))
             WHEN 'g' THEN 'g'
             WHEN 'gram' THEN 'g'
             WHEN 'grams' THEN 'g'
@@ -67,28 +65,57 @@ prepared AS (
                 REGEXP_REPLACE(
                     REGEXP_REPLACE(
                         LOWER(TRIM(coalesce(raw_category, ''))),
-                        '&', 'and'
+                        '&',
+                        'and'
                     ),
-                    '/ |- ', ' '
+                    '/ |- ',
+                    ' '
                 ),
-                '[^a-z0-9 ]', ' '
+                '[^a-z0-9 ]',
+                ' '
             ),
             '\\s+',
             ' '
         ) AS category_key,
-        trim(regexp_replace(lower(coalesce(item_name, '')), '[^a-z0-9]+', ' ', 'g')) AS product_name_key,
-        trim(regexp_replace(lower(coalesce(brand_name, '')), '[^a-z0-9]+', ' ', 'g')) AS brand_name_key,
+        trim(
+            regexp_replace(
+                lower(coalesce(item_name, '')),
+                '[^a-z0-9]+',
+                ' ',
+                'g'
+            )
+        ) AS product_name_key,
+        trim(
+            regexp_replace(
+                lower(coalesce(brand_name, '')),
+                '[^a-z0-9]+',
+                ' ',
+                'g'
+            )
+        ) AS brand_name_key,
         CASE
-            WHEN raw_product_id IS NULL THEN NULL
-            WHEN url_friendly_name IS NULL THEN 'https://www.woolworths.com.au/shop/productdetails/' || raw_product_id
-            ELSE 'https://www.woolworths.com.au/shop/productdetails/' || raw_product_id || '/' || url_friendly_name
+            WHEN raw_product_id IS NULL
+                THEN NULL
+            WHEN url_friendly_name IS NULL
+                THEN
+                    'https://www.woolworths.com.au/shop/productdetails/'
+                    || raw_product_id
+            ELSE
+                'https://www.woolworths.com.au/shop/productdetails/'
+                || raw_product_id
+                || '/'
+                || url_friendly_name
         END AS product_url,
         CASE
-            WHEN promotion_type IS NULL OR upper(promotion_type) = 'NOT_SET' THEN NULL
+            WHEN promotion_type IS NULL
+                OR upper(promotion_type) = 'NOT_SET'
+                THEN NULL
             ELSE promotion_type
         END AS special_text
     FROM cleaned
 ),
+
+
 categorized AS (
     SELECT
         *,
@@ -160,24 +187,106 @@ categorized AS (
         END AS category_name
     FROM prepared
 ),
+
+
+name_stripped AS (
+    SELECT
+        *,
+        CASE
+            -- Brand must actually appear at the START of the name
+            WHEN brand_name_key <> ''
+                AND (
+                    product_name_key = brand_name_key
+                    OR product_name_key LIKE brand_name_key || ' %'
+                )
+
+            THEN trim(
+                substr(
+                    product_name_key,
+                    length(brand_name_key) + 1
+                )
+            )
+            ELSE product_name_key
+        END AS stripped_product_name_key
+    FROM categorized
+),
+
+name_measure_stripped AS (
+    SELECT
+        *,
+
+        trim(
+            regexp_replace(
+                regexp_replace(
+                    regexp_replace(
+                        regexp_replace(
+                            stripped_product_name_key,
+
+                            -- 12 x 375ml
+                            '[0-9]+[[:space:]]*x[[:space:]]*[0-9]+([.][0-9]+)?[[:space:]]*(ml|l|g|kg)',
+                            ' ',
+                            'g'
+                        ),
+
+                        -- 375ml / 500 g
+                        '[0-9]+([.][0-9]+)?[[:space:]]*(ml|l|g|kg)',
+                        ' ',
+                        'g'
+                    ),
+
+                    -- 12pk / 10 pack
+                    '[0-9]+[[:space:]]*(pk|pack)',
+                    ' ',
+                    'g'
+                ),
+
+                -- each / ea
+                '(^|[[:space:]])(each|ea)($|[[:space:]])',
+                ' ',
+                'g'
+            )
+        ) AS canonical_product_name_key
+
+    FROM name_stripped
+),
+
 deduplicated AS (
     SELECT
         *,
         CASE
-            WHEN pack_quantity IS NULL THEN ''
+            WHEN pack_quantity IS NULL
+                THEN ''
+
             ELSE rtrim(
-                regexp_replace(printf('%.3f', pack_quantity), '0+$', ''),
+                regexp_replace(
+                    printf('%.3f', pack_quantity),
+                    '0+$',
+                    ''
+                ),
                 '.'
             )
         END AS pack_quantity_key,
         brand_name_key
             || '|'
-            || product_name_key
+            || trim(
+                regexp_replace(
+                    canonical_product_name_key,
+                    '\\s+',
+                    ' ',
+                    'g'
+                )
+            )
             || '|'
             || CASE
-                WHEN pack_quantity IS NULL THEN ''
+                WHEN pack_quantity IS NULL
+                    THEN ''
+
                 ELSE rtrim(
-                    regexp_replace(printf('%.3f', pack_quantity), '0+$', ''),
+                    regexp_replace(
+                        printf('%.3f', pack_quantity),
+                        '0+$',
+                        ''
+                    ),
                     '.'
                 )
             END
@@ -189,17 +298,31 @@ deduplicated AS (
                 recorded_at,
                 coalesce(price, -1),
                 coalesce(cup_price, -1)
-            ORDER BY source_file DESC, item_name DESC
+
+            ORDER BY
+                source_file DESC,
+                item_name DESC
         ) AS dedupe_rank
-    FROM categorized
+    FROM name_measure_stripped
 )
+
+
 SELECT
     raw_product_id,
     raw_gtin AS gtin,
-    raw_gtin AS match_gtin,
+    CASE
+        WHEN length(raw_gtin) IN (8, 12, 13, 14)
+            THEN raw_gtin
+
+        ELSE NULL
+    END AS match_gtin,
     item_name,
     item_name AS standardized_product_name,
     brand_name,
+    brand_name_key,
+    pack_quantity_key,
+    stripped_product_name_key,
+    canonical_product_name_key,
     category_name,
     NULLIF(pack_quantity, 0) AS pack_quantity,
     pack_uom,
@@ -207,12 +330,22 @@ SELECT
     product_url,
     special_text,
     CAST(price AS DECIMAL(10, 2)) AS price,
-    CAST(coalesce(cup_price, price / nullif(pack_quantity, 0)) AS DECIMAL(12, 4)) AS unit_price,
-    coalesce(is_on_special, special_text IS NOT NULL, FALSE) AS is_on_special,
+    CAST(
+        coalesce(
+            cup_price,
+            price / nullif(pack_quantity, 0)
+        )
+        AS DECIMAL(12, 4)
+    ) AS unit_price,
+    coalesce(
+        is_on_special,
+        special_text IS NOT NULL,
+        FALSE
+    ) AS is_on_special,
     recorded_at,
     source_file,
     canonical_key,
-    coalesce(raw_gtin, raw_product_id, canonical_key) AS source_product_key
+    raw_product_id AS source_product_key
 FROM deduplicated
 WHERE dedupe_rank = 1
   AND raw_product_id IS NOT NULL

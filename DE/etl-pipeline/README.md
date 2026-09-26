@@ -5,7 +5,7 @@ DuckDB-first ETL pipeline for loading retailer product data into the PostgreSQL 
 This repo now contains:
 
 - one generic example workflow for starter/reference use
-- one implemented retailer workflow for Aldi product pricing
+- retailer workflows for Aldi, Coles, IGA, and Woolworths product pricing
 - PostgreSQL migrations for the current `silver` warehouse tables
 
 The Aldi workflow reads raw Aldi Bronze CSV data, enriches it with conservative GTIN matching from `silver.static_master_coles_products`, and syncs the results into:
@@ -71,6 +71,24 @@ Apply migrations:
 uv run alembic upgrade head
 ```
 
+If Alembic reports an unknown revision (for example `20260430_0002`), do not
+stamp the database. First inspect the database without changing it:
+
+```sql
+SELECT version_num FROM alembic_version;
+SELECT table_schema, table_name
+FROM information_schema.tables
+WHERE table_schema = 'silver'
+ORDER BY table_name;
+```
+
+Compare that schema with the migrations in `migrations/versions` and restore the
+missing historical migration from source control. For a disposable showcase
+database, creating a new empty database and running the full migration chain is
+safer than claiming an unverified schema is current. Only use `alembic stamp`
+after the tables, columns, constraints, seeds, and views have been reconciled and
+reviewed.
+
 ## Run workflows
 
 Retailer selectors use the format `products_<retailer>`, for example `products_aldi`.
@@ -95,7 +113,7 @@ through DuckDB for the final silver-table sync. Bronze inputs can come from:
 
 ## Run the Aldi workflow
 
-The implemented retailer workflow is `products_aldi`.
+The Aldi retailer workflow is `products_aldi`.
 
 It uses:
 
@@ -208,8 +226,7 @@ uv run alembic revision -m "describe change"
 - `config/`: env-backed settings and runtime config templates
 - `common/`: shared CLI, path, DuckDB, normalization, and PostgreSQL helpers
 - `features/example/`: one working example workflow
-- `features/products/aldi/`: implemented Aldi job plus workflow SQL for normalize, QA, and silver upsert
-- `features/products/<retailer>/job.py`: retailer jobs, with Aldi implemented and others available for later expansion
+- `features/products/<retailer>/`: implemented ALDI, Coles, IGA, and Woolworths jobs plus workflow SQL
 - `migrations/`: Alembic migration files
 
 ## Container build
@@ -236,6 +253,8 @@ The runtime config and local sample CSV files are mounted because they are kept 
 For GCS-backed Bronze inputs, set `paths.bronze_root` to a `gs://bucket/prefix`
 value in `config/config.yaml` and provide `GCS_KEY_ID` / `GCS_SECRET`.
 
+Production runs as four Cloud Run Jobs invoked directly by Cloud Scheduler at 12:00 every Saturday in Australia/Melbourne. All four run independently of ingestion completion and use the existing seven-day lookback, including the run date. Apply the production Alembic migrations manually before enabling the schedules; deployment does not run migrations.
+
 ## Config and secrets
 
 Commit:
@@ -253,8 +272,10 @@ Do not commit:
 
 ## Notes
 
-- `example` is still useful as a starter workflow, but `products_aldi` is the implemented retailer pipeline in this repo
+- `example` is a starter workflow; production jobs use `products_aldi`, `products_coles`, `products_iga`, and `products_woolworths`
 - Aldi GTIN matching uses `silver.static_master_coles_products` as a reference source and optimizes for precision over recall
-- retailer `job.py` files under `features/products/` other than Aldi remain expansion points
+- Woolworths rejects malformed/scientific-notation barcodes and only enriches brands from a unique trusted Coles GTIN
+- successful product loads write `silver.etl_run_audit` and refresh comparison groups to convergence
+- product jobs fail before publishing a zero-positive-offer load
 - local Bronze sample data is kept local
-- deployment, CI/CD, and the final warehouse schema are out of scope for this refactor
+- CI checks are defined in `.github/workflows/etl-pipeline-checks.yml`. Production image deployment is manually triggered through `.github/workflows/data-pipeline-deploy.yml`.

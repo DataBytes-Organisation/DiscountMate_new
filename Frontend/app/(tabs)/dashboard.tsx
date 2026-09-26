@@ -136,7 +136,7 @@ export default function DashboardScreen() {
          const message = err?.message || "Unable to load dashboard.";
          setError(message);
          if (message === SESSION_EXPIRED_MESSAGE) {
-            router.replace("/login");
+            router.replace("/(auth)/login");
          }
       } finally {
          if (showLoader) {
@@ -279,7 +279,7 @@ export default function DashboardScreen() {
          const message = err?.message || "Unable to apply dashboard list selection.";
          setError(message);
          if (message === SESSION_EXPIRED_MESSAGE) {
-            router.replace("/login");
+            router.replace("/(auth)/login");
          }
       } finally {
          setRefreshing(false);
@@ -303,7 +303,7 @@ export default function DashboardScreen() {
          const message = err?.message || "Unable to refresh dashboard pricing.";
          setError(message);
          if (message === SESSION_EXPIRED_MESSAGE) {
-            router.replace("/login");
+            router.replace("/(auth)/login");
          }
       } finally {
          setRefreshing(false);

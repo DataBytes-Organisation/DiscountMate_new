@@ -4,7 +4,7 @@ import { Slot, useSegments } from "expo-router";
 import AppHeader from "../../components/layout/Header";
 import SearchBar from "../../components/layout/SearchBar";
 import { CartProvider } from "./CartContext";
-import RecipeBot from "./RecipeBot";
+import Chatbot from "./Chatbot";
 
 export default function TabsLayout() {
    const segments = useSegments();
@@ -12,18 +12,21 @@ export default function TabsLayout() {
    const isProfilePage = segments.includes("profile");
    const isNotificationsPage = segments.includes("notifications");
    const isAlertSegmentsPage = segments.includes("alert-segments");
+   const isPriceAlertsPage = segments.includes("price-alerts");
    const isSubscriptionPage = segments.includes("subscription");
    const isSupportPage = segments.includes("contact");
    const isPrivacyTermsPage = segments.includes("privacy-terms");
    const isComparePage = segments.includes("compare");
    const isMyListsPage = segments.includes("my-lists");
    const isProductDashboardPage = segments.includes("product-dashboard");
+   const isChatbotPage = segments.includes("Chatbot");
 
    let activeRoute: "Home" | "Compare" | "Specials" | "Grocery Lists" | "Profile" | "Dashboard" = "Home";
    if (
       isProfilePage ||
       isNotificationsPage ||
       isAlertSegmentsPage ||
+      isPriceAlertsPage ||
       isSubscriptionPage ||
       isSupportPage ||
       isPrivacyTermsPage
@@ -44,19 +47,21 @@ export default function TabsLayout() {
             {!isProfilePage &&
                !isNotificationsPage &&
                !isAlertSegmentsPage &&
+               !isPriceAlertsPage &&
                !isSubscriptionPage &&
                !isSupportPage &&
                !isPrivacyTermsPage &&
                !isComparePage &&
                !isMyListsPage &&
                !isDashboardPage &&
-               !isProductDashboardPage && (
+               !isProductDashboardPage &&
+               !isChatbotPage && (
                <View className="mb-1">
                   <SearchBar />
                </View>
             )}
 
-            {isComparePage || isMyListsPage ? (
+            {isComparePage || isMyListsPage || isChatbotPage ? (
                <Slot />
             ) : (
                <ScrollView
@@ -67,10 +72,11 @@ export default function TabsLayout() {
                </ScrollView>
             )}
 
-            {/* Floating Recipe RAG chatbot — sits above the scroll
-                container so it stays pinned to the viewport corner
-                on every page in the (tabs) group. */}
-            <RecipeBot />
+            {/* Floating MateBot widget — product search and price
+                comparison. Sits outside the scroll container so it stays
+                pinned to the viewport corner on every page in the (tabs)
+                group. Skipped on /Chatbot, which renders it as the page. */}
+            {!isChatbotPage && <Chatbot />}
          </View>
       </CartProvider>
    );

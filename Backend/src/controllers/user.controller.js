@@ -12,6 +12,10 @@ const {
     normalizeDashboardRetailer,
 } = require('../utils/savedLists');
 const { logSecurityEvent } = require('../utils/securityLogger');
+const {
+    createDiscountMateSession,
+    passwordMatchesUser,
+} = require('../services/google-auth.service');
 
 const PASSWORD_SPECIAL_CHARACTER_REGEX = /[^A-Za-z0-9\s]/;
 const AU_POSTCODE_REGEX = /^\d{4}$/;
@@ -279,6 +283,8 @@ function getDefaultNotificationPreferences() {
             price_alerts: true,
             weekly_summary: true,
             in_browser_notifications: true,
+            email_notifications: true,
+            push_notifications: true,
         },
     };
 }
@@ -414,6 +420,8 @@ function normalizeNotificationPreferences(preferences) {
                         : typeof alertTypes.browserNotifications === 'boolean'
                             ? alertTypes.browserNotifications
                             : defaults.alert_types.in_browser_notifications,
+            email_notifications: typeof alertTypes.email_notifications === 'boolean' ? alertTypes.email_notifications : true,
+            push_notifications: typeof alertTypes.push_notifications === 'boolean' ? alertTypes.push_notifications : true,
         },
     };
 }
@@ -567,10 +575,7 @@ const signin = async (req, res) => {
             });
         }
 
-        const isMatch = await bcrypt.compare(
-            password,
-            user.encrypted_password
-        );
+        const isMatch = await passwordMatchesUser(password, user, bcrypt.compare);
 
         if (!isMatch) {
             const attempts =
@@ -634,28 +639,7 @@ const signin = async (req, res) => {
             }
         );
 
-        const role =
-            user.role ||
-            (user.admin ? 'admin' : 'user');
-
-        const token = jwt.sign(
-            {
-                email: normalizedEmail,
-                role,
-                admin: role === 'admin',
-            },
-            process.env.JWT_SECRET,
-            {
-                expiresIn: '1h',
-            }
-        );
-
-        return res.status(200).json({
-            message: 'Signin successful',
-            token,
-            role,
-            admin: role === 'admin',
-        });
+        return res.status(200).json(createDiscountMateSession(user));
     } catch (error) {
         console.error(
             'Error signing in user:',
@@ -995,6 +979,32 @@ const updateNotificationPreferences = async (req, res) => {
             'Failed to update notification preferences',
             'Error updating notification preferences:'
         );
+    }
+};
+
+const registerPushToken = async (req, res) => {
+    try {
+        const token = req.body?.token;
+        if (!token) return res.status(400).json({ message: 'Push token is required' });
+        const db = await connectToMongoDB();
+        await db.collection('users').updateOne({ email: req.user.email }, { $addToSet: { push_tokens: String(token) } });
+        return res.status(200).json({ message: 'Push token registered.' });
+    } catch (error) {
+        console.error('Error registering push token:', error);
+        return res.status(500).json({ message: 'Failed to register push token' });
+    }
+};
+
+const removePushToken = async (req, res) => {
+    try {
+        const token = req.body?.token;
+        if (!token) return res.status(400).json({ message: 'Push token is required' });
+        const db = await connectToMongoDB();
+        await db.collection('users').updateOne({ email: req.user.email }, { $pull: { push_tokens: String(token) } });
+        return res.status(200).json({ message: 'Push token removed.' });
+    } catch (error) {
+        console.error('Error removing push token:', error);
+        return res.status(500).json({ message: 'Failed to remove push token' });
     }
 };
 
@@ -1429,4 +1439,6 @@ module.exports = {
     updateProfileImage,
     getProfileImage,
     saveReceiptToProfile,
+    registerPushToken,
+    removePushToken,
 };

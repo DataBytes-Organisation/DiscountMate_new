@@ -3,6 +3,7 @@ services:
     image: postgres:18
     container_name: discount_mate_etl_postgres
     restart: unless-stopped
+    shm_size: ${POSTGRES_SHM_SIZE:-256mb}
     env_file:
       - .env
     environment:
