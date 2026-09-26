@@ -9,6 +9,8 @@ venv/
 */venv/
 .venv*/
 Backend/ml-service/venv/
+.venv/
+*/.venv/
 .vscode/settings.json
 *.csv
 *.joblib

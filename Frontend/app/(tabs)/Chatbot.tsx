@@ -4,348 +4,164 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import { buildApiUrl } from '../../constants/Api';
 
-// Add FAQ responses
+// Static FAQ answers. These never hit the network — they are product
+// copy, not data, so answering them locally keeps the bot responsive.
 const quickResponses = {
    "How does DiscountMate work?": "DiscountMate compares prices across multiple retailers in real-time to help you find the best deals. We track prices, apply available coupons, and factor in shipping costs to show you the true lowest price.",
    "Where do you get your price data?": "We collect price data directly from authorized retailers through their official APIs and web services. Our system updates prices multiple times daily to ensure accuracy.",
    "Can I save favorite products?": "Yes! Once you create an account, you can save products to your favorites list and we'll notify you when their prices drop or when they go on sale."
 };
 
-// Recipe generation prompt template
-const recipePrompt = (ingredients: string) => `
-Generate a recipe using these ingredients: ${ingredients}
-Please include:
-1. Recipe name
-2. Ingredients list
-3. Step-by-step instructions
-4. Cooking time
-5. Difficulty level
-`;
-// Interface definitions for TypeScript type checking
+// The DL-06 agent exposes two tools only: search_products and
+// compare_prices. Recipe support was removed from the chatbot, so we
+// answer recipe asks here rather than sending them to a tool that
+// cannot serve them.
+const RECIPE_KEYWORDS = ['recipe', 'cook', 'cooking', 'meal', 'dish', 'ingredients to make'];
+const RECIPE_FUTURE_FEATURE = 'Recipe suggestions are planned as a future feature.';
+
 interface Message {
    text: string;
    sender: 'user' | 'bot';
+   prices?: RetailerPrice[];
+   products?: ProductCandidate[];
 }
-// Product interface for e-commerce functionality
-interface Product {
-   _id: string;
-   current_price: number;
-   link_image: string;
-   product_code: string;
+
+// Mirrors chatbots/schemas/products.py::RetailerPrice
+interface RetailerPrice {
+   retailer: string;
+   price: number;
+   currency?: string;
+   unit_price?: string | null;
+   is_on_special?: boolean | null;
+   price_date?: string | null;
+}
+
+// Mirrors chatbots/schemas/products.py::ProductCandidate
+interface ProductCandidate {
    product_id: string;
    product_name: string;
-   category: string;
-   link: string;
-   measurement: string;
-   sub_category_1: string;
-   sub_category_2: string;
-   unit_per_prod: string;
+   brand?: string | null;
+   pack_size?: string | null;
+   category?: string | null;
+   image_url?: string | null;
 }
 
-// Recipe interface
-interface Recipe {
-   name: string;
-   ingredients: string[];
-   instructions: string[];
-   cookingTime: string;
-   difficulty: string;
-}
-// Type guard to ensure product data is valid
-const isValidProduct = (product: any): product is Product => {
-   return (
-      product &&
-      typeof product === 'object' &&
-      typeof product.product_name === 'string' &&
-      typeof product.current_price === 'number' &&
-      typeof product.category === 'string'
-   );
-};
-// Class to manage conversation history and context
-interface HistoryItem {
-   role: 'user' | 'assistant';
-   content: string;
+// Mirrors chatbots/schemas/agent.py::AgentResponse
+interface AgentResponse {
+   success: boolean;
+   answer: string;
+   action: 'search_products' | 'compare_prices' | 'clarification';
+   data?: {
+      prices?: RetailerPrice[];
+      cheapest?: RetailerPrice | null;
+      matched_product?: ProductCandidate | null;
+      products?: ProductCandidate[];
+      candidate_products?: ProductCandidate[];
+      status?: string;
+   };
+   needs_clarification?: boolean;
+   clarification_question?: string | null;
+   error?: { code: string; message: string } | null;
 }
 
-class ConversationContext {
-   private history: HistoryItem[];
-   private lastQuery: string | null;
-
-   constructor() {
-      this.history = [];
-      this.lastQuery = null;
-   }
-   // Methods to manage conversation history
-   addToHistory(message: string, role: 'user' | 'assistant'): void {
-      this.history.push({ role, content: message });
-      if (this.history.length > 10) this.history.shift();
-   }
-
-   getContext(): string {
-      return this.history.map(h => `${h.role}: ${h.content}`).join('\n');
-   }
-
-   clearContext(): void {
-      this.history = [];
-      this.lastQuery = null;
-   }
-}
-
-const conversationContext = new ConversationContext();
-
-const generateRecipe = async (ingredients: string): Promise<string> => {
-   try {
-      const API_KEY = ''; //Replace the API Here
-      // API call to Hugging Face model
-      const response = await axios.post(
-         'https://api-inference.huggingface.co/models/flax-community/t5-recipe-generation',
-         {
-            inputs: `ingredients: ${ingredients}`,
-            parameters: {
-               max_length: 512,
-               temperature: 0.7,
-               top_p: 0.95,
-               do_sample: true
-            }
-         },
-         {
-            headers: {
-               'Authorization': `Bearer ${API_KEY}`,
-               'Content-Type': 'application/json',
-            },
-         }
-      );
-
-      let recipe = response.data[0].generated_text;
-
-      // Remove duplications
-      const sections = recipe.split(/\b(title:|ingredients:|directions:|instructions:)/i);
-      const uniqueSections = new Map();
-
-      sections.forEach((section: string) => {
-         const sectionType = section.toLowerCase().trim();
-         if (sectionType === 'title:' || sectionType === 'ingredients:' || sectionType === 'directions:' || sectionType === 'instructions:') {
-            uniqueSections.set(sectionType, '');
-         } else if (section.trim()) {
-            const lastKey = Array.from(uniqueSections.keys()).pop();
-            uniqueSections.set(lastKey, section.trim());
-         }
-      });
-
-      // Format the recipe nicely
-      let formattedRecipe = '';
-
-      if (uniqueSections.has('title:')) {
-         formattedRecipe += `🍕 ${uniqueSections.get('title:')}\n\n`;
-      }
-
-      if (uniqueSections.has('ingredients:')) {
-         formattedRecipe += `📝 Ingredients:\n`;
-         const ingredients = uniqueSections.get('ingredients:')
-            .replace('ingredients', '')
-            .split(',')
-            .map(i => i.trim())
-            .filter(i => i)
-            .map(i => `• ${i}`)
-            .join('\n');
-         formattedRecipe += `${ingredients}\n\n`;
-      }
-
-      if (uniqueSections.has('directions:') || uniqueSections.has('instructions:')) {
-         formattedRecipe += `👩‍🍳 Instructions:\n`;
-         const steps = (uniqueSections.get('directions:') || uniqueSections.get('instructions:'))
-            .replace('directions', '')
-            .split('.')
-            .map(s => s.trim())
-            .filter(s => s)
-            .map((step, index) => `${index + 1}. ${step}`)
-            .join('\n');
-         formattedRecipe += steps;
-      }
-
-      // Add cooking tips section
-      formattedRecipe += '\n\n💡 Tips:\n';
-      formattedRecipe += '• Ensure all ingredients are at room temperature before starting\n';
-      formattedRecipe += '• Follow the instructions carefully for best results\n';
-      formattedRecipe += '• Adjust seasoning to taste';
-
-      return formattedRecipe;
-
-   } catch (error) {
-      console.error('Recipe Generation Error:', error);
-      return "I'm sorry, I'm having trouble generating a recipe right now. Please try again later.";
-   }
+const isRecipeQuery = (message: string): boolean => {
+   const lower = message.toLowerCase();
+   return RECIPE_KEYWORDS.some(keyword => lower.includes(keyword));
 };
 
-const handleAIResponse = async (message: string): Promise<string> => {
-   try {
-      // Check if the message matches any FAQ
-      const faqResponse = quickResponses[message as keyof typeof quickResponses];
-      if (faqResponse) {
-         return faqResponse;
-      }
-
-      // Check for recipe-related keywords
-      const recipeKeywords = ['recipe', 'cook', 'make', 'prepare', 'ingredients', 'how to make', 'how do i make'];
-      const isRecipeQuery = recipeKeywords.some(keyword =>
-         message.toLowerCase().includes(keyword)
-      );
-
-      if (isRecipeQuery) {
-         // Extract ingredients from the message
-         let ingredients = message
-            .toLowerCase()
-            .replace(/recipe|cook|make|prepare|with|using|can you|please|for|how to|how do i/g, '')
-            .replace(/[?!.]/g, '')
-            .trim();
-         if (ingredients.length < 3) {
-            return "Could you please specify what ingredients you'd like to use in the recipe?";
-         }
-
-         return await generateRecipe(ingredients);
-      }
-
-      // Check for product availability keywords
-      const productKeywords = ['available', 'in stock', 'have', 'sell', 'price of', 'cost of', 'how much'];
-      const isProductQuery = productKeywords.some(keyword =>
-         message.toLowerCase().includes(keyword)
-      );
-
-      if (isProductQuery) {
-         try {
-            const response = await axios.get(buildApiUrl('/products'));
-            const responseData = response.data;
-
-            // Handle consistent response structure: { items, page, pageSize, total, totalPages }
-            const productsData = Array.isArray(responseData)
-               ? responseData
-               : (responseData?.items || []);
-
-            if (!Array.isArray(productsData)) {
-               throw new Error('Invalid product data received - not an array');
-            }
-
-            const products: Product[] = productsData.filter(isValidProduct);
-
-            if (products.length === 0) {
-               return "I'm sorry, but I couldn't find any valid product information.";
-            }
-
-            const messageWords = message.toLowerCase().split(' ').filter(word =>
-               word.length > 2 && !['the', 'is', 'are', 'any', 'for', 'and', 'but', 'how', 'much', 'does', 'cost'].includes(word)
-            );
-
-            const potentialProducts = products.filter(product => {
-               const productName = product.product_name.toLowerCase();
-               const category = product.category.toLowerCase();
-               const subCategory1 = product.sub_category_1.toLowerCase();
-               const subCategory2 = product.sub_category_2.toLowerCase();
-
-               return messageWords.some(word =>
-                  productName.includes(word) ||
-                  category.includes(word) ||
-                  subCategory1.includes(word) ||
-                  subCategory2.includes(word)
-               );
-            });
-
-            if (potentialProducts.length > 0) {
-               const productResponses = potentialProducts.map(product => {
-                  return `${product.product_name} (${product.unit_per_prod}) is available for $${product.current_price.toFixed(2)} in the ${product.category} category.`;
-               });
-
-               return productResponses.join('\n');
-            } else {
-               return "I couldn't find any products matching your query. Could you please be more specific about what you're looking for?";
-            }
-         } catch (error) {
-            console.error('Product API Error:', error);
-            return "I'm having trouble checking product availability right now. Please try again later.";
-         }
-      }
-
-      // Generate AI response for general queries
-      const API_KEY = process.env.API_KEY;
-
-      const response = await axios.post(
-
-         'https://api-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-
-         {
-
-            inputs: message,
-
-            parameters: {
-
-               max_length: 100,
-
-               temperature: 0.7,
-
-               top_p: 0.9,
-
-            }
-
-         },
-
-         {
-            headers: {
-               'Authorization': `Bearer ${API_KEY}`,
-               'Content-Type': 'application/json',
-            },
-
-         });
-
-      const aiResponse = response.data[0].generated_text;
-      return aiResponse;
-
-   } catch (error) {
-      console.error('Response Handler Error:', error);
-      return "I apologize, but I'm having trouble connecting to our systems. Please try again in a moment.";
-   }
-};
+const newSessionId = (): string =>
+   `web-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
 const Chatbot: React.FC = () => {
    const [isOpen, setIsOpen] = useState<boolean>(false);
    const [messages, setMessages] = useState<Message[]>([
-      { text: "Hi, I'm your AI shopping and cooking assistant! I can help you check product availability, generate recipes, and answer questions.", sender: 'bot' },
-      { text: "Try asking me about products, recipes, or check out our FAQ!", sender: 'bot' },
+      { text: "Hi, I'm your AI shopping assistant! I can help you search for products and compare prices across Coles, Woolworths and IGA.", sender: 'bot' },
+      { text: "Try \"Compare prices for Coke Zero 2L\" or \"Find me milk\".", sender: 'bot' },
    ]);
    const [inputText, setInputText] = useState<string>('');
    const [isTyping, setIsTyping] = useState<boolean>(false);
    const scrollViewRef = useRef<ScrollView>(null);
+   const sessionIdRef = useRef<string>(newSessionId());
 
-   // Add FAQ questions as clickable options
    const faqQuestions = Object.keys(quickResponses);
 
-   const handleFAQClick = async (question: string) => {
-      setMessages(prevMessages => [...prevMessages, { text: question, sender: 'user' }]);
-      setIsTyping(true);
-
-      const response = quickResponses[question as keyof typeof quickResponses];
-
-      setTimeout(() => {
-         setMessages(prevMessages => [...prevMessages, { text: response, sender: 'bot' }]);
-         setIsTyping(false);
-      }, 500);
+   const pushBotMessage = (message: Message) => {
+      setMessages(prev => [...prev, message]);
    };
 
-   useEffect(() => {
-      conversationContext.clearContext();
-   }, []);
+   const handleFAQClick = (question: string) => {
+      setMessages(prev => [...prev, { text: question, sender: 'user' }]);
+      pushBotMessage({
+         text: quickResponses[question as keyof typeof quickResponses],
+         sender: 'bot',
+      });
+   };
+
+   // Sends one turn to the DL-06 agent and renders whatever tool it chose.
+   const askAgent = async (userMessage: string): Promise<Message> => {
+      try {
+         const response = await axios.post<AgentResponse>(
+            buildApiUrl('/ml/chatbot/chat'),
+            {
+               session_id: sessionIdRef.current,
+               message: userMessage,
+               top_k: 5,
+            },
+            { timeout: 30000 }
+         );
+
+         const result = response.data;
+
+         if (!result.success) {
+            console.error('Chatbot agent error:', result.error);
+            return {
+               text: "I'm having trouble reaching product data right now. Please try again in a moment.",
+               sender: 'bot',
+            };
+         }
+
+         const data = result.data || {};
+         return {
+            text: result.answer,
+            sender: 'bot',
+            prices: result.action === 'compare_prices' ? data.prices : undefined,
+            products: result.action === 'search_products'
+               ? data.products
+               : undefined,
+         };
+      } catch (error) {
+         console.error('Chatbot request failed:', error);
+         return {
+            text: "I'm having trouble connecting to DiscountMate right now. Please try again in a moment.",
+            sender: 'bot',
+         };
+      }
+   };
 
    const handleSend = async (): Promise<void> => {
-      if (inputText.trim()) {
-         const userMessage = inputText.trim();
-         setMessages(prevMessages => [...prevMessages, { text: userMessage, sender: 'user' }]);
-         setInputText('');
-         setIsTyping(true);
-
-         const aiResponse = await handleAIResponse(userMessage);
-
-         setTimeout(() => {
-            setMessages(prevMessages => [...prevMessages, { text: aiResponse, sender: 'bot' }]);
-            setIsTyping(false);
-         }, 500);
+      const userMessage = inputText.trim();
+      if (!userMessage) {
+         return;
       }
+
+      setMessages(prev => [...prev, { text: userMessage, sender: 'user' }]);
+      setInputText('');
+
+      const faqResponse = quickResponses[userMessage as keyof typeof quickResponses];
+      if (faqResponse) {
+         pushBotMessage({ text: faqResponse, sender: 'bot' });
+         return;
+      }
+
+      if (isRecipeQuery(userMessage)) {
+         pushBotMessage({ text: RECIPE_FUTURE_FEATURE, sender: 'bot' });
+         return;
+      }
+
+      setIsTyping(true);
+      const botMessage = await askAgent(userMessage);
+      setIsTyping(false);
+      pushBotMessage(botMessage);
    };
 
    useEffect(() => {
@@ -373,10 +189,42 @@ const Chatbot: React.FC = () => {
                   }}
                >
                   {messages.map((message, index) => (
-                     <View key={index} style={[styles.messageBubble, message.sender === 'bot' ? styles.botBubble : styles.userBubble]}>
-                        <Text style={styles.messageText}>{message.text}</Text>
+                     <View key={index} style={styles.messageRow}>
+                        <View style={[styles.messageBubble, message.sender === 'bot' ? styles.botBubble : styles.userBubble]}>
+                           <Text style={styles.messageText}>{message.text}</Text>
+                        </View>
+
+                        {/* Retailer price breakdown for compare_prices turns */}
+                        {message.prices && message.prices.length > 0 && (
+                           <View style={styles.detailCard}>
+                              {message.prices.map((price, priceIndex) => (
+                                 <View key={priceIndex} style={styles.priceRow}>
+                                    <Text style={styles.priceRetailer}>{price.retailer}</Text>
+                                    <Text style={styles.priceValue}>
+                                       ${Number(price.price).toFixed(2)}
+                                       {price.is_on_special ? ' (special)' : ''}
+                                    </Text>
+                                 </View>
+                              ))}
+                           </View>
+                        )}
+
+                        {/* Matched products for search_products turns */}
+                        {message.products && message.products.length > 0 && (
+                           <View style={styles.detailCard}>
+                              {message.products.slice(0, 5).map((product, productIndex) => (
+                                 <View key={productIndex} style={styles.productRow}>
+                                    <Text style={styles.productName}>{product.product_name}</Text>
+                                    {!!product.brand && (
+                                       <Text style={styles.productMeta}>{product.brand}</Text>
+                                    )}
+                                 </View>
+                              ))}
+                           </View>
+                        )}
                      </View>
                   ))}
+
                   {messages.length === 2 && (
                      <View style={styles.faqContainer}>
                         {faqQuestions.map((question, index) => (
@@ -388,14 +236,9 @@ const Chatbot: React.FC = () => {
                               <Text style={styles.faqText}>{question}</Text>
                            </TouchableOpacity>
                         ))}
-                        <TouchableOpacity
-                           style={styles.recipeButton}
-                           onPress={() => setInputText("Can you suggest a recipe with chicken and vegetables?")}
-                        >
-                           <Text style={styles.recipeButton}>🍳 Get Recipe Suggestions</Text>
-                        </TouchableOpacity>
                      </View>
                   )}
+
                   {isTyping && (
                      <View style={[styles.messageBubble, styles.botBubble]}>
                         <ActivityIndicator size="small" color="#4CAF50" />
@@ -472,11 +315,13 @@ const styles = StyleSheet.create({
       flex: 1,
       padding: 10,
    },
+   messageRow: {
+      marginBottom: 10,
+   },
    messageBubble: {
       maxWidth: '80%',
       padding: 10,
       borderRadius: 10,
-      marginBottom: 10,
    },
    botBubble: {
       alignSelf: 'flex-start',
@@ -488,6 +333,42 @@ const styles = StyleSheet.create({
    },
    messageText: {
       fontSize: 14,
+   },
+   detailCard: {
+      alignSelf: 'flex-start',
+      backgroundColor: '#fafafa',
+      borderWidth: 1,
+      borderColor: '#e0e0e0',
+      borderRadius: 8,
+      padding: 8,
+      marginTop: 6,
+      maxWidth: '90%',
+   },
+   priceRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: 3,
+   },
+   priceRetailer: {
+      fontSize: 13,
+      color: '#444',
+      marginRight: 12,
+   },
+   priceValue: {
+      fontSize: 13,
+      fontWeight: 'bold',
+      color: '#2E7D32',
+   },
+   productRow: {
+      paddingVertical: 3,
+   },
+   productName: {
+      fontSize: 13,
+      color: '#333',
+   },
+   productMeta: {
+      fontSize: 11,
+      color: '#777',
    },
    faqContainer: {
       marginTop: 10,
@@ -524,42 +405,6 @@ const styles = StyleSheet.create({
       borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
-   },
-   typingIndicator: {
-      flexDirection: 'row',
-      padding: 10,
-      alignItems: 'center',
-   },
-   recipeButton: {
-      backgroundColor: '#4CAF50',
-      padding: 12,
-      borderRadius: 8,
-      marginTop: 8,
-      alignItems: 'center',
-   },
-   recipeText: {
-      fontSize: 14,
-      color: '#444',
-      lineHeight: 20,
-   },
-   recipeDifficultyEasy: {
-      color: '#4CAF50',
-   },
-   recipeDifficultyMedium: {
-      color: '#FFA726',
-   },
-   recipeDifficultyHard: {
-      color: '#F44336',
-   },
-   cookingTime: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginTop: 4,
-   },
-   cookingTimeText: {
-      fontSize: 12,
-      color: '#666',
-      marginLeft: 4,
    },
 });
 
