@@ -413,7 +413,6 @@ export function ShoppingListsProvider({ children }: { children: ReactNode }) {
 
                const storeName =
                   retailer === "iga" ? "IGA" : retailer === "coles" ? "Coles" : "Woolworths";
-
                return {
                   ...item,
                   store: storeName,

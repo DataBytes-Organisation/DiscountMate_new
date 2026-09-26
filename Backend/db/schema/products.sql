@@ -11,6 +11,7 @@ CREATE TABLE app.product_metadata (
     product_id          UUID PRIMARY KEY,  -- logical FK to silver.dim_products.id
     description         TEXT,
     image_link_primary   TEXT,
+    pack_display_unit TEXT,
     updated_at           TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

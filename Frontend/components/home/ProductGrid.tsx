@@ -4,6 +4,8 @@ import { View, Text, Pressable, ScrollView } from "react-native";
 import ProductCard, { Product } from "./ProductCard";
 import ProductFilterSection from "../common/ProductFilterSection";
 import { API_URL } from "@/constants/Api";
+import type { CatalogueSource } from "@/services/catalogue/types";
+import { fetchPostgresProductsPage, } from "@/services/catalogue/catalogueApi";
 
 export type ApiProduct = {
    _id: string;
@@ -29,6 +31,12 @@ export type ApiProduct = {
    /** Latest IGA shelf price from product_pricings (iga_generic) */
    iga_price?: number | null;
    iga_unit_price?: string | null;
+   catalogue_source?: CatalogueSource;
+   is_on_special?: boolean | null;
+   special_text?: string | null;
+   aldi_price?: number | null;
+   aldi_unit_price?: string | null;
+
 };
 
 function pickPositivePrice(value: unknown): number | null {
@@ -55,6 +63,7 @@ function parseUnitNumericFromProduct(product: ApiProduct): number | null {
       product.coles_unit_price,
       product.woolworths_unit_price,
       product.iga_unit_price,
+      product.aldi_unit_price,
    ];
    for (const c of candidates) {
       if (c == null || !String(c).trim()) continue;
@@ -68,36 +77,77 @@ function parseUnitNumericFromProduct(product: ApiProduct): number | null {
 }
 
 /** Resolves Coles / Woolworths / IGA shelf prices (incl. legacy single-store current_price). */
-function resolveColesWoolworthsPrices(product: ApiProduct): {
+function resolveRetailerPrices(product: ApiProduct): {
    colesPriceNum: number | null;
    woolworthsPriceNum: number | null;
    igaPriceNum: number | null;
+   aldiPriceNum: number | null;
 } {
-   let colesPriceNum = pickPositivePrice(product.coles_price);
-   let woolworthsPriceNum = pickPositivePrice(product.woolworths_price);
-   let igaPriceNum = pickPositivePrice(product.iga_price);
+   let colesPriceNum =
+      pickPositivePrice(product.coles_price);
 
-   if (colesPriceNum == null && woolworthsPriceNum == null && igaPriceNum == null) {
-      const legacy = pickPositivePrice(product.current_price);
+   let woolworthsPriceNum =
+      pickPositivePrice(product.woolworths_price);
+
+   let igaPriceNum =
+      pickPositivePrice(product.iga_price);
+
+   let aldiPriceNum =
+      pickPositivePrice(product.aldi_price);
+
+   if (
+      colesPriceNum == null &&
+      woolworthsPriceNum == null &&
+      igaPriceNum == null &&
+      aldiPriceNum == null
+   ) {
+      const legacy =
+         pickPositivePrice(product.current_price);
+
       if (legacy != null) {
-         if (product.store_chain === "woolworths_generic") {
+         if (
+            product.store_chain ===
+            "woolworths_generic" ||
+            product.store_chain === "woolworths"
+         ) {
             woolworthsPriceNum = legacy;
-         } else if (product.store_chain === "iga_generic") {
+         } else if (
+            product.store_chain === "iga_generic" ||
+            product.store_chain === "iga"
+         ) {
             igaPriceNum = legacy;
+         } else if (
+            product.store_chain === "aldi_generic" ||
+            product.store_chain === "aldi"
+         ) {
+            aldiPriceNum = legacy;
          } else {
             colesPriceNum = legacy;
          }
       }
    }
-
-   return { colesPriceNum, woolworthsPriceNum, igaPriceNum };
+   return {
+      colesPriceNum,
+      woolworthsPriceNum,
+      igaPriceNum,
+      aldiPriceNum,
+   };
 }
 
 function apiProductHasShelfPrice(product: ApiProduct): boolean {
-   const { colesPriceNum, woolworthsPriceNum, igaPriceNum } = resolveColesWoolworthsPrices(
-      product
+   const {
+      colesPriceNum,
+      woolworthsPriceNum,
+      igaPriceNum,
+      aldiPriceNum,
+   } = resolveRetailerPrices(product);
+
+   return (
+      colesPriceNum != null ||
+      woolworthsPriceNum != null ||
+      igaPriceNum != null ||
+      aldiPriceNum != null
    );
-   return colesPriceNum != null || woolworthsPriceNum != null || igaPriceNum != null;
 }
 
 function parseProductsPayload(
@@ -137,129 +187,210 @@ export async function fetchProductsPage(
    limit: number,
    category: string | undefined,
    search: string | undefined,
-   signal?: AbortSignal
-): Promise<{ items: ApiProduct[]; total: number; totalPages: number }> {
+   signal?: AbortSignal,
+   source: CatalogueSource = "mongo"):
+   Promise<{ items: ApiProduct[]; total: number; totalPages: number; }> {
+   if (source === "postgres") {
+      return fetchPostgresProductsPage(
+         page,
+         limit,
+         category,
+         search,
+         signal
+      );
+   }
    const params = new URLSearchParams();
    params.set("page", String(page));
    params.set("limit", String(limit));
-
    if (category && category !== "All") {
       params.set("category", category);
    }
    if (search && search.trim().length > 0) {
       params.set("search", search.trim());
    }
-
-   const response = await fetch(`${API_URL}/products?${params.toString()}`, {
-      signal,
-   });
+   const response = await fetch(
+      `${API_URL}/products?${params.toString()}`,
+      { signal }
+   );
    if (!response.ok) {
-      throw new Error(`Products request failed: ${response.status}`);
+      throw new Error(
+         `Products request failed: ${response.status}`
+      );
    }
    const data = await response.json();
    return parseProductsPayload(data, limit);
 }
 
 export function mapApiProductToCard(product: ApiProduct): Product {
-   // Always use _id for consistency in URLs since it's guaranteed to exist for all MongoDB documents
-   // The backend's getProduct endpoint can handle both _id (MongoDB ObjectId) and product_code
    const rawId = product._id;
    const id = String(rawId ?? "");
+   const name = product.product_name?.trim() || (typeof rawId === "string" && rawId.trim().length > 0
+      ? `Product ${rawId}`
+      : "Unnamed product");
 
-   const name =
-      product.product_name?.trim() ||
-      (typeof rawId === "string" && rawId.trim().length > 0
-         ? `Product ${rawId}`
-         : "Unnamed product");
-   const category = product.category_name?.trim() || undefined;
+   const category =
+      product.category_name?.trim() || undefined;
 
-   // Truncate description for grid display
-   const truncateDescription = (text: string | null | undefined, maxWords: number = 20): string => {
+   const truncateDescription = (
+      text: string | null | undefined,
+      maxWords = 20
+   ): string => {
       if (!text) return "no description";
 
-      // Strip HTML tags
-      const stripped = text.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+      const stripped = text
+         .replace(/<[^>]*>/g, " ")
+         .replace(/\s+/g, " ")
+         .trim();
 
       if (!stripped) return "no description";
 
-      // Split into words and truncate
       const words = stripped.split(/\s+/);
+
       if (words.length <= maxWords) {
          return stripped;
       }
 
-      return words.slice(0, maxWords).join(" ") + "...";
+      return `${words
+         .slice(0, maxWords)
+         .join(" ")}...`;
    };
 
-   // Use description from API, truncated for grid display
-   const subtitle = truncateDescription(product.description);
-
-   const { colesPriceNum, woolworthsPriceNum, igaPriceNum } = resolveColesWoolworthsPrices(
-      product
+   const subtitle = truncateDescription(
+      product.description
    );
 
-   const colesUnitPriceLabel = sanitizeUnitLabel(product.coles_unit_price);
-   const woolworthsUnitPriceLabel = sanitizeUnitLabel(product.woolworths_unit_price);
-   const igaUnitPriceLabel = sanitizeUnitLabel(product.iga_unit_price);
-
-   const badge = "Great value";
-
-   // Use default icon
-   const icon: Product["icon"] = "tag";
-
-   // Use default trend
-   const trend = { label: "Stable", tone: "neutral" as Product["trendTone"] };
+   const {
+      colesPriceNum,
+      woolworthsPriceNum,
+      igaPriceNum,
+      aldiPriceNum,
+   } = resolveRetailerPrices(product);
 
    const prices: Array<{
-      storeKey: "coles" | "woolworths" | "iga";
+      storeKey:
+      | "coles"
+      | "woolworths"
+      | "iga"
+      | "aldi";
       name: string;
       price: number | null;
+      unitPriceLabel?: string;
    }> = [
-         { storeKey: "coles", name: "Coles", price: colesPriceNum },
-         { storeKey: "woolworths", name: "Woolworths", price: woolworthsPriceNum },
-         { storeKey: "iga", name: "IGA", price: igaPriceNum },
+         {
+            storeKey: "coles",
+            name: "Coles",
+            price: colesPriceNum,
+            unitPriceLabel: sanitizeUnitLabel(
+               product.coles_unit_price
+            ),
+         },
+         {
+            storeKey: "woolworths",
+            name: "Woolworths",
+            price: woolworthsPriceNum,
+            unitPriceLabel: sanitizeUnitLabel(
+               product.woolworths_unit_price
+            ),
+         },
+         {
+            storeKey: "iga",
+            name: "IGA",
+            price: igaPriceNum,
+            unitPriceLabel: sanitizeUnitLabel(
+               product.iga_unit_price
+            ),
+         },
+         {
+            storeKey: "aldi",
+            name: "Aldi",
+            price: aldiPriceNum,
+            unitPriceLabel: sanitizeUnitLabel(
+               product.aldi_unit_price
+            ),
+         },
       ];
 
-   const pricedEntries = prices.filter(
-      (p): p is typeof p & { price: number } => p.price != null && p.price > 0
+   /*
+    * Preserve the existing three cards on Mongo.
+    * PostgreSQL displays only retailers that actually
+    * have a price for the product.
+    */
+   const visiblePrices =
+      product.catalogue_source === "postgres"
+         ? prices
+         : prices.filter(
+            (entry) =>
+               entry.storeKey !== "aldi"
+         );
+
+   const pricedEntries = visiblePrices.filter(
+      (
+         entry
+      ): entry is typeof entry & {
+         price: number;
+      } =>
+         entry.price != null &&
+         entry.price > 0
    );
+
    const lowestPrice =
       pricedEntries.length > 0
-         ? pricedEntries.reduce((min, entry) => Math.min(min, entry.price), Number.POSITIVE_INFINITY)
+         ? Math.min(
+            ...pricedEntries.map(
+               (entry) => entry.price
+            )
+         )
          : null;
 
-   const retailers = prices.map((p) => ({
-      storeKey: p.storeKey,
-      name: p.name,
-      price: formatShelfPrice(p.price),
-      isCheapest: lowestPrice != null && p.price != null && p.price === lowestPrice,
-      unitPriceLabel:
-         p.storeKey === "coles"
-            ? colesUnitPriceLabel
-            : p.storeKey === "woolworths"
-               ? woolworthsUnitPriceLabel
-               : igaUnitPriceLabel,
-   }));
+   const retailers = visiblePrices.map(
+      (entry) => ({
+         storeKey: entry.storeKey,
+         name: entry.name,
+         price: formatShelfPrice(entry.price),
+         isCheapest:
+            lowestPrice != null &&
+            entry.price === lowestPrice,
+         unitPriceLabel:
+            entry.unitPriceLabel,
+      })
+   );
+
+   const badge =
+      product.special_text?.trim() ||
+      (product.is_on_special
+         ? "On special"
+         : "Great value");
 
    return {
       id: id || name,
+      source:
+         product.catalogue_source ?? "mongo",
       name,
       subtitle,
       category,
-      brand: product.brand?.trim() || undefined,
-      gtin: product.gtin?.trim() || undefined,
-      packQuantity: product.unit_per_prod == null ? undefined : String(product.unit_per_prod),
-      packUom: product.measurement?.trim() || undefined,
-      icon,
-      link_image: product.link_image || null,
+      brand:
+         product.brand?.trim() || undefined,
+      gtin:
+         product.gtin?.trim() || undefined,
+      packQuantity:
+         product.unit_per_prod == null
+            ? undefined
+            : String(product.unit_per_prod),
+      packUom:
+         product.measurement?.trim() ||
+         undefined,
+      icon: "tag",
+      link_image:
+         product.link_image || null,
       badge,
-      trendLabel: trend.label,
-      trendTone: trend.tone,
+      trendLabel: "Stable",
+      trendTone: "neutral",
       retailers,
    };
 }
 
 type ProductGridProps = {
+   source?: CatalogueSource;
    activeCategory?: string;
    searchQuery?: string;
    priceRangeFilter?: { min: number | null; max: number | null };
@@ -269,6 +400,7 @@ type ProductGridProps = {
 };
 
 const ProductGrid: React.FC<ProductGridProps> = ({
+   source = "mongo",
    activeCategory,
    searchQuery,
    priceRangeFilter,
@@ -310,7 +442,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                pageSize,
                activeCategory,
                searchQuery,
-               ac.signal
+               ac.signal,
+               source
             );
 
             setApiProducts(items);
@@ -321,12 +454,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                return;
             }
             console.error("Error fetching products for home grid:", err);
-               setApiProducts([]);
-               setTotalProducts(0);
-               setTotalPagesFromApi(0);
-               setError(
-                  "We couldn't load products just now. Please check your connection and try again."
-               );
+            setApiProducts([]);
+            setTotalProducts(0);
+            setTotalPagesFromApi(0);
+            setError(
+               "We couldn't load products just now. Please check your connection and try again."
+            );
          } finally {
             if (!ac.signal.aborted) {
                setLoading(false);
@@ -337,17 +470,18 @@ const ProductGrid: React.FC<ProductGridProps> = ({
       run();
       return () => ac.abort();
    }, [
-         currentPage,
-         activeCategory,
-         searchQuery,
-         requireSearch,
-         retryRequest,
-      ]);
+      currentPage,
+      activeCategory,
+      searchQuery,
+      requireSearch,
+      retryRequest,
+      source
+   ]);
 
    useEffect(() => {
       // Reset to first page when the category or search query changes
       setCurrentPage(1);
-   }, [activeCategory, searchQuery]);
+   }, [activeCategory, searchQuery, source]);
 
    useEffect(() => {
       if (totalPagesFromApi == null || totalPagesFromApi < 1) return;
@@ -413,7 +547,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
          {/* Product Filter Section */}
          <ProductFilterSection productCount={loading ? 0 : overallProductCount} />
 
-        {/* Error state */}
+         {/* Error state */}
          {error && !loading && (
             <View className="mb-6 px-6 py-8 rounded-2xl bg-red-50 border border-red-200 items-center">
                <Text className="text-base font-semibold text-red-700 text-center mb-2">

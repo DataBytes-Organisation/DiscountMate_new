@@ -83,10 +83,10 @@ function normalizeRetailerPrices(value) {
 function transformListItem(item, listSourceId, index) {
   const sourceIdentifier = cleanString(
     item?.id
-      ?? item?.product_id
-      ?? item?.productId
-      ?? item?.product_code
-      ?? item?.productCode,
+    ?? item?.product_id
+    ?? item?.productId
+    ?? item?.product_code
+    ?? item?.productCode,
   );
 
   const legacyProductIdentifier = sourceIdentifier
