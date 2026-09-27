@@ -1,0 +1,34 @@
+# Local dependencies and generated Expo output are recreated by EAS Build.
+node_modules/
+.expo/
+dist/
+web-build/
+
+# Test and local development output is not part of the native application.
+test-results/
+playwright-report/
+coverage/
+npm-debug.log*
+
+# EAS supplies build environment variables separately.
+.env
+.env.*
+!.env.example
+
+# Never upload local signing material.
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Repository-only content.
+.git/
+backups/
+demo-product page/
+e2e/
+
+# Web-only static assets (served via fetch() for the web build; not read by
+# the native Android/iOS builders and not referenced through require()).
+public/

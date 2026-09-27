@@ -10,6 +10,7 @@ from urllib.parse import quote
 import yaml
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy.engine import URL
 
 
 class AppSettings(BaseSettings):
@@ -28,6 +29,10 @@ class AppSettings(BaseSettings):
     postgres_user: str = Field(default="postgres", alias="POSTGRES_USER")
     postgres_password: str = Field(default="postgres", alias="POSTGRES_PASSWORD")
     postgres_schema: str = Field(default="silver", alias="POSTGRES_SCHEMA")
+    postgres_unix_socket: str | None = Field(
+        default=None,
+        alias="POSTGRES_UNIX_SOCKET",
+    )
     duckdb_home_directory: str = Field(
         default="/tmp/discountmate-duckdb/home",
         alias="DUCKDB_HOME_DIRECTORY",
@@ -40,6 +45,14 @@ class AppSettings(BaseSettings):
     gcs_secret: str | None = Field(default=None, alias="GCS_SECRET")
 
     def postgres_url(self) -> str:
+        if self.postgres_unix_socket:
+            return URL.create(
+                drivername="postgresql+psycopg",
+                username=self.postgres_user,
+                password=self.postgres_password,
+                database=self.postgres_database,
+                query={"host": self.postgres_unix_socket},
+            ).render_as_string(hide_password=False)
         return (
             f"postgresql+psycopg://{self.postgres_user}:{self.postgres_password}"
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_database}"
@@ -49,6 +62,12 @@ class AppSettings(BaseSettings):
         encoded_user = quote(self.postgres_user, safe="")
         encoded_password = quote(self.postgres_password, safe="")
         encoded_database = quote(self.postgres_database, safe="")
+        if self.postgres_unix_socket:
+            encoded_socket = quote(self.postgres_unix_socket, safe="")
+            return (
+                f"postgresql://{encoded_user}:{encoded_password}@/{encoded_database}"
+                f"?host={encoded_socket}"
+            )
         return (
             f"postgresql://{encoded_user}:{encoded_password}"
             f"@{self.postgres_host}:{self.postgres_port}/{encoded_database}"
@@ -57,6 +76,8 @@ class AppSettings(BaseSettings):
 
 class ModelRuntimeConfig(BaseModel):
     products: str | None = None
+    products_glob: str | None = None
+    coles_master: str | None = None
 
 
 class RuntimePaths(BaseModel):

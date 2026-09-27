@@ -10,7 +10,8 @@ import {
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
-import AuthFooter from "../../components/auth/AuthFooter";
+import FooterSection from "../../components/home/FooterSection";
+import GoogleSignInButton from "../../components/auth/GoogleSignInButton";
 import { useRouter } from "expo-router";
 import { API_URL } from "../../constants/Api";
 
@@ -393,9 +394,11 @@ export default function RegisterScreen() {
    const [allowMarketingEmails, setAllowMarketingEmails] = useState(false);
    const [error, setError] = useState<string | null>(null);
    const [isSubmitting, setIsSubmitting] = useState(false);
+   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
    const router = useRouter();
 
    const handleRegister = async () => {
+      if (isSubmitting || isGoogleSubmitting) return;
       setError(null);
 
       if (!firstName || !lastName || !email || !password || !confirmPassword) {
@@ -433,9 +436,9 @@ export default function RegisterScreen() {
          if (!response.ok) {
             setError(data?.message || "Signup failed. Please try again.");
          } else {
-            router.push("/(auth)/login");
+            router.push({ pathname: "/(auth)/login", params: { registered: "1" } });
          }
-      } catch (err) {
+      } catch {
          setError("An error occurred. Please try again.");
       } finally {
          setIsSubmitting(false);
@@ -501,6 +504,26 @@ export default function RegisterScreen() {
                            You can update or remove your information at any time from
                            your account settings.
                         </Text>
+                     </View>
+
+                     <View className="mb-5 gap-3">
+                        <GoogleSignInButton
+                           label="Continue with Google"
+                           disabled={isSubmitting}
+                           onBusyChange={setIsGoogleSubmitting}
+                           onError={setError}
+                        />
+                        <Text className="text-center text-xs text-gray-400">
+                           By continuing with Google, you agree to the DiscountMate
+                           Terms of Use and acknowledge the Privacy Policy.
+                        </Text>
+                        <View className="flex-row items-center gap-3">
+                           <View className="h-px flex-1 bg-gray-200" />
+                           <Text className="text-xs font-medium uppercase tracking-wide text-gray-400">
+                              or create with email
+                           </Text>
+                           <View className="h-px flex-1 bg-gray-200" />
+                        </View>
                      </View>
 
                      {/* Name row */}
@@ -720,7 +743,7 @@ export default function RegisterScreen() {
                         <Pressable
                            className="h-12 items-center justify-center rounded-2xl bg-emerald-600"
                            onPress={handleRegister}
-                           disabled={isSubmitting}
+                           disabled={isSubmitting || isGoogleSubmitting}
                         >
                            {isSubmitting ? (
                               <ActivityIndicator color="#fff" />
@@ -1019,7 +1042,7 @@ export default function RegisterScreen() {
                </View>
             </View>
          </View>
-         <AuthFooter />
+         <FooterSection disableEdgeOffset />
       </ScrollView>
    );
 }

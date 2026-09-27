@@ -1,0 +1,105 @@
+{
+  "name": "DiscountMate DL-06 Chatbot Orchestration",
+  "description": "Visual prototype for the LangGraph workflow behind POST /api/chatbot/chat.",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "validate_request",
+      "type": "python_function",
+      "label": "Validate Chat Request",
+      "description": "Parse session_id, message, top_k, and optional screen/product context."
+    },
+    {
+      "id": "plan_tool",
+      "type": "llm_or_heuristic_router",
+      "label": "Plan Tool",
+      "description": "Select search_products, compare_prices, or clarification."
+    },
+    {
+      "id": "validate_tool",
+      "type": "pydantic_validator",
+      "label": "Validate Tool Arguments",
+      "description": "Validate selected tool arguments against the chatbot schema models."
+    },
+    {
+      "id": "clarify",
+      "type": "response_builder",
+      "label": "Ask Clarifying Question",
+      "description": "Return a structured clarification response when the workflow cannot safely execute a tool."
+    },
+    {
+      "id": "execute_tool",
+      "type": "tool_runner",
+      "label": "Execute MCP-Style Tool",
+      "description": "Run the selected product-search or price-comparison tool."
+    },
+    {
+      "id": "compose_answer",
+      "type": "response_builder",
+      "label": "Compose Chatbot Answer",
+      "description": "Convert the tool envelope into the unified AgentResponse contract used by the Flask endpoint."
+    }
+  ],
+  "edges": [
+    {
+      "source": "validate_request",
+      "target": "plan_tool",
+      "condition": "valid request"
+    },
+    {
+      "source": "validate_request",
+      "target": "compose_answer",
+      "condition": "invalid request"
+    },
+    {
+      "source": "plan_tool",
+      "target": "validate_tool"
+    },
+    {
+      "source": "validate_tool",
+      "target": "clarify",
+      "condition": "clarification selected"
+    },
+    {
+      "source": "validate_tool",
+      "target": "execute_tool",
+      "condition": "valid tool arguments"
+    },
+    {
+      "source": "validate_tool",
+      "target": "compose_answer",
+      "condition": "invalid tool arguments"
+    },
+    {
+      "source": "execute_tool",
+      "target": "compose_answer"
+    }
+  ],
+  "test_cases": [
+    {
+      "name": "Product search route",
+      "input": {
+        "session_id": "demo-session",
+        "message": "Find oat milk",
+        "top_k": 5
+      },
+      "expected_tool": "search_products"
+    },
+    {
+      "name": "Price comparison route",
+      "input": {
+        "session_id": "demo-session",
+        "message": "Compare prices for Coke Zero 2L at Coles and Woolworths"
+      },
+      "expected_tool": "compare_prices"
+    },
+    {
+      "name": "Clarification route",
+      "input": {
+        "session_id": "demo-session",
+        "message": "Find the cheapest"
+      },
+      "expected_tool": "clarification"
+    }
+  ]
+}

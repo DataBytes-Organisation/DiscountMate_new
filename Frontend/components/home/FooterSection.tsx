@@ -18,13 +18,20 @@ const FooterSection: React.FC<FooterSectionProps> = ({ disableEdgeOffset }) => {
       { label: "Contact Us", route: "/contact" },
       { label: "Help Center", route: "/contact" },
    ];
+   const quickLinks = [
+      { label: "Home", route: "/" },
+      { label: "Compare Prices", route: "/(tabs)/compare" },
+      { label: "Weekly Specials", route: "/specials" },
+      { label: "Grocery Lists", route: "/(tabs)/my-lists" },
+      { label: "Price Alerts", route: "/(tabs)/alert-segments" },
+   ];
 
    return (
       <View
          className="bg-dark m-0"
          style={[
             disableEdgeOffset ? undefined : { marginHorizontal: -16 },
-            { marginBottom: -24 },
+            { marginBottom: disableEdgeOffset ? 0 : -24 },
          ]}
       >
          <View className="w-full px-6 md:px-12 py-12">
@@ -63,16 +70,10 @@ const FooterSection: React.FC<FooterSectionProps> = ({ disableEdgeOffset }) => {
                <View className="flex-1">
                   <Text className="text-white font-bold mb-5">Quick Links</Text>
                   <View className="gap-3">
-                     {[
-                        "Home",
-                        "Compare Prices",
-                        "Weekly Specials",
-                        "Grocery Lists",
-                        "Price Alerts",
-                     ].map((item) => (
-                        <TouchableOpacity key={item}>
+                     {quickLinks.map((item) => (
+                        <TouchableOpacity key={item.label} onPress={() => router.push(item.route as any)} accessibilityLabel={item.label}>
                            <Text className="text-sm text-gray-400 active:text-primary">
-                              {item}
+                              {item.label}
                            </Text>
                         </TouchableOpacity>
                      ))}
@@ -119,7 +120,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ disableEdgeOffset }) => {
             {/* Bottom bar */}
             <View className="border-t border-white/10 pt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                <Text className="text-sm text-gray-400">
-                  © 2024 DiscountMate. All rights reserved.
+                  © {new Date().getFullYear()} DiscountMate. All rights reserved.
                </Text>
 
                <View className="flex flex-row flex-wrap items-center gap-6">

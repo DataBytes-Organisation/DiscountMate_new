@@ -67,7 +67,7 @@ export default function ProfileScreen() {
                const message = err?.message || "Unable to load your profile.";
                if (message === SESSION_EXPIRED_MESSAGE) {
                   setError(message);
-                  router.replace("/login");
+                  router.replace("/(auth)/login");
                   return;
                }
 
@@ -110,7 +110,7 @@ export default function ProfileScreen() {
          const message = err?.message || "Unable to save your profile.";
          setError(message);
          if (message === SESSION_EXPIRED_MESSAGE) {
-            router.replace("/login");
+            router.replace("/(auth)/login");
          }
          throw err;
       } finally {
@@ -163,7 +163,7 @@ export default function ProfileScreen() {
             err?.message || "Unable to upload your profile picture.";
          setError(message);
          if (message === SESSION_EXPIRED_MESSAGE) {
-            router.replace("/login");
+            router.replace("/(auth)/login");
          }
       } finally {
          setUploadingImage(false);
@@ -186,7 +186,7 @@ export default function ProfileScreen() {
          const message = err?.message || "Unable to update your password.";
          setError(message);
          if (message === SESSION_EXPIRED_MESSAGE) {
-            router.replace("/login");
+            router.replace("/(auth)/login");
          }
          throw err;
       } finally {
@@ -203,12 +203,12 @@ export default function ProfileScreen() {
          await deleteAccount();
          await AsyncStorage.removeItem("authToken");
          setCachedProfile(null);
-         router.replace("/login");
+         router.replace("/(auth)/login");
       } catch (err: any) {
          const message = err?.message || "Unable to delete your account.";
          setError(message);
          if (message === SESSION_EXPIRED_MESSAGE) {
-            router.replace("/login");
+            router.replace("/(auth)/login");
          }
          throw err;
       } finally {

@@ -10,6 +10,13 @@ type CartItem = {
    image?: string;
    category?: string;
    categoryId?: string;
+   comparisonProductId?: string;
+   sourceProductId?: string;
+   deProductId?: string;
+   gtin?: string;
+   brand?: string;
+   packQuantity?: string;
+   packUom?: string;
    retailerPrices?: {
       coles?: number;
       woolworths?: number;
@@ -51,13 +58,22 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             image: item.image,
             category: item.category,
             categoryId: item.categoryId,
+            comparisonProductId: item.comparisonProductId,
+            sourceProductId: item.sourceProductId,
+            deProductId: item.deProductId,
+            gtin: item.gtin,
+            brand: item.brand,
+            packQuantity: item.packQuantity,
+            packUom: item.packUom,
             retailerPrices: item.retailerPrices,
          })),
       [activeList]
    );
 
    const addToCart = (item: CartItem) => {
-      addItemToActiveList(item);
+      void addItemToActiveList(item).catch((error) => {
+         console.error("Failed to add item to cart:", error);
+      });
    };
 
    const removeFromCart = (itemId: string) => {

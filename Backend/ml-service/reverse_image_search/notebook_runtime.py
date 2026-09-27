@@ -1,7 +1,7 @@
 """
 Query-only runtime extracted from the reverse-image-search Jupyter notebook.
 
-Loads reverse-image-search metadata plus the FAISS index cached from GCS, and
+Loads reverse-image-search metadata plus a local or GCS-backed FAISS index, and
 exposes two entrypoints for reverse-image search:
 
     search_image_file(image_path, top_k=3)    -> list[dict]
@@ -22,9 +22,7 @@ import sys
 from pathlib import Path
 from typing import Optional, cast
 
-import google.auth
 from dotenv import load_dotenv
-from google.cloud.storage import Client as StorageClient  # pyright: ignore[reportMissingImports]
 
 # torch MUST be imported before faiss (OpenMP runtime claim — see notebook).
 import torch
@@ -49,8 +47,9 @@ TEST_IMAGE_DIR = BASE_DIR / "Test_Image"
 load_dotenv(BASE_DIR.parent.parent / ".env", override=False)
 
 # ---------------------------------------------------------------------------
-# GCS config — override via env vars if needed
+# Model artifact config
 # ---------------------------------------------------------------------------
+MODEL_ARTIFACT_SOURCE = os.environ.get("MODEL_ARTIFACT_SOURCE", "gcs").strip().lower()
 FAISS_BUCKET_NAME = os.environ.get("FAISS_BUCKET_NAME", "discountmate-ml-models")
 FAISS_OBJECT_NAME = os.environ.get("FAISS_OBJECT_NAME", "reverse_image_search.faiss")
 FAISS_GCP_PROJECT = (
@@ -77,8 +76,19 @@ def _is_gcp_serverless() -> bool:
 INDEX_PATH = _resolve_faiss_local_path()
 
 
-def load_faiss_index_from_gcs() -> Path:
-    """Download the FAISS index from GCS if not already cached locally."""
+def _validate_artifact_source() -> None:
+    if MODEL_ARTIFACT_SOURCE not in {"gcs", "local"}:
+        raise RuntimeError(
+            "MODEL_ARTIFACT_SOURCE must be either 'gcs' or 'local', "
+            f"got {MODEL_ARTIFACT_SOURCE!r}."
+        )
+
+
+def _download_faiss_index_from_gcs() -> Path:
+    """Download the FAISS index to the configured local cache path."""
+    import google.auth
+    from google.cloud.storage import Client as StorageClient  # pyright: ignore[reportMissingImports]
+
     if INDEX_PATH.exists():
         return INDEX_PATH
     INDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -117,6 +127,20 @@ def load_faiss_index_from_gcs() -> Path:
             "`gcloud auth application-default set-quota-project <project-id>`."
         ) from exc
     return INDEX_PATH
+
+
+def resolve_faiss_index() -> Path:
+    """Resolve the FAISS index without contacting GCS in local mode."""
+    _validate_artifact_source()
+    if INDEX_PATH.exists():
+        return INDEX_PATH
+    if MODEL_ARTIFACT_SOURCE == "local":
+        raise RuntimeError(
+            "Reverse image search is unavailable because the local FAISS "
+            f"index is missing at '{INDEX_PATH}'. Set LOCAL_FAISS_PATH to a "
+            "valid index file or place the artifact at the default path."
+        )
+    return _download_faiss_index_from_gcs()
 
 # ---------------------------------------------------------------------------
 # Config — mirrors notebook defaults that produced the shipped index.
@@ -306,13 +330,13 @@ def load_engine(device: Optional[str] = None) -> dict:
             "Expected a prebuilt metadata file alongside the runtime module."
         )
 
-    resolved_index = load_faiss_index_from_gcs()
+    resolved_index = resolve_faiss_index()
     try:
         index = faiss.read_index(str(resolved_index))
     except Exception as exc:
         raise RuntimeError(
             f"Failed to load FAISS index from '{resolved_index}': {exc}. "
-            "Delete the cached file and restart to download a fresh copy."
+            "Replace or rebuild the configured index artifact."
         ) from exc
     if index.d != VECTOR_DIM:
         raise ValueError(
@@ -324,7 +348,7 @@ def load_engine(device: Optional[str] = None) -> dict:
         print(
             "[ReverseImageSearch] WARNING: FAISS index contains 0 vectors — "
             "all searches will return empty results. "
-            "Upload the correct index to GCS and delete the local cache to re-download.",
+            "Replace or rebuild the configured index artifact.",
             file=sys.stderr,
         )
     with open(METADATA_PATH, encoding="utf-8") as f:

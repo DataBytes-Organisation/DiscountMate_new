@@ -1,0 +1,23 @@
+DL-06-T16 validation results
+=============================
+
+Unit tests
+----------
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 0.003s
+
+OK
+
+Tool-selection regression evaluation
+------------------------------------
+Cases:             30
+Baseline exact:    10/30 (33.3%)
+Refactored exact:  30/30 (100.0%)
+
+Apply-script smoke test
+-----------------------
+PASS - guarded structural integration applied to representative target.
+PASS - patched rag_pipeline.py compiled.
+PASS - tool_selector.py compiled.
+PASS - test/evaluation scripts compiled and executed.
