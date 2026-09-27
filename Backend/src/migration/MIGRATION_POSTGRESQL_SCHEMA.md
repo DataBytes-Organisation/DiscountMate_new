@@ -22,11 +22,11 @@ Diagram files: [editable Draw.io](./diagrams/migration-postgresql-schema.drawio)
 | Migration PostgreSQL object | Finalised PostgreSQL outcome | Why |
 | --- | --- | --- |
 | `app.category_api_compatibility` | Rename to `app.category_metadata` | Description/icon/order are real App fields; only the name is temporary. |
-| `app.product_api_compatibility` | Rename to `app.product_metadata` | Description/primary image are real App fields; legacy parsing fields are removed. |
+| `app.product_api_compatibility` | Rename to `app.product_metadata`; rename `source_measurement` to `pack_display_unit` | Description, primary image, and the exact display unit remain available; malformed legacy GTIN data is archived and removed. |
 | `app.user_legacy_metrics` | Rename to `app.user_metrics` | The metrics are real; `legacy` is only an old name. |
 | `app.notification_product_references` | Rename to `app.notification_products` | This is a real many-to-many bridge; only the name and legacy alias field change. |
 | `app.catalog_source_keys` | Move to `migration.catalog_source_keys` | It translates Mongo/product-code/GTIN aliases; it is not an API table. |
-| `app.product_price_source_records` | Move to `migration.product_price_source_records` | It is source-lineage/audit data for Silver price facts. |
+| `app.product_price_source_records` | Move intact to `migration.product_price_source_records`; create `app.product_price_metadata` | Full Mongo lineage remains auditable, while only exact labels and best-price values remain App-readable. |
 | `legacy_*`, selected `*_key`, and `raw_payload` fields | Archive, then remove | They exist for migration/API fallback, not as canonical relationships. |
 
 Everything else remains unless a later product decision changes it.
@@ -85,8 +85,8 @@ Everything else remains unless a later product decision changes it.
 | --- | --- | --- |
 | `app.catalog_source_keys` | Alias resolver. Multiple identifiers can point to the **same** `silver.dim_products.id` or `silver.dim_categories.id`. It does not contain another product/category. | `entity_type text`; `source_system text`; `source_collection text`; `identifier_type text`; `identifier_value text`; `entity_id uuid`; `source_checksum text?`; `created_at`; `updated_at` |
 | `app.category_api_compatibility` | App-owned category fields absent from the fixed DE Silver shape. Shares `category_id` with Silver. This becomes `category_metadata`; it is not deleted. | `category_id uuid PK`; `description text?`; `icon_url text?`; `display_order integer?`; `is_active boolean`; `updated_at` |
-| `app.product_api_compatibility` | App-owned product fields absent from the fixed DE Silver shape. Shares `product_id` with Silver. This becomes `product_metadata`; it is not deleted. | `product_id uuid PK`; `description text?`; `image_link_primary text?`; `updated_at`; `legacy_gtin text?`; `legacy_measurement text?` |
-| `app.product_price_source_records` | Connects a source Mongo pricing record to its canonical Silver fact and retains source parsing/audit values. It moves to `migration`. | `source_system text`; `source_collection text`; `source_record_id text`; `price_fact_id uuid`; `price_recorded_at timestamptz`; `best_price numeric?`; `raw_unit_price text?`; `raw_best_unit_price text?`; `raw_store_chain text?`; `source_name text?`; `source_checksum text?`; `source_created_at?`; `source_updated_at?`; `created_at`; `updated_at` |
+| `app.product_api_compatibility` | App-owned product fields absent from the fixed DE Silver shape. Shares `product_id` with Silver. This becomes `product_metadata`; `source_measurement` becomes `pack_display_unit`. | `product_id uuid PK`; `description text?`; `image_link_primary text?`; `source_measurement text?`; `updated_at`; `legacy_gtin text?`; `legacy_measurement text?` (retired at finalisation) |
+| `app.product_price_source_records` | Connects a source Mongo pricing record to its canonical Silver fact and retains source parsing/audit values. Finalisation moves the full table to `migration` and copies only the runtime labels and best-price values into `app.product_price_metadata`. | `source_system text`; `source_collection text`; `source_record_id text`; `price_fact_id uuid`; `price_recorded_at timestamptz`; `best_price numeric?`; `raw_unit_price text?`; `raw_best_unit_price text?`; `raw_store_chain text?`; `source_name text?`; `source_checksum text?`; `source_created_at?`; `source_updated_at?`; `created_at`; `updated_at` |
 
 Alias example:
 
@@ -148,7 +148,7 @@ Canonical retailer keys are `aldi`, `coles`, `iga`, and `woolworths`. Labels suc
 | product `_id`, `product_code`, legacy `product_id` | Aliases in `app.catalog_source_keys` |
 | valid `gtin` | `silver.dim_products.gtin`; malformed source retained in App compatibility |
 | `product_name`, `brand` | Silver product name and brand |
-| package quantity/measurement | Normalized Silver fields plus original App label |
+| package quantity/measurement | `unit_per_prod` becomes `silver.dim_products.pack_quantity`; permitted canonical units become `silver.dim_products.pack_uom`; the exact Mongo `measurement` is retained in `app.product_api_compatibility.source_measurement` for frontend display. Unsupported Silver units become `NULL`, while their source text remains available. |
 | product description/primary image | `app.product_api_compatibility` |
 | side/back image and category | Original Silver columns |
 | pricing product alias | Resolved through `app.catalog_source_keys` |
@@ -156,7 +156,7 @@ Canonical retailer keys are `aldi`, `coles`, `iga`, and `woolworths`. Labels suc
 | `date`, `price`, `unit_price`, `is_on_special` | `silver.fct_product_prices` |
 | `best_price`, raw unit labels, source timestamps | `app.product_price_source_records` |
 
-Silver keeps canonical warehouse fields. Frontend-only, legacy, or source-fidelity values stay in App-owned compatibility tables rather than changing the DE format.
+Silver keeps canonical warehouse fields. Frontend presentation values stay in App-owned metadata; source-fidelity and lineage values move to the `migration` schema at finalisation rather than changing the DE format.
 
 ### Alerts and notifications
 

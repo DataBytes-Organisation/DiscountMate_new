@@ -134,7 +134,7 @@ function decodeProfileImage(profileImage) {
     imageData = profileImage.content;
   } else if (
     profileImage.content?.type === 'Buffer'
-        && Array.isArray(profileImage.content.data)
+    && Array.isArray(profileImage.content.data)
   ) {
     imageData = Buffer.from(profileImage.content.data);
   } else if (typeof profileImage.content === 'string') {
@@ -346,11 +346,11 @@ function transformUserDocument(document, fallbackNow = new Date()) {
       role: normalizeRole(document),
       status: 'active',
       emailVerifiedAt:
-                explicitEmailVerified === false ? null : createdAt,
+        explicitEmailVerified === false ? null : createdAt,
       phoneVerifiedAt:
-                explicitPhoneVerified === false || (!phoneNumber && explicitPhoneVerified !== true)
-                  ? null
-                  : createdAt,
+        explicitPhoneVerified === false || (!phoneNumber && explicitPhoneVerified !== true)
+          ? null
+          : createdAt,
       createdAt,
       updatedAt,
     },

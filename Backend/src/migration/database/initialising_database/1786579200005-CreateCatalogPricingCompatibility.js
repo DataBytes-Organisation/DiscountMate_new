@@ -46,6 +46,7 @@ class CreateCatalogPricingCompatibility1786579200005 {
         image_link_primary text,
         legacy_gtin text,
         legacy_measurement text,
+        source_measurement text,
         updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
     `);

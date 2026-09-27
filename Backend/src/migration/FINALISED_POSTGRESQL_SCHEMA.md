@@ -4,7 +4,7 @@ This is the optional clean schema produced by `npm run db:finalised:apply`.
 
 Diagram files: [editable Draw.io](./diagrams/finalised-postgresql-schema.drawio), [relationship preview](./diagrams/finalised-postgresql-schema-relationships.png), and [all-fields preview](./diagrams/finalised-postgresql-schema-allfields.png).
 
-The Finalised Schema does **not** remove any application critical data. Users, subscriptions, receipt history, lists, alerts, and notifications all remain. It removes old source identifiers/payloads, gives four application tables clearer names, and moves two source-audit tables out of `app`.
+The Finalised Schema does **not** remove any application critical data. Users, subscriptions, receipt history, lists, alerts, and notifications all remain. It removes old source identifiers/payloads, gives application tables clearer names, keeps only API presentation metadata in `app`, and moves source aliases and pricing lineage to `migration`.
 
 ## What changed from Migration PostgreSQL
 
@@ -15,10 +15,12 @@ The Finalised Schema does **not** remove any application critical data. Users, s
 | Rename | `app.category_api_compatibility` | `app.category_metadata` |
 | Rename | `app.product_api_compatibility` | `app.product_metadata` |
 | Move | `app.catalog_source_keys` | `migration.catalog_source_keys` |
+| Rename field | `app.product_api_compatibility.source_measurement` | `app.product_metadata.pack_display_unit` |
 | Move | `app.product_price_source_records` | `migration.product_price_source_records` |
+| Create runtime projection | Source price labels and best-price values | `app.product_price_metadata` |
 | Remove fields | `legacy_*`, selected source `*_key`, and `raw_payload` fields | Values are first saved in `migration.finalised_schema_field_backup` |
 
-No required App table is deleted. A renamed table still contains the same rows; a moved table still contains the same rows but has a more accurate owner.
+No required runtime data is deleted. The complete pricing source rows remain under `migration`, while their API-facing labels and best-price values are copied into the smaller App-owned runtime table.
 
 ## The four schemas
 
@@ -93,9 +95,10 @@ These tables are identical in Migration PostgreSQL and Finalised PostgreSQL; the
 | Table | What it does | Finalised PostgreSQL fields |
 | --- | --- | --- |
 | `app.category_metadata` | App/API fields that do not belong to the fixed DE category dimension. Its `category_id` is the same UUID as `silver.dim_categories.id`. | `category_id uuid PK/logical FK`; `description text?`; `icon_url text?`; `display_order integer?`; `is_active boolean`; `updated_at timestamptz` |
-| `app.product_metadata` | App/API fields that do not belong to the fixed DE product dimension. Its `product_id` is the same UUID as `silver.dim_products.id`. | `product_id uuid PK/logical FK`; `description text?`; `image_link_primary text?`; `updated_at timestamptz` |
+| `app.product_metadata` | App/API fields that do not belong to the fixed DE product dimension. Its `product_id` is the same UUID as `silver.dim_products.id`. | `product_id uuid PK/logical FK`; `description text?`; `image_link_primary text?`; `pack_display_unit text?`; `updated_at timestamptz` |
+| `app.product_price_metadata` | Runtime-only price presentation metadata. Exact source labels reproduce the existing API while numeric price facts remain canonical in Silver. | `price_fact_id uuid PK part/logical FK`; `price_recorded_at timestamptz PK part`; `unit_price_label text?`; `best_price numeric(10,2)?`; `best_unit_price_label text?`; `created_at timestamptz`; `updated_at timestamptz` |
 
-These two metadata tables are **not duplicate category/product tables**. Silver owns the canonical catalogue fields; App owns only extra presentation/API fields. They are joined through their shared UUID.
+These three metadata tables do **not** duplicate canonical Silver catalogue facts. Category and product metadata join through the shared entity UUID; price metadata joins through the Silver fact UUID plus `recorded_at`. App owns only the extra presentation/API fields.
 
 `app.product_metadata.image_link_primary` must remain until DE and App agree on image ownership. If Silver becomes the complete image source of truth, DE must publish an explicit primary/front/preferred image (ideally through a normalized product-image table with image role and ordering), after which App metadata may hold only an optional UI override/reference. If DE owns source images but not the App's display choice, `image_link_primary` remains intentional App-owned metadata. Do not remove it merely because Silver currently has `image_link_side` and `image_link_back`, neither column reliably identifies the primary image.
 
@@ -127,7 +130,7 @@ These are operational evidence for the migration, not frontend tables.
 | `migration.reference_resolution_issues` | Required and optional unresolved-reference evidence. | `id uuid PK`; `record_outcome_id uuid? FK`; `migration_run_id uuid? FK`; `source_system text`; `source_collection text`; `source_id text`; `source_field text`; `source_value text?`; `target_schema text`; `target_table text`; `target_field text`; `reason_code text`; `required boolean`; `details jsonb`; `resolved_target_id uuid?`; `resolved_at timestamptz?`; `created_at timestamptz` |
 | `migration.reconciliation_results` | Counts, amounts, uniqueness, and relationship checks after a phase. | `id uuid PK`; `migration_run_id uuid FK`; `entity_type text`; `check_name text`; `source_value jsonb?`; `target_value jsonb?`; `passed boolean`; `details jsonb?`; `checked_at timestamptz` |
 | `migration.catalog_source_keys` | Alias lookup from old/external identifiers to the same canonical category/product UUID. It moved from `app`; it did not become another catalogue. | `entity_type text PK part`; `source_system text PK part`; `source_collection text PK part`; `identifier_type text PK part`; `identifier_value text PK part`; `entity_id uuid logical FK`; `source_checksum text?`; `created_at timestamptz`; `updated_at timestamptz` |
-| `migration.product_price_source_records` | Source-record lineage for canonical Silver price facts. It moved from `app`. | `source_system text PK part`; `source_collection text PK part`; `source_record_id text PK part`; `price_fact_id uuid logical FK`; `price_recorded_at timestamptz`; `best_price numeric(10,2)?`; `raw_unit_price text?`; `raw_best_unit_price text?`; `raw_store_chain text?`; `source_name text?`; `source_checksum text?`; `source_created_at timestamptz?`; `source_updated_at timestamptz?`; `created_at timestamptz`; `updated_at timestamptz` |
+| `migration.product_price_source_records` | Full Mongo pricing lineage retained for traceability; the runtime API does not query it. | `source_system text PK part`; `source_collection text PK part`; `source_record_id text PK part`; `price_fact_id uuid logical FK`; `price_recorded_at timestamptz`; `best_price numeric(10,2)?`; `raw_unit_price text?`; `raw_best_unit_price text?`; `raw_store_chain text?`; `source_name text?`; `source_checksum text?`; `source_created_at timestamptz?`; `source_updated_at timestamptz?`; `created_at timestamptz`; `updated_at timestamptz` |
 | `migration.finalised_schema_field_backup` | Restricted reversible backup of every field removed by finalisation. It exists only while Finalised PostgreSQL is applied. | `table_name text PK part`; `record_id text PK part`; `fields jsonb`; `backed_up_at timestamptz` |
 
 The lineage tables may be kept for audit/traceability after cutover. If policy later permits deleting them, that should be a separate retention decision—not part of removing MongoDB compatibility from controllers.
@@ -153,6 +156,8 @@ Removing a database compatibility field does not require immediately renaming a 
 | retailer key such as `woolworths` | Join the stored retailer UUID to `silver.dim_retailers`, then normalize its name. |
 | category description/icon/order | Join `silver.dim_categories` to `app.category_metadata` on the shared UUID. |
 | product description/primary image | Join `silver.dim_products` to `app.product_metadata` on the shared UUID. |
+| product package measurement | Prefer `app.product_metadata.pack_display_unit` for Mongo-compatible frontend display; fall back to canonical `silver.dim_products.pack_uom` when the display value is null. |
+| exact unit-price display label | Join the selected Silver price fact to `app.product_price_metadata.unit_price_label`; do not reconstruct it from `pack_uom`. |
 | `triggeredCount` / `unread_count` | Compute with a query; these were never stored columns. |
 
 That controller adaptation must be completed before the application uses the Finalised PostgreSQL. The current Mongo copy phases and migration-stage repositories expect Migration PostgreSQL names, so revert the finalisation before rerunning them.

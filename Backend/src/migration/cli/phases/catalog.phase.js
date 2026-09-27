@@ -362,7 +362,7 @@ function buildProductRows(successes, categoryBySourceId) {
         image_link_side: product.imageLinkSide || product.imageLinkPrimary,
         image_link_back: product.imageLinkBack,
         legacy_gtin: product.sourceAttributes.rawGtin,
-        legacy_measurement: product.sourceAttributes.rawMeasurement,
+        source_measurement: product.sourceAttributes.rawMeasurement,
         created_at: product.createdAt,
         updated_at: product.updatedAt,
       });
@@ -442,7 +442,7 @@ async function upsertProductRows(manager, rows) {
         description,
         image_link_primary,
         legacy_gtin,
-        legacy_measurement,
+        source_measurement,
         updated_at
       )
       SELECT
@@ -450,20 +450,20 @@ async function upsertProductRows(manager, rows) {
         input.description,
         input.image_link_primary,
         input.legacy_gtin,
-        input.legacy_measurement,
+        input.source_measurement,
         CURRENT_TIMESTAMP
       FROM jsonb_to_recordset($1::jsonb) AS input(
         id uuid,
         description text,
         image_link_primary text,
         legacy_gtin text,
-        legacy_measurement text
+        source_measurement text
       )
       ON CONFLICT (product_id) DO UPDATE SET
         description = EXCLUDED.description,
         image_link_primary = EXCLUDED.image_link_primary,
         legacy_gtin = EXCLUDED.legacy_gtin,
-        legacy_measurement = EXCLUDED.legacy_measurement,
+        source_measurement = EXCLUDED.source_measurement,
         updated_at = CURRENT_TIMESTAMP
     `,
     [JSON.stringify(rows)],

@@ -61,6 +61,11 @@ const { checkPriceAlerts } = require('./src/utils/priceAlerts');
 const comparisonRoutes = require('./src/comparison/routers/comparison.router');
 const { closePostgresPools, getPostgresPools } = require('./src/config/postgres');
 const {
+   closePostgresCatalogue,
+   createPostgresCatalogueRouter,
+   initializePostgresCatalogue,
+} = require('./src/postgres-catalogue');
+const {
    assertComparisonConfiguration,
    assertComparisonDatabaseConnections,
    comparisonRequiresConfiguredDatabases,
@@ -591,6 +596,15 @@ async function startServer() {
       return;
    }
 
+   const postgresCatalogueStatus = await initializePostgresCatalogue();
+   app.locals.postgresCatalogueAvailable =
+      postgresCatalogueStatus.available;
+   if (!postgresCatalogueStatus.available) {
+      console.log(
+         'PostgreSQL catalogue is disabled or unavailable; MongoDB routes remain active.'
+      );
+   }
+
    try {
       const {
          assertGoogleAuthConfiguration,
@@ -700,6 +714,7 @@ app.use('/api/alert-segments', alertSegmentRoutes);
 app.use('/api/lists', listRoutes);
 app.use('/api/price-alerts', priceAlertRoutes);
 app.use('/api/comparisons', comparisonRoutes);
+app.use('/api/postgres', createPostgresCatalogueRouter());
 
 /*
  * Root route used to confirm that the API is running.
@@ -862,6 +877,7 @@ async function shutdown(signal) {
    console.log(`Received ${signal}. Shutting down...`);
    stopReverseImageSearch();
    await closePostgresPools();
+   await closePostgresCatalogue();
    process.exit(0);
 }
 
