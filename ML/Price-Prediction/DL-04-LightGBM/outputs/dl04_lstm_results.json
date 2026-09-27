@@ -1,0 +1,7 @@
+{
+  "mae": 4.016625881195068,
+  "rmse": 9.678835827519455,
+  "directional_accuracy": 0.00878774222622803,
+  "directional_accuracy_percent": 0.878774222622803,
+  "n_samples": 8876
+}
