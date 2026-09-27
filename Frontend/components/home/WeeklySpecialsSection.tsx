@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
    View,
    Text,
@@ -15,19 +15,19 @@ import { useCart } from "../../app/(tabs)/CartContext";
 import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 
 interface WeeklySpecial {
-   id?: number;
-   product_name?: string | null;
-   description?: string | null;
-   price?: number | null;
-   original_price?: number | null;
-   discount_percentage?: number | null;
-   savings?: number | null;
-   store?: string | null;
-   store_key?: string | null;
-   category?: string | null;
-   icon?: string | null;
-   image_url?: string | null;
-   product_id?: string | null;
+   id: string | number;
+   product_name: string;
+   description: string;
+   price: number;
+   original_price: number;
+   discount_percentage: number;
+   savings: number;
+   store: string;
+   store_key: string;
+   category: string;
+   icon: string;
+   image_url: string | null;
+   product_id: string;
 }
 
 interface WeeklySpecialsResponse {
@@ -96,27 +96,91 @@ export default function WeeklySpecialsSection() {
    }, []);
 
    const fetchWeeklySpecials = async () => {
-   try {
-      setLoading(true);
-      setError(null);
-      setSpecials([]);
+      try {
+         setLoading(true);
+         setError(null);
 
-      const response = await fetch(
-         `${API_URL}/ml/weekly-specials?limit=4`
-      );
+         const response = await fetch(`${API_URL}/products?limit=50`);
 
-      if (!response.ok) {
-         throw new Error(
-            `Weekly specials request failed with status ${response.status}`
-         );
-      }
+         if (!response.ok) {
+            throw new Error(`Products request failed: ${response.status}`);
+         }
 
-      const data: WeeklySpecialsResponse = await response.json();
+         const result = await response.json();
 
-      if (!data.success) {
-         throw new Error(
-            data.error || "The weekly specials service returned an error."
-         );
+         const liveSpecials: WeeklySpecial[] = (result.items || [])
+            .filter((product: any) => {
+               const currentPrice = Number(product.current_price) || 0;
+               const bestPrice = Number(product.best_price) || 0;
+
+               return (
+                  product.is_on_special === true &&
+                  currentPrice > 0 &&
+                  bestPrice > 0 &&
+                  bestPrice < currentPrice
+               );
+            })
+            .filter(
+               (product: any, index: number, array: any[]) =>
+                  index ===
+                  array.findIndex(
+                     (p: any) => p.product_name === product.product_name
+                  )
+            )
+            .sort((a: any, b: any) => {
+               const aCurrent = Number(a.current_price) || 0;
+               const aBest = Number(a.best_price) || 0;
+               const bCurrent = Number(b.current_price) || 0;
+               const bBest = Number(b.best_price) || 0;
+
+               return (bCurrent - bBest) - (aCurrent - aBest);
+            })
+            .slice(0, 4)
+            .map((product: any) => {
+               const originalPrice = Number(product.current_price);
+               const specialPrice = Number(product.best_price);
+               const savings = originalPrice - specialPrice;
+               const discountPercentage =
+                  originalPrice > 0
+                     ? (savings / originalPrice) * 100
+                     : 0;
+
+               const storeKey = String(product.store_chain || "")
+                  .replace("_generic", "")
+                  .toLowerCase();
+
+               const store =
+                  storeKey === "coles"
+                     ? "Coles"
+                     : storeKey === "woolworths"
+                       ? "Woolworths"
+                       : storeKey === "iga"
+                         ? "IGA"
+                         : "Retailer";
+
+               return {
+                  id: product._id,
+                  product_id: product._id,
+                  product_name: product.product_name,
+                  description: product.description || "",
+                  price: specialPrice,
+                  original_price: originalPrice,
+                  discount_percentage: discountPercentage,
+                  savings,
+                  store,
+                  store_key: storeKey,
+                  category: product.category_name || "Other",
+                  icon: "tag",
+                  image_url: product.link_image || null,
+               };
+            });
+
+         setSpecials(liveSpecials);
+      } catch (err) {
+         console.error("Error fetching weekly specials:", err);
+         setError("Unable to load live weekly specials.");
+      } finally {
+         setLoading(false);
       }
 
       setSpecials(Array.isArray(data.data) ? data.data : []);
@@ -228,7 +292,10 @@ const formatDiscount = (
                   </Text>
                </View>
 
-               <Pressable className="w-full md:w-auto px-8 py-4 rounded-xl bg-[#10B981] items-center">
+               <Pressable
+                  className="px-8 py-4 rounded-xl bg-[#10B981]"
+                  onPress={() => router.push("/(specials)/specials")}
+               >
                   <Text className="text-white font-semibold">
                      View All Specials
                   </Text>
@@ -262,18 +329,38 @@ const formatDiscount = (
             {!loading && !error && specials.length > 0 && (
                <View className="flex-row flex-wrap -mx-3">
                   {specials.map((item) => (
-                     <View
-                           key={item.product_id || item.id}
-                           className="w-full sm:w-1/2 lg:w-1/4 px-3 mb-6"
-                        >
+                     <Pressable
+                        key={item.id}
+                        onPress={() =>
+                           router.push({
+                              pathname: "/(product)/product/[id]",
+                              params: {
+                                 id: item.product_id || String(item.id),
+                              },
+                           })
+                        }
+                        className="w-full md:w-1/4 px-3 mb-6"
+                     >
                         <View className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
                            {/* Image / icon area + badge */}
                            <View className="relative">
-                              <SpecialImage
-                                 imageUrl={item.image_url}
-                                 icon={item.icon}
-                                 productName={item.product_name}
-                              />
+                              <View className="w-full h-56 bg-gray-100 items-center justify-center">
+                                 {item.image_url ? (
+                                    <Image
+                                       source={{ uri: item.image_url }}
+                                       className="w-full h-56"
+                                       resizeMode="contain"
+                                       accessibilityRole="image"
+                                       accessibilityLabel={item.product_name}
+                                    />
+                                 ) : (
+                                    <FontAwesome6
+                                       name={item.icon || "circle-question"}
+                                       size={32}
+                                       color="#9CA3AF"
+                                    />
+                                 )}
+                              </View>
 
                               {formatDiscount(item.discount_percentage) && (
                               <View className="absolute top-4 right-4">
@@ -291,8 +378,11 @@ const formatDiscount = (
                               <Text className="text-base font-bold text-[#111827] mb-1">
                                  {item.product_name?.trim() || "Product name unavailable"}
                               </Text>
-                              <Text className="text-xs text-gray-500 mb-4">
-                                 {item.description?.trim() || "Description unavailable"}
+                              <Text
+                                 numberOfLines={3}
+                                 className="text-xs text-gray-500 mb-4"
+                              >
+                                 {item.description?.replace(/<[^>]*>/g, "")}
                               </Text>
 
                               <View className="flex-row items-end justify-between mb-4">
@@ -329,7 +419,7 @@ const formatDiscount = (
                               </View>
                            </View>
                         </View>
-                     </View>
+                     </Pressable>
                   ))}
                </View>
             )}
