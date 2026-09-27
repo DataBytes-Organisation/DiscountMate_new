@@ -12,6 +12,7 @@ export default function TabsLayout() {
    const isProfilePage = segments.includes("profile");
    const isNotificationsPage = segments.includes("notifications");
    const isAlertSegmentsPage = segments.includes("alert-segments");
+   const isPriceAlertsPage = segments.includes("price-alerts");
    const isSubscriptionPage = segments.includes("subscription");
    const isSupportPage = segments.includes("contact");
    const isPrivacyTermsPage = segments.includes("privacy-terms");
@@ -25,6 +26,7 @@ export default function TabsLayout() {
       isProfilePage ||
       isNotificationsPage ||
       isAlertSegmentsPage ||
+      isPriceAlertsPage ||
       isSubscriptionPage ||
       isSupportPage ||
       isPrivacyTermsPage
@@ -45,6 +47,7 @@ export default function TabsLayout() {
             {!isProfilePage &&
                !isNotificationsPage &&
                !isAlertSegmentsPage &&
+               !isPriceAlertsPage &&
                !isSubscriptionPage &&
                !isSupportPage &&
                !isPrivacyTermsPage &&

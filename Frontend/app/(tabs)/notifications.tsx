@@ -9,6 +9,7 @@ import {
 } from "../../services/notifications";
 import { NotificationPreferences } from "../../types/NotificationPreferences";
 import { SESSION_EXPIRED_MESSAGE } from "../../utils/authSession";
+import { usePushNotificationRegistration } from "../../hooks/usePushNotificationRegistration";
 import { useRouter } from "expo-router";
 
 const FALLBACK_PREFERENCES: NotificationPreferences = {
@@ -16,6 +17,8 @@ const FALLBACK_PREFERENCES: NotificationPreferences = {
       priceAlerts: true,
       browserNotifications: true,
       weeklySummary: true,
+      emailNotifications: true,
+      pushNotifications: true,
    },
 };
 
@@ -43,6 +46,18 @@ const ALERT_TYPE_ITEMS: Array<{
       subtitle: "Show notifications in the DiscountMate bell panel while you use the app.",
       icon: "desktop-outline",
    },
+   {
+      key: "emailNotifications",
+      title: "Email Notifications",
+      subtitle: "Receive email notifications for price updates and important information.",
+      icon: "mail-outline",
+   },
+   {
+      key: "pushNotifications",
+      title: "Push Notifications",
+      subtitle: "Send push alerts to this device when a tracked product drops in price.",
+      icon: "phone-portrait-outline",
+   },
 ];
 
 function getDisplayName(firstName?: string, lastName?: string) {
@@ -58,6 +73,8 @@ export default function NotificationsScreen() {
    const [savingKey, setSavingKey] = useState<string | null>(null);
    const [error, setError] = useState<string | null>(null);
    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+   usePushNotificationRegistration();
 
    useEffect(() => {
       let active = true;

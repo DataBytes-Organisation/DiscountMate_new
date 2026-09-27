@@ -122,7 +122,11 @@ def upgrade() -> None:
         """
     )
     op.execute(_refresh_function_sql())
-    op.execute("SELECT silver.refresh_comparison_product_groups()")
+    # The initial group population is deferred to migration 20260923_0012,
+    # which runs after 20260825_0008 has replaced this function's passes with
+    # the bounded/equi-join implementation. Calling it here would run this
+    # revision's own O(n**2) self-join version on the full dim_products table,
+    # which does not scale to production data volumes on a fresh migration run.
     _replace_comparison_views()
     op.execute(
         """

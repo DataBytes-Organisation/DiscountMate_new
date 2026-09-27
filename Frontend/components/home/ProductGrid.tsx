@@ -132,7 +132,7 @@ function parseProductsPayload(
 }
 
 /** One API page per UI page: `GET /products?page=&limit=` (matches backend pagination). */
-async function fetchProductsPage(
+export async function fetchProductsPage(
    page: number,
    limit: number,
    category: string | undefined,
