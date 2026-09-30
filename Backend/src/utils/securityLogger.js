@@ -94,7 +94,10 @@ const monitorSecurityEvent = ({ event, ip }) => {
         eventHistory.set(ip, []);
     }
 };
-
+// NOTE: this function was declared twice, this second one is broken since it uses
+// variables that don't exist anywhere (writeSecurityLog, eventHistory, etc)
+// Commented out so the file can load. Flagged to the team for a proper fix
+/*
 const logSecurityEvent = ({
     event,
     ip,
@@ -117,5 +120,5 @@ const logSecurityEvent = ({
         ip,
     });
 };
-
+*/
 module.exports = { logSecurityEvent }; // export function

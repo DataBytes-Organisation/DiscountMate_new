@@ -498,6 +498,73 @@ const verifyEmail = async (req, res) => {
     }
 };
 
+// Sends a password reset code to the user's email
+const requestPasswordReset = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const normalizedEmail = String(email || '').trim().toLowerCase();
+        const db = await connectToMongoDB();
+        const user = await db.collection('users').findOne({ email: normalizedEmail });
+
+        if (user) {
+            const resetToken = generateVerificationToken();
+            const resetExpires = new Date(Date.now() + 15 * 60 * 1000);
+
+            await db.collection('users').updateOne(
+                { email: normalizedEmail },
+                { $set: { passwordResetToken: resetToken, passwordResetExpires: resetExpires } }
+            );
+
+            const transporter = createEmailTransporter();
+            if (transporter) {
+                transporter.sendMail({
+                    from: process.env.SUPPORT_EMAIL_USER,
+                    to: normalizedEmail,
+                    subject: 'Reset your DiscountMate password',
+                    text: `Your reset code is: ${resetToken}. Expires in 15 minutes.`,
+                });
+            }
+        }
+
+        // same response either way, so nobody can check which emails exist
+        return res.status(200).json({ message: 'If that account exists, a reset code has been sent' });
+    } catch (error) {
+        console.error('Error requesting password reset:', error);
+        return res.status(500).json({ message: 'Error requesting password reset' });
+    }
+};
+
+// Confirms the reset code and sets the new password
+const resetPassword = async (req, res) => {
+    const { email, resetToken, newPassword } = req.body;
+
+    try {
+        const normalizedEmail = String(email || '').trim().toLowerCase();
+        const db = await connectToMongoDB();
+        const user = await db.collection('users').findOne({
+            email: normalizedEmail,
+            passwordResetToken: resetToken,
+            passwordResetExpires: { $gt: new Date() },
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired reset code' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await db.collection('users').updateOne(
+            { email: normalizedEmail },
+            { $set: { encrypted_password: hashedPassword }, $unset: { passwordResetToken: '', passwordResetExpires: '' } }
+        );
+
+        return res.status(200).json({ message: 'Password reset successfully' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        return res.status(500).json({ message: 'Error resetting password' });
+    }
+};
+
 // Only allows for one signup request burst every 5 minutes per IP.
 const signupLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
@@ -527,6 +594,14 @@ const signinLimiter = rateLimit({
             message: 'Too many requests. Please try again later.',
         });
     },
+});
+// CS-16-T4: limit repeated password reset requests per IP
+const passwordResetLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000,
+    limit: 5,
+    message: 'Too many requests. Please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
 // Signin Controller
@@ -1412,9 +1487,12 @@ const getProfileImage = async (req, res) => {
 module.exports = {
     signupLimiter,
     signinLimiter,
+    passwordResetLimiter,
     signup,
     signin,
     verifyEmail,  // added for email confirmation feature
+    requestPasswordReset,  // CS-16: sends the reset code
+    resetPassword,  // CS-16: confirms the code and sets new password
     getProfile,
     updateProfile,
     changePassword,

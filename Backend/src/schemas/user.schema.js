@@ -58,6 +58,14 @@ const UserSchema = new Schema({
     type: Number,
     default: 0, // wrong password count
   },
+    passwordResetToken: {
+    type: String,
+    required: false, // code sent to email for password reset
+  },
+  passwordResetExpires: {
+    type: Date,
+    required: false, // when the reset code stops being valid
+  },
   profileID: {
     type: String,
     required: false,
