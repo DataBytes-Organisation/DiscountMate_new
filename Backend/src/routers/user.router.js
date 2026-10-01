@@ -1,5 +1,6 @@
 const express = require('express');
 const userController = require('../controllers/user.controller');
+const googleAuthController = require('../controllers/google-auth.controller');
 const multer = require('multer');
 const verifyToken = require('../middleware/auth.middleware');
 const validateRequest = require('../middleware/validateRequest.middleware');
@@ -38,6 +39,9 @@ router.get('/address-suggestions', verifyToken, userController.getAddressSuggest
 
 router.get('/notification-preferences', verifyToken, userController.getNotificationPreferences);
 router.put('/notification-preferences', verifyToken, userController.updateNotificationPreferences);
+
+router.post('/push-token', verifyToken, userController.registerPushToken);
+router.delete('/push-token', verifyToken, userController.removePushToken);
 
 router.get('/dashboard-preferences', verifyToken, userController.getDashboardPreferences);
 router.put('/dashboard-preferences', verifyToken, userController.updateDashboardPreferences);

@@ -13,6 +13,7 @@ from common.db import (
     postgres_table,
 )
 from common.duckdb_utils import fetch_scalar, render_sql_template
+from common.job_validation import validate_positive_offer_count
 from common.paths import resolve_input_paths
 
 if TYPE_CHECKING:
@@ -26,12 +27,19 @@ WOOLWORTHS_MODEL = "products_woolworths"
 WOOLWORTHS_TIMEZONE = "Australia/Melbourne"
 
 
+def _validate_positive_offer_count(count: int) -> None:
+    validate_positive_offer_count("Woolworths", count)
+
+
 def _workflow_sql_context() -> dict[str, str]:
     return {
         "dim_categories_table": postgres_table("dim_categories"),
         "dim_retailers_table": postgres_table("dim_retailers"),
         "dim_products_table": postgres_table("dim_products"),
         "fct_product_prices_table": postgres_table("fct_product_prices"),
+        "static_master_coles_products_table": postgres_table(
+            "static_master_coles_products"
+        ),
         "dim_product_canonical_key_expr": """
             trim(regexp_replace(lower(coalesce(products.brand_name, '')), '[^a-z0-9]+', ' ', 'g'))
             || '|'
@@ -128,6 +136,7 @@ def run(
                 conn,
                 "SELECT count(*) FROM raw_input_normalized",
             )
+            _validate_positive_offer_count(counts["raw_input_normalized"])
 
             conn.execute("BEGIN")
             try:
@@ -154,4 +163,5 @@ def run(
         "processed_dates": ",".join(processed_dates) if processed_dates else "none",
         "skipped_dates": ",".join(skipped_dates) if skipped_dates else "none",
         "counts": counts,
+        "source_files": sorted(input_paths),
     }

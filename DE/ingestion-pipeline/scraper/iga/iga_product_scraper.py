@@ -218,6 +218,8 @@ def run(context: RunContext) -> RunResult:
                             skip,
                             session_id,
                         )
+                        context.stats.record_status(status, context.source)
+
                         if payload is None or status != "SUCCESS":
                             brand_progress[brand_key] = {
                                 "skip": skip,
@@ -316,6 +318,7 @@ def run(context: RunContext) -> RunResult:
                 raise
             except Exception:
                 autosave(current_brand_index)
+                context.stats.emit_failure(context.source, state_run_id, len(seen_skus))
                 raise
 
     records = read_jsonl(snapshot_jsonl_path)
@@ -323,6 +326,8 @@ def run(context: RunContext) -> RunResult:
     run_progress["finished_at"] = legacy_timestamp()
     run_progress["updated_at"] = legacy_timestamp()
     save_json_file(run_progress_path, run_progress)
+
+    context.stats.emit_success(context.source, state_run_id, len(records))
 
     return RunResult(
         records=records,

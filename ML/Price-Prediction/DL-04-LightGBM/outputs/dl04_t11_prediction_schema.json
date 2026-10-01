@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://discountmate.local/schema/dl04-t11-prediction-v1.json",
+  "title": "DiscountMate DL-04 Prediction",
+  "description": "Standardised next-price forecasting output for DiscountMate DL-04.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task",
+    "prediction_id",
+    "product",
+    "observation",
+    "forecast",
+    "model"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "task": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "prediction_id": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "product": {
+      "type": "object",
+      "required": [
+        "product_id",
+        "retailer_id"
+      ],
+      "properties": {
+        "product_id": {},
+        "retailer_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "observation": {
+      "type": "object",
+      "required": [
+        "recorded_at",
+        "current_price"
+      ],
+      "properties": {
+        "recorded_at": {
+          "type": "string"
+        },
+        "current_price": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "forecast": {
+      "type": "object",
+      "required": [
+        "target",
+        "horizon_days",
+        "horizon_bucket",
+        "baseline_prediction",
+        "lightgbm_prediction",
+        "change_aware_prediction",
+        "selected_prediction",
+        "change_probability",
+        "predicted_price_changed"
+      ],
+      "properties": {
+        "target": {
+          "type": "string"
+        },
+        "horizon_days": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "horizon_bucket": {
+          "type": "string"
+        },
+        "baseline_prediction": {
+          "type": "number"
+        },
+        "lightgbm_prediction": {
+          "type": "number"
+        },
+        "change_aware_prediction": {
+          "type": "number"
+        },
+        "selected_prediction": {
+          "type": "number"
+        },
+        "change_probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "predicted_price_changed": {
+          "type": "integer",
+          "enum": [
+            0,
+            1
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "regime": {
+      "type": "object",
+      "properties": {
+        "change_regime": {
+          "type": "string"
+        },
+        "promotion_regime": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "model": {
+      "type": "object",
+      "required": [
+        "family",
+        "variant"
+      ],
+      "properties": {
+        "family": {
+          "type": "string"
+        },
+        "variant": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "evaluation": {
+      "type": "object",
+      "properties": {
+        "split": {
+          "type": "string"
+        },
+        "actual_next_price": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "actual_price_change": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "actual_price_changed": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

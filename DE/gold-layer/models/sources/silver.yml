@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: silver
+    description: Tables produced by the Discount Mate ETL pipeline.
+    schema: "{{ env_var('POSTGRES_SCHEMA', 'silver') }}"
+    tables:
+      - name: fct_product_prices
+        description: Historical product price observations from retailers.
+      - name: dim_retailers
+        description: Canonical retailer details used by price observations.
