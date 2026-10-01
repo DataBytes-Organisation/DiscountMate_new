@@ -2,6 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const { ObjectId } = require('mongodb');
 const { getDb } = require('../config/database');
+const verifyToken = require('../middleware/auth.middleware');
+const isAdmin = require('../middleware/admin.middleware');
 
 const router = express.Router();
 const upload = multer({
@@ -32,7 +34,7 @@ function normaliseImageUrl(imageUrl) {
    return null;
 }
 
-router.get('/health', async (_req, res) => {
+router.get('/health', verifyToken, isAdmin, async (_req, res) => {
    try {
       const response = await fetch(`${getServiceUrl()}/health`);
       const body = await response.json().catch(() => ({}));
@@ -47,7 +49,7 @@ router.get('/health', async (_req, res) => {
 
 // Proxy a CDN image URL server-side — avoids any client CORS/CDN restrictions.
 // Usage: GET /images/proxy?url=https%3A%2F%2Fcdn.example.com%2Fimage.jpg
-router.get('/images/proxy', async (req, res) => {
+router.get('/images/proxy', verifyToken, async (req, res) => {
    const targetUrl = req.query.url;
    if (!targetUrl || !targetUrl.startsWith('http')) {
       return res.status(400).json({ message: 'Missing or invalid url query parameter' });
@@ -70,7 +72,7 @@ router.get('/images/proxy', async (req, res) => {
    }
 });
 
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', verifyToken, upload.single('file'), async (req, res) => {
    if (!req.file) {
       return res.status(400).json({ message: 'No image file uploaded' });
    }

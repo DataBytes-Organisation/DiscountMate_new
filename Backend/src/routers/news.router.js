@@ -1,6 +1,8 @@
 const express = require('express');
-const { getAllNews,submitNews } = require('../controllers/news.controller');
+const { getAllNews, submitNews } = require('../controllers/news.controller');
+
 const verifyToken = require('../middleware/auth.middleware');
+const isAdmin = require('../middleware/admin.middleware');
 
 const router = express.Router();
 
@@ -29,6 +31,11 @@ router.get('/', getAllNews);
  *     security:
  *       - bearerAuth: []
  */
-router.post('/submit-news', verifyToken, submitNews)
+router.post(
+  '/submit-news',
+  verifyToken,
+  isAdmin,
+  submitNews
+);
 
 module.exports = router;

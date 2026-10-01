@@ -3,13 +3,22 @@ const analyticsController = require('../controllers/analytics.controller');
 const ipThrottle = require('../middleware/ipThrottle.middleware');
 const { scraperSlowDown, suspiciousTrafficLogger } = require('../middleware/antiScraping.middleware');
 const validateRequest = require('../middleware/validateRequest.middleware');
+const verifyToken = require('../middleware/auth.middleware');
+const isAdmin = require('../middleware/admin.middleware');
+
 const {
   salesSummaryValidation,
   brandAnalysisValidation,
   priceComparisonValidation,
   dataCleaningValidation,
 } = require('../validators/analytics.validators');
+
 const router = express.Router();
+
+// CS-13-T2: Analytics contains internal business data.
+// All analytics routes require authentication and admin access.
+router.use(verifyToken, isAdmin)
+
 
 /**
  * @swagger

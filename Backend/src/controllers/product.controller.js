@@ -244,10 +244,9 @@ const getProducts = async (req, res) => {
 
       const { search, category } = req.query || {};
 
-      const pageNumber = Math.max(parseInt(req.query.page, 10) || 1, 1);
-      const rawPageSize =
-         parseInt(req.query.limit, 10) || parseInt(req.query.pageSize, 10) || 30;
-      const pageSizeNumber = Math.min(Math.max(rawPageSize, 1), 100);
+      // CS-13-T1: Use validated pagination values.
+      const pageNumber = req.query.page || 1;
+      const pageSizeNumber = req.query.limit || 30;
 
       const match = { product_code: { $exists: true, $ne: null } };
 
@@ -258,7 +257,6 @@ const getProducts = async (req, res) => {
             { brand: regex },
          ];
       }
-
       // category can be category_id OR category_name
       let wantsCategoryName = false;
       let categoryName = null;

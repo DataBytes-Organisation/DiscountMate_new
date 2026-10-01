@@ -1,5 +1,7 @@
 const express = require('express');
 const mlController = require('../controllers/ml.controller');
+const verifyToken = require('../middleware/auth.middleware');
+const isAdmin = require('../middleware/admin.middleware');
 
 const router = express.Router();
 
@@ -54,7 +56,11 @@ router.get('/weekly-specials', mlController.getWeeklySpecials);
  *       200:
  *         description: Recommendations retrieved successfully
  */
-router.post('/recommendations', mlController.getRecommendations);
+router.post(
+  '/recommendations',
+  verifyToken,
+  mlController.getRecommendations
+);
 
 /**
  * @swagger
@@ -78,7 +84,11 @@ router.post('/recommendations', mlController.getRecommendations);
  *       200:
  *         description: Price prediction retrieved successfully
  */
-router.post('/price-prediction', mlController.getPricePrediction);
+router.post(
+  '/price-prediction',
+  verifyToken,
+  mlController.getPricePrediction
+);
 
 /* ============================================================
  * Recipe RAG routes (Step 2)
@@ -108,7 +118,12 @@ router.post('/price-prediction', mlController.getPricePrediction);
  *       503:
  *         description: ML service or RAG pipeline unavailable
  */
-router.get('/recipe/stats', mlController.getRecipeStats);
+router.get(
+  '/recipe/stats',
+  verifyToken,
+  isAdmin,
+  mlController.getRecipeStats
+);
 
 /**
  * @swagger
@@ -165,7 +180,11 @@ router.get('/recipe/search', mlController.getRecipeSearch);
  *       504:
  *         description: LLM providers timed out
  */
-router.post('/recipe/chat', mlController.postRecipeChat);
+router.post(
+  '/recipe/chat',
+  verifyToken,
+  mlController.postRecipeChat
+);
 
 /**
  * @swagger
@@ -187,7 +206,11 @@ router.post('/recipe/chat', mlController.postRecipeChat);
  *       200:
  *         description: Session reset successfully
  */
-router.post('/recipe/reset', mlController.postRecipeReset);
+router.post(
+  '/recipe/reset',
+  verifyToken,
+  mlController.postRecipeReset
+);
 
 /**
  * @swagger
@@ -215,7 +238,11 @@ router.post('/recipe/reset', mlController.postRecipeReset);
  *       503:
  *         description: ML service unavailable
  */
-router.get('/recipe/products', mlController.getRecipeProducts);
+router.get(
+  '/recipe/products',
+  verifyToken,
+  mlController.getRecipeProducts
+);
 
 /* ============================================================
  * DL-06 chatbot MCP-style tool routes
