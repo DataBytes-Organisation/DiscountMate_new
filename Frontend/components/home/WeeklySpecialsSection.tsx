@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import {
+   View,
+   Text,
+   Pressable,
+   ActivityIndicator,
+   Image,
+} from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -9,19 +15,19 @@ import { useCart } from "../../app/(tabs)/CartContext";
 import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 
 interface WeeklySpecial {
-   id: number;
-   product_name: string;
-   description: string;
-   price: number;
-   original_price: number;
-   discount_percentage: number;
-   savings: number;
-   store: string;
-   store_key: string;
-   category: string;
-   icon: string;
-   image_url: string | null;
-   product_id: string;
+   id?: number;
+   product_name?: string | null;
+   description?: string | null;
+   price?: number | null;
+   original_price?: number | null;
+   discount_percentage?: number | null;
+   savings?: number | null;
+   store?: string | null;
+   store_key?: string | null;
+   category?: string | null;
+   icon?: string | null;
+   image_url?: string | null;
+   product_id?: string | null;
 }
 
 interface WeeklySpecialsResponse {
@@ -30,6 +36,51 @@ interface WeeklySpecialsResponse {
    count: number;
    week: string;
    error?: string;
+}
+interface SpecialImageProps {
+   imageUrl?: string | null;
+   icon?: string | null;
+   productName?: string | null;
+}
+
+function SpecialImage({
+   imageUrl,
+   icon,
+   productName,
+}: SpecialImageProps) {
+   const [imageFailed, setImageFailed] = useState(false);
+   const validImageUrl = imageUrl?.trim();
+
+   useEffect(() => {
+      setImageFailed(false);
+   }, [validImageUrl]);
+
+   if (validImageUrl && !imageFailed) {
+      return (
+         <Image
+            source={{ uri: validImageUrl }}
+            className="w-full h-56"
+            resizeMode="cover"
+            accessibilityLabel={
+               productName?.trim() || "Weekly special product"
+            }
+            onError={() => setImageFailed(true)}
+         />
+      );
+   }
+
+   return (
+      <View className="w-full h-56 bg-gray-100 items-center justify-center">
+         <FontAwesome6
+            name={icon || "image"}
+            size={32}
+            color="#9CA3AF"
+         />
+         <Text className="mt-3 text-sm text-gray-500">
+            Image unavailable
+         </Text>
+      </View>
+   );
 }
 
 export default function WeeklySpecialsSection() {
@@ -45,73 +96,129 @@ export default function WeeklySpecialsSection() {
    }, []);
 
    const fetchWeeklySpecials = async () => {
-      try {
-         setLoading(true);
-         setError(null);
+   try {
+      setLoading(true);
+      setError(null);
+      setSpecials([]);
 
-         const response = await fetch(`${API_URL}/ml/weekly-specials?limit=4`);
-         const data: WeeklySpecialsResponse = await response.json();
+      const response = await fetch(
+         `${API_URL}/ml/weekly-specials?limit=4`
+      );
 
-         if (data.success && data.data) {
-            setSpecials(data.data);
-         } else {
-            setError(data.error || "Failed to load weekly specials");
-            // Fallback to empty array or show error message
-            console.error("Error fetching weekly specials:", data.error);
-         }
-      } catch (err) {
-         console.error("Error fetching weekly specials:", err);
-         setError("Unable to connect to ML service. Please ensure the Python ML service is running.");
-         // Keep empty array on error - component will show loading/error state
-      } finally {
-         setLoading(false);
+      if (!response.ok) {
+         throw new Error(
+            `Weekly specials request failed with status ${response.status}`
+         );
       }
-   };
 
-   const formatPrice = (price: number): string => {
-      return `$${price.toFixed(2)}`;
-   };
+      const data: WeeklySpecialsResponse = await response.json();
 
-   const formatDiscount = (percentage: number): string => {
-      return `${Math.round(percentage)}% OFF`;
-   };
+      if (!data.success) {
+         throw new Error(
+            data.error || "The weekly specials service returned an error."
+         );
+      }
+
+      setSpecials(Array.isArray(data.data) ? data.data : []);
+   } catch (err) {
+      console.error("Error fetching weekly specials:", err);
+      setSpecials([]);
+      setError(
+         "We couldn't load this week's specials. Please check your connection and try again."
+      );
+   } finally {
+      setLoading(false);
+   }
+};
+
+const formatPrice = (price?: number | null): string => {
+   if (typeof price !== "number" || !Number.isFinite(price)) {
+      return "Price unavailable";
+   }
+
+   return `$${price.toFixed(2)}`;
+};
+
+const formatDiscount = (
+   percentage?: number | null
+): string | null => {
+   if (
+      typeof percentage !== "number" ||
+      !Number.isFinite(percentage)
+   ) {
+      return null;
+   }
+
+   return `${Math.round(percentage)}% OFF`;
+};
 
    const handleAddSpecial = async (item: WeeklySpecial) => {
-      const token = await AsyncStorage.getItem("authToken");
-      if (!token) {
-         router.push("/(auth)/login");
-         return;
-      }
+   const token = await AsyncStorage.getItem("authToken");
 
-      if (!getActiveList()) {
-         router.push({
-            pathname: "/(tabs)/my-lists",
-            params: { create: "1" },
-         });
-         return;
-      }
+   if (!token) {
+      router.push("/(auth)/login");
+      return;
+   }
 
-      const storeKey = item.store_key?.toLowerCase();
-      addToCart({
-         id: item.product_id || String(item.id),
-         name: item.product_name,
-         price: item.price,
-         store: item.store,
-         category: item.category,
-         image: item.image_url ?? undefined,
-         retailerPrices: {
-            ...(storeKey === "coles" ? { coles: item.price } : {}),
-            ...(storeKey === "woolworths" ? { woolworths: item.price } : {}),
-            ...(storeKey === "iga" ? { iga: item.price } : {}),
-         },
+   if (!getActiveList()) {
+      router.push({
+         pathname: "/(tabs)/my-lists",
+         params: { create: "1" },
       });
-   };
+      return;
+   }
+
+   const productId =
+      item.product_id ||
+      (item.id !== undefined ? String(item.id) : null);
+
+   const productName = item.product_name?.trim();
+   const productPrice = item.price;
+
+   if (
+      !productId ||
+      !productName ||
+      typeof productPrice !== "number" ||
+      !Number.isFinite(productPrice)
+   ) {
+      console.warn(
+         "Cannot add weekly special because required product data is missing.",
+         item
+      );
+      return;
+   }
+
+   const storeName = item.store?.trim() || "Store unavailable";
+   const categoryName =
+      item.category?.trim() || "Uncategorised";
+   const storeKey = item.store_key?.toLowerCase();
+
+   addToCart({
+      id: productId,
+      name: productName,
+      price: productPrice,
+      store: storeName,
+      category: categoryName,
+      image: item.image_url || undefined,
+      retailerPrices: {
+         ...(storeKey === "coles"
+            ? { coles: productPrice }
+            : {}),
+         ...(storeKey === "woolworths"
+            ? { woolworths: productPrice }
+            : {}),
+         ...(storeKey === "iga"
+            ? { iga: productPrice }
+            : {}),
+      },
+   });
+};
 
    return (
       <View className="bg-white border-t border-gray-100">
          <View className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-16">
             {/* Header */}
-            <View className="flex-row items-center justify-between mb-10">
+            <View className="flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
                <View>
                   <Text className="text-3xl font-bold text-[#111827] mb-2">
                      This Week&apos;s Top Specials
@@ -121,7 +228,7 @@ export default function WeeklySpecialsSection() {
                   </Text>
                </View>
 
-               <Pressable className="px-8 py-4 rounded-xl bg-[#10B981]">
+               <Pressable className="w-full md:w-auto px-8 py-4 rounded-xl bg-[#10B981] items-center">
                   <Text className="text-white font-semibold">
                      View All Specials
                   </Text>
@@ -155,18 +262,20 @@ export default function WeeklySpecialsSection() {
             {!loading && !error && specials.length > 0 && (
                <View className="flex-row flex-wrap -mx-3">
                   {specials.map((item) => (
-                     <View key={item.id} className="w-full md:w-1/4 px-3 mb-6">
+                     <View
+                           key={item.product_id || item.id}
+                           className="w-full sm:w-1/2 lg:w-1/4 px-3 mb-6"
+                        >
                         <View className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
                            {/* Image / icon area + badge */}
                            <View className="relative">
-                              <View className="w-full h-56 bg-gray-100 items-center justify-center">
-                                 <FontAwesome6
-                                    name={item.icon || "circle-question"}
-                                    size={32}
-                                    color="#9CA3AF"
-                                 />
-                              </View>
+                              <SpecialImage
+                                 imageUrl={item.image_url}
+                                 icon={item.icon}
+                                 productName={item.product_name}
+                              />
 
+                              {formatDiscount(item.discount_percentage) && (
                               <View className="absolute top-4 right-4">
                                  <View className="px-4 py-2 rounded-full bg-red-500">
                                     <Text className="text-white text-xs font-bold">
@@ -174,15 +283,16 @@ export default function WeeklySpecialsSection() {
                                     </Text>
                                  </View>
                               </View>
+                           )}
                            </View>
 
                            {/* Content */}
                            <View className="p-5">
                               <Text className="text-base font-bold text-[#111827] mb-1">
-                                 {item.product_name}
+                                 {item.product_name?.trim() || "Product name unavailable"}
                               </Text>
                               <Text className="text-xs text-gray-500 mb-4">
-                                 {item.description}
+                                 {item.description?.trim() || "Description unavailable"}
                               </Text>
 
                               <View className="flex-row items-end justify-between mb-4">
@@ -197,11 +307,14 @@ export default function WeeklySpecialsSection() {
 
                                  <View className="items-end">
                                     <Text className="text-xs text-gray-500 mb-1">
-                                       at {item.store}
+                                       at {item.store?.trim() || "Store name unavailable"}
                                     </Text>
                                     <Text className="text-xs font-bold text-[#10B981]">
-                                       Save {formatPrice(item.savings)}
-                                    </Text>
+                                    {typeof item.savings === "number" &&
+                                    Number.isFinite(item.savings)
+                                       ? `Save ${formatPrice(item.savings)}`
+                                       : "Savings unavailable"}
+                                 </Text>
                                  </View>
                               </View>
 

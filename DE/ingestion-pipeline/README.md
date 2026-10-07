@@ -59,6 +59,8 @@ Run the container locally:
 docker run --rm --env-file .env discount-mate-ingestion:latest --source ww --runner products
 ```
 
+Production uses four scheduled Cloud Run Jobs. Cloud Scheduler invokes ingestion directly on Saturday mornings at 06:00–09:00 in Australia/Melbourne. ETL runs independently at 12:00 the same day, without waiting for ingestion completion. Image checks are defined in `.github/workflows/ingestion-pipeline-checks.yml`; production image deployment is manually triggered through `.github/workflows/data-pipeline-deploy.yml`.
+
 ## Structure
 
 - `main.py`: CLI entrypoint and source/runner dispatch

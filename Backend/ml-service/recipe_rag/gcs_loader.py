@@ -1,15 +1,13 @@
 """
-GCS loader for RAG index files.
+Local/GCS loader for RAG index files.
 
 Binary index artefacts live in the team's existing GCS bucket
 (discountmate-ml-models) under a recipe_rag/ prefix, and are
 downloaded to a local cache on first run.
 
-Behaviour by environment:
-  - LOCAL DEV:        if a file already exists at the expected local
-                      path, it is used as-is (no download). Only files
-                      that are MISSING locally trigger a GCS fetch.
-  - CLOUD RUN / GAE:  cache directory defaults to /tmp/recipe_rag/.
+Behaviour by source:
+  - local:            use local files only; never contact GCS.
+  - gcs:              use cached local files, downloading missing files.
 
 Required env vars (already set in Backend/.env):
   GOOGLE_CLOUD_PROJECT       sit-26t1-discountmate-935cb94
@@ -54,6 +52,7 @@ INDEX_FILES = [
 RAG_BUCKET_NAME = os.environ.get("RAG_BUCKET_NAME", "discountmate-ml-models")
 RAG_OBJECT_PREFIX = os.environ.get("RAG_OBJECT_PREFIX", "recipe_rag/")
 RAG_GCP_PROJECT = os.environ.get("GOOGLE_CLOUD_PROJECT")
+MODEL_ARTIFACT_SOURCE = os.environ.get("MODEL_ARTIFACT_SOURCE", "gcs").strip().lower()
 
 
 # ---------------------------------------------------------------------------
@@ -67,11 +66,21 @@ def _is_gcp_serverless() -> bool:
 
 def _resolve_local_index_dir() -> Path:
     """Where the index files should live on this machine."""
+    if override := os.environ.get("LOCAL_RAG_INDEX_DIR"):
+        return Path(override)
     if _is_gcp_serverless():
         return Path("/tmp") / "recipe_rag"
     # Default: same place rag_pipeline.py already expects
     # (Backend/ml-service/recipe_rag/index/)
     return Path(__file__).resolve().parent / "index"
+
+
+def _validate_artifact_source() -> None:
+    if MODEL_ARTIFACT_SOURCE not in {"gcs", "local"}:
+        raise RuntimeError(
+            "MODEL_ARTIFACT_SOURCE must be either 'gcs' or 'local', "
+            f"got {MODEL_ARTIFACT_SOURCE!r}."
+        )
 
 
 def _download_one(blob_name: str, dest_path: Path) -> None:
@@ -133,11 +142,19 @@ def ensure_index_file(filename: str,
 
     Safe to call repeatedly — it's a no-op when the file is already present.
     """
+    _validate_artifact_source()
     target_dir = Path(index_dir) if index_dir else _resolve_local_index_dir()
     local_path = target_dir / filename
 
     if local_path.exists():
         return str(local_path)
+
+    if MODEL_ARTIFACT_SOURCE == "local":
+        raise RuntimeError(
+            "Recipe RAG artifact is missing in local mode at "
+            f"'{local_path}'. Set LOCAL_RAG_INDEX_DIR to the directory "
+            "containing the required index files."
+        )
 
     blob_name = f"{RAG_OBJECT_PREFIX}{filename}"
     _download_one(blob_name, local_path)
@@ -145,11 +162,17 @@ def ensure_index_file(filename: str,
 
 
 def ensure_all_indexes(index_dir: Optional[str] = None) -> None:
-    """Ensure every file in INDEX_FILES is present locally, downloading in parallel."""
+    """Ensure every file in INDEX_FILES is available from the configured source."""
+    _validate_artifact_source()
     target_dir = Path(index_dir) if index_dir else _resolve_local_index_dir()
     missing = [f for f in INDEX_FILES if not (target_dir / f).exists()]
     if not missing:
         return
+    if MODEL_ARTIFACT_SOURCE == "local":
+        missing_paths = ", ".join(str(target_dir / filename) for filename in missing)
+        raise RuntimeError(
+            f"Recipe RAG artifacts are missing in local mode: {missing_paths}"
+        )
     print(f"[gcs_loader] {len(missing)} file(s) missing locally, "
           f"fetching from GCS in parallel: {missing}")
     with ThreadPoolExecutor(max_workers=min(len(missing), 4)) as executor:

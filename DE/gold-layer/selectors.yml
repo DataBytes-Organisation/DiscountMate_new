@@ -1,0 +1,8 @@
+selectors:
+  - name: stats
+    description: Build all retailer statistics models and their attached tests.
+    definition:
+      method: path
+      value: models/marts/stats
+      indirect_selection: eager
+

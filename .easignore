@@ -1,0 +1,29 @@
+# EAS archives from the Git repository root for this monorepo. Only the Expo
+# application is required by the Android and iOS builders.
+*
+!Frontend
+!Frontend/**
+
+# Generated and local-only frontend content.
+Frontend/node_modules/
+Frontend/.expo/
+Frontend/dist/
+Frontend/coverage/
+Frontend/playwright-report/
+Frontend/test-results/
+Frontend/demo-product page/
+Frontend/backups/
+
+# Web-only static assets (served via fetch() for the web build; not read by
+# the native Android/iOS builders and not referenced through require()).
+Frontend/public/
+
+# Local configuration and signing material must never be uploaded.
+Frontend/.env
+Frontend/.env.*
+!Frontend/.env.example
+Frontend/*.jks
+Frontend/*.keystore
+Frontend/*.p8
+Frontend/*.p12
+Frontend/*.mobileprovision

@@ -15,6 +15,10 @@ export type Product = {
    name: string;
    subtitle: string;
    category?: string;
+   brand?: string;
+   gtin?: string;
+   packQuantity?: string;
+   packUom?: string;
    icon: React.ComponentProps<typeof FontAwesome6>["name"]; // e.g. "wine-glass"
    link_image?: string | null; // Product image URL
    badge: string;       // e.g. "Save $1.20"
@@ -45,7 +49,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const router = useRouter();
    const { addToCart } = useCart();
    const { getActiveList } = useShoppingLists();
-   const { id, name, subtitle, category, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
+   const { id, name, subtitle, category, brand, gtin, packQuantity, packUom, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
    const [imageError, setImageError] = React.useState(false);
 
    // Use retailers as-is for display
@@ -125,6 +129,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
          store: cheapestRetailer?.retailer.name || "Unknown retailer",
          image: link_image ?? undefined,
          category,
+         brand,
+         gtin,
+         packQuantity,
+         packUom,
          retailerPrices: retailerPriceMap,
       });
    };

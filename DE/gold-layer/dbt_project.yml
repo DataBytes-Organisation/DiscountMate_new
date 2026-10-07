@@ -1,0 +1,16 @@
+name: discount_mate_gold
+version: 1.0.0
+config-version: 2
+
+profile: discount_mate_gold
+
+model-paths: ["models"]
+test-paths: ["tests"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  discount_mate_gold:
+    +materialized: view

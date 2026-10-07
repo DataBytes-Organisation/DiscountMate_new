@@ -9,6 +9,13 @@ export type ShoppingListLineItem = {
    image?: string;
    category?: string;
    categoryId?: string;
+   comparisonProductId?: string;
+   sourceProductId?: string;
+   deProductId?: string;
+   gtin?: string;
+   brand?: string;
+   packQuantity?: string;
+   packUom?: string;
    retailerPrices?: {
       aldi?: number;
       coles?: number;

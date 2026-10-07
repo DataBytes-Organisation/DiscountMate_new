@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = async () => {
     await AsyncStorage.removeItem('authToken'); // Remove the token from AsyncStorage
     setIsAuthenticated(false);
-    router.push('/login'); // Redirect to login page after logout
+    router.push('/(auth)/login'); // Redirect to login page after logout
   };
 
   return (

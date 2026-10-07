@@ -6,4 +6,6 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 .output/
+data/
 .env
+.DS_Store

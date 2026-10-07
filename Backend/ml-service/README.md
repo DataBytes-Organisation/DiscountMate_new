@@ -255,7 +255,7 @@ The reverse image search feature lives in `reverse_image_search/` inside this se
 1. User uploads a product image via the Node.js API (`POST /api/reverse-image-search`)
 2. Node.js proxies the image to the FastAPI sidecar on port 8001
 3. The sidecar extracts a 768-dim embedding using **DINOv2 ViT-B/14** with 5 test-time augmentations
-4. A prebuilt **FAISS HNSW index** is downloaded from Google Cloud Storage on startup and cached locally
+4. A prebuilt **FAISS HNSW index** is loaded from the local device or downloaded from Google Cloud Storage
 5. Results are deduplicated by product and ranked by similarity score
 6. Node.js enriches the results with live pricing from MongoDB before returning them
 
@@ -268,13 +268,25 @@ The reverse image search feature lives in `reverse_image_search/` inside this se
 | `ml_models/reverse_image_search.faiss` | Local development cache for the downloaded FAISS HNSW index; ignored by Git |
 | `ml_models/reverse_image_search_metadata.json` | Product metadata for each indexed vector (~33 MB) |
 
-### FAISS index download
+### Model artifact source
 
-The FAISS index is not stored in Git. On startup, `reverse_image_search/notebook_runtime.py` downloads it from Google Cloud Storage if the cache file is missing.
-
-Configure these values in `Backend/.env`:
+The large FAISS and Recipe RAG index files are not stored in Git. Select their source in `Backend/.env`:
 
 ```env
+# Local development: never contact GCS for model artifacts
+MODEL_ARTIFACT_SOURCE=local
+LOCAL_FAISS_PATH=/absolute/path/to/reverse_image_search.faiss
+LOCAL_RAG_INDEX_DIR=/absolute/path/to/recipe_rag/index
+```
+
+`LOCAL_RAG_INDEX_DIR` must contain `recipe_index.npz`, `recipe_metadata.json`, `product_index.npz`, and `product_metadata.json`. If either path override is omitted, the service uses the ignored project directories `ml_models/` and `recipe_rag/index/`.
+
+When a local artifact is missing or invalid, the affected feature reports itself as unavailable instead of contacting GCS. The remaining services continue to run. Reverse-image health returns HTTP 200 with `"ready": false`, while search and unavailable Recipe RAG endpoints return HTTP 503.
+
+For deployed environments, use the existing cache-first GCS behavior:
+
+```env
+MODEL_ARTIFACT_SOURCE=gcs
 GOOGLE_CLOUD_PROJECT=your-gcp-project-id
 FAISS_GCP_PROJECT=
 FAISS_QUOTA_PROJECT=
@@ -292,7 +304,7 @@ Default cache paths:
 | Local machine | `Backend/ml-service/ml_models/reverse_image_search.faiss` |
 | Cloud Run / App Engine | `/tmp/reverse_image_search.faiss` |
 
-You can override the cache path with `LOCAL_FAISS_PATH`.
+You can override the cache paths with `LOCAL_FAISS_PATH` and `LOCAL_RAG_INDEX_DIR`.
 
 For local GCS access, authenticate once:
 
@@ -304,7 +316,7 @@ gcloud auth application-default set-quota-project your-gcp-project-id
 
 ### First-run note
 
-On first startup, DINOv2 (~330 MB) is downloaded from Torch Hub and the FAISS index is downloaded from GCS. This can take a few minutes. Subsequent runs use the local caches.
+On first startup, DINOv2 (~330 MB) is downloaded from Torch Hub. In `gcs` mode, missing index artifacts are also downloaded from GCS. Subsequent runs use the local caches.
 
 ### Rebuilding the index
 

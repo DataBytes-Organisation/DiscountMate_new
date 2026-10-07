@@ -99,4 +99,98 @@ After fixing any broken links, you can run `npm start` again to continue editing
 
 :::
 
+---
+
+## Submitting documents to to GitHub
+
+Once `npm run build` reports **Success**, the final step is to get the new documentation onto the shared repository so it can be reviewed and merged into `main`. The DiscountMate repo uses the standard **feature-branch → pull request** workflow — never commit directly to `main`.
+
+The walk-through below uses a worked example:  you have just added a new file called `ML deployment.md` to one of the docs folders, and you want to push it up for review.
+
+### Step 1 — Check what you have changed
+
+Before doing anything, see exactly what git thinks has changed in your working copy. This catches accidentally-staged files, leftover scratch files, and forgotten edits.
+
+```powershell
+git status
+```
+
+You should see your new file listed under **Untracked files** (or under **Changes not staged for commit** if you were editing an existing file):
+
+```
+On branch feature/MLdocumentation
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        docs-site/docs/Machine Learning/ML deployment.md
+```
+
+### Step 2 — Make sure you are on a feature branch (not on `main`)
+
+If `git status` says `On branch main`, switch to (or create) a feature branch first. Branch names should be short, lowercase-ish, and describe the work:
+
+```powershell
+# Create and switch to a new feature branch
+git checkout -b feature/MLdocumentation
+```
+
+If the branch already exists (e.g. you started it yesterday), just check it out:
+
+```powershell
+git checkout feature/MLdocumentation
+```
+
+:::tip Pull the latest `main` before branching
+If you are about to create a brand-new branch, first make sure your local `main` is up to date so your branch starts from the latest code:
+
+```powershell
+git checkout main
+git pull
+git checkout -b feature/MLdocumentation
+```
+:::
+
+### Step 3 — Stage the file(s) you want to commit
+
+Add only the file(s) related to this change. Avoid `git add .` unless you have just run `git status` and are confident about every line of output.
+
+```powershell
+git add "docs-site/docs/Machine Learning/ML deployment.md"
+```
+
+Run `git status` again — your file should now be listed in green under **Changes to be committed**.
+
+### Step 4 — Commit with a descriptive message
+
+```powershell
+git commit -m "docs(ml): add ML deployment walkthrough"
+```
+
+Keep commit messages short and meaningful. A future reader scanning `git log` should be able to tell what changed without opening the diff.
+
+### Step 5 — Push the branch to GitHub
+
+The first time you push a new branch, you need to tell git where it should live on the remote (`-u` sets the upstream so future `git push` calls don't need the full form):
+
+```powershell
+git push -u origin feature/MLdocumentation
+```
+
+### Step 6 — Open the pull request
+
+After the push, GitHub will print a URL in the terminal that looks something like:
+
+```
+remote: Create a pull request for 'feature/MLdocumentation' on GitHub by visiting:
+remote:      https://github.com/<org>/<repo>/pull/new/feature/MLdocumentation
+```
+
+**`Ctrl + click`** that link (or paste it into your browser) to open the **Open a pull request** page on GitHub. On that page:
+
+1. Confirm the **base** branch is `main` and the **compare** branch is `feature/MLdocumentation`.
+2. Give the PR a clear title (e.g. *"Docs: ML deployment walkthrough"*).
+3. In the description, summarise what you added and call out anything reviewers should specifically look at.
+4. Click **Create pull request**.
+
+
+
 

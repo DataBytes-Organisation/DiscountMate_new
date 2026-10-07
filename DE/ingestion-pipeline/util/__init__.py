@@ -7,6 +7,9 @@ from .common import (
     load_brand_queries,
     load_json_file,
     log_request_debug,
+    emit_scrape_summary,
+    emit_scrape_block,
+    emit_scrape_run_failed,
     normalize_record_keys,
     parse_cookie_string,
     read_csv_rows,
@@ -20,11 +23,12 @@ from .common import (
     utc_timestamp,
     write_csv_rows,
 )
-from .runtime import RunContext, RunResult
+from .runtime import RunContext, RunResult, RunStats
 
 __all__ = [
     "RunContext",
     "RunResult",
+    "RunStats",
     "append_jsonl",
     "ensure_dir",
     "flatten_json",
@@ -33,6 +37,9 @@ __all__ = [
     "load_brand_queries",
     "load_json_file",
     "log_request_debug",
+    "emit_scrape_summary",
+    "emit_scrape_block",
+    "emit_scrape_run_failed",
     "normalize_record_keys",
     "parse_cookie_string",
     "read_csv_rows",

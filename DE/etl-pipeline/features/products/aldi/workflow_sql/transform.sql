@@ -24,7 +24,7 @@ WITH aldi_cleaned AS (
             ELSE NULL
         END AS pack_quantity,
         nullif(
-            lower(regexp_extract(CAST(aldi_selling_size AS VARCHAR), '(kg|g|ml|l|ea|each|pack|pk)', 1)),
+            regexp_extract(lower(CAST(aldi_selling_size AS VARCHAR)), '(kg|g|ml|l|ea|each|pack|pk)', 1),
             ''
         ) AS pack_uom,
         nullif(
@@ -73,7 +73,19 @@ aldi_mapped AS (
             ELSE 'MISCELLANEOUS'
         END AS category_name,
         trim(regexp_replace(lower(coalesce(item_name, '')), '[^a-z0-9]+', ' ', 'g')) AS normalized_product_name,
-        trim(regexp_replace(lower(coalesce(brand_name, '')), '[^a-z0-9]+', ' ', 'g')) AS normalized_brand_name
+        trim(regexp_replace(lower(coalesce(brand_name, '')), '[^a-z0-9]+', ' ', 'g')) AS normalized_brand_name,
+        CASE
+            WHEN item_name IS NULL THEN NULL
+            WHEN brand_name IS NULL THEN item_name
+            WHEN lower(item_name) LIKE lower(brand_name) || ' %' THEN coalesce(
+                nullif(
+                    trim(regexp_replace(substr(item_name, length(brand_name) + 1), '^[[:space:][:punct:]]+', '')),
+                    ''
+                ),
+                item_name
+            )
+            ELSE item_name
+        END AS standardized_product_name
     FROM aldi_cleaned
     WHERE item_name IS NOT NULL
       AND trim(item_name) <> ''
@@ -183,7 +195,15 @@ aldi_keyed AS (
         END AS pack_quantity_key,
         normalized_brand_name
             || '|'
-            || normalized_product_name
+            || CASE
+                WHEN normalized_brand_name <> ''
+                    AND normalized_product_name LIKE normalized_brand_name || ' %'
+                    THEN coalesce(
+                        nullif(substr(normalized_product_name, length(normalized_brand_name) + 2), ''),
+                        normalized_product_name
+                    )
+                ELSE normalized_product_name
+            END
             || '|'
             || CASE
                 WHEN pack_quantity IS NULL THEN ''
@@ -193,7 +213,10 @@ aldi_keyed AS (
                 )
             END
             || '|'
-            || coalesce(pack_uom, '') AS canonical_key
+            || coalesce(
+                CASE pack_uom WHEN 'each' THEN 'ea' WHEN 'pk' THEN 'pack' ELSE pack_uom END,
+                ''
+            ) AS canonical_key
     FROM aldi_match_ready
 ),
 aldi_deduplicated AS (
@@ -482,7 +505,7 @@ matched AS (
             ELSE NULL
         END AS match_gtin,
         a.item_name,
-        a.item_name AS standardized_product_name,
+        a.standardized_product_name,
         a.brand_name,
         a.category_name,
         a.pack_quantity,
