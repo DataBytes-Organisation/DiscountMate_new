@@ -94,9 +94,30 @@ const FINALISED_PROJECTIONS = [
   {
     sourceTable: 'app.product_api_compatibility',
     proposedTable: 'app.product_metadata',
+    rename: {
+      source_measurement: 'pack_display_unit',
+    },
     omit: {
       legacy_gtin: 'Source-only malformed/alternate identifier.',
-      legacy_measurement: 'Replaced by canonical pack_quantity and pack_uom.',
+      legacy_measurement: 'Replaced by the App-owned pack_display_unit field.',
+    },
+  },
+  {
+    sourceTable: 'app.product_price_source_records',
+    proposedTable: 'app.product_price_metadata',
+    rename: {
+      raw_unit_price: 'unit_price_label',
+      raw_best_unit_price: 'best_unit_price_label',
+    },
+    omit: {
+      source_system: 'Retained in migration.product_price_source_records.',
+      source_collection: 'Retained in migration.product_price_source_records.',
+      source_record_id: 'Retained in migration.product_price_source_records.',
+      raw_store_chain: 'Retained in migration.product_price_source_records.',
+      source_name: 'Retained in migration.product_price_source_records.',
+      source_checksum: 'Retained in migration.product_price_source_records.',
+      source_created_at: 'Retained in migration.product_price_source_records.',
+      source_updated_at: 'Retained in migration.product_price_source_records.',
     },
   },
   {
@@ -122,8 +143,8 @@ const FINALISED_PROJECTIONS = [
 ];
 
 const AUDIT_ONLY_TABLES = [
-  'app.catalog_source_keys',
-  'app.product_price_source_records',
+  'migration.catalog_source_keys',
+  'migration.product_price_source_records',
   'migration.entity_id_map',
   'migration.record_issues',
   'migration.record_outcomes',
@@ -242,7 +263,7 @@ async function createPreview(dataSource) {
     mode: 'finalised-schema-preview',
     readOnly: true,
     finalisedSchemaApplied: Boolean(finalisedState[0]?.backup_table),
-    explanation: 'Compatibility data is excluded from this proposed contract but is not dropped from PostgreSQL. Standalone pricing snapshots retain a durable snapshot_list_key.',
+    explanation: 'Source-only fields are excluded, while catalogue presentation metadata required for Mongo-compatible API output remains in App-owned read tables.',
     tables,
     auditOnlyTables: AUDIT_ONLY_TABLES,
     unresolvedReferences,

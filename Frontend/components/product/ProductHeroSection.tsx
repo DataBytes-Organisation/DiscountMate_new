@@ -1,42 +1,39 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { View, Text, Image, Pressable, ActivityIndicator } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
-import { API_URL } from "@/constants/Api";
+import { fetchCatalogueProductDetail } from "@/services/catalogue/catalogueApi";
+import type { CatalogueProductDetail, CatalogueSource } from "@/services/catalogue/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
 interface ProductHeroSectionProps {
    productId?: string | string[];
    productName?: string;
+   source?: CatalogueSource;
 }
 
-type ApiProduct = {
-   _id: string;
-   product_name?: string | null;
-   product_code?: string | null;
-   link_image?: string | null;
-   image_link_back?: string | null;
-   image_link_side?: string | null;
-   description?: string | null;
-   brand?: string | null;
-   current_price?: number | null;
-   unit_price?: string | null;
-   is_on_special?: boolean | null;
-   price_date?: string | null;
-   unit_per_prod?: number | null;
-   measurement?: string | null;
-   gtin?: string | null;
-};
-
-export default function ProductHeroSection({
-   productId,
-}: ProductHeroSectionProps) {
+export default function ProductHeroSection({ productId, source = "mongo", }: ProductHeroSectionProps) {
    const router = useRouter();
-   const [isFavorited, setIsFavorited] = useState(false);
-   const [product, setProduct] = useState<ApiProduct | null>(null);
-   const [loading, setLoading] = useState(true);
-   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
-   const [erroredImageUris, setErroredImageUris] = useState<Record<string, true>>({});
+   const [isFavorited, setIsFavorited] =
+      useState(false);
+
+   const [product, setProduct] =
+      useState<CatalogueProductDetail | null>(
+         null
+      );
+
+   const [loading, setLoading] =
+      useState(true);
+
+   const [
+      selectedImageUri,
+      setSelectedImageUri,
+   ] = useState<string | null>(null);
+
+   const [
+      erroredImageUris,
+      setErroredImageUris,
+   ] = useState<Record<string, true>>({});
 
    const resolvedProductId = Array.isArray(productId) ? productId[0] : productId;
 
@@ -48,10 +45,10 @@ export default function ProductHeroSection({
          label: string;
          uri: string | null | undefined;
       }> = [
-         { key: "front", label: "Front", uri: product?.link_image },
-         { key: "back", label: "Back", uri: product?.image_link_back },
-         { key: "side", label: "Side", uri: product?.image_link_side },
-      ];
+            { key: "front", label: "Front", uri: product?.link_image },
+            { key: "back", label: "Back", uri: product?.image_link_back },
+            { key: "side", label: "Side", uri: product?.image_link_side },
+         ];
 
       const seen = new Set<string>();
       const out: Array<{ key: "front" | "back" | "side"; label: string; uri: string }> = [];
@@ -69,6 +66,8 @@ export default function ProductHeroSection({
    const mainImageUri = selectedImageUri ?? galleryImages[0]?.uri ?? null;
 
    useEffect(() => {
+      const controller = new AbortController();
+
       const fetchProduct = async () => {
          if (!resolvedProductId) {
             setLoading(false);
@@ -77,33 +76,57 @@ export default function ProductHeroSection({
 
          try {
             setLoading(true);
-            // Backend route is GET /api/products/:id
-            const response = await fetch(
-               `${API_URL}/products/${encodeURIComponent(resolvedProductId)}`
+            setProduct(null);
+
+            const data =
+               await fetchCatalogueProductDetail(
+                  source,
+                  resolvedProductId,
+                  controller.signal
+               );
+
+            if (controller.signal.aborted) {
+               return;
+            }
+
+            setProduct(data);
+
+            const defaultUri =
+               data.link_image ||
+               data.image_link_back ||
+               data.image_link_side ||
+               null;
+
+            setSelectedImageUri(defaultUri);
+            setErroredImageUris({});
+         } catch (error) {
+            if (
+               error instanceof Error &&
+               error.name === "AbortError"
+            ) {
+               return;
+            }
+
+            console.error(
+               "Error fetching product:",
+               error
             );
 
-            if (response.ok) {
-               const data = await response.json();
-               setProduct(data);
-               // Reset gallery state when new product is loaded
-               const defaultUri =
-                  data?.link_image || data?.image_link_back || data?.image_link_side || null;
-               setSelectedImageUri(defaultUri);
-               setErroredImageUris({});
-            } else {
-               const errorText = await response.text();
-               console.error("Failed to fetch product:", response.status, errorText);
-               console.error("ProductId used:", resolvedProductId);
+            if (!controller.signal.aborted) {
+               setProduct(null);
             }
-         } catch (error) {
-            console.error("Error fetching product:", error);
          } finally {
-            setLoading(false);
+            if (!controller.signal.aborted) {
+               setLoading(false);
+            }
          }
       };
 
       fetchProduct();
-   }, [resolvedProductId]);
+
+      return () => controller.abort();
+   }, [resolvedProductId, source]);
+
 
    const currentPrice = typeof product?.current_price === "number" ? product.current_price : 0;
    const oldPrice = 0;
@@ -125,7 +148,7 @@ export default function ProductHeroSection({
       image_link_side: product?.image_link_side || null,
       price: currentPrice,
       oldPrice,
-      retailer: "Coles",
+      retailer: product?.retailer_name || "Retailer unavailable",
       savings,
       percent,
       trend: "down",

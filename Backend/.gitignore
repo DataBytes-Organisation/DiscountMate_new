@@ -5,3 +5,4 @@ __pycache__/
 venv/
 .DS_Store
 logs/
+/.local-backups/

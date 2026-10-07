@@ -108,56 +108,56 @@ async function assertMigrationSchema(dataSource, phase) {
 
   if (
     phase === 'alerts-notifications'
-      && (!rows[0]?.app_alert_segments || !rows[0]?.app_notifications)
+    && (!rows[0]?.app_alert_segments || !rows[0]?.app_notifications)
   ) {
     throw new Error('Alert/notification tables are missing. Run `npm run db:migrate` first.');
   }
 
   if (
     phase === 'support-requests'
-      && (!rows[0]?.app_support_requests || !rows[0]?.app_support_attachments)
+    && (!rows[0]?.app_support_requests || !rows[0]?.app_support_attachments)
   ) {
     throw new Error('Support-request tables are missing. Run `npm run db:migrate` first.');
   }
 
   if (
     phase === 'shopping-lists'
-      && (!rows[0]?.silver_retailers
-        || !rows[0]?.silver_categories
-        || !rows[0]?.silver_products
-        || !rows[0]?.app_catalog_source_keys)
+    && (!rows[0]?.silver_retailers
+      || !rows[0]?.silver_categories
+      || !rows[0]?.silver_products
+      || !rows[0]?.app_catalog_source_keys)
   ) {
     throw new Error('Catalogue references are missing. Run `npm run db:migrate` and `npm run db:silver:setup` first.');
   }
 
   if (
     phase === 'alerts-notifications'
-      && (!rows[0]?.silver_categories
-        || !rows[0]?.silver_products
-        || !rows[0]?.app_catalog_source_keys)
+    && (!rows[0]?.silver_categories
+      || !rows[0]?.silver_products
+      || !rows[0]?.app_catalog_source_keys)
   ) {
     throw new Error('Category/product references are missing. Run `npm run db:migrate` and `npm run db:silver:setup` first.');
   }
 
   if (
     phase === 'catalog'
-      && (!rows[0]?.silver_categories
-        || !rows[0]?.silver_products
-        || !rows[0]?.app_catalog_source_keys
-        || !rows[0]?.app_category_compatibility
-        || !rows[0]?.app_product_compatibility)
+    && (!rows[0]?.silver_categories
+      || !rows[0]?.silver_products
+      || !rows[0]?.app_catalog_source_keys
+      || !rows[0]?.app_category_compatibility
+      || !rows[0]?.app_product_compatibility)
   ) {
     throw new Error('Catalogue tables are missing. Run `npm run db:migrate` and `npm run db:silver:setup` first.');
   }
 
   if (
     phase === 'product-pricing'
-      && (!rows[0]?.silver_retailers
-        || !rows[0]?.silver_categories
-        || !rows[0]?.silver_products
-        || !rows[0]?.silver_product_prices
-        || !rows[0]?.app_catalog_source_keys
-        || !rows[0]?.app_product_price_sources)
+    && (!rows[0]?.silver_retailers
+      || !rows[0]?.silver_categories
+      || !rows[0]?.silver_products
+      || !rows[0]?.silver_product_prices
+      || !rows[0]?.app_catalog_source_keys
+      || !rows[0]?.app_product_price_sources)
   ) {
     throw new Error('Product-pricing tables are missing. Run `npm run db:migrate` and `npm run db:silver:setup` first.');
   }
@@ -321,14 +321,14 @@ async function main() {
     if (exitCode) process.exitCode = exitCode;
   } catch (error) {
     if (dataSource?.isInitialized && runId) {
-      await finishRun(dataSource, runId, summary, null, error).catch(() => {});
+      await finishRun(dataSource, runId, summary, null, error).catch(() => { });
     }
     throw error;
   } finally {
-    await mongoClient.close().catch(() => {});
+    await mongoClient.close().catch(() => { });
 
     if (dataSource?.isInitialized) {
-      await dataSource.destroy().catch(() => {});
+      await dataSource.destroy().catch(() => { });
     }
   }
 }

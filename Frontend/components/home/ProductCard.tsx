@@ -9,9 +9,11 @@ import { useRouter } from "expo-router";
 import { useCart } from "../../app/(tabs)/CartContext";
 import { useShoppingLists } from "../../app/(tabs)/ShoppingListsContext";
 export type TrendTone = "green" | "red" | "orange" | "neutral";
+import type { CatalogueSource, } from "@/services/catalogue/types";
 
 export type Product = {
    id: string;
+   source?: CatalogueSource;
    name: string;
    subtitle: string;
    category?: string;
@@ -19,10 +21,10 @@ export type Product = {
    gtin?: string;
    packQuantity?: string;
    packUom?: string;
-   icon: React.ComponentProps<typeof FontAwesome6>["name"]; // e.g. "wine-glass"
-   link_image?: string | null; // Product image URL
-   badge: string;       // e.g. "Save $1.20"
-   trendLabel: string;  // e.g. "Trending down"
+   icon: React.ComponentProps<typeof FontAwesome6>["name"];
+   link_image?: string | null;
+   badge: string;
+   trendLabel: string;
    trendTone: TrendTone;
    retailers: Retailer[];
 };
@@ -49,7 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const router = useRouter();
    const { addToCart } = useCart();
    const { getActiveList } = useShoppingLists();
-   const { id, name, subtitle, category, brand, gtin, packQuantity, packUom, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
+   const { id, source = "mongo", name, subtitle, category, brand, gtin, packQuantity, packUom, icon, link_image, badge, trendLabel, trendTone, retailers } = product;
    const [imageError, setImageError] = React.useState(false);
 
    // Use retailers as-is for display
@@ -63,7 +65,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
    const handleOpenDetails = () => {
       router.push({
          pathname: "/(product)/product/[id]",
-         params: { id },
+         params: {
+            id,
+            ...(source === "postgres"
+               ? { source: "postgres" }
+               : {}),
+         },
       });
    };
 
@@ -112,13 +119,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
          woolworths?: number;
          iga?: number;
       }>((acc, retailer) => {
-         const parsedPrice = parseRetailerPrice(retailer.price);
+         const parsedPrice =
+            parseRetailerPrice(retailer.price);
          if (parsedPrice == null) return acc;
-
-         const key = retailer.storeKey?.toLowerCase();
-         if (key === "coles") acc.coles = parsedPrice;
-         if (key === "woolworths") acc.woolworths = parsedPrice;
-         if (key === "iga") acc.iga = parsedPrice;
+         const key =
+            retailer.storeKey?.toLowerCase();
+         if (key === "coles") { acc.coles = parsedPrice; }
+         if (key === "woolworths") { acc.woolworths = parsedPrice; }
+         if (key === "iga") { acc.iga = parsedPrice; }
          return acc;
       }, {});
 

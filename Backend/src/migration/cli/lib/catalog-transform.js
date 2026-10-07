@@ -1,4 +1,5 @@
 const { checksumDocument } = require('./user-transform');
+
 const PACK_UOM_ALIASES = new Map([
   ['g', 'g'],
   ['gram', 'g'],
@@ -188,7 +189,7 @@ function transformProductDocument(document, fallbackNow = new Date()) {
   if (rawMeasurement && !packUom) {
     warnings.push({
       reason: 'catalog_product_unsupported_pack_uom',
-      detail: { rawMeasurement: rawMeasurement.toLowerCase() },
+      detail: { rawMeasurement },
     });
   }
 
@@ -225,7 +226,7 @@ function transformProductDocument(document, fallbackNow = new Date()) {
         .toLowerCase(),
       productName: productName.toLowerCase(),
       packQuantity,
-      packUom,
+      packUom: packUom?.toLowerCase() || null,
     },
     product: {
       productName,
