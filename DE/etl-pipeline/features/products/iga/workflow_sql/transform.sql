@@ -233,7 +233,7 @@ prepared AS (
         CASE
             WHEN item_name IS NULL THEN NULL
             WHEN brand_name IS NULL THEN item_name
-            WHEN lower(item_name) LIKE lower(brand_name) || '%' THEN coalesce(
+            WHEN lower(item_name) LIKE lower(brand_name) || ' %' THEN coalesce(
                 NULLIF(
                     trim(
                         regexp_replace(

@@ -35,7 +35,7 @@ export default function AuthFooter() {
 
             <View className="flex-row flex-wrap items-center justify-between gap-3">
                <Text className="text-[11px] text-gray-400">
-                  © 2024 DiscountMate. All rights reserved.
+                  © {new Date().getFullYear()} DiscountMate. All rights reserved.
                </Text>
                <View className="flex-row flex-wrap items-center gap-4">
                   {footerLinks.map((item) => (

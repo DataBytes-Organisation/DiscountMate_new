@@ -21,6 +21,7 @@ COPY app.py ./app.py
 COPY ml_models ./ml_models
 COPY ocr ./ocr
 COPY recipe_rag ./recipe_rag
+COPY chatbots ./chatbots
 
 EXPOSE 5001
 

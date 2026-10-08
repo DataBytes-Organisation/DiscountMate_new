@@ -30,15 +30,11 @@ except ImportError:
           "Run: pip install sentence-transformers")
 
 try:
-    from .gcs_loader import (  # Flask package
-        ensure_index_file,
-        get_local_index_dir,
-    )
+    from .gcs_loader import ensure_index_file   # Flask package
+    from .tool_selector import ChatToolSelector, RECIPE_ONLY_MESSAGE, ordinal_index
 except ImportError:
-    from gcs_loader import (  # CLI direct run
-        ensure_index_file,
-        get_local_index_dir,
-    )
+    from gcs_loader import ensure_index_file    # CLI direct run
+    from tool_selector import ChatToolSelector, RECIPE_ONLY_MESSAGE, ordinal_index
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -59,7 +55,7 @@ else:
     print(f"[env] no .env at {_ENV_PATH} — fell back to cwd search")
 
 EMBEDDING_MODEL_NAME = "all-mpnet-base-v2"
-INDEX_DIR = get_local_index_dir()
+INDEX_DIR = os.path.join(os.path.dirname(__file__), "index")
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 HUGGINGFACE_URL = "https://router.huggingface.co/v1/chat/completions"
@@ -1098,8 +1094,8 @@ class RecipeRetriever:
             meta_path = ensure_index_file("recipe_metadata.json", self.index_dir)
         except RuntimeError as e:
             raise FileNotFoundError(
-                f"Recipe index unavailable from the configured source: {e}\n"
-                "Build the local index or check the configured GCS access."
+                f"Recipe index unavailable (local + GCS both failed): {e}\n"
+                "Run: python build_recipe_index.py — or check GCS auth."
             ) from e
         embeddings = np.load(emb_path)["embeddings"].astype(np.float32)
         with open(meta_path, "r", encoding="utf-8") as f:
@@ -1187,18 +1183,13 @@ class ProductMatcher:
             meta_path = ensure_index_file("product_metadata.json", self.index_dir)
         except RuntimeError as e:
             print(f"[ProductMatcher] product index unavailable "
-                  f"from the configured source — annotations DISABLED. {e}")
+                  f"(local + GCS both failed) — annotations DISABLED. {e}")
             return
 
-        try:
-            data = np.load(emb_path, allow_pickle=True)
-            embeddings = data["embeddings"].astype(np.float32)
-            with open(meta_path, "r", encoding="utf-8") as f:
-                products = json.load(f)["products"]
-        except Exception as e:
-            print(f"[ProductMatcher] product index is invalid "
-                  f"— annotations DISABLED. {e}")
-            return
+        data = np.load(emb_path, allow_pickle=True)
+        embeddings = data["embeddings"].astype(np.float32)
+        with open(meta_path, "r", encoding="utf-8") as f:
+            products = json.load(f)["products"]
 
         if embeddings.shape[0] != len(products):
             print(f"[ProductMatcher] WARNING: shape mismatch — "
@@ -1321,10 +1312,11 @@ class RecipeRAG:
         self.product_matcher = ProductMatcher(self.model, index_dir)
         self.mongo_resolver = MongoProductResolver()
         self.llm = LLMClient()
+        self.tool_selector = ChatToolSelector()
 
         self.max_turns = max_turns
         self.sessions: Dict[str, List[Dict]] = {}
-
+        self._last_results_by_session: Dict[str, List[Dict]] = {}
         # context_id → list of confirmed MongoDB lookup keys for that turn
         self._context_store: Dict[str, List[Dict]] = {}
         self._context_store_created: Dict[str, float] = {}
@@ -1336,6 +1328,7 @@ class RecipeRAG:
 
     def reset_session(self, session_id: str):
         self.sessions.pop(session_id, None)
+        self._last_results_by_session.pop(session_id, None)
 
     def turn_count(self, session_id: str) -> int:
         return len(self.sessions.get(session_id, [])) // 2
@@ -1464,6 +1457,10 @@ class RecipeRAG:
     ) -> Optional[Dict]:
         if not results:
             return None
+        requested_index = ordinal_index(user_query)
+        if requested_index is not None and requested_index < len(results):
+            return results[requested_index]
+
         haystack_l = f"{answer} {user_query}".lower()
         recipe_names = []
         for result in results:
@@ -1610,7 +1607,28 @@ class RecipeRAG:
         a recipe_context_id that the caller uses to fetch product cards via
         GET /api/recipe/products?context_id=... (products_pending=True signals this).
         """
+        user_query = str(user_query or "").strip()[:2000]
+        try:
+            top_k = int(top_k)
+        except (TypeError, ValueError):
+            top_k = 3
+        top_k = max(1, min(top_k, 8))
+
         history = self.sessions.setdefault(session_id, [])
+        previous_results = self._last_results_by_session.get(session_id, [])
+        selection = self.tool_selector.select(
+            user_query,
+            has_previous_results=bool(previous_results),
+        )
+
+        price_tool_selection = {
+            "intent": "price_comparison",
+            "tools": ["product_lookup"],
+            "reason": "message asks for retailer price comparison",
+            "confidence": 0.9,
+            "reuse_previous_results": False,
+            "reused_previous_results": False,
+        }
 
         if self.turn_count(session_id) >= self.max_turns:
             return {
@@ -1623,6 +1641,7 @@ class RecipeRAG:
                 "product_candidate_names": [],
                 "products_pending": False,
                 "recipe_context_id": None,
+                "tool_selection": selection.to_dict(),
             }
                     # Handle price-comparison requests
         if self._is_price_comparison_query(user_query):
@@ -1699,13 +1718,124 @@ class RecipeRAG:
                 "recipe_context_id": None,
             }
 
-        # 1. Retrieve recipes
-        results = self.retriever.search(user_query, top_k=top_k)
+        # Handle price-comparison requests without invoking recipe retrieval or LLMs.
+        if self._is_price_comparison_query(user_query):
+            candidates = self.product_matcher.find_query_product_candidates(
+                user_query,
+                top_k=10,
+            )
+
+            comparison = self.mongo_resolver.compare_product_prices(candidates)
+
+            if comparison.get("status") not in ("success", "no_prices"):
+                return {
+                    "answer": "I couldn't find reliable price information for that product. Please try specifying the product name, brand, or pack size.",
+                    "sources": [],
+                    "turns": self.turn_count(session_id),
+                    "limit_reached": False,
+                    "product_candidate_names": [],
+                    "products_pending": False,
+                    "recipe_context_id": None,
+                    "tool_selection": price_tool_selection,
+                }
+
+            matched_product = comparison.get("matched_product") or {}
+            prices = comparison.get("prices") or []
+            cheapest = comparison.get("cheapest")
+
+            product_name = (
+                matched_product.get("product_name")
+                or matched_product.get("name")
+                or matched_product.get("description")
+                or "the product"
+            )
+
+            if not prices:
+                return {
+                    "answer": f"I found {product_name}, but there are no current retailer prices available.",
+                    "sources": [],
+                    "turns": self.turn_count(session_id),
+                    "limit_reached": False,
+                    "product_candidate_names": [product_name],
+                    "products_pending": False,
+                    "recipe_context_id": None,
+                    "tool_selection": price_tool_selection,
+                }
+
+            lines = [f"Price comparison for {product_name}:"]
+
+            for item in prices:
+                retailer = item.get("store_chain") or item.get("retailer") or "Unknown retailer"
+                price = item.get("price")
+
+                if price is not None:
+                    lines.append(f"- {retailer}: ${float(price):.2f}")
+
+            if cheapest:
+                cheapest_store = (
+                    cheapest.get("store_chain")
+                    or cheapest.get("retailer")
+                    or "Unknown retailer"
+                )
+                cheapest_price = cheapest.get("price")
+
+                if cheapest_price is not None:
+                    lines.append(
+                        f"\nCheapest option: {cheapest_store} "
+                        f"at ${float(cheapest_price):.2f}."
+                    )
+
+            return {
+                "answer": "\n".join(lines),
+                "sources": [],
+                "turns": self.turn_count(session_id),
+                "limit_reached": False,
+                "product_candidate_names": [product_name],
+                "products_pending": False,
+                "recipe_context_id": None,
+                "tool_selection": price_tool_selection,
+            }
+
+        if not selection.run_llm:
+            return {
+                "answer": RECIPE_ONLY_MESSAGE,
+                "sources": [],
+                "turns": self.turn_count(session_id),
+                "limit_reached": False,
+                "product_candidate_names": [],
+                "products_pending": False,
+                "recipe_context_id": None,
+                "tool_selection": selection.to_dict(),
+            }
+
+        reused_previous_results = False
+        if selection.reuse_previous_results and previous_results:
+            results = previous_results[:top_k]
+            reused_previous_results = True
+        else:
+            if self.retriever is None:
+                return {
+                    "answer": (
+                        "Recipe search is temporarily unavailable, but I can still "
+                        "help compare grocery prices if you ask about a specific product."
+                    ),
+                    "sources": [],
+                    "turns": self.turn_count(session_id),
+                    "limit_reached": False,
+                    "product_candidate_names": [],
+                    "products_pending": False,
+                    "recipe_context_id": None,
+                    "tool_selection": selection.to_dict(reused_previous_results),
+                }
+            results = self.retriever.search(user_query, top_k=top_k)
+            self._last_results_by_session[session_id] = results
 
         # Product cards are still resolved after the LLM answer is known, but
-        # generation gets a Mongo-grounded product constraint up front.
+        # the selector grants product-lookup permission before any lookup runs.
         mongo_products: List[Dict] = []
-        mongo_names: List[str] = self._prefetch_query_product_names(user_query)
+        mongo_names: List[str] = []
+        if selection.run_product_lookup:
+            mongo_names = self._prefetch_query_product_names(user_query)
         confirmed_lookups: List[Dict] = []
         ingredient_matches: List[Dict] = []
 
@@ -1739,11 +1869,12 @@ class RecipeRAG:
                 "product_candidate_names": [],
                 "products_pending": False,
                 "recipe_context_id": None,
+                "tool_selection": selection.to_dict(reused_previous_results),
             }
 
-        should_attach_products = self._should_attach_products(
-            user_query,
-            answer,
+        should_attach_products = (
+            selection.run_product_lookup
+            and self._should_attach_products(user_query, answer)
         )
         if should_attach_products:
             answered_recipe = self._select_recipe_for_answer(results, answer, user_query)
@@ -1775,6 +1906,7 @@ class RecipeRAG:
             "product_candidate_names": mongo_names if products_pending else [],
             "products_pending": products_pending,
             "recipe_context_id": context_id if products_pending else None,
+            "tool_selection": selection.to_dict(reused_previous_results),
         }
 
 

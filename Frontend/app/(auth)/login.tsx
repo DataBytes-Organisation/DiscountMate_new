@@ -14,9 +14,11 @@ import FooterSection from "../../components/home/FooterSection";
 import GoogleSignInButton from "../../components/auth/GoogleSignInButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../../constants/Api";
+import { useUserProfile } from "../../context/UserProfileContext";
 
 export default function LoginPage() {
    const router = useRouter();
+   const { refreshProfile } = useUserProfile();
    const { registered } = useLocalSearchParams<{ registered?: string }>();
    const [email, setEmail] = useState("");
    const [password, setPassword] = useState("");
@@ -56,6 +58,7 @@ export default function LoginPage() {
          } else {
             if (data?.token) {
                await AsyncStorage.setItem("authToken", data.token);
+               await refreshProfile();
             }
             router.push("/(tabs)");
          }
@@ -256,4 +259,3 @@ export default function LoginPage() {
       </View>
    );
 }
-

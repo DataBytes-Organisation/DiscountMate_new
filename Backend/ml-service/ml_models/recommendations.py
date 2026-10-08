@@ -1,223 +1,109 @@
-"""
-Product Recommendations ML Model
-This module demonstrates how to integrate the existing product recommendation model.
-
-The actual model file is located at:
-ML/Recommendation_system/Recommendation-by-Simba/product_recommendation_model.joblib
-"""
-
-import pandas as pd
-import joblib
-from typing import List, Dict, Optional
 import os
+import time
+from datetime import timedelta
+from typing import Dict, List
 
-# Path to the actual model file
-DEFAULT_MODEL_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-    'ML',
-    'Recommendation_system',
-    'Recommendation-by-Simba',
-    'product_recommendation_model.joblib'
-)
+import joblib
+import pandas as pd
 
-MODEL_PATH = os.getenv('RECOMMENDATION_MODEL_PATH', '/app/models/product_recommendation_model.joblib')
+MONGO_URI = os.getenv("MONGO_URI", "").strip()
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "DiscountMate_DB")
+ONE_DAY = timedelta(days=1)
+CACHE_SECONDS = 600
 
-# Global variables to cache model and data (loaded once)
-_model = None
-_rules_df = None
-_products_df = None
+MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
+MODEL_PATH = os.path.join(MODELS_DIR, "DiscountMate_REES46_purchase_probability_model.joblib")
+RECOMMENDED_OPTIONS_PATH = os.path.join(MODELS_DIR, "user_recommended_options.csv")
 
-
-def _load_model():
-    """Load the recommendation model from joblib file"""
-    global _model
-    if _model is None:
-        if not os.path.exists(MODEL_PATH):
-            if os.path.exists(DEFAULT_MODEL_PATH):
-                _model = joblib.load(DEFAULT_MODEL_PATH)
-                return _model
-
-            raise FileNotFoundError(
-                f"Model file not found at {MODEL_PATH}\n"
-                "Please ensure the model file exists or update RECOMMENDATION_MODEL_PATH"
-            )
-        _model = joblib.load(MODEL_PATH)
-    return _model
+_pricings_col = None
+_cache: Dict = {'results': [], 'expires': 0.0}
+_bundle = None
 
 
-def _create_mock_rules_df():
-    """
-    Create mock association rules dataframe for demo purposes.
-    In production, this would be loaded from CSV or MongoDB.
-
-    The rules_df needs columns: antecedents, consequents, lift
-    """
-    # Create sample association rules based on the notebook structure
-    # These are example rules that match the model's expected format
-    rules_data = {
-        'antecedents': [
-            frozenset({21137}),  # Organic Strawberries
-            frozenset({21137}),
-            frozenset({21137}),
-            frozenset({21137}),
-            frozenset({21137}),
-            frozenset({27966}),  # Organic Raspberries
-            frozenset({47209}),  # Organic Hass Avocado
-        ],
-        'consequents': [
-            frozenset({27966}),  # Organic Raspberries
-            frozenset({47209}),  # Organic Hass Avocado
-            frozenset({13176}),  # Bag of Organic Bananas
-            frozenset({21903}),  # Organic Baby Spinach
-            frozenset({8277}),   # Apple Honeycrisp Organic
-            frozenset({47209}),
-            frozenset({13176}),
-        ],
-        'lift': [2.15, 1.88, 1.75, 1.65, 1.55, 1.45, 1.35],
-        'confidence': [0.64, 0.56, 0.52, 0.49, 0.46, 0.43, 0.40],
-        'support': [0.18, 0.16, 0.15, 0.14, 0.13, 0.12, 0.11]
-    }
-    return pd.DataFrame(rules_data)
+def _get_pricings_collection():
+    global _pricings_col
+    if _pricings_col is None:
+        if not MONGO_URI:
+            raise RuntimeError("MONGO_URI not set")
+        from pymongo import MongoClient
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        client.admin.command("ping")
+        db = client[MONGO_DB_NAME]
+        _pricings_col = db["product_pricings"]
+    return _pricings_col
 
 
-def _create_mock_products_df():
-    """
-    Create mock products dataframe for demo purposes.
-    In production, this would be loaded from CSV or MongoDB.
+def get_recommendations_ml(limit: int = 10) -> List[Dict]:
+    if time.time() < _cache['expires']:
+        return _cache['results'][:limit]
 
-    The products_df needs columns: product_id, product_name
-    """
-    products_data = {
-        'product_id': [21137, 27966, 47209, 13176, 21903, 8277],
-        'product_name': [
-            'Organic Strawberries',
-            'Organic Raspberries',
-            'Organic Hass Avocado',
-            'Bag of Organic Bananas',
-            'Organic Baby Spinach',
-            'Apple Honeycrisp Organic'
-        ]
-    }
-    return pd.DataFrame(products_data)
+    pricings = _get_pricings_collection()
 
+    newest = pricings.find_one({}, {'date': 1}, sort=[('date', -1)])
+    if not newest:
+        return []
 
-def get_recommendations_ml(product_id: int, limit: int = 5) -> List[Dict]:
-    """
-    Get product recommendations using the existing ML model.
+    rows = pricings.find(
+        {'date': {'$gte': newest['date'] - ONE_DAY}},
+        {'product_code': 1, 'store_chain': 1, 'price': 1, 'best_price': 1, 'is_on_special': 1},
+    ).sort([('date', -1), ('created_at', -1)])
 
-    This function demonstrates using an actual trained model:
-    1. Loads the saved joblib model
-    2. Creates mock data (rules_df, products_df) for demo
-    3. Calls the actual model function
-    4. Formats and returns results
+    seen = set()
+    results = []
+    for row in rows:
+        code = str(row.get('product_code') or '')
+        key = (code, row.get('store_chain'))
+        if not code or key in seen:
+            continue
+        seen.add(key)
 
-    Args:
-        product_id: The product ID to get recommendations for
-        limit: Number of recommendations to return
+        price = float(row.get('price') or 0)
+        best_price = float(row.get('best_price') or 0)
+        if not row.get('is_on_special') or price <= 0 or best_price <= 0 or best_price >= price:
+            continue
 
-    Returns:
-        List of recommended products with details
-    """
-    try:
-        # Load the actual model
-        model = _load_model()
+        results.append({
+            'product_code': code,
+            'store_chain': row.get('store_chain'),
+            'price': round(best_price, 2),
+            'was_price': round(price, 2),
+            'discount_percent': round((price - best_price) / price * 100, 1),
+        })
 
-        # Create mock data for demo (in production, load from CSV/MongoDB)
-        rules_df = _create_mock_rules_df()
-        products_df = _create_mock_products_df()
+    results.sort(key=lambda r: r['discount_percent'], reverse=True)
 
-        # IMPORTANT: The model function expects a 'products' dataframe in the global scope
-        # We need to inject it into the function's globals before calling
-        import sys
-        import types
+    _cache['results'] = results[:20]
+    _cache['expires'] = time.time() + CACHE_SECONDS
 
-        # Method 1: Try to inject into function's __globals__
-        if hasattr(model, '__globals__'):
-            model.__globals__['products'] = products_df
-
-        # Method 2: Also add to current module's globals as backup
-        globals()['products'] = products_df
-
-        # Method 3: Create a new function with updated globals if needed
-        try:
-            # Try calling the model first
-            recommendations_df = model(rules_df, product_id, limit)
-        except NameError as e:
-            if 'products' in str(e):
-                # Products not found - create new function with products in globals
-                func_globals = dict(model.__globals__) if hasattr(model, '__globals__') else {}
-                func_globals['products'] = products_df
-
-                # Create new function with updated globals
-                new_func = types.FunctionType(
-                    model.__code__,
-                    func_globals,
-                    model.__name__,
-                    model.__defaults__,
-                    model.__closure__
-                )
-                recommendations_df = new_func(rules_df, product_id, limit)
-            else:
-                raise
-
-        # Format results for API response
-        recommendations = []
-        for _, row in recommendations_df.iterrows():
-            recommendations.append({
-                'product_id': int(row['product_id']),
-                'product_name': str(row['product_name']),
-                'model_type': 'Association Rule Learning',
-                'source': 'product_recommendation_model.joblib'
-            })
-
-        return recommendations
-
-    except FileNotFoundError as e:
-        # If model file doesn't exist, return demo data with error message
-        print(f"Warning: {e}")
-        print("Returning demo data - model file not found")
-        return _get_demo_recommendations(product_id, limit)
-    except Exception as e:
-        # If model fails for any reason, return demo data
-        print(f"Error using model: {e}")
-        print("Returning demo data as fallback")
-        return _get_demo_recommendations(product_id, limit)
+    return results[:limit]
 
 
-def _get_demo_recommendations(product_id: int, limit: int) -> List[Dict]:
-    """Fallback demo recommendations if model can't be loaded"""
-    demo_recommendations = [
-        {
-            'product_id': 27966,
-            'product_name': 'Organic Raspberries',
-            'model_type': 'Demo (model not loaded)',
-            'source': 'placeholder'
-        },
-        {
-            'product_id': 47209,
-            'product_name': 'Organic Hass Avocado',
-            'model_type': 'Demo (model not loaded)',
-            'source': 'placeholder'
-        },
-        {
-            'product_id': 13176,
-            'product_name': 'Bag of Organic Bananas',
-            'model_type': 'Demo (model not loaded)',
-            'source': 'placeholder'
-        },
-        {
-            'product_id': 21903,
-            'product_name': 'Organic Baby Spinach',
-            'model_type': 'Demo (model not loaded)',
-            'source': 'placeholder'
-        },
-        {
-            'product_id': 8277,
-            'product_name': 'Apple Honeycrisp Organic',
-            'model_type': 'Demo (model not loaded)',
-            'source': 'placeholder'
-        }
+def _get_model():
+    global _bundle
+    if _bundle is None:
+        _bundle = joblib.load(MODEL_PATH)
+    return _bundle
+
+
+def score_user(rows):
+    bundle = _get_model()
+    rows['purchase_probability'] = bundle['estimator'].predict_proba(rows[bundle['feature_columns']])[:, 1]
+    return rows.sort_values('purchase_probability', ascending=False)
+
+
+def load_user_recommended_options(user_id):
+    options = pd.read_csv(RECOMMENDED_OPTIONS_PATH)
+    return options[options['user_id'] == int(user_id)]
+
+
+def get_model_recommendations_ml(user_id, limit: int = 10) -> List[Dict]:
+    rows = load_user_recommended_options(user_id)
+    if rows.empty:
+        return []
+
+    ranked = score_user(rows).head(limit)
+
+    return [
+        {'product_code': code, 'purchase_probability': round(float(prob), 3)}
+        for code, prob in zip(ranked['product_code'], ranked['purchase_probability'])
     ]
-    return demo_recommendations[:limit]
-
-

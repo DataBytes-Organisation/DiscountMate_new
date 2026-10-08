@@ -9,6 +9,8 @@ USING (
         SELECT
             raw.source_product_key,
             raw.canonical_key,
+            raw.brand_name_key,
+            raw.canonical_product_name_key,
             categories.id AS category_id,
             raw.standardized_product_name AS product_name,
             raw.brand_name,
@@ -24,10 +26,13 @@ USING (
         INNER JOIN {{ dim_categories_table }} AS categories
             ON categories.category_name = raw.category_name
     ),
+
     touched_products AS (
         SELECT
             source_product_key,
             canonical_key,
+            brand_name_key,
+            canonical_product_name_key,
             category_id,
             product_name,
             brand_name,
@@ -38,96 +43,243 @@ USING (
         FROM latest_products
         WHERE product_rank = 1
     ),
+
+    existing_products_base AS (
+        SELECT
+            products.id AS product_id,
+            products.gtin,
+            products.product_name,
+            products.brand_name,
+            CAST(products.pack_quantity AS DECIMAL(10, 3)) AS pack_quantity,
+            lower(products.pack_uom) AS pack_uom,
+            trim(regexp_replace(lower(coalesce(products.brand_name, '')), '[^a-z0-9]+', ' ', 'g')) AS brand_name_key,
+            trim(regexp_replace(lower(coalesce(products.product_name, '')), '[^a-z0-9]+', ' ', 'g')) AS product_name_key
+        FROM {{ dim_products_table }} AS products
+    ),
+
+    existing_products_brand_stripped AS (
+        SELECT
+            *,
+            CASE
+                WHEN brand_name_key <> ''
+                 AND (product_name_key = brand_name_key OR product_name_key LIKE brand_name_key || ' %')
+                THEN trim(substr(product_name_key, length(brand_name_key) + 1))
+                ELSE product_name_key
+            END AS stripped_product_name_key
+        FROM existing_products_base
+    ),
+
+    existing_products_measure_stripped AS (
+        SELECT
+            *,
+            trim(
+                regexp_replace(
+                    regexp_replace(
+                        regexp_replace(
+                            regexp_replace(
+                                stripped_product_name_key,
+                                '[0-9]+[[:space:]]*x[[:space:]]*[0-9]+([.][0-9]+)?[[:space:]]*(ml|l|g|kg)',
+                                ' ', 'g'
+                            ),
+                            '[0-9]+([.][0-9]+)?[[:space:]]*(ml|l|g|kg)',
+                            ' ', 'g'
+                        ),
+                        '[0-9]+[[:space:]]*(pk|pack)',
+                        ' ', 'g'
+                    ),
+                    '(^|[[:space:]])(each|ea)($|[[:space:]])',
+                    ' ', 'g'
+                )
+            ) AS canonical_product_name_key
+        FROM existing_products_brand_stripped
+    ),
+
+    existing_products_normalized AS (
+        SELECT
+            *,
+            brand_name_key || '|'
+            || trim(regexp_replace(canonical_product_name_key, '[[:space:]]+', ' ', 'g')) || '|'
+            || CASE
+                WHEN pack_quantity IS NULL THEN ''
+                ELSE rtrim(regexp_replace(printf('%.3f', pack_quantity), '0+$', ''), '.')
+               END || '|'
+            || coalesce(pack_uom, '') AS canonical_key
+        FROM existing_products_measure_stripped
+    ),
+
+    -- 1) Exact GTIN match. GTIN always has first priority.
     gtin_matches AS (
         SELECT
-            touched_products.source_product_key,
-            products.id AS product_id
-        FROM touched_products
-        INNER JOIN {{ dim_products_table }} AS products
-            ON touched_products.gtin IS NOT NULL
-            AND products.gtin = touched_products.gtin
+            incoming.source_product_key,
+            min(existing.product_id) AS product_id
+        FROM touched_products AS incoming
+        INNER JOIN existing_products_normalized AS existing
+            ON incoming.gtin IS NOT NULL
+           AND existing.gtin = incoming.gtin
+        GROUP BY incoming.source_product_key
     ),
+
+    -- 2) Exact canonical match, only when GTIN did not resolve the product.
     canonical_matches AS (
         SELECT
-            touched_products.source_product_key,
-            products.id AS product_id
-        FROM touched_products
-        INNER JOIN {{ dim_products_table }} AS products
-            ON {{ dim_product_canonical_key_expr }} = touched_products.canonical_key
-    ),
-    physical_key_matches AS (
-        SELECT
-            touched_products.source_product_key,
-            products.id AS product_id
-        FROM touched_products
-        INNER JOIN {{ dim_products_table }} AS products
-            ON coalesce(lower(products.brand_name), '') = coalesce(lower(touched_products.brand_name), '')
-            AND lower(products.product_name) = lower(touched_products.product_name)
-            AND coalesce(products.pack_quantity, -1) = coalesce(touched_products.pack_quantity, -1)
-            AND coalesce(lower(products.pack_uom), '') = coalesce(lower(touched_products.pack_uom), '')
-    ),
-    resolved_canonical_groups AS (
-        SELECT
-            touched_products.canonical_key,
-            coalesce(
-                min(physical_key_matches.product_id) FILTER (WHERE physical_key_matches.product_id IS NOT NULL),
-                min(canonical_matches.product_id) FILTER (WHERE canonical_matches.product_id IS NOT NULL),
-                min(gtin_matches.product_id) FILTER (WHERE gtin_matches.product_id IS NOT NULL)
-            ) AS product_id
-        FROM touched_products
+            incoming.source_product_key,
+            min(existing.product_id) AS product_id
+        FROM touched_products AS incoming
+        INNER JOIN existing_products_normalized AS existing
+            ON existing.canonical_key = incoming.canonical_key
+           AND (
+                incoming.gtin IS NULL
+                OR existing.gtin IS NULL
+                OR existing.gtin = incoming.gtin
+           )
         LEFT JOIN gtin_matches
             USING (source_product_key)
-        LEFT JOIN canonical_matches
-            USING (source_product_key)
-        LEFT JOIN physical_key_matches
-            USING (source_product_key)
-        GROUP BY touched_products.canonical_key
-        HAVING coalesce(
-            min(physical_key_matches.product_id) FILTER (WHERE physical_key_matches.product_id IS NOT NULL),
-            min(canonical_matches.product_id) FILTER (WHERE canonical_matches.product_id IS NOT NULL),
-            min(gtin_matches.product_id) FILTER (WHERE gtin_matches.product_id IS NOT NULL)
-        ) IS NOT NULL
+        WHERE gtin_matches.product_id IS NULL
+        GROUP BY incoming.source_product_key
     ),
-    unmatched_touched_products AS (
+
+    -- 3) Only exact-unmatched products reach fuzzy matching.
+    fuzzy_candidate_source AS (
+        SELECT incoming.*
+        FROM touched_products AS incoming
+        LEFT JOIN gtin_matches USING (source_product_key)
+        LEFT JOIN canonical_matches USING (source_product_key)
+        WHERE gtin_matches.product_id IS NULL
+          AND canonical_matches.product_id IS NULL
+          AND incoming.pack_quantity IS NOT NULL
+          AND incoming.pack_uom IS NOT NULL
+    ),
+
+    fuzzy_candidates_base AS (
         SELECT
-            touched_products.*
-        FROM touched_products
-        LEFT JOIN gtin_matches
-            USING (source_product_key)
-        LEFT JOIN canonical_matches
-            USING (source_product_key)
-        LEFT JOIN physical_key_matches
-            USING (source_product_key)
-        LEFT JOIN resolved_canonical_groups
-            USING (canonical_key)
-        WHERE
-            gtin_matches.product_id IS NULL
-            AND canonical_matches.product_id IS NULL
-            AND physical_key_matches.product_id IS NULL
-            AND resolved_canonical_groups.product_id IS NULL
+            incoming.source_product_key,
+            existing.product_id,
+            incoming.canonical_key AS incoming_canonical_key,
+            existing.canonical_key AS existing_canonical_key,
+            incoming.canonical_product_name_key AS incoming_name_key,
+            existing.canonical_product_name_key AS existing_name_key,
+            incoming.brand_name_key AS incoming_brand_key,
+            existing.brand_name_key AS existing_brand_key,
+
+            jaro_winkler_similarity(
+                incoming.canonical_product_name_key,
+                existing.canonical_product_name_key
+            ) AS name_similarity,
+
+            CASE
+                WHEN incoming.brand_name_key = '' OR existing.brand_name_key = '' THEN NULL
+                ELSE jaro_winkler_similarity(incoming.brand_name_key, existing.brand_name_key)
+            END AS brand_similarity
+
+        FROM fuzzy_candidate_source AS incoming
+        INNER JOIN existing_products_normalized AS existing
+            ON incoming.pack_quantity = existing.pack_quantity
+           AND lower(incoming.pack_uom) = lower(existing.pack_uom)
+
+           -- Do not fuzzy-merge two different known GTINs.
+           AND (
+                incoming.gtin IS NULL
+                OR existing.gtin IS NULL
+                OR incoming.gtin = existing.gtin
+           )
+
+           -- Broad candidate blocking only; final thresholds are below.
+           AND (
+                (
+                    incoming.brand_name_key <> ''
+                    AND existing.brand_name_key <> ''
+                    AND jaro_winkler_similarity(
+                        incoming.brand_name_key,
+                        existing.brand_name_key
+                    ) >= 0.80
+                )
+                OR
+                jaro_winkler_similarity(
+                    incoming.canonical_product_name_key,
+                    existing.canonical_product_name_key
+                ) >= 0.60
+           )
     ),
-    canonical_duplicate_keys AS (
+
+    fuzzy_candidates AS (
         SELECT
-            canonical_key
-        FROM unmatched_touched_products
-        GROUP BY canonical_key
-        HAVING count(*) > 1
+            *,
+            CASE
+                WHEN brand_similarity IS NULL THEN name_similarity
+                ELSE (name_similarity * 0.80) + (brand_similarity * 0.20)
+            END AS confidence_score
+        FROM fuzzy_candidates_base
     ),
+
+    fuzzy_ranked AS (
+        SELECT
+            *,
+            row_number() OVER (
+                PARTITION BY source_product_key
+                ORDER BY confidence_score DESC, product_id
+            ) AS match_rank,
+            lead(confidence_score) OVER (
+                PARTITION BY source_product_key
+                ORDER BY confidence_score DESC, product_id
+            ) AS runner_up_score
+        FROM fuzzy_candidates
+    ),
+
+    fuzzy_best_matches AS (
+        SELECT
+            source_product_key,
+            product_id,
+            confidence_score,
+            runner_up_score,
+            confidence_score - coalesce(runner_up_score, 0) AS score_margin,
+            CASE
+            WHEN confidence_score >= 0.98
+                THEN 'HIGH'
+        
+            WHEN confidence_score >= 0.92
+             AND (
+                    runner_up_score IS NULL
+                    OR confidence_score - runner_up_score >= 0.03
+                 )
+                THEN 'HIGH'
+            WHEN confidence_score >= 0.80
+                THEN 'MEDIUM'
+            ELSE 'LOW'
+        END AS confidence_band
+        FROM fuzzy_ranked
+        WHERE match_rank = 1
+    ),
+
+    -- HIGH confidence is safe enough for automatic merge.
+    fuzzy_high_matches AS (
+        SELECT source_product_key, product_id
+        FROM fuzzy_best_matches
+        WHERE confidence_band = 'HIGH'
+    ),
+
+    -- MEDIUM are deliberately held for review, not inserted as new products.
+    -- LOW matches and products with no fuzzy candidate are treated as new-product candidates.
+    new_product_candidates AS (
+        SELECT incoming.*
+        FROM touched_products AS incoming
+        LEFT JOIN gtin_matches USING (source_product_key)
+        LEFT JOIN canonical_matches USING (source_product_key)
+        LEFT JOIN fuzzy_best_matches USING (source_product_key)
+        WHERE gtin_matches.product_id IS NULL
+        AND canonical_matches.product_id IS NULL
+        AND (
+                fuzzy_best_matches.product_id IS NULL
+                OR fuzzy_best_matches.confidence_band = 'LOW'
+            )
+    ),
+
     unresolved_products AS (
         SELECT
-            unmatched_touched_products.source_product_key,
-            CASE
-                WHEN canonical_duplicate_keys.canonical_key IS NOT NULL
-                    THEN unmatched_touched_products.canonical_key
-                ELSE coalesce(
-                    unmatched_touched_products.gtin,
-                    unmatched_touched_products.canonical_key
-                )
-            END AS insert_identity_key
-        FROM unmatched_touched_products
-        LEFT JOIN canonical_duplicate_keys
-            USING (canonical_key)
+            source_product_key,
+            coalesce(gtin, canonical_key) AS insert_identity_key
+        FROM new_product_candidates
     ),
+
     new_product_ids AS (
         SELECT
             insert_identity_key,
@@ -137,13 +289,13 @@ USING (
             FROM unresolved_products
         )
     ),
+
     canonical_products AS (
         SELECT
             coalesce(
-                physical_key_matches.product_id,
-                canonical_matches.product_id,
-                resolved_canonical_groups.product_id,
                 gtin_matches.product_id,
+                canonical_matches.product_id,
+                fuzzy_high_matches.product_id,
                 new_product_ids.product_id
             ) AS product_id,
             touched_products.source_product_key,
@@ -155,19 +307,19 @@ USING (
             touched_products.pack_uom,
             touched_products.image_link_side
         FROM touched_products
-        LEFT JOIN gtin_matches
-            USING (source_product_key)
-        LEFT JOIN canonical_matches
-            USING (source_product_key)
-        LEFT JOIN physical_key_matches
-            USING (source_product_key)
-        LEFT JOIN resolved_canonical_groups
-            USING (canonical_key)
-        LEFT JOIN unresolved_products
-            USING (source_product_key)
-        LEFT JOIN new_product_ids
-            USING (insert_identity_key)
+        LEFT JOIN gtin_matches USING (source_product_key)
+        LEFT JOIN canonical_matches USING (source_product_key)
+        LEFT JOIN fuzzy_high_matches USING (source_product_key)
+        LEFT JOIN unresolved_products USING (source_product_key)
+        LEFT JOIN new_product_ids USING (insert_identity_key)
+        WHERE coalesce(
+            gtin_matches.product_id,
+            canonical_matches.product_id,
+            fuzzy_high_matches.product_id,
+            new_product_ids.product_id
+        ) IS NOT NULL
     ),
+
     product_gtin_resolution AS (
         SELECT
             canonical_products.product_id,

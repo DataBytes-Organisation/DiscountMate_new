@@ -10,15 +10,18 @@ const verifyToken = async (req, res, next) => {
 
     // CS-15-T3: Log requests to protected routes without a token.
     if (!token) {
-            logSecurityEvent({
-                event: 'INVALID_TOKEN_USAGE',
-                ip: req.ip,
-                method:req.method,
-                route: req.originalUrl,
-                details: ['No authentication token provided'],
-            });
+        logSecurityEvent({
+            event: 'INVALID_TOKEN_USAGE',
+            ip: req.ip,
+            method:req.method,
+            route: req.originalUrl,
+            details: ['No authentication token provided'],
+        });
 
-        return res.status(401).json({message: "No token provided"});
+        return res.status(401).json({
+            message: "No token provided",
+            code: "authentication_required",
+        });
     }
 
     try {
@@ -54,7 +57,7 @@ const verifyToken = async (req, res, next) => {
         });
 
         if (err.name === "TokenExpiredError") {
-            return res.status(401).json({message: "Token Has Expired"});
+            return res.status(401).json({message: "Token Has Expired", code: "authentication_required"});
         }
 
         // CS-15-T3: Log malformed or invalid authentication tokens.
@@ -70,6 +73,7 @@ const verifyToken = async (req, res, next) => {
 
         return res.status(401).json({
             message: 'Invalid Token',
+            code: 'authentication_required',
         });
     }
 };

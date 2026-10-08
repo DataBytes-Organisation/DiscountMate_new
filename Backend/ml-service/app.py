@@ -14,9 +14,11 @@ from google.cloud.secretmanager import SecretManagerServiceClient
 
 # Import ML model functions
 from ml_models.weekly_specials import get_weekly_specials_ml
-from ml_models.recommendations import get_recommendations_ml
+from ml_models.recommendations import get_recommendations_ml, get_model_recommendations_ml
 from ml_models.price_prediction import get_price_prediction_ml
 from ocr.extractor import process_receipt_internal, build_user_response
+from chatbots.agents import DiscountMateAgent
+from chatbots.mcp_tools import TOOL_REGISTRY
 
 
 def _resolve_project_id():
@@ -82,6 +84,8 @@ from recipe_rag.rag_pipeline import INDEX_DIR, RecipeRAG
 rag = None
 RAG_INIT_ERROR = None
 RAG_LOCK = Lock()
+chatbot_agent = None
+CHATBOT_AGENT_LOCK = Lock()
 
 
 def get_rag():
@@ -115,6 +119,21 @@ def rag_not_ready_response(error):
     }), 503
 
 
+def get_chatbot_agent():
+    """Lazy-load the combined RAG + MCP chatbot agent."""
+    global chatbot_agent
+
+    if chatbot_agent is not None:
+        return chatbot_agent
+
+    with CHATBOT_AGENT_LOCK:
+        if chatbot_agent is None:
+            chatbot_agent = DiscountMateAgent(
+                tool_registry=TOOL_REGISTRY,
+            )
+        return chatbot_agent
+
+
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -138,6 +157,50 @@ def error_payload(message, error, status_code=500):
         'message': message,
         'error': error,
     }), status_code
+
+
+def model_to_dict(model):
+    if hasattr(model, "model_dump"):
+        return model.model_dump()
+    if hasattr(model, "dict"):
+        return model.dict()
+    return model
+
+
+def chatbot_tool_status(payload):
+    if payload.get("success"):
+        return 200
+
+    error = payload.get("error") or {}
+    code = error.get("code")
+    if code in ("invalid_arguments", "invalid_request"):
+        return 400
+    if code == "repository_unavailable":
+        return 503
+    if code == "product_not_found":
+        return 404
+    return 500
+
+
+def run_chatbot_tool(tool_name):
+    data = request.get_json(silent=True) or {}
+    arguments = data.get("arguments") if isinstance(data.get("arguments"), dict) else data
+
+    if tool_name not in TOOL_REGISTRY:
+        return jsonify({
+            "success": False,
+            "tool": tool_name,
+            "data": None,
+            "error": {
+                "code": "unknown_tool",
+                "message": f"Unknown chatbot tool: {tool_name}",
+                "details": {},
+            },
+        }), 404
+
+    result = TOOL_REGISTRY[tool_name](arguments)
+    payload = model_to_dict(result)
+    return jsonify(payload), chatbot_tool_status(payload)
 
 
 @app.route('/health', methods=['GET'])
@@ -191,48 +254,33 @@ def get_current_week():
 
 @app.route('/api/ml/recommendations', methods=['POST'])
 def get_recommendations():
-    """
-    Get product recommendations using existing ML model
-
-    This endpoint demonstrates how to integrate an existing trained model:
-    - The model file exists at: ML/Recommendation_system/Recommendation-by-Simba/product_recommendation_model.joblib
-    - Currently returns demo output showing the expected structure
-    - Ready to be connected to the actual model when data sources are available
-
-    Request body:
-    {
-        "product_id": 21137,
-        "limit": 5
-    }
-    """
+    data = request.get_json(silent=True) or {}
     try:
-        data = request.get_json() or {}
-        product_id = data.get('product_id')
-        limit = int(data.get('limit', 5))
+        limit = min(max(int(data.get('limit', 10)), 1), 20)
+    except (TypeError, ValueError):
+        return error_payload('Invalid request', 'limit must be an integer', 400)
 
-        if product_id is None:
-            return error_payload('Invalid request', 'product_id is required', 400)
+    user_id = data.get('user_id')
 
-        # Call ML model function from ml_models module
-        # This demonstrates the integration pattern:
-        # - app.py handles HTTP requests/responses
-        # - ml_models/recommendations.py contains the ML model logic
-        recommendations = get_recommendations_ml(product_id=product_id, limit=limit)
+    try:
+        if user_id:
+            recommendations = get_model_recommendations_ml(user_id, limit=limit)
+            model_type = 'purchase_probability_model'
+        else:
+            recommendations = get_recommendations_ml(limit=limit)
+            model_type = 'discount_ranking'
 
         return success_payload(
-            message='Product recommendations using existing ML model',
-            input_product_id=product_id,
             recommendations=recommendations,
             count=len(recommendations),
             model_info={
-                'model_type': 'Association Rule Learning',
-                'model_location': os.getenv('RECOMMENDATION_MODEL_PATH', '/app/models/product_recommendation_model.joblib'),
-                'status': 'using_actual_model' if recommendations and recommendations[0].get('source') == 'product_recommendation_model.joblib' else 'fallback_mode'
+                'type': model_type,
+                'status': 'live'
             }
         )
 
     except Exception as e:
-        return error_payload('Failed to get recommendations', str(e))
+        return error_payload('Failed to get recommendations', str(e), 503)
 
 
 @app.route('/api/ml/price-prediction', methods=['POST'])
@@ -322,6 +370,29 @@ def process_receipt_api():
     finally:
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
+
+
+# ============================================================
+# DL-06 chatbot MCP-style tool endpoints
+# ============================================================
+
+@app.route('/api/chatbot/chat', methods=['POST'])
+def chatbot_chat():
+    data = request.get_json(silent=True) or {}
+    result = get_chatbot_agent().chat(data)
+    payload = model_to_dict(result)
+    return jsonify(payload), chatbot_tool_status(payload)
+
+
+@app.route('/api/chatbot/tools/search-products', methods=['POST'])
+def chatbot_search_products():
+    return run_chatbot_tool("search_products")
+
+
+@app.route('/api/chatbot/tools/compare-prices', methods=['POST'])
+def chatbot_compare_prices():
+    return run_chatbot_tool("compare_prices")
+
 
 # ============================================================
 # Recipe RAG endpoints
@@ -516,6 +587,9 @@ if __name__ == '__main__':
     print("  POST /api/ml/recommendations - Get product recommendations")
     print("  POST /api/ml/price-prediction - Predict future prices")
     print("  POST /api/ocr/receipt - Process uploaded receipt image")
+    print("  POST /api/chatbot/tools/search-products - DL-06 product search tool")
+    print("  POST /api/chatbot/tools/compare-prices - DL-06 price comparison tool")
+    print("  POST /api/chatbot/chat - Product search and price comparison assistant")
     print("  GET  /api/recipe/stats - Recipe RAG diagnostics")
     print("  GET  /api/recipe/search?q=... - Recipe retrieval (no LLM)")
     print("  POST /api/recipe/chat - Recipe RAG chat (full LLM)")

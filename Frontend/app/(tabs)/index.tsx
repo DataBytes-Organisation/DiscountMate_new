@@ -2,6 +2,7 @@
 import React from "react";
 import { View } from "react-native";
 import HomeMainSection from "../../components/home/HomeMainSection";
+import RecommendedForYouSection from "../../components/home/RecommendedForYouSection";
 import TrendingInsightsSection from "../../components/home/TrendingInsightsSection";
 import SavingsSummarySection from "../../components/home/SavingsSummarySection";
 import SmartListsSection from "../../components/home/SmartListsSection";
@@ -16,6 +17,7 @@ export default function HomeScreen() {
    return (
       <View className="flex-1 bg-[#F9FAFB]">
          <HomeMainSection />
+         <RecommendedForYouSection />
          <TrendingInsightsSection />
          <SavingsSummarySection />
          <SmartListsSection />

@@ -1,0 +1,8 @@
+{
+  "label": "Product Matching & Deduplication",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "DE-06: how the same product is matched and deduplicated into one canonical record across retailers."
+  }
+}
