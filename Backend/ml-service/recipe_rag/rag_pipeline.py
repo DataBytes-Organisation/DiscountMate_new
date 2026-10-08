@@ -1600,7 +1600,7 @@ class RecipeRAG:
                 "price comparison",
             )
         )
-
+    
     def chat(self, session_id: str, user_query: str, top_k: int = 3) -> Dict:
         """
         Multi-turn RAG chat. Returns the LLM answer immediately together with
@@ -1642,6 +1642,80 @@ class RecipeRAG:
                 "products_pending": False,
                 "recipe_context_id": None,
                 "tool_selection": selection.to_dict(),
+            }
+                    # Handle price-comparison requests
+        if self._is_price_comparison_query(user_query):
+            candidates = self.product_matcher.find_query_product_candidates(
+                user_query,
+                top_k=10
+            )
+
+            comparison = self.mongo_resolver.compare_product_prices(candidates)
+
+            if comparison.get("status") != "ok":
+                return {
+                    "answer": "I couldn't find reliable price information for that product. Please try specifying the product name, brand, or pack size.",
+                    "sources": [],
+                    "turns": self.turn_count(session_id),
+                    "limit_reached": False,
+                    "product_candidate_names": [],
+                    "products_pending": False,
+                    "recipe_context_id": None,
+                }
+
+            matched_product = comparison.get("matched_product") or {}
+            prices = comparison.get("prices") or []
+            cheapest = comparison.get("cheapest")
+
+            product_name = (
+                matched_product.get("product_name")
+                or matched_product.get("name")
+                or matched_product.get("description")
+                or "the product"
+            )
+
+            if not prices:
+                return {
+                    "answer": f"I found {product_name}, but there are no current retailer prices available.",
+                    "sources": [],
+                    "turns": self.turn_count(session_id),
+                    "limit_reached": False,
+                    "product_candidate_names": [product_name],
+                    "products_pending": False,
+                    "recipe_context_id": None,
+                }
+
+            lines = [f"Price comparison for {product_name}:"]
+
+            for item in prices:
+                retailer = item.get("store_chain") or item.get("retailer") or "Unknown retailer"
+                price = item.get("price")
+
+                if price is not None:
+                    lines.append(f"- {retailer}: ${float(price):.2f}")
+
+            if cheapest:
+                cheapest_store = (
+                    cheapest.get("store_chain")
+                    or cheapest.get("retailer")
+                    or "Unknown retailer"
+                )
+                cheapest_price = cheapest.get("price")
+
+                if cheapest_price is not None:
+                    lines.append(
+                        f"\nCheapest option: {cheapest_store} "
+                        f"at ${float(cheapest_price):.2f}."
+                    )
+
+            return {
+                "answer": "\n".join(lines),
+                "sources": [],
+                "turns": self.turn_count(session_id),
+                "limit_reached": False,
+                "product_candidate_names": [product_name],
+                "products_pending": False,
+                "recipe_context_id": None,
             }
 
         # Handle price-comparison requests without invoking recipe retrieval or LLMs.
