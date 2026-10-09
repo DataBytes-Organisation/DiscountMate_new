@@ -655,10 +655,14 @@ async function startServer() {
          );
          app.locals.reverseImageSearchAvailable = true;
       } else {
+ aaradhya-da02-t10
+         // await startReverseImageSearch();
+
          const reverseImageStatus = await initializeReverseImageSearchDependency({
             initialize: startReverseImageSearch,
          });
          app.locals.reverseImageSearchAvailable = reverseImageStatus.available;
+ main
       }
    } catch (err) {
       console.error(
