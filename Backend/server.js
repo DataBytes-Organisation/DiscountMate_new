@@ -655,12 +655,17 @@ async function startServer() {
          );
          app.locals.reverseImageSearchAvailable = true;
       } else {
-         const reverseImageStatus = await initializeReverseImageSearchDependency({
-            initialize: startReverseImageSearch,
-         });
-         app.locals.reverseImageSearchAvailable = reverseImageStatus.available;
+     
+         const reverseImageStatus =
+            await initializeReverseImageSearchDependency({
+               initialize: startReverseImageSearch,
+            });
+
+         app.locals.reverseImageSearchAvailable =
+            reverseImageStatus.available;
       }
-   } catch (err) {
+      }
+   catch (err) {
       console.error(
          'Failed to start required ReverseImageSearch sidecar:',
          err.message

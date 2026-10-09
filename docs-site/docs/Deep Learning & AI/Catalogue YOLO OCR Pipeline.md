@@ -120,7 +120,7 @@ results = model.train(
 
 The sub region boxes were done in such a way so as to allow the OCR extraction to be directly associated to that region. Running global extraction over the entire tile could have unit price values being inserted into the actual price attribute. See some examples below. 
 
-![YOLO Model 2 Examples](img\yolo2examples.png "YOLO 2 Examples")
+![YOLO Model 2 Examples](img\yolo2examples.PNG "YOLO 2 Examples")
 
 ### General training notes
 

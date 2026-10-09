@@ -9,7 +9,7 @@ sidebar_position: 1
 The Data Engineering (DE) team moves retailer product data from source websites into
 warehouse tables that the Analytics, Machine Learning, and Application teams can use.
 
-:::tip New here? Start with the [**Project Onboarding**](/into.md) guide first. 
+:::tip New here? Start with the [**Project Onboarding**](/docs/intro) guide first. 
 This covers the general project setup, including the tools and repository setup needed by all team members.
 :::
 
@@ -35,7 +35,7 @@ Find active tasks, sprint cards, and sub-tasks on Microsoft Planner:
 
 | If you want to… | Go to |
 |---|---|
-| Set up your environment | [Getting Started](./into.md)[cite: 2] |
+| Set up your environment | [Getting Started](/docs/intro)[cite: 2] |
 | Follow GitHub & PR guidelines | [Github Guidelines](https://deakin365-my.sharepoint.com/personal/s225113285_deakin_edu_au/_layouts/15/Doc.aspx?sourcedoc=%7BD7C822EA-00E4-4206-A8D5-FEAAE8D6D7C9%7D&file=Github%20Guidelines.docx&action=default&mobileredirect=true&DefaultItemOpen=1) |
 | Understand the Github repository set-up | [Repository Guide](/docs/Data%20Engineering/DE%20Onboarding/repository-guide) |
 | Understand scraper layers | [Ingestion Pipeline](/docs/Data%20Engineering/Ingestion%20Pipeline/tech-specs) |
